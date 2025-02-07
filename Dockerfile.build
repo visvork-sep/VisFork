@@ -1,0 +1,21 @@
+# Use the official Node.js image (exact version for consistency)
+FROM node:20.4.0
+
+# Set the working directory in the container
+WORKDIR /workspace
+
+# Install system-level dependencies (if needed for builds/tests)
+RUN apt-get update && apt-get install -y git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy only package.json and package-lock.json for caching dependencies
+COPY package*.json ./
+
+# Install Node.js dependencies
+RUN npm ci
+
+# Copy the rest of the application files
+COPY . .
+
+# Set the default shell for interactive use (optional for dev containers)
+CMD ["/bin/bash"]

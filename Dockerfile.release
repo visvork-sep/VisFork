@@ -1,0 +1,20 @@
+# Stage 2: Production Stage
+FROM node:20-slim
+
+# set to production
+ENV NODE_ENV=production
+
+# Set working directory
+WORKDIR /app
+
+# Copy only package.json and package-lock.json for caching dependencies
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production
+
+# Expose the application port (if applicable)
+# EXPOSE 3000
+
+# Set the default command
+CMD ["node", "./dist/app.js"]

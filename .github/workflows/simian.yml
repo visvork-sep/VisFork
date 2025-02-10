@@ -36,8 +36,8 @@ jobs:
 
       - name: Run Simian Analysis
         run: |
-          chmod +x your-script.sh
-          ./your-script.sh
+          chmod +x /.contrib/Simian/simian.sh
+          ./.contrib/Simian/simian.sh
 
       - name: Fail if duplicates found
         run: |

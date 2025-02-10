@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Simian Analysis
         run: |
-          chmod +x /.contrib/Simian/simian.sh
+          chmod +x .contrib/Simian/simian.sh
           ./.contrib/Simian/simian.sh
 
       - name: Fail if duplicates found

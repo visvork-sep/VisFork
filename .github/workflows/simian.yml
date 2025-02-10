@@ -1,0 +1,47 @@
+name: Simian Similarity Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-simian:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Cache Simian JAR
+        id: cache-simian
+        uses: actions/cache@v3
+        with:
+          path: simian.jar
+          key: simian-2.5.10
+
+      - name: Download Simian JAR (if not cached)
+        if: steps.cache-simian.outputs.cache-hit != 'true'
+        run: |
+          curl -L -o simian-4.0.0.jar https://simian.quandarypeak.com/a126d132-1526-4328-996c-c42f7a8a181c
+
+      - name: Run Simian Analysis
+        run: |
+          chmod +x your-script.sh
+          ./your-script.sh
+
+      - name: Fail if duplicates found
+        run: |
+          if grep -q "Found [1-9][0-9]* duplicate lines" simian.log; then
+            echo "Duplicate code detected!"
+            exit 1
+          fi

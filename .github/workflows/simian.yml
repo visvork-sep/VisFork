@@ -32,7 +32,7 @@ jobs:
       - name: Download Simian JAR (if not cached)
         if: steps.cache-simian.outputs.cache-hit != 'true'
         run: |
-          curl -L -o simian-4.0.0.jar https://simian.quandarypeak.com/a126d132-1526-4328-996c-c42f7a8a181c
+          curl -L -o simian-4.0.0.jar https://github.com/visvork-sep/visvork-sep/releases/download/v0.1-alpha/simian-4.0.0.jar
 
       - name: Run Simian Analysis
         run: |

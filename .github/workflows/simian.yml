@@ -20,14 +20,14 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - name: Cache Simian JAR
         id: cache-simian
         uses: actions/cache@v3
         with:
           path: simian.jar
-          key: simian-2.5.10
+          key: simian-4.0.0
 
       - name: Download Simian JAR (if not cached)
         if: steps.cache-simian.outputs.cache-hit != 'true'

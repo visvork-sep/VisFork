@@ -14,8 +14,11 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
+
+
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "npm install",
+	// download schmea and put in root
+	"postCreateCommand": "npm install && curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql",
 
 	// Run in priviliged mode.
 	"runArgs": ["--privileged"],
@@ -24,7 +27,7 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"esbenp.prettier-vscode",
+				"GraphQL.vscode-graphql",
 				"dbaeumer.vscode-eslint"
 			]
 		}

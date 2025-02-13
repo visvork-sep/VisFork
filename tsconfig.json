@@ -14,6 +14,9 @@
                 "node_modules/*",
                 "src/types/*"
             ],
+            "@__generated__/*": [
+                "__generated__/*"
+            ]
             // "@hello/*": [ // define your own modules here
             //     "src/hello/*"
             // ]
@@ -21,7 +24,8 @@
     },
     "include": [
         "src/**/*",
-        "test/**/*"
+        "test/**/*",
+        "__generated__/**/*"
     ],
     "exclude": [
         "node_modules"

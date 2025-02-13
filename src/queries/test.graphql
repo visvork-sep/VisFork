@@ -1,0 +1,14 @@
+query myQuery($first: Int!) {
+    repository(owner: "torvalds", name: "linux") {
+        forks(first: $first) {
+            nodes {
+                name
+                forks(first: 100) {
+                    nodes {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}

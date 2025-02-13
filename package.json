@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "type": "module",
   "description": "visvork-plugin",
-  "main": "app.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/fasonju/visfork-plugin.git"
@@ -24,6 +23,7 @@
     "@eslint/js": "^9.19.0",
     "@graphql-codegen/cli": "^5.0.4",
     "@graphql-codegen/client-preset": "^4.6.2",
+    "@tanstack/eslint-plugin-query": "^5.66.1",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
@@ -42,8 +42,9 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@apollo/client": "^3.12.11",
+    "@tanstack/react-query": "^5.66.0",
     "graphql": "^16.10.0",
+    "graphql-request": "^7.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }

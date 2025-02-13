@@ -20,8 +20,12 @@
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "noFallthroughCasesInSwitch": true,
-      "noUncheckedSideEffectImports": true
+      "noUncheckedSideEffectImports": true,
+
+      "paths": {
+        "__generated__/*": ["./__generated__/*"]
+      },
     },
-    "include": ["src"]
+    "include": ["src", "__generated__"],
   }
   

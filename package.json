@@ -43,9 +43,11 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.66.0",
+    "bootstrap": "^5.3.3",
     "graphql": "^16.10.0",
     "graphql-request": "^7.1.2",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0"
   }
 }

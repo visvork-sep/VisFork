@@ -7,7 +7,6 @@ const config: CodegenConfig = {
       "./__generated__/": {
          preset: "client",
       },
-      
    },
 };
 

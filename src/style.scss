@@ -1,0 +1,13 @@
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+
+// Customized defaults for the UI style
+// map-merge is used to make sure it retains the rest of its default colors.
+$theme-colors: map-merge($theme-colors, (
+    // Template colors go here
+    'danger': tomato
+));
+
+// Other customizable global elements go here
+
+@import 'bootstrap/scss/bootstrap';

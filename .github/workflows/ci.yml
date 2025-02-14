@@ -28,6 +28,6 @@ jobs:
 
       # Step 5: Build 
       - name: Build
-        run: docker run --rm visfork-ci npm run build-ts
+        run: docker run --rm visfork-ci npm run build
 
       # Step 6: TODO: Store the build artifact

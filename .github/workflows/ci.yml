@@ -18,7 +18,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Build Docker image
+      # Step 2: Get Resources
+      - name: Get Resources
+        run: |
+          curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
+
+      # Step 3: Build Docker image
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
 

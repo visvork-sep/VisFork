@@ -15,17 +15,22 @@ jobs:
 
     steps:
       # Step 1: Checkout the code
+      # Clone the repository to the CI runner
       - name: Checkout repository
         uses: actions/checkout@v3
 
       # Step 2: Cache schema
+      # Check cache for schema.graphql file. Use it if it exists, otherwise execute Step 3
       - name: Cache schema
+        # Variable used for referring to this step in subsequent steps
         id: cache-schema
         uses: actions/cache@v4
         env: 
           cache-name: cache-schema-gql
         with:
+          # Since the schema file should be located in the root directory of the project, we define this as the path
           path: ./
+          # The key(s) used for finding back the cache once the cache has been generated
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('./schema.graphql') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
@@ -33,6 +38,7 @@ jobs:
 
 
       # Step 3: Get Resources
+      # If schema.graphql has not been cached before (or the cache has expired), it will download it again
       - if: ${{ steps.cache-schema.outputs.cache-hit != 'true' }}
         name: Get resources
         run: |

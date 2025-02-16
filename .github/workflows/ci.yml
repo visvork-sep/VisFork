@@ -10,16 +10,16 @@ on:
       - release
 
 jobs:
-  build-and-test:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
+      # Step 1
       # Clone the repository to the CI runner
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Cache schema
+      # Step 2
       # Check cache for schema.graphql file. Use it if it exists, otherwise execute Step 3
       - name: Cache schema
         # Variable used for referring to this step in subsequent steps
@@ -37,23 +37,45 @@ jobs:
             ${{ runner.os }}-
 
 
-      # Step 3: Get Resources
+      # Step 3
       # If schema.graphql has not been cached before (or the cache has expired), it will download it again
       - if: ${{ steps.cache-schema.outputs.cache-hit != 'true' }}
         name: Get resources
         run: |
           curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
 
-      # Step 4: Build Docker image
+      # Step 4
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
 
-      # Step 5: Run Tests
-      - name: Run tests
-        run: docker run --rm visfork-ci npm run test-slim
 
-      # Step 6: Build 
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 5
+      - name: Run tests
+        run: docker run --rm visfork-ci npm run test-slim # uses fast testing (see package.json -> scripts)
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 6
       - name: Build
         run: docker run --rm visfork-ci npm run build
 
-      # Step 7: TODO: Store the build artifact
+      # Step 7
+      # This is so we can use cached files to build faster next time
+      - name: Store Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    # push the build artifact generated in build@step7 to the VM
+    # NOTE: also either run a script on the server remotely as a step here,
+    # or add a trigger to the server to automatically publish the new build

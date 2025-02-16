@@ -1,4 +1,4 @@
-import { HeartIcon } from "@primer/octicons-react";
+import { ImageIcon } from "@primer/octicons-react";
 import { Avatar, Box, Button, Header } from "@primer/react";
 
 
@@ -6,7 +6,7 @@ function AppHeader() {
     return (
         <Header aria-label="nav bar">
             <Header.Item>
-                <HeartIcon size={32}/>
+                <ImageIcon size={32}/>
             </Header.Item>
             <Header.Item full>
                 <span>VisFork</span>

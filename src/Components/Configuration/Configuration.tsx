@@ -1,27 +1,87 @@
-import { Box, Button, Details, FormControl, TextInput, useDetails } from "@primer/react";
-
+import { Box, Button, FormControl, Select, Stack, TextInput } from "@primer/react";
+import { Pagehead } from "@primer/react/deprecated";
 
 function Configuration() {
   return (
-    <Box as="form" border={1} borderRadius={2} display="grid" p={3}>
-      <FormControl required id="repository">
-        <FormControl.Label>Repository</FormControl.Label>
-        <TextInput type="text" placeholder="torvalds/linux" />
-        <FormControl.Caption>This is the repository that the visualizations will be based upon</FormControl.Caption>
-        {/* <FormControl.Validation variant="error">Repository must be of form repositoryOwner/RepositoryName or a GitHub URL</FormControl.Validation> */}
-      </FormControl>
+    <Box as="form" p={3} action="#">
+      <Stack direction={"vertical"}>
+        <Stack.Item >
+          <FormControl required id="repository">
+            <FormControl.Label>Repository</FormControl.Label>
+            <TextInput type="text" placeholder="torvalds/linux" />
+            <FormControl.Caption>This is the repository that the visualizations will be based upon</FormControl.Caption>
+            {/* <FormControl.Validation variant="error">Repository must be of form repositoryOwner/RepositoryName or a GitHub URL</FormControl.Validation> */}
+          </FormControl>
+        </Stack.Item>
 
-      <Box>
-        <Details>
-          <Details.Summary as={Button}>Advanced</Details.Summary>
-            <FormControl id="forks">
-              <FormControl.Label>Forks</FormControl.Label>
-              <TextInput type="number" placeholder="5" min="1" max="500"/>
-            </FormControl>
-        </Details>
-      </Box>
+        <Pagehead>Advanced</Pagehead>
 
-      <Button type="submit">Submit</Button>
+        <Stack.Item>
+          <Stack direction={"horizontal"} wrap="wrap">
+            <Stack.Item>
+              <FormControl id="forksCount">
+                <FormControl.Label>Forks</FormControl.Label>
+                <TextInput type="number" placeholder="5" min={1} max={500}/>
+              </FormControl>
+            </Stack.Item> 
+
+            <Stack.Item>
+              <FormControl id="sortingOrder">
+                <FormControl.Label>Sort by</FormControl.Label>
+                <Select>
+                  <Select.Option value={"date"}>Date</Select.Option>
+                  <Select.Option value={"stars"}>Stars</Select.Option>
+                </Select>
+              </FormControl>
+            </Stack.Item>
+
+            <Stack.Item>
+              <FormControl>
+                <FormControl.Label>Order</FormControl.Label>
+                <Select>
+                  <Select.Option value={"ascending"}>asc</Select.Option>
+                  <Select.Option value={"descending"}>desc</Select.Option>
+                </Select>
+              </FormControl>
+            </Stack.Item>
+
+            <Stack.Item>
+              <FormControl>
+                <FormControl.Label>Order</FormControl.Label>
+                <Select>
+                  <Select.Option value={"ascending"}>asc</Select.Option>
+                  <Select.Option value={"descending"}>desc</Select.Option>
+                </Select>
+              </FormControl>
+            </Stack.Item>
+          
+            <Stack.Item>
+              <FormControl>
+                <FormControl.Label>Order</FormControl.Label>
+                <Select>
+                  <Select.Option value={"ascending"}>asc</Select.Option>
+                  <Select.Option value={"descending"}>desc</Select.Option>
+                </Select>
+              </FormControl>
+            </Stack.Item>
+          
+            <Stack.Item>
+              <FormControl>
+                <FormControl.Label>Order</FormControl.Label>
+                <Select>
+                  <Select.Option value={"ascending"}>asc</Select.Option>
+                  <Select.Option value={"descending"}>desc</Select.Option>
+                </Select>
+              </FormControl>
+            </Stack.Item>
+        
+          </Stack>
+        </Stack.Item>
+        <Stack.Item >
+          <Button type="submit">Submit</Button>
+        </Stack.Item> 
+      </Stack>
+     
     </Box>
 
   );

@@ -5,7 +5,7 @@ import { Pagehead } from "@primer/react/deprecated";
 const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
   console.log("Submitted");
   event.preventDefault();
-}
+};
 
 
 function Configuration() {

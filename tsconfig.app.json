@@ -23,7 +23,8 @@
       "noUncheckedSideEffectImports": true,
 
       "paths": {
-        "__generated__/*": ["./__generated__/*"]
+        "@generated/*": ["./__generated__/*"],
+        "@Components/*": ["./src/Components/*"],
       },
     },
     "include": ["src", "__generated__"],

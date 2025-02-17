@@ -1,9 +1,16 @@
 import { Box, Button, FormControl, Select, Stack, TextInput } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 
+
+const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  console.log("Submitted");
+  event.preventDefault();
+}
+
+
 function Configuration() {
   return (
-    <Box as="form" p={3} action="#">
+    <Box as="form" p={3} onSubmit={onSubmit} >
       <Stack direction={"vertical"}>
         <Stack.Item >
           <FormControl required id="repository">

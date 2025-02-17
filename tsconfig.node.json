@@ -21,7 +21,14 @@
       "noUncheckedIndexedAccess": true,
       "noUncheckedSideEffectImports": true,
       
-        "types": ["node", "jest"],
+      "types": ["node", "jest"],
+      
+      "plugins": [
+        {
+          "name": "@0no-co/graphqlsp",
+          "schema": "./schema.graphql"
+        }
+      ]
     },
     "include": ["vite.config.ts"]
   }

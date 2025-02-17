@@ -8,7 +8,7 @@
     "url": "https://github.com/fasonju/visfork-plugin.git"
   },
   "scripts": {
-    "generate": "graphql-codegen",
+    "generate": "graphql-codegen && openapi-typescript ./.contrib/github-rest-api/api.github.com.2022-11-28.yaml -o ./__generated__/rest-schema.d.ts",
     "dev": "vite --host 127.0.0.1 --port 3000",
     "build": "npm run generate && tsc -b && vite build",
     "fix-lint": "eslint . --quiet --fix",
@@ -49,6 +49,7 @@
     "@tanstack/react-query": "^5.66.0",
     "graphql": "^16.10.0",
     "graphql-request": "^7.1.2",
+    "openapi-fetch": "^0.13.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "styled-components": "^5.3.7"

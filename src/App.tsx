@@ -3,7 +3,6 @@ import ApplicationBody from "@Components/ApplicationBody";
 import Configuration from "@Components/Configuration/Configuration";
 import { SplitPageLayout } from "@primer/react";
 
-
 function App() {
   return (
     <SplitPageLayout>

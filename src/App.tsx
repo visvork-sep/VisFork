@@ -1,5 +1,3 @@
-import "nonexistent.css";
-
 function App() {
 
   return (

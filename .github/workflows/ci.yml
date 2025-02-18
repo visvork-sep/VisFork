@@ -48,19 +48,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
 
-
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
       # Step 5
       - name: Run tests
         run: docker run --rm visfork-ci npm run test-slim # uses fast testing (see package.json -> scripts)
 
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
       # Step 6
       - name: Build
         run: docker run --rm visfork-ci npm run build

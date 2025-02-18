@@ -344,8 +344,11 @@ $RECYCLE.BIN/
 
 # Github schema
 schema.graphql
+openapi-schema.yaml
 
 # Code generation
 __generated__/
+
+
 
 # End of https://www.toptal.com/developers/gitignore/api/node,macos,windows,linux,visualstudiocode,jetbrains

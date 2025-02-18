@@ -8,7 +8,7 @@
     "url": "https://github.com/fasonju/visfork-plugin.git"
   },
   "scripts": {
-    "generate": "graphql-codegen && openapi-typescript ./.contrib/github-rest-api/api.github.com.2022-11-28.yaml -o ./__generated__/rest-schema.d.ts",
+    "generate": "graphql-codegen && openapi-typescript ./openapi-schema.yaml -o ./__generated__/rest-schema.d.ts",
     "dev": "vite --host 127.0.0.1 --port 3000",
     "build": "npm run generate && tsc -b && vite build",
     "fix-lint": "eslint . --quiet --fix",

@@ -58,11 +58,11 @@ jobs:
 
       # Step 7
       # This is so we can use cached files to build faster next time
-      - name: Store Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: dist/
+      # - name: Store Build Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: build-output
+      #     path: dist/
 
   # deploy:
   #   runs-on: ubuntu-latest

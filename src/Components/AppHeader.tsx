@@ -1,8 +1,7 @@
 import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
-import { Avatar, Box, Button, Dialog, Header, useTheme } from "@primer/react";
+import { ActionMenu, Avatar, Box, Button, Dialog, Header, useTheme } from "@primer/react";
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useState } from "react";
-
 
 function AppHeader() {
     const {colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme} = useTheme();
@@ -16,7 +15,7 @@ function AppHeader() {
     const onLogout = useCallback(() => {
         onDialogClose();
         setLoggedIn(false);
-    }, []);
+    }, [onDialogClose]);
 
 
     const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";
@@ -25,13 +24,13 @@ function AppHeader() {
         const newNightScheme = currentlyColorblindMode ? "dark" : "dark_colorblind";
         setDayScheme(newDayScheme);
         setNightScheme(newNightScheme);
-    }, [currentlyColorblindMode]);
+    }, [currentlyColorblindMode, setDayScheme, setNightScheme]);
 
     const currentlyDarkMode = colorMode === "dark" || colorMode === "night";
     const onToggleDarkMode = useCallback(() => {
         const newMode = currentlyDarkMode ? "day" : "dark";
         setColorMode(newMode);
-    }, [currentlyDarkMode]);
+    }, [currentlyDarkMode, setColorMode]);
 
     return (
         <>
@@ -59,17 +58,20 @@ function AppHeader() {
 
             {isOpen && (
                 <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
-                    <ActionList 
-                        items={[
-                            {text: "colorblind mode", onClick: onToggleColorblindMode, selected: currentlyColorblindMode},
-
-                            {text: currentlyDarkMode ? "light mode" :"dark mode", onClick: onToggleDarkMode,
-                                leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon},
-                            ActionList.Divider,
-                            {text: "Sign out", onClick: onLogout, variant: "danger"},
-                        ]}>
-
-                    </ActionList>
+                    <ActionMenu>
+                        <ActionMenu.Divider></ActionMenu.Divider>
+                        <ActionList 
+                            items={[
+                                {text: "colorblind mode", onClick: onToggleColorblindMode, selected: currentlyColorblindMode},
+                                {text: currentlyDarkMode ? "light mode" :"dark mode", onClick: onToggleDarkMode,
+                                    leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon},
+                                ActionList.Divider,
+                                {text: "Sign out", onClick: onLogout, variant: "danger"},
+                            ]}>
+                        </ActionList>
+                    </ActionMenu>
+                    
+                    
                 </Dialog>
             )}
         </>

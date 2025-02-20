@@ -6,7 +6,7 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider colorMode="day">
+    <ThemeProvider>
       <BaseStyles>
         <Box className="body">
           <App/>

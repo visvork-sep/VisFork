@@ -5,10 +5,9 @@ import { useCallback, useState } from "react";
 
 
 function AppHeader() {
-    const {colorMode, setColorMode} = useTheme();
+    const {colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme} = useTheme();
     const [isOpen, setIsOpen] = useState(false);
     const [loggedIn, setLoggedIn] = useState(false); // TODO: Implement login
-    const [colorblindMode, setColorblindMode] = useState(false); // todo implement colorblind mode
 
 
     const onDialogClose = useCallback(() => setIsOpen(false), []);
@@ -19,9 +18,14 @@ function AppHeader() {
         setLoggedIn(false);
     }, []);
 
+
+    const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";
     const onToggleColorblindMode = useCallback(() => {
-        setColorblindMode((colorblindMode) => !colorblindMode)
-    }, [colorblindMode]);
+        const newDayScheme = currentlyColorblindMode ? "light" : "light_colorblind";
+        const newNightScheme = currentlyColorblindMode ? "dark" : "dark_colorblind";
+        setDayScheme(newDayScheme);
+        setNightScheme(newNightScheme);
+    }, [currentlyColorblindMode]);
 
     const currentlyDarkMode = colorMode === "dark" || colorMode === "night";
     const onToggleDarkMode = useCallback(() => {
@@ -57,7 +61,7 @@ function AppHeader() {
                 <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
                     <ActionList 
                         items={[
-                            {text: "colorblind mode", onClick: onToggleColorblindMode, selected: colorblindMode},
+                            {text: "colorblind mode", onClick: onToggleColorblindMode, selected: currentlyColorblindMode},
 
                             {text: currentlyDarkMode ? "light mode" :"dark mode", onClick: onToggleDarkMode,
                                 leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon},

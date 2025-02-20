@@ -2,12 +2,10 @@
 import { Box, Button, FormControl, Select, Stack, TextInput } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 
-
 const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  console.log("Submitted");
-  event.preventDefault();
+    event.preventDefault();
+// set url variables
 };
-
 
 function Configuration() {
     return (

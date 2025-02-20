@@ -1,4 +1,0 @@
-# Placeholder query to make sure build script finds a document
-query Placeholder {
-    __typename
-}

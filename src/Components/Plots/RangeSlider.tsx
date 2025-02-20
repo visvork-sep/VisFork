@@ -6,12 +6,12 @@ interface DataPoint {
   date: string; // Assuming date comes as a string in raw data
 }
 
-interface DateRangeSliderProps {
+interface RangeSlider {
   raw: DataPoint[];
   onSelection?: (selectedDates: Date[]) => void;
 }
 
-const DateRangeSlider: React.FC<DateRangeSliderProps> = ({
+const RangeSlider: React.FC<RangeSlider> = ({
   raw,
   onSelection = () => {},
 }) => {
@@ -40,7 +40,7 @@ const DateRangeSlider: React.FC<DateRangeSliderProps> = ({
       let frequency = d3.rollup(
         data,
         (v) => v.length,
-        (d) => new Date(d.date) // ✅ Properly converts string to Date
+        (d) => new Date(d.date)
       );
 
       // Fill missing months with 0
@@ -140,7 +140,6 @@ const DateRangeSlider: React.FC<DateRangeSliderProps> = ({
 
         // Get selected dates
         selectedDates = xScale.domain().filter((d: Date) => {
-          // ✅ Explicitly type 'd' as Date
           const xPos = xScale(d);
           return xPos !== undefined && x0 <= xPos && xPos <= x1;
         });
@@ -150,7 +149,7 @@ const DateRangeSlider: React.FC<DateRangeSliderProps> = ({
           .selectAll<SVGRectElement, [Date, number]>(".bar")
           .attr("fill", (d) =>
             selectedDates.includes(d[0] as Date) ? "steelblue" : "gray"
-          ); // ✅ Ensure 'd[0]' is treated as Date
+          );
       }
 
       function brushed(event: d3.D3BrushEvent<any>) {
@@ -181,4 +180,4 @@ const DateRangeSlider: React.FC<DateRangeSliderProps> = ({
   );
 };
 
-export default DateRangeSlider;
+export default RangeSlider;

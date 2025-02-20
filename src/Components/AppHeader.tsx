@@ -59,7 +59,6 @@ function AppHeader() {
             {isOpen && (
                 <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
                     <ActionMenu>
-                        <ActionMenu.Divider></ActionMenu.Divider>
                         <ActionList 
                             items={[
                                 {text: "colorblind mode", onClick: onToggleColorblindMode, selected: currentlyColorblindMode},

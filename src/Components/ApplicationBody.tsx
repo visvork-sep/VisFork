@@ -1,31 +1,16 @@
-import {   Spinner, Stack } from "@primer/react";
-
-import { Blankslate } from "@primer/react/experimental";
-
-const plotsData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+import { Stack } from "@primer/react";
+import RangeSlider from "./Plots/RangeSlider";
+import exampleData from "../Components/Plots/commit_data_example.json";
 
 function ApplicationBody() {
-
-  const children = plotsData.map((plot) => {
-    return (
-      <Stack.Item key={plot}>
-        <Blankslate border>
-          <Blankslate.Heading>Plot{plot}</Blankslate.Heading>
-          <Blankslate.Visual>
-            <Spinner/>
-          </Blankslate.Visual>
-        </Blankslate>
-      </Stack.Item>
-    );
-  });
-
-
   return (
     <Stack>
-      {children}
+      <RangeSlider
+        raw={exampleData}
+        onSelection={(selected: any) => console.log(selected)}
+      />
     </Stack>
   );
 }
-
 
 export default ApplicationBody;

@@ -9,7 +9,7 @@ function AppHeader() {
 
     const handleLogin = () => {
         // Redirect user to the GitHub OAuth login
-        window.location.href = "http://localhost:5000/auth/github";
+        fetch("https://github.com/login/oauth/authorize", {method: "GET", body: JSON.stringify({client_id: 'Ov23litxFPn7VKcZSWSH'})});
     }
 
     return (

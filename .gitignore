@@ -342,10 +342,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Github schema
-schema.graphql
-openapi-schema.yaml
-
 # Code generation
 __generated__/
 

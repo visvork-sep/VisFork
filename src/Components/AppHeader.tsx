@@ -2,16 +2,17 @@ import { ImageIcon } from "@primer/octicons-react";
 import { Avatar, Box, Button, Header } from "@primer/react";
 import React, { useState } from "react";
 
+const handleLogin = () => {
+    window.location.href = "http://localhost:5000/auth/github";
+};
 
+
+const handleLogout = () => {
+    fetch("http://localhost:5000/auth/logout", { method: "POST", credentials: "include" })
+        .then(() => window.location.reload()); // Reload to reset session
+};
 
 function AppHeader() {
-    const [user, setUser] = useState(null);
-
-    const handleLogin = () => {
-        // Redirect user to the GitHub OAuth login
-        fetch("https://github.com/login/oauth/authorize", {method: "GET", body: JSON.stringify({client_id: 'Ov23litxFPn7VKcZSWSH'})});
-    }
-
     return (
         <Header aria-label="nav bar">
             <Header.Item>

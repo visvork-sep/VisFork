@@ -1,4 +1,4 @@
-import AppHeader from "@Components/AppHeader";
+import AppHeader from "./Components/AppHeader";
 import React, { useEffect, useState } from "react";
 import ApplicationBody from "@Components/ApplicationBody";
 import Configuration from "@Components/Configuration/Configuration";
@@ -9,22 +9,19 @@ function App() {
   const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Check URL for GitHub OAuth token
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get("token");
-
-        if (token) {
-            // Fetch GitHub user data using the token
-            fetch("https://api.github.com/user", {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setUser(data);
-                    localStorage.setItem("token", token); // Store token for future sessions
-                    window.history.replaceState({}, document.title, "/"); // Clean up URL
-                });
-        }
+       // Fetch user data from backend (token is stored in session)
+        fetch("http://localhost:5000/auth/user", {
+            credentials: "include", // Include session cookies
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.error) {
+                    setUser(null); // Not authenticated
+                } else {
+                    console.log("🔑 User Data from Backend:", data); // Log user session data
+                    setUser(data); // Set user data
+                }
+            });
     }, []);
   return (
     <SplitPageLayout>

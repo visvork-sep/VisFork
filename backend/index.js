@@ -29,6 +29,7 @@ const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 // Step 1: Redirect users to GitHub login
 app.get("/auth/github", (req, res) => {
+    console.log("🔁 Redirecting user to GitHub login");
     const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http://localhost:5000/auth/github/callback&scope=read:user`;
     res.redirect(redirectUri);
 });
@@ -92,6 +93,7 @@ app.get("/auth/user", (req, res) => {
         return res.status(401).json({ error: "Not authenticated" });
     }
     res.json(req.session.user); // Only send user data
+    console.log("🛫 Sending user data");
 });
 
 // Step 4: Logout and destroy session
@@ -99,6 +101,7 @@ app.post("/auth/logout", (req, res) => {
     req.session.destroy(() => {
         res.json({ message: "Logged out" });
     });
+    console.log("🔑 User logged out session destroyed.");
 });
 
 app.listen(5000, () => {

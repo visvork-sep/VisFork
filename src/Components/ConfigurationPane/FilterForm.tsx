@@ -38,6 +38,7 @@ function FilterForm() {
                                 <Select.Option value="date">Date of creation</Select.Option>
                                 <Select.Option value="stargazers">Starsgazers</Select.Option>
                                 <Select.Option value="watchers">Watchers</Select.Option>
+                                <Select.Option value="last commit">Date of Last Commit</Select.Option>
                             </Select>
                         </FormControl>
                     </Stack.Item>
@@ -64,6 +65,10 @@ function FilterForm() {
                                 <Select.Option value="perfective">Perfective</Select.Option>
                             </Select>
                         </FormControl>
+                    </Stack.Item>
+
+                    <Stack.Item>
+
                     </Stack.Item>
 
                 </Stack>

@@ -1,6 +1,7 @@
 import {   Spinner, Stack } from "@primer/react";
 
 import { Blankslate, UnderlinePanels } from "@primer/react/experimental";
+//import exampleData from "../Components/Plots/commit_data_example.json";
 
 const plotsData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 

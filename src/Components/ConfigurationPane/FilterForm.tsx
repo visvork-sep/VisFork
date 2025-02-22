@@ -34,8 +34,9 @@ function FilterForm() {
                         <FormControl id="sortingOrder">
                             <FormControl.Label>Sort by</FormControl.Label>
                             <Select>
-                                <Select.Option value={"date"}>Date</Select.Option>
-                                <Select.Option value={"stars"}>Stars</Select.Option>
+                                <Select.Option value="date">Date of creation</Select.Option>
+                                <Select.Option value="stargazers">Starsgazers</Select.Option>
+                                <Select.Option value="watchers">Watchers</Select.Option>
                             </Select>
                         </FormControl>
                     </Stack.Item>

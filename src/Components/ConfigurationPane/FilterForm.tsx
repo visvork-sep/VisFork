@@ -31,8 +31,8 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <FormControl id="sortingOrder">
-                            <FormControl.Label>Sort by</FormControl.Label>
+                        <FormControl>
+                            <FormControl.Label>Sort forks by</FormControl.Label>
                             <Select>
                                 <Select.Option value="date">Date of creation</Select.Option>
                                 <Select.Option value="stargazers">Starsgazers</Select.Option>

@@ -8,9 +8,9 @@ const fileButtons = FileButtons();
 
 function ConfigurationPane() {
     const filterForm = FilterForm();
-    
+
     return(
-        <Stack gap="spacious">
+        <Stack gap="condensed">
             <Stack.Item>
                 {filterForm}
             </Stack.Item> 

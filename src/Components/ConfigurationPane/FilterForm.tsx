@@ -32,7 +32,7 @@ function FilterForm() {
 
                     <Stack.Item>
                         <FormControl>
-                            <FormControl.Label>Sort forks by</FormControl.Label>
+                            <FormControl.Label>Select forks by</FormControl.Label>
                             <Select>
                                 <Select.Option value="date">Date of creation</Select.Option>
                                 <Select.Option value="stargazers">Starsgazers</Select.Option>
@@ -45,8 +45,19 @@ function FilterForm() {
                         <FormControl>
                             <FormControl.Label>Order</FormControl.Label>
                             <Select>
-                                <Select.Option value={"ascending"}>asc</Select.Option>
-                                <Select.Option value={"descending"}>desc</Select.Option>
+                                <Select.Option value="ascending">asc</Select.Option>
+                                <Select.Option value="descending">desc</Select.Option>
+                            </Select>
+                        </FormControl>
+                    </Stack.Item>
+
+                    <Stack.Item>
+                        <FormControl>
+                            <FormControl.Label>Filter fork type</FormControl.Label>
+                            <Select>
+                                <Select.Option value="adaptive">Adaptive</Select.Option>
+                                <Select.Option value="corrective">Corrective</Select.Option>
+                                <Select.Option value="perfective">Perfective</Select.Option>
                             </Select>
                         </FormControl>
                     </Stack.Item>

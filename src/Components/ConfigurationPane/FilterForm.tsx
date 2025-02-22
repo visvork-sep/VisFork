@@ -53,28 +53,23 @@ function FilterForm() {
                             </Select>
                         </FormControl>
                     </Stack.Item>
-
                     <Stack.Item>
-                        <Stack direction="vertical" gap="condensed">
-                            <Stack.Item>
-                                <FormControl>
-                                    <FormControl.Label>Adaptive</FormControl.Label>
-                                    <Checkbox value="adaptive"/>
-                                </FormControl> 
-                            </Stack.Item>
-                            <Stack.Item>
-                                <FormControl>
-                                    <FormControl.Label>Corrective</FormControl.Label>
-                                    <Checkbox value="corrective"/>
-                                </FormControl> 
-                            </Stack.Item> 
-                            <Stack.Item>
-                                <FormControl>
-                                    <FormControl.Label>Perfective</FormControl.Label>
-                                    <Checkbox value="perfective"/>
-                                </FormControl>
-                            </Stack.Item>
-                        </Stack>
+                        <CheckboxGroup>
+                            <CheckboxGroup.Label>Included fork types</CheckboxGroup.Label>
+                            <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
+                            <FormControl>
+                                <FormControl.Label>Adaptive</FormControl.Label>
+                                <Checkbox value="adaptive"/>
+                            </FormControl>
+                            <FormControl>
+                                <FormControl.Label>Corrective</FormControl.Label>
+                                <Checkbox value="corrective"/>
+                            </FormControl>
+                            <FormControl>
+                                <FormControl.Label>Perfective</FormControl.Label>
+                                <Checkbox value="perfective"/>
+                            </FormControl>
+                        </CheckboxGroup>
                     </Stack.Item>
                 </Stack>
             </Stack.Item>

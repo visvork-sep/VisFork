@@ -25,7 +25,7 @@ function FilterForm() {
             <Pagehead>Filters</Pagehead>
 
             <Stack.Item>
-                <Stack direction={"horizontal"} wrap="wrap">
+                <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
                     <Stack.Item>
                         <ForksCountInput validation={forksCountInputValidation}/>
                     </Stack.Item>
@@ -53,6 +53,7 @@ function FilterForm() {
                             </Select>
                         </FormControl>
                     </Stack.Item>
+
                     <Stack.Item>
                         <CheckboxGroup>
                             <CheckboxGroup.Label>Included fork types</CheckboxGroup.Label>
@@ -68,6 +69,20 @@ function FilterForm() {
                             <FormControl>
                                 <FormControl.Label>Perfective</FormControl.Label>
                                 <Checkbox value="perfective"/>
+                            </FormControl>
+                        </CheckboxGroup>
+                    </Stack.Item>
+                    
+                    <Stack.Item>
+                        <CheckboxGroup>
+                            <CheckboxGroup.Label>Included Owner types</CheckboxGroup.Label>
+                            <FormControl>
+                                <FormControl.Label>User</FormControl.Label>
+                                <Checkbox value="user"/>
+                            </FormControl>
+                            <FormControl>
+                                <FormControl.Label>Organization</FormControl.Label>
+                                <Checkbox value="organization"/>
                             </FormControl>
                         </CheckboxGroup>
                     </Stack.Item>

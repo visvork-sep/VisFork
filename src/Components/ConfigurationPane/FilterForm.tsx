@@ -33,6 +33,7 @@ function FilterForm() {
                     <Stack.Item>
                         <FormControl>
                             <FormControl.Label>Select forks by</FormControl.Label>
+                            <FormControl.Caption>The metric to select forks by</FormControl.Caption>
                             <Select>
                                 <Select.Option value="date">Date of creation</Select.Option>
                                 <Select.Option value="stargazers">Starsgazers</Select.Option>
@@ -43,7 +44,8 @@ function FilterForm() {
 
                     <Stack.Item>
                         <FormControl>
-                            <FormControl.Label>Order</FormControl.Label>
+                            <FormControl.Label>Retrieval order</FormControl.Label>
+                            <FormControl.Caption>Order of fork retrieval</FormControl.Caption>
                             <Select>
                                 <Select.Option value="ascending">asc</Select.Option>
                                 <Select.Option value="descending">desc</Select.Option>
@@ -54,7 +56,9 @@ function FilterForm() {
                     <Stack.Item>
                         <FormControl>
                             <FormControl.Label>Filter fork type</FormControl.Label>
+                            <FormControl.Caption>Only show forks of set type</FormControl.Caption>
                             <Select>
+                                <Select.Option value="any">Any</Select.Option>
                                 <Select.Option value="adaptive">Adaptive</Select.Option>
                                 <Select.Option value="corrective">Corrective</Select.Option>
                                 <Select.Option value="perfective">Perfective</Select.Option>

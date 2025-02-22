@@ -48,29 +48,33 @@ function FilterForm() {
                             <FormControl.Label>Retrieval order</FormControl.Label>
                             <FormControl.Caption>Order of fork retrieval</FormControl.Caption>
                             <Select>
-                                <Select.Option value="ascending">asc</Select.Option>
-                                <Select.Option value="descending">desc</Select.Option>
+                                <Select.Option value="ascending">Ascending</Select.Option>
+                                <Select.Option value="descending">Descending</Select.Option>
                             </Select>
                         </FormControl>
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CheckboxGroup>
-                            <CheckboxGroup.Label>Included fork types</CheckboxGroup.Label>
-                            <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
-                            <FormControl>
-                                <FormControl.Label>Adaptive</FormControl.Label>
-                                <Checkbox value="adaptive"/>
-                            </FormControl>
-                            <FormControl>
-                                <FormControl.Label>Corrective</FormControl.Label>
-                                <Checkbox value="corrective"/>
-                            </FormControl>
-                            <FormControl>
-                                <FormControl.Label>Perfective</FormControl.Label>
-                                <Checkbox value="perfective"/>
-                            </FormControl>
-                        </CheckboxGroup>
+                        <Stack direction="vertical" gap="condensed">
+                            <Stack.Item>
+                                <FormControl>
+                                    <FormControl.Label>Adaptive</FormControl.Label>
+                                    <Checkbox value="adaptive"/>
+                                </FormControl> 
+                            </Stack.Item>
+                            <Stack.Item>
+                                <FormControl>
+                                    <FormControl.Label>Corrective</FormControl.Label>
+                                    <Checkbox value="corrective"/>
+                                </FormControl> 
+                            </Stack.Item> 
+                            <Stack.Item>
+                                <FormControl>
+                                    <FormControl.Label>Perfective</FormControl.Label>
+                                    <Checkbox value="perfective"/>
+                                </FormControl>
+                            </Stack.Item>
+                        </Stack>
                     </Stack.Item>
                 </Stack>
             </Stack.Item>

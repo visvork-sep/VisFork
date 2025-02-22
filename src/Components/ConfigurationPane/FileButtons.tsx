@@ -14,7 +14,7 @@ function FileButtons() {
                 </Button>
             </Stack.Item>
         </Stack>
-    )
+    );
 }
 
 export default FileButtons;

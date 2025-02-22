@@ -1,22 +1,25 @@
-import { Box, Button, FormControl, Select, Stack, TextInput } from "@primer/react";
+import { Box, Button, FormControl, Select, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 import { useState } from "react";
-import {RepositoryInput, RepositoryInputError} from "./FilterFormElements/RepositoryInput";
+import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/RepositoryInput";
+import { ForksCountInput, ForksCountInputValidation } from "./FilterFormElements/ForksCountInput";
 
 
 function FilterForm() {
-    const [repositoryInputError, setRepositoryInputError] = useState<RepositoryInputError>();
+    const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
+    const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  
-        setRepositoryInputError("name");
+        setRepositoryInputValidation("repositoryNameError");
+        setForksCountInputValidation("LessThanMinForksError");
         // set url variables
     };
 
     return <Box as="form" onSubmit={onSubmit}>
         <Stack direction={"vertical"}>
             <Stack.Item>
-                <RepositoryInput error={repositoryInputError} /> 
+                <RepositoryInput validation={repositoryInputValidation} /> 
             </Stack.Item>
 
             <Pagehead>Filters</Pagehead>
@@ -24,10 +27,7 @@ function FilterForm() {
             <Stack.Item>
                 <Stack direction={"horizontal"} wrap="wrap">
                     <Stack.Item>
-                        <FormControl id="forksCount">
-                            <FormControl.Label>Forks</FormControl.Label>
-                            <TextInput type="number" placeholder="5" min={1} max={500} />
-                        </FormControl>
+                        <ForksCountInput validation={forksCountInputValidation}/>
                     </Stack.Item>
 
                     <Stack.Item>
@@ -36,36 +36,6 @@ function FilterForm() {
                             <Select>
                                 <Select.Option value={"date"}>Date</Select.Option>
                                 <Select.Option value={"stars"}>Stars</Select.Option>
-                            </Select>
-                        </FormControl>
-                    </Stack.Item>
-
-                    <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Order</FormControl.Label>
-                            <Select>
-                                <Select.Option value={"ascending"}>asc</Select.Option>
-                                <Select.Option value={"descending"}>desc</Select.Option>
-                            </Select>
-                        </FormControl>
-                    </Stack.Item>
-
-                    <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Order</FormControl.Label>
-                            <Select>
-                                <Select.Option value={"ascending"}>asc</Select.Option>
-                                <Select.Option value={"descending"}>desc</Select.Option>
-                            </Select>
-                        </FormControl>
-                    </Stack.Item>
-
-                    <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Order</FormControl.Label>
-                            <Select>
-                                <Select.Option value={"ascending"}>asc</Select.Option>
-                                <Select.Option value={"descending"}>desc</Select.Option>
                             </Select>
                         </FormControl>
                     </Stack.Item>

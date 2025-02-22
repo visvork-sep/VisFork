@@ -1,23 +1,23 @@
 import { FormControl, TextInput } from "@primer/react";
 
-type RepositoryInputError = "syntax" | "owner" | "name";
+type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameError";
 
 interface RepositoryInputProps {
-    error?: RepositoryInputError;
+    validation?: RepositoryInputValidation;
 }
 
-function RepositoryInput({ error } : RepositoryInputProps) {
+function RepositoryInput({ validation } : RepositoryInputProps) {
     let validationText: string | undefined;
 
-    switch(error) {
-        case "syntax":
-            validationText = "Syntax must match <Owner>/<RepositoryName>"
-            break
-        case "owner":
-            validationText = "Invalid repository owner"
-            break
-        case "name":
-            validationText = "Invalid repository name"
+    switch(validation) {
+        case "syntaxError":
+            validationText = "Syntax must match <Owner>/<RepositoryName>";
+            break;
+        case "ownerError":
+            validationText = "Invalid repository owner";
+            break;
+        case "repositoryNameError":
+            validationText = "Invalid repository name";
     }
 
     return (
@@ -39,4 +39,4 @@ function RepositoryInput({ error } : RepositoryInputProps) {
 export {
     RepositoryInput
 };
-export type { RepositoryInputProps, RepositoryInputError };
+export type { RepositoryInputProps, RepositoryInputValidation };

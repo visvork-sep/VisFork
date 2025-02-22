@@ -14,14 +14,14 @@ function AppHeader() {
     const onDialogOpen = useCallback(() => setIsOpen(true), []);
     const onLogin = useCallback(() => setLoggedIn(true), []);
     const onToggleColorblindMode = useCallback(() => {
-        setColorblindMode((colorblindMode) => !colorblindMode)
+        setColorblindMode((colorblindMode) => !colorblindMode);
     }, [colorblindMode]);
     const onLogout = useCallback(() => {
         onDialogClose();
         setLoggedIn(false);
     }, []);
     const ontoggleDarkMode = useCallback(() => {
-        setDarkMode((darkMode) => !darkMode)
+        setDarkMode((darkMode) => !darkMode);
     }, []);
 
 

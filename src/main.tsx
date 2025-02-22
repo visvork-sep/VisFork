@@ -5,13 +5,13 @@ import App from "./App.tsx";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
-      <BaseStyles>
-        <Box className="body" >
-          <App/>
-        </Box>
-      </BaseStyles>
-    </ThemeProvider>
-  </StrictMode>
+    <StrictMode>
+        <ThemeProvider>
+            <BaseStyles>
+                <Box className="body" >
+                    <App/>
+                </Box>
+            </BaseStyles>
+        </ThemeProvider>
+    </StrictMode>
 );

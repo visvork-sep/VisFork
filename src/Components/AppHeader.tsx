@@ -42,14 +42,14 @@ function AppHeader() {
                     <span>VisFork</span>
                 </Header.Item>
 
-                <Header.Item>
+                <Header.Item aria-label="Open settings dialog">
                     {loggedIn ? (
                         <Box onClick={onDialogOpen}> 
                             <Avatar src="https://avatars.githubusercontent.com/u/14032476?v=4" size={24}/> 
                         </Box>
                         
                     ) : ( 
-                        <Button onClick={onLogin}>
+                        <Button onClick={onLogin} aria-label="Login button">
                             Log in
                         </Button>
                     )}
@@ -61,11 +61,14 @@ function AppHeader() {
                     <ActionMenu>
                         <ActionList 
                             items={[
-                                {text: "colorblind mode", onClick: onToggleColorblindMode, selected: currentlyColorblindMode},
-                                {text: currentlyDarkMode ? "light mode" :"dark mode", onClick: onToggleDarkMode,
-                                    leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon},
+                                {text: "Colorblind mode", onClick: onToggleColorblindMode, 
+                                    selected: currentlyColorblindMode, "aria-label": "Toggle colrblind mode"},
+                                {text: currentlyDarkMode ? "Light mode" :"Dark mode", onClick: onToggleDarkMode,
+                                    leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon,
+                                    "aria-label": "Toggle light mode"},
                                 ActionList.Divider,
-                                {text: "Sign out", onClick: onLogout, variant: "danger"},
+                                {text: "Sign out", onClick: onLogout, variant: "danger",
+                                    "aria-label": "Sign out button"},
                             ]}>
                         </ActionList>
                     </ActionMenu>

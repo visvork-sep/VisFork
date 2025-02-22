@@ -22,6 +22,9 @@ function ForksCountInput({ validation }: ForksCountInputProps) {
     return (
         <FormControl id="forksCount">
             <FormControl.Label>Forks</FormControl.Label>
+            <FormControl.Caption>
+                The amount of forks to analyze
+            </FormControl.Caption>
             <TextInput type="number" placeholder="5" min={MIN_FORKS} max={MAX_FORKS} />
             {validationText &&
                 <FormControl.Validation variant="error">

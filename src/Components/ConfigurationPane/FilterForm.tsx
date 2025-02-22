@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, Select, Stack } from "@primer/react";
+import { Box, Button, Checkbox, CheckboxGroup, FormControl, Select, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 import { useState } from "react";
 import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/RepositoryInput";
@@ -55,22 +55,23 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Filter fork type</FormControl.Label>
-                            <FormControl.Caption>Only show forks of set type</FormControl.Caption>
-                            <Select>
-                                <Select.Option value="any">Any</Select.Option>
-                                <Select.Option value="adaptive">Adaptive</Select.Option>
-                                <Select.Option value="corrective">Corrective</Select.Option>
-                                <Select.Option value="perfective">Perfective</Select.Option>
-                            </Select>
-                        </FormControl>
+                        <CheckboxGroup>
+                            <CheckboxGroup.Label>Included fork types</CheckboxGroup.Label>
+                            <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
+                            <FormControl>
+                                <FormControl.Label>Adaptive</FormControl.Label>
+                                <Checkbox value="adaptive"/>
+                            </FormControl>
+                            <FormControl>
+                                <FormControl.Label>Corrective</FormControl.Label>
+                                <Checkbox value="corrective"/>
+                            </FormControl>
+                            <FormControl>
+                                <FormControl.Label>Perfective</FormControl.Label>
+                                <Checkbox value="perfective"/>
+                            </FormControl>
+                        </CheckboxGroup>
                     </Stack.Item>
-
-                    <Stack.Item>
-
-                    </Stack.Item>
-
                 </Stack>
             </Stack.Item>
             <Stack.Item>

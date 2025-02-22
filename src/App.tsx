@@ -1,11 +1,15 @@
 import AppHeader from "./Components/AppHeader";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DataComponents from "@Components/DataComponents";
-import Configuration from "@Components/Configuration/Configuration";
 import { SplitPageLayout } from "@primer/react";
 
+interface User {
+  login: string;
+  id: number;
+  avatar_url:string;
+}
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null> (null);
 
     useEffect(() => {
        // Fetch user data from backend (token is stored in session)
@@ -25,7 +29,7 @@ function App() {
     return (
         <SplitPageLayout>
             <SplitPageLayout.Header aria-label="Header">
-                <AppHeader/>
+                <AppHeader user = {user} setUser={setUser}/>
             </SplitPageLayout.Header>
     
             <DataComponents/>

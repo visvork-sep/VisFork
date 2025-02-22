@@ -25,7 +25,7 @@
       "paths": {
         "@generated/*": ["./__generated__/*"],
         "@Components/*": ["./src/Components/*"],
-        "@Constants": ["./src/constants.tsx"] 
+        "@Utils/*": ["./src/Utils/*"] 
       },
     },
     "include": ["src", "__generated__"],

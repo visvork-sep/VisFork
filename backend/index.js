@@ -7,12 +7,20 @@ const session = require("express-session");
 //Load environment variables from .env file
 dotenv.config();
 
+// Load Frontend and backend url-s from environment variables
+const FRONTEND_URL = process.env.FRONTEND_URL;
+const BACKEND_URL = process.env.BACKEND_URL;
+// Load GitHub OAuth credentials from environment variables
+const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+
+
 // Initialize Express application
 const app = express();
 
 // Enable Cross-Origin Resource Sharing (CORS) for frontend requests
 app.use(cors({
-    origin: "http://localhost:3000", //Allows requests from the frontend
+    origin: FRONTEND_URL, //Allows requests from the frontend
     methods: ["GET", "POST"], //allows GET adn POST requests
     credentials: true, // Allow sending cookies with requests
     allowedHeaders: ["Content-Type", "Authorization"] // Allow these headers in requests
@@ -23,21 +31,17 @@ app.use(express.json());
 
 // Set up session handling (store user authentication state)
 app.use(session({
-    secret: "supersecretkey", // Secret key for session encryption
+    secret: process.env.SESSION_SECRET || "supersecretkey", // Secret key for session encryption
     resave: false, // Don't save session if it hasn't changed
     saveUninitialized: false, // Don't create sessions for unauthenticated users
     cookie: { secure: false, httpOnly: true, sameSite: "lax" } // Cookie settings
 }));
 
-// Load GitHub OAuth credentials from environment variables
-const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-
 // Step 1: Redirect users to GitHub login
 app.get("/auth/github", (req, res) => {
     console.log("🔁 Redirecting user to GitHub login");
     // Construct GitHub OAuth login URL with required parameters
-    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http://localhost:5000/auth/github/callback&scope=read:user`;
+    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http:${BACKEND_URL}/auth/github/callback&scope=read:user`;
     res.redirect(redirectUri); // Redirect user to GitHub login
 });
 
@@ -55,11 +59,10 @@ app.get("/auth/github/callback", async (req, res) => {
 
     try {
         // Exchange the code for an access token
-        const tokenResponse = await axios.post(
-            "https://github.com/login/oauth/access_token",
+        const tokenResponse = await axios.post("https://github.com/login/oauth/access_token",
             {
-                client_id: process.env.GITHUB_CLIENT_ID,
-                client_secret: process.env.GITHUB_CLIENT_SECRET,
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET,
                 code,
             },
             { headers: { Accept: "application/json" } }
@@ -89,7 +92,7 @@ app.get("/auth/github/callback", async (req, res) => {
         req.session.user = userResponse.data;
 
         console.log("🔁 Redirecting user back to frontend...");
-        res.redirect("http://localhost:3000");
+        res.redirect(FRONTEND_URL);
     } catch (error) {
         console.error("❌ GitHub OAuth Error:", error.response?.data || error);
         res.status(500).json({ error: "Failed to authenticate with GitHub" });

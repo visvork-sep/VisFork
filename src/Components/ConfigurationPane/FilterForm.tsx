@@ -62,7 +62,7 @@ function FilterForm() {
 
                     <Stack.Item>
                         <FormControl>
-                            <FormControl.Label>Commits until</FormControl.Label>
+                            <FormControl.Label>Commits from</FormControl.Label>
                             <FormControl.Caption>Retrieve commits starting from</FormControl.Caption>
                             <TextInput type="date"/>
                         </FormControl>

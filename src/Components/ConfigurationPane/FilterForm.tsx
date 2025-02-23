@@ -5,7 +5,6 @@ import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/R
 import { ForksCountInput, ForksCountInputValidation } from "./FilterFormElements/ForksCountInput";
 import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } from "./FilterFormElements/RecentlyUpdatedInput";
 
-
 function FilterForm() {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
     const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();

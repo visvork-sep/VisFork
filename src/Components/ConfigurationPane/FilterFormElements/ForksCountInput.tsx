@@ -1,7 +1,6 @@
 import { FormControl, TextInput } from "@primer/react";
 import { MIN_FORKS, MAX_FORKS } from "@Utils/Constants";
 
-
 type ForksCountInputValidation = "LessThanMinForksError" | "GreaterThanMaxForksError";
 
 interface ForksCountInputProps {

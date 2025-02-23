@@ -4,8 +4,6 @@ import { Pagehead } from "@primer/react/deprecated";
 import FilterForm from "@Components/ConfigurationPane/FilterForm";
 import FileButtons from "@Components/ConfigurationPane/FileButtons";
 
-
-
 function ConfigurationPane() {
     return(
         <Stack gap="condensed">

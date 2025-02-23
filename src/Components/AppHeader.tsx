@@ -35,6 +35,7 @@ function AppHeader() {
     //Logs user out, and deletes user data.
     const handleLogout = () => {
         logoutUser().then(() => setAvatarUrl(null));
+        setIsOpen(false);
     };
     return (
         <>

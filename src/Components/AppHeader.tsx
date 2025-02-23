@@ -1,37 +1,12 @@
 import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
 import { Avatar, Box, Button, Dialog, Header } from "@primer/react";
 import { ActionList } from "@primer/react/deprecated";
-import { useCallback, useState } from "react";
-
-//Interface to store the impotant data that comes form App.tsx
-interface User {
-    login: string;
-    id: number;
-    avatar_url: string;
-}
-
-//Define exparcted data for components
-interface AppHeaderProps {
-    user: User | null; //Logged in user or null if user is logged out
-    //User state update. Log in or out for the user.
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-
-}
+import { useCallback, useEffect, useState } from "react";
+import { fetchUser, logoutUser, loginUser } from "../api/api";
 
 
-function AppHeader( {user, setUser}:  AppHeaderProps) {
-    
-    //Redirects to github login page
-    const handleLogin = () => {
-        window.location.href = "http://localhost:5000/auth/github";
-    };
-    
-    //Logs user out, and deletes user data.
-    const handleLogout = () => {
-        fetch("http://localhost:5000/auth/logout", { method: "POST", credentials: "include" })
-            .then(() => {setUser(null); window.location.reload()}); // Reload to reset session
-    };
-
+function AppHeader() {
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     /**Sidepanel*/
     const [isOpen, setIsOpen] = useState(false);     
     const onDialogClose = useCallback(() => setIsOpen(false), []);
@@ -49,6 +24,18 @@ function AppHeader( {user, setUser}:  AppHeaderProps) {
         setDarkMode((darkMode) => !darkMode)
     }, []);
 
+
+    useEffect(() => {
+        fetchUser().then(data => setAvatarUrl(data?.avatarUrl || null));
+    }, []);
+    //Redirects to github login page
+    const handleLogin = () => {
+        loginUser();
+    };
+    //Logs user out, and deletes user data.
+    const handleLogout = () => {
+        logoutUser().then(() => setAvatarUrl(null));
+    };
     return (
         <>
             <Header aria-label="nav bar">
@@ -60,9 +47,9 @@ function AppHeader( {user, setUser}:  AppHeaderProps) {
                 </Header.Item>
 
                 <Header.Item>
-                    {user !== null ? ( /** If user has data than update the user profile. */
+                    {avatarUrl ? ( /** If user has data than update the user profile. */
                         <Box onClick={onDialogOpen}> 
-                            <Avatar src= {user.avatar_url} size={24}/> 
+                            <Avatar src= {avatarUrl} size={24}/> 
                         </Box>
                         
                     ) : (  /**If user data is not present, keep the login button. */

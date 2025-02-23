@@ -39,7 +39,7 @@ app.use(session({
 
 // Step 1: Redirect users to GitHub login
 app.get("/auth/github", (req, res) => {
-    console.log("🔁 Redirecting user to GitHub login");
+    //console.log("🔁 Redirecting user to GitHub login");
     // Construct GitHub OAuth login URL with required parameters
     const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${BACKEND_URL}/auth/github/callback&scope=read:user`;
     res.redirect(redirectUri); // Redirect user to GitHub login
@@ -55,7 +55,7 @@ app.get("/auth/github/callback", async (req, res) => {
         return res.status(400).json({ error: "No code provided" });
     }
 
-    console.log("✅ GitHub OAuth Code Received:", code);
+    //console.log("✅ GitHub OAuth Code Received:", code);
 
     try {
         // Exchange the code for an access token
@@ -68,7 +68,7 @@ app.get("/auth/github/callback", async (req, res) => {
             { headers: { Accept: "application/json" } }
         );
 
-        console.log("🔍 GitHub Token Response Data:", tokenResponse.data); 
+        //console.log("🔍 GitHub Token Response Data:", tokenResponse.data); 
 
         // Check if we actually received an access token
         if (!tokenResponse.data.access_token) {
@@ -78,20 +78,20 @@ app.get("/auth/github/callback", async (req, res) => {
 
         //assign the data to the variable 
         const accessToken = tokenResponse.data.access_token;
-        console.log("✅ GitHub Access Token Received:", accessToken);
+       //console.log("✅ GitHub Access Token Received:", accessToken);
 
         // Fetch user details from GitHub using the access token
         const userResponse = await axios.get("https://api.github.com/user", {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-        console.log("✅ GitHub User Data Received:", userResponse.data);
+       //console.log("✅ GitHub User Data Received:", userResponse.data);
 
         // Store user info in session
         req.session.accessToken = accessToken;
         req.session.user = userResponse.data;
 
-        console.log("🔁 Redirecting user back to frontend...");
+       //console.log("🔁 Redirecting user back to frontend...");
         res.redirect(FRONTEND_URL);
     } catch (error) {
         console.error("❌ GitHub OAuth Error:", error.response?.data || error);
@@ -106,7 +106,7 @@ app.get("/auth/user", (req, res) => {
         return res.status(401).json({ error: "Not authenticated" });
     }
     res.json({ avatarUrl: req.session.user.avatar_url }); // Avatar ⇨ sending
-    console.log("🛫 Sending avatar data");
+   //console.log("🛫 Sending avatar data");
 });
 
 // Step 4: Logout and destroy session
@@ -114,7 +114,7 @@ app.post("/auth/logout", (req, res) => {
     req.session.destroy(() => {
         res.json({ message: "Logged out" });
     }); //Destroy session
-    console.log("🔑 User logged out session destroyed.");
+   //console.log("🔑 User logged out session destroyed.");
 });
 
 app.listen(5000, () => {

@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, CheckboxGroup, FormControl, Select, Stack } from "@primer/react";
+import { Box, Button, Checkbox, CheckboxGroup, FormControl, Select, Stack, TextInput } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 import { useState } from "react";
 import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/RepositoryInput";
@@ -39,8 +39,8 @@ function FilterForm() {
                             <FormControl.Label>Select forks by</FormControl.Label>
                             <FormControl.Caption>The metric to select forks by</FormControl.Caption>
                             <Select>
-                                <Select.Option value="date">Date of creation</Select.Option>
                                 <Select.Option value="stargazers">Starsgazers</Select.Option>
+                                <Select.Option value="date">Date of creation</Select.Option>
                                 <Select.Option value="watchers">Watchers</Select.Option>
                                 <Select.Option value="last commit">Date of Last Commit</Select.Option>
                                 <Select.Option value="author">Author followers</Select.Option> 
@@ -59,7 +59,22 @@ function FilterForm() {
                             </Select>
                         </FormControl>
                     </Stack.Item>
-                    
+
+                    <Stack.Item>
+                        <FormControl>
+                            <FormControl.Label>Commits until</FormControl.Label>
+                            <FormControl.Caption>Retrieve commits starting from</FormControl.Caption>
+                            <TextInput type="date"/>
+                        </FormControl>
+                    </Stack.Item>
+
+                    <Stack.Item>
+                        <FormControl>
+                            <FormControl.Label>Commits until</FormControl.Label>
+                            <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
+                            <TextInput type="date"/>
+                        </FormControl>
+                    </Stack.Item>
                 </Stack>
             </Stack.Item>
 

@@ -1,8 +1,5 @@
 import { FormControl, TextInput } from "@primer/react";
-
-
-const MOST_RECENT_UPDATE = 1;
-const LEAST_RECENT_UPDATE = 12;
+import { MOST_RECENT_UPDATE, LEAST_RECENT_UPDATE } from "@Utils/Constants";
 
 type RecentlyUpdatedInputValidation = "outOfInputRange";
 

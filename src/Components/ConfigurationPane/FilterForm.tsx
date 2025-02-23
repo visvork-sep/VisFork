@@ -22,7 +22,7 @@ function FilterForm() {
                 <RepositoryInput validation={repositoryInputValidation} /> 
             </Stack.Item>
 
-            <Pagehead>Filters</Pagehead>
+            <Pagehead>Data retrieval</Pagehead>
 
             <Stack.Item>
                 <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
@@ -53,7 +53,14 @@ function FilterForm() {
                             </Select>
                         </FormControl>
                     </Stack.Item>
+                    
+                </Stack>
+            </Stack.Item>
 
+            <Pagehead>Client side filters</Pagehead>
+
+            <Stack.Item>
+                <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
                         <CheckboxGroup>
                             <CheckboxGroup.Label>Included fork types</CheckboxGroup.Label>
@@ -72,7 +79,7 @@ function FilterForm() {
                             </FormControl>
                         </CheckboxGroup>
                     </Stack.Item>
-                    
+
                     <Stack.Item>
                         <CheckboxGroup>
                             <CheckboxGroup.Label>Included Owner types</CheckboxGroup.Label>
@@ -88,6 +95,7 @@ function FilterForm() {
                     </Stack.Item>
                 </Stack>
             </Stack.Item>
+
             <Stack.Item>
                 <Button type="submit">Submit</Button>
             </Stack.Item>

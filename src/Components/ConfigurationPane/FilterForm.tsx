@@ -43,6 +43,8 @@ function FilterForm() {
                                 <Select.Option value="stargazers">Starsgazers</Select.Option>
                                 <Select.Option value="watchers">Watchers</Select.Option>
                                 <Select.Option value="last commit">Date of Last Commit</Select.Option>
+                                <Select.Option value="author">Author followers</Select.Option> 
+                                {/* find out if possible */}
                             </Select>
                         </FormControl>
                     </Stack.Item>
@@ -103,9 +105,6 @@ function FilterForm() {
                     </Stack.Item>
                 </Stack>
             </Stack.Item>
-
-            
-
 
             <Stack.Item>
                 <Button type="submit">Submit</Button>

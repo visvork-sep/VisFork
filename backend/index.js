@@ -41,7 +41,7 @@ app.use(session({
 app.get("/auth/github", (req, res) => {
     console.log("🔁 Redirecting user to GitHub login");
     // Construct GitHub OAuth login URL with required parameters
-    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http:${BACKEND_URL}/auth/github/callback&scope=read:user`;
+    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${BACKEND_URL}/auth/github/callback&scope=read:user`;
     res.redirect(redirectUri); // Redirect user to GitHub login
 });
 
@@ -105,8 +105,8 @@ app.get("/auth/user", (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: "Not authenticated" });
     }
-    res.json(req.session.user); // Only send user data to frontend
-    console.log("🛫 Sending user data");
+    res.json({ avatarUrl: req.session.user.avatar_url }); // Avatar ⇨ sending
+    console.log("🛫 Sending avatar data");
 });
 
 // Step 4: Logout and destroy session

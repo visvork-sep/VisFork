@@ -3,16 +3,20 @@ import { Pagehead } from "@primer/react/deprecated";
 import { useState } from "react";
 import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/RepositoryInput";
 import { ForksCountInput, ForksCountInputValidation } from "./FilterFormElements/ForksCountInput";
+import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } from "./FilterFormElements/RecentlyUpdatedInput";
 
 
 function FilterForm() {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
     const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();
+    const [RecentlyUpdatedInputValidation, setRecentlyUpdatedInputValidation] =
+         useState<RecentlyUpdatedInputValidation>();
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  
         setRepositoryInputValidation("repositoryNameError");
         setForksCountInputValidation("LessThanMinForksError");
+        setRecentlyUpdatedInputValidation("outOfInputRange");
         // set url variables
     };
 
@@ -63,7 +67,7 @@ function FilterForm() {
                 <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
                         <CheckboxGroup>
-                            <CheckboxGroup.Label>Included fork types</CheckboxGroup.Label>
+                            <CheckboxGroup.Label>Included forks</CheckboxGroup.Label>
                             <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
                             <FormControl>
                                 <FormControl.Label>Adaptive</FormControl.Label>
@@ -82,7 +86,7 @@ function FilterForm() {
 
                     <Stack.Item>
                         <CheckboxGroup>
-                            <CheckboxGroup.Label>Included Owner types</CheckboxGroup.Label>
+                            <CheckboxGroup.Label>Included Owners</CheckboxGroup.Label>
                             <FormControl>
                                 <FormControl.Label>User</FormControl.Label>
                                 <Checkbox value="user"/>
@@ -93,8 +97,15 @@ function FilterForm() {
                             </FormControl>
                         </CheckboxGroup>
                     </Stack.Item>
+
+                    <Stack.Item>
+                        <RecentlyUpdatedInput validation={RecentlyUpdatedInputValidation}/>
+                    </Stack.Item>
                 </Stack>
             </Stack.Item>
+
+            
+
 
             <Stack.Item>
                 <Button type="submit">Submit</Button>

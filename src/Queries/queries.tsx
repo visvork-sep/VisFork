@@ -1,7 +1,7 @@
 import { GetForksQueryVariables } from "@generated/graphql";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchForks, fetchCommits } from "./rawQueries";
-import { CommitQueryParams } from "../types/githubTypes"
+import { CommitQueryParams } from "../Types/githubTypes"
 
 /**
  * Fetches fork data using a GraphQL query.

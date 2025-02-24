@@ -4,19 +4,22 @@ import { useState } from "react";
 import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/RepositoryInput";
 import { ForksCountInput, ForksCountInputValidation } from "./FilterFormElements/ForksCountInput";
 import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } from "./FilterFormElements/RecentlyUpdatedInput";
-import { CommitDateRangeInputs } from "./FilterFormElements/CommitsDateRangeInputs";
+import { CommitDateRangeInputs, CommitDateRangeInputsValidation } from "./FilterFormElements/CommitsDateRangeInputs";
 
 function FilterForm() {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
     const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();
-    const [RecentlyUpdatedInputValidation, setRecentlyUpdatedInputValidation] =
+    const [recentlyUpdatedInputValidation, setRecentlyUpdatedInputValidation] =
          useState<RecentlyUpdatedInputValidation>();
+    const [commitDateRangeInputsValidation, setCommitDateRangeInputsValidation] = 
+        useState<CommitDateRangeInputsValidation>();
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  
         setRepositoryInputValidation("repositoryNameError");
         setForksCountInputValidation("lessThanMinForksError");
         setRecentlyUpdatedInputValidation("outOfInputRange");
+        setCommitDateRangeInputsValidation("futureUntilDateError");
         // set url variables
     };
 
@@ -61,7 +64,7 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitDateRangeInputs/> 
+                        <CommitDateRangeInputs validation={commitDateRangeInputsValidation}/> 
                     </Stack.Item>
 
                     
@@ -106,7 +109,7 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <RecentlyUpdatedInput validation={RecentlyUpdatedInputValidation}/>
+                        <RecentlyUpdatedInput validation={recentlyUpdatedInputValidation}/>
                     </Stack.Item>
                 </Stack>
             </Stack.Item>

@@ -24,7 +24,7 @@ export async function fetchCommits(parameters: CommitQueryParams) {
 }
 
 /**
- * Fetch commits using REST API.
+ * Fetch forks using REST API.
  */
 export async function fetchForks(parameters: ForkQueryParams) {
     return fetchClient.GET("/repos/{owner}/{repo}/forks", { params: parameters });

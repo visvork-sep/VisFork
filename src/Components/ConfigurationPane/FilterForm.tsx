@@ -11,9 +11,11 @@ import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation }
 import { CommitDateRangeInputs, CommitDateRangeInputsValidation } 
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeInputs";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { ForksQueryOrderAscDescInput } from "./FilterFormElements/ForksQueryOrderAscDescInput";
-import { ForksTypeFilterInput } from "./FilterFormElements/ForksTypeFilter";
-import { OrganizationTypeFilterInput } from "./FilterFormElements/OrganizationTypeFilterInput";
+import { ForksQueryOrderAscDescInput } 
+    from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
+import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilter";
+import { OrganizationTypeFilterInput } 
+    from "@Components/ConfigurationPane/FilterFormElements/OrganizationTypeFilterInput";
 
 function FilterForm() {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();

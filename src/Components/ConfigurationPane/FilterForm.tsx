@@ -1,10 +1,16 @@
 import { Box, Button, Checkbox, CheckboxGroup, FormControl, Select, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 import { useState } from "react";
-import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/RepositoryInput";
-import { ForksCountInput, ForksCountInputValidation } from "./FilterFormElements/ForksCountInput";
-import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } from "./FilterFormElements/RecentlyUpdatedInput";
-import { CommitDateRangeInputs, CommitDateRangeInputsValidation } from "./FilterFormElements/CommitsDateRangeInputs";
+
+import {RepositoryInput, RepositoryInputValidation} 
+    from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
+import { ForksCountInput, ForksCountInputValidation } 
+    from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
+import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } 
+    from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
+import { CommitDateRangeInputs, CommitDateRangeInputsValidation } 
+    from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeInputs";
+import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
 
 function FilterForm() {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
@@ -38,18 +44,7 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Select forks by</FormControl.Label>
-                            <FormControl.Caption>The metric to select forks by</FormControl.Caption>
-                            <Select>
-                                <Select.Option value="stargazers">Starsgazers</Select.Option>
-                                <Select.Option value="date">Date of creation</Select.Option>
-                                <Select.Option value="watchers">Watchers</Select.Option>
-                                <Select.Option value="last commit">Date of Last Commit</Select.Option>
-                                <Select.Option value="author">Author followers</Select.Option> 
-                                {/* find out if possible */}
-                            </Select>
-                        </FormControl>
+                        <ForksQueryOrderInput/> 
                     </Stack.Item>
 
                     <Stack.Item>

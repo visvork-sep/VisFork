@@ -1,4 +1,4 @@
-import { CommitQueryParams } from "../types/githubTypes";
+import { CommitQueryParams } from "../Types/githubTypes";
 import { GetForksQueryVariables, RepositoryOrder, OrderDirection, RepositoryOrderField } from "@generated/graphql";
 
 /**

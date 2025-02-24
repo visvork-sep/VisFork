@@ -21,9 +21,9 @@ jobs:
 
       # Step 2
       # Check cache for schema.graphql file. Use it if it exists, otherwise execute Step 3
-      - name: Cache schema
+      - name: Cache graphql schema
         # Variable used for referring to this step in subsequent steps
-        id: cache-schema
+        id: cache-schema-gql
         uses: actions/cache@v4
         env: 
           cache-name: cache-schema-gql
@@ -39,12 +39,38 @@ jobs:
 
       # Step 3
       # If schema.graphql has not been cached before (or the cache has expired), it will download it again
-      - if: ${{ steps.cache-schema.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-schema-gql.outputs.cache-hit != 'true' }}
         name: Get resources
         run: |
           curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
 
-      # Step 4
+      # Step 4: Cache openapi schema
+      # Check cache for schema.graphql file. Use it if it exists, otherwise execute Step 3
+      - name: Cache openapi schema
+        # Variable used for referring to this step in subsequent steps
+        id: cache-schema-openapi
+        uses: actions/cache@v4
+        env: 
+          cache-name: cache-schema-openapi
+        with:
+          # Since the schema file should be located in the root directory of the project, we define this as the path
+          path: ./
+          # The key(s) used for finding back the cache once the cache has been generated
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('./openapi-schema.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-
+
+
+      # Step 5: Get openapi Resources
+      # If openapi schema has not been cached before (or the cache has expired), it will download it again
+      - if: ${{ steps.cache-schema-openapi.outputs.cache-hit != 'true' }}
+        name: Get resources
+        run: |
+          curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
+
+
+      # Step 6: Build Docker image
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
 

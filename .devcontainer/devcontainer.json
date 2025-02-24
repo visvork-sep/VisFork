@@ -15,7 +15,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// download schmea and put in root
-	"postCreateCommand": "npm install && curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql",
+	"postCreateCommand": "npm install && curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql && curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml",
 
 	// Run in priviliged mode.
 	"runArgs": ["--privileged"],

@@ -14,7 +14,7 @@ function FilterForm() {
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  
         setRepositoryInputValidation("repositoryNameError");
-        setForksCountInputValidation("LessThanMinForksError");
+        setForksCountInputValidation("lessThanMinForksError");
         setRecentlyUpdatedInputValidation("outOfInputRange");
         // set url variables
     };

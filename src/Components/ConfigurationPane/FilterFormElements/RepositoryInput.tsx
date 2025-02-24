@@ -1,6 +1,6 @@
 import { FormControl, TextInput } from "@primer/react";
 
-type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameError";
+type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameError" | "unknownError";
 
 interface RepositoryInputProps {
     validation?: RepositoryInputValidation;
@@ -18,6 +18,9 @@ function RepositoryInput({ validation } : RepositoryInputProps) {
             break;
         case "repositoryNameError":
             validationText = "Invalid repository name";
+            break;
+        case "unknownError":
+            validationText = "Unknown error in field";
     }
 
     return (

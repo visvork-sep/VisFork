@@ -1,7 +1,7 @@
 import { FormControl, TextInput } from "@primer/react";
 import { MIN_FORKS, MAX_FORKS } from "@Utils/Constants";
 
-type ForksCountInputValidation = "LessThanMinForksError" | "GreaterThanMaxForksError";
+type ForksCountInputValidation = "lessThanMinForksError" | "greaterThanMaxForksError" | "unknownError";
 
 interface ForksCountInputProps {
     validation?: ForksCountInputValidation
@@ -11,11 +11,14 @@ function ForksCountInput({ validation }: ForksCountInputProps) {
     let validationText: string | undefined;
 
     switch(validation) {
-        case "LessThanMinForksError":
+        case "lessThanMinForksError":
             validationText = "Number of forks must be greater than" + {MIN_FORKS};
             break;
-        case "GreaterThanMaxForksError":
+        case "greaterThanMaxForksError":
             validationText = "Number of forks msut be less than" + {MAX_FORKS};
+            break;
+        case "unknownError":
+            validationText = "Unknown error in field";
     }
 
     return (

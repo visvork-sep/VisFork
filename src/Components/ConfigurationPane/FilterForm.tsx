@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, CheckboxGroup, FormControl, Select, Stack } from "@primer/react";
+import { Box, Button, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 import { useState } from "react";
 
@@ -11,6 +11,9 @@ import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation }
 import { CommitDateRangeInputs, CommitDateRangeInputsValidation } 
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeInputs";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
+import { ForksQueryOrderAscDescInput } from "./FilterFormElements/ForksQueryOrderAscDescInput";
+import { ForksTypeFilterInput } from "./FilterFormElements/ForksTypeFilter";
+import { OrganizationTypeFilterInput } from "./FilterFormElements/OrganizationTypeFilterInput";
 
 function FilterForm() {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
@@ -48,21 +51,12 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Retrieval order</FormControl.Label>
-                            <FormControl.Caption>Order of fork retrieval</FormControl.Caption>
-                            <Select>
-                                <Select.Option value="ascending">Ascending</Select.Option>
-                                <Select.Option value="descending">Descending</Select.Option>
-                            </Select>
-                        </FormControl>
+                        <ForksQueryOrderAscDescInput/> 
                     </Stack.Item>
 
                     <Stack.Item>
                         <CommitDateRangeInputs validation={commitDateRangeInputsValidation}/> 
                     </Stack.Item>
-
-                    
                 </Stack>
             </Stack.Item>
 
@@ -71,36 +65,11 @@ function FilterForm() {
             <Stack.Item>
                 <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
-                        <CheckboxGroup>
-                            <CheckboxGroup.Label>Included forks</CheckboxGroup.Label>
-                            <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
-                            <FormControl>
-                                <FormControl.Label>Adaptive</FormControl.Label>
-                                <Checkbox value="adaptive"/>
-                            </FormControl>
-                            <FormControl>
-                                <FormControl.Label>Corrective</FormControl.Label>
-                                <Checkbox value="corrective"/>
-                            </FormControl>
-                            <FormControl>
-                                <FormControl.Label>Perfective</FormControl.Label>
-                                <Checkbox value="perfective"/>
-                            </FormControl>
-                        </CheckboxGroup>
+                        <ForksTypeFilterInput/> 
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CheckboxGroup>
-                            <CheckboxGroup.Label>Included Owners</CheckboxGroup.Label>
-                            <FormControl>
-                                <FormControl.Label>User</FormControl.Label>
-                                <Checkbox value="user"/>
-                            </FormControl>
-                            <FormControl>
-                                <FormControl.Label>Organization</FormControl.Label>
-                                <Checkbox value="organization"/>
-                            </FormControl>
-                        </CheckboxGroup>
+                        <OrganizationTypeFilterInput/>
                     </Stack.Item>
 
                     <Stack.Item>

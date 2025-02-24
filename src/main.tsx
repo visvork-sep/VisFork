@@ -9,12 +9,12 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
     //<StrictMode>
-        <ThemeProvider colorMode="auto">
-            <BaseStyles>
-                <Box className="body">
-                    <App/>
-                </Box>
-            </BaseStyles>
-        </ThemeProvider>
+    <ThemeProvider colorMode="auto">
+        <BaseStyles>
+            <Box className="body">
+                <App/>
+            </Box>
+        </BaseStyles>
+    </ThemeProvider>
     //</StrictMode>
 );

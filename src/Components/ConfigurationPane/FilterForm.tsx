@@ -1,9 +1,10 @@
-import { Box, Button, Checkbox, CheckboxGroup, FormControl, Select, Stack, TextInput } from "@primer/react";
+import { Box, Button, Checkbox, CheckboxGroup, FormControl, Select, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 import { useState } from "react";
 import {RepositoryInput, RepositoryInputValidation} from "./FilterFormElements/RepositoryInput";
 import { ForksCountInput, ForksCountInputValidation } from "./FilterFormElements/ForksCountInput";
 import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } from "./FilterFormElements/RecentlyUpdatedInput";
+import { CommitDateRangeInputs } from "./FilterFormElements/CommitsDateRangeInputs";
 
 function FilterForm() {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
@@ -60,20 +61,10 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Commits from</FormControl.Label>
-                            <FormControl.Caption>Retrieve commits starting from</FormControl.Caption>
-                            <TextInput type="date"/>
-                        </FormControl>
+                        <CommitDateRangeInputs/> 
                     </Stack.Item>
 
-                    <Stack.Item>
-                        <FormControl>
-                            <FormControl.Label>Commits until</FormControl.Label>
-                            <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
-                            <TextInput type="date"/>
-                        </FormControl>
-                    </Stack.Item>
+                    
                 </Stack>
             </Stack.Item>
 

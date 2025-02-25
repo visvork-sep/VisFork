@@ -1,12 +1,14 @@
 import { FormControl, TextInput } from "@primer/react";
+import { ChangeEvent } from "react";
 
-type CommitDateRangeUntilInputValidation = "laterFromDateError" | "futureUntilDateError" | "unknownError";
+type CommitsDateRangeUntilInputValidation = "laterFromDateError" | "futureUntilDateError" | "unknownError";
 
-interface CommitDateRangeUntilInputProps {
-    validation? : CommitDateRangeUntilInputValidation
+interface CommitsDateRangeUntilInputProps {
+    validation? : CommitsDateRangeUntilInputValidation
+    onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-function CommitsDateRangeUntilInput({ validation } : CommitDateRangeUntilInputProps) {
+function CommitsDateRangeUntilInput({ validation, onChangeHandler } : CommitsDateRangeUntilInputProps) {
     let validationText;
 
     switch(validation) {
@@ -24,7 +26,7 @@ function CommitsDateRangeUntilInput({ validation } : CommitDateRangeUntilInputPr
         <FormControl>
             <FormControl.Label>Commits until</FormControl.Label>
             <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
-            <TextInput type="date"/>
+            <TextInput type="date" onChange={onChangeHandler}/>
             {validationText && 
                 <FormControl.Validation variant="error">
                     {validationText}
@@ -37,4 +39,4 @@ function CommitsDateRangeUntilInput({ validation } : CommitDateRangeUntilInputPr
 export {
     CommitsDateRangeUntilInput
 };
-export type {CommitDateRangeUntilInputProps, CommitDateRangeUntilInputValidation};
+export type {CommitsDateRangeUntilInputProps, CommitsDateRangeUntilInputValidation};

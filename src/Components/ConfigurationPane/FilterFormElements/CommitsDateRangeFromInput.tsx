@@ -1,12 +1,14 @@
 import { FormControl, TextInput } from "@primer/react";
+import { ChangeEvent } from "react";
 
-type CommitDateRangeFromInputValidation = "laterFromDateError" | "unknownError";
+type CommitsDateRangeFromInputValidation = "laterFromDateError" | "unknownError";
 
-interface CommitDateRangeFromInputProps {
-    validation? : CommitDateRangeFromInputValidation
+interface CommitsDateRangeFromInputProps {
+    validation? : CommitsDateRangeFromInputValidation
+    onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-function CommitDateRangeFromInput({ validation } : CommitDateRangeFromInputProps) {
+function CommitsDateRangeFromInput({ validation, onChangeHandler } : CommitsDateRangeFromInputProps) {
     let validationText;
 
     switch (validation) {
@@ -21,7 +23,7 @@ function CommitDateRangeFromInput({ validation } : CommitDateRangeFromInputProps
         <FormControl>
             <FormControl.Label>Commits from</FormControl.Label>
             <FormControl.Caption>Retrieve commits starting from</FormControl.Caption>
-            <TextInput type="date"/>
+            <TextInput type="date" onChange={onChangeHandler}/>
             {validationText && 
                 <FormControl.Validation variant="error">
                     {validationText}
@@ -32,6 +34,6 @@ function CommitDateRangeFromInput({ validation } : CommitDateRangeFromInputProps
 }
 
 export {
-    CommitDateRangeFromInput
+    CommitsDateRangeFromInput
 };
-export type { CommitDateRangeFromInputValidation, CommitDateRangeFromInputProps };
+export type { CommitsDateRangeFromInputValidation, CommitsDateRangeFromInputProps };

@@ -8,7 +8,7 @@ import { ForksCountInput, ForksCountInputValidation }
     from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
 import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } 
     from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
-import {CommitDateRangeFromInput, CommitDateRangeFromInputValidation}
+import {CommitsDateRangeFromInput, CommitsDateRangeFromInputValidation}
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
 import { ForksQueryOrderAscDescInput } 
@@ -16,7 +16,7 @@ import { ForksQueryOrderAscDescInput }
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilter";
 import { OrganizationTypeFilterInput } 
     from "@Components/ConfigurationPane/FilterFormElements/OrganizationTypeFilterInput";
-import { CommitDateRangeUntilInputValidation, CommitsDateRangeUntilInput } 
+import { CommitsDateRangeUntilInputValidation, CommitsDateRangeUntilInput } 
     from "./FilterFormElements/CommitsDateRangeUntilInput";
 
 
@@ -58,15 +58,15 @@ function FilterForm() {
     const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();
     const [recentlyUpdatedInputValidation, setRecentlyUpdatedInputValidation] =
          useState<RecentlyUpdatedInputValidation>();
-    const [commitDateRangeFromInputValidation, setCommitDateRangeFromInputValidation] = 
-        useState<CommitDateRangeFromInputValidation>();
-    const [commitDateRangeUntilInputValidation, setCommitDateRangeUntilInputValidation] 
-        = useState<CommitDateRangeUntilInputValidation>();
+    const [commitsDateRangeFromInputValidation, setCommitsDateRangeFromInputValidation] = 
+        useState<CommitsDateRangeFromInputValidation>();
+    const [commitsDateRangeUntilInputValidation, setCommitsDateRangeUntilInputValidation] 
+        = useState<CommitsDateRangeUntilInputValidation>();
 
     const [form, setForm] = useState<FormState>(initialForm);
 
 
-    const handleRepositoryInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const handleRepositoryChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
 
         // maybe seperate
@@ -84,7 +84,7 @@ function FilterForm() {
         });
     }, []);
 
-    const handleForksCountInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const handleForksCountChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         const regex = new RegExp(/[1-9]([0-9]*)/);
         if (!regex.test(value)) {
@@ -104,7 +104,7 @@ function FilterForm() {
         });
     }, []);
 
-    const handleForksOrderInputChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+    const handleForksOrderChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value;
         
         //TODO: add validation
@@ -137,6 +137,13 @@ function FilterForm() {
         });
     }, []);
 
+    const handleCommitsDateRangeFromChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.value);
+    }, []);
+
+    const handleCommitsDateRangeUntilChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.value);
+    }, []);;
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  
@@ -144,15 +151,15 @@ function FilterForm() {
         setRepositoryInputValidation("repositoryNameError");
         setForksCountInputValidation("lessThanMinForksError");
         setRecentlyUpdatedInputValidation("outOfInputRange");
-        setCommitDateRangeFromInputValidation("laterFromDateError");
-        setCommitDateRangeUntilInputValidation("laterFromDateError");
+        setCommitsDateRangeFromInputValidation("laterFromDateError");
+        setCommitsDateRangeUntilInputValidation("laterFromDateError");
         // set url variables
     };
 
     return <Box as="form" onSubmit={onSubmit}>
         <Stack direction={"vertical"}>
             <Stack.Item>
-                <RepositoryInput validation={repositoryInputValidation} onChangeHandler={handleRepositoryInputChange}/> 
+                <RepositoryInput validation={repositoryInputValidation} onChangeHandler={handleRepositoryChange}/> 
             </Stack.Item>
 
             <Pagehead>Data retrieval</Pagehead>
@@ -161,11 +168,11 @@ function FilterForm() {
                 <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
                     <Stack.Item>
                         <ForksCountInput validation={forksCountInputValidation} 
-                            onChangeHandler={handleForksCountInputChange}/>
+                            onChangeHandler={handleForksCountChange}/>
                     </Stack.Item>
 
                     <Stack.Item>
-                        <ForksQueryOrderInput onChangeHandler={handleForksOrderInputChange}/> 
+                        <ForksQueryOrderInput onChangeHandler={handleForksOrderChange}/> 
                     </Stack.Item>
 
                     <Stack.Item>
@@ -173,11 +180,13 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitDateRangeFromInput validation={commitDateRangeFromInputValidation}/>
+                        <CommitsDateRangeFromInput validation={commitsDateRangeFromInputValidation} 
+                            onChangeHandler={handleCommitsDateRangeFromChange}/>
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitsDateRangeUntilInput validation={commitDateRangeUntilInputValidation}/>
+                        <CommitsDateRangeUntilInput validation={commitsDateRangeUntilInputValidation} 
+                            onChangeHandler={handleCommitsDateRangeUntilChange}/>
                     </Stack.Item>
                 </Stack>
             </Stack.Item>

@@ -105,7 +105,7 @@ app.get("/auth/user", (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: "Not authenticated" });
     }
-    res.json({ avatarUrl: req.session.user.avatar_url }); // Avatar ⇨ sending
+    res.json({ avatarUrl: req.session.user.avatar_url, token: req.session.accessToken  }); // Avatar ⇨ sending
    //console.log("🛫 Sending avatar data");
 });
 

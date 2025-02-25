@@ -26,7 +26,13 @@ function AppHeader() {
 
 
     useEffect(() => {
-        fetchUser().then(data => setAvatarUrl(data?.avatarUrl || null));
+        fetchUser().then(data => {
+            setAvatarUrl(data?.avatarUrl || null);
+            const token = sessionStorage.getItem("authToken");
+            if (token) {
+                console.log("Token retrieved:", token); // Debugging purposes
+            }
+        });
     }, []);
     //Redirects to github login page
     const handleLogin = () => {
@@ -34,9 +40,13 @@ function AppHeader() {
     };
     //Logs user out, and deletes user data.
     const handleLogout = () => {
-        logoutUser().then(() => setAvatarUrl(null));
+        logoutUser().then(() => {
+            setAvatarUrl(null);
+            sessionStorage.removeItem("authToken"); // Remove token on logout
+        });
         setIsOpen(false);
     };
+    
     return (
         <>
             <Header aria-label="nav bar">

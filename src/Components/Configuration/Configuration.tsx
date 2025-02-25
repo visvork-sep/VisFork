@@ -6,7 +6,7 @@ const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 // set url variables
 };
-export const BACKEND_URL = import.meta.env.BACKEND_URL;
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 function Configuration() {
     return (

@@ -15,14 +15,14 @@ export default [
     pluginReact.configs.flat.recommended,
     {
         rules: {
-            "eol-last": ["warning", "always"],
-            "quotes": ["warning", "double", {}],
-            "no-irregular-whitespace": ["warning"],
-            "semi": ["warning", "always"],
-            "max-len": ["warning", { code: 120, tabWidth: 4 }],
-            "indent": ["warning", 4, { SwitchCase: 1 }],
-            "react/jsx-indent": ["warning", 4],
-            "react/jsx-indent-props": ["warning", 4],
+            "eol-last": ["warn", "always"],
+            "quotes": ["warn", "double", {}],
+            "no-irregular-whitespace": ["warn"],
+            "semi": ["warn", "always"],
+            "max-len": ["warn", { code: 120, tabWidth: 4 }],
+            "indent": ["warn", 4, { SwitchCase: 1 }],
+            "react/jsx-indent": ["warn", 4],
+            "react/jsx-indent-props": ["warn", 4],
             "react/react-in-jsx-scope": "off" // Ignore "React must be in scope" rule
         }
     },

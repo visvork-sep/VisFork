@@ -1,11 +1,16 @@
 import { FormControl, Select } from "@primer/react";
+import { ChangeEvent } from "react";
 
-function ForksQueryOrderInput() {
+interface ForksQueryOrderInputProps {
+    onChangeHandler: (event: ChangeEvent<HTMLSelectElement>) => void;
+}
+
+function ForksQueryOrderInput({ onChangeHandler } : ForksQueryOrderInputProps) {
     return (
         <FormControl>
             <FormControl.Label>Select forks by</FormControl.Label>
             <FormControl.Caption>The metric to select forks by</FormControl.Caption>
-            <Select>
+            <Select onChange={onChangeHandler}>
                 <Select.Option value="stargazers">Starsgazers</Select.Option>
                 <Select.Option value="date">Date of creation</Select.Option>
                 <Select.Option value="watchers">Watchers</Select.Option>
@@ -20,3 +25,4 @@ function ForksQueryOrderInput() {
 export {
     ForksQueryOrderInput
 };
+export type {ForksQueryOrderInputProps};

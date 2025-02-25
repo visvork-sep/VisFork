@@ -22,7 +22,7 @@ interface FormState {
     repositoryOwner: string,
     repositoryName: string,
     forksCount: number,
-    forksOrder: "stargazers" | "watchers" | "creation date"
+    forksOrder: "stargazers" | "watchers" | "last commit" | "author" | "date",
     forksAscDesc: "ascending" | "descending"
     commitsStart: Date,
     commitsEnd: Date,
@@ -77,7 +77,7 @@ function FilterForm() {
                 repositoryName: words[1]
             };
         });
-    }, [setForm]);
+    }, []);
 
     const handleForksCountInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
@@ -95,6 +95,23 @@ function FilterForm() {
             return {
                 ...previousForm,
                 forksCount: parsed
+            };
+        });
+    }, []);
+
+    const handleForksOrderInputChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+        const value = event.target.value;
+        
+        //TODO: add validation
+        if (value != "stargazers" && value != "watchers" &&
+            value != "last commit" && value != "author" && value != "date") {
+            return;
+        }
+        
+        setForm((perviousform) => {
+            return {
+                ...perviousform,
+                forksOrder: value
             };
         });
     }, []);
@@ -125,7 +142,7 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <ForksQueryOrderInput/> 
+                        <ForksQueryOrderInput onChangeHandler={handleForksOrderInputChange}/> 
                     </Stack.Item>
 
                     <Stack.Item>

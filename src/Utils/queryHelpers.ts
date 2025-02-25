@@ -1,3 +1,4 @@
+import { SortingCriterionGithub } from "../Types/Filters";
 import { CommitQueryParams, ForkQueryParams } from "../Types/githubTypes";
 import { GetForksQueryVariables, RepositoryOrder, OrderDirection, RepositoryOrderField } from "@generated/graphql";
 
@@ -33,7 +34,7 @@ export function createCommitQueryParams(
  *
  * @param owner - The repository owner's GitHub username.
  * @param repo - The repository name.
- * @param sort - Sorting criteria for forks ("newest", "oldest", "stargazers", "watchers").
+ * @param sort - Sorting criteria for forks (default: stargazers).
  * @param perPage - Number of results per page (default: 30).
  * @param page - Page number for pagination (default: 1).
  * @returns A properly structured ForkQueryParams object.
@@ -41,7 +42,7 @@ export function createCommitQueryParams(
 export function createForkQueryParams(
     owner: string,
     repo: string,
-    sort: "newest" | "oldest" | "stargazers" | "watchers" = "newest",
+    sort: SortingCriterionGithub = "stargazers",
     perPage = 30,
     page = 1
 ): ForkQueryParams {

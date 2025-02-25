@@ -15,7 +15,7 @@ function RecentlyUpdatedInput({ validation } : RecentlyUpdatedInputProps) {
             validationText = `Can only check between ${LEAST_RECENT_UPDATE} and ${MOST_RECENT_UPDATE} months`;
             break;
         case "unknownError":
-            validationText = `Unknown Error in field`;
+            validationText = "Unknown Error in field";
     }
     
     return (

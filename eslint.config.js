@@ -10,9 +10,15 @@ export default [
     {languageOptions: { globals: globals.browser }},
     pluginJs.configs.recommended,
     ...tseslint.configs.recommended,
+    ...tseslint.configs.strict,
+    ...tseslint.configs.stylistic,
     pluginReact.configs.flat.recommended,
     {
         rules: {
+            "eol-last": ["error", "always"],
+            "quotes": ["error", "double", {}],
+            "no-irregular-whitespace": ["error"],
+            "semi": ["error", "always"],
             "max-len": ["error", { code: 120, tabWidth: 4 }],
             "indent": ["error", 4, { SwitchCase: 1 }],
             "semi":  ["error"],
@@ -20,5 +26,12 @@ export default [
             "react/jsx-indent-props": ["error", 4],
             "react/react-in-jsx-scope": "off" // Ignore "React must be in scope" rule
         }
+    },
+    {
+        settings: {
+            react: {
+                version: "detect", 
+            },
+        },
     }
 ];

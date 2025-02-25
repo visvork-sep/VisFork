@@ -15,8 +15,8 @@ export default [
     pluginReact.configs.flat.recommended,
     {
         rules: {
+            "eol-last": ["error", "always"],
             "quotes": ["error", "double", {}],
-            "linebreak-style": ["error", "windows"],
             "no-irregular-whitespace": ["error"],
             "semi": ["error", "always"],
             "max-len": ["error", { code: 120, tabWidth: 4 }],
@@ -25,5 +25,12 @@ export default [
             "react/jsx-indent-props": ["error", 4],
             "react/react-in-jsx-scope": "off" // Ignore "React must be in scope" rule
         }
+    },
+    {
+        settings: {
+            react: {
+                version: "detect", 
+            },
+        },
     }
 ];

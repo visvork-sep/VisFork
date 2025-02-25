@@ -26,14 +26,22 @@ function AppHeader() {
 
 
     useEffect(() => {
-        fetchUser().then(data => {
-            setAvatarUrl(data?.avatarUrl || null);
-            const token = sessionStorage.getItem("authToken");
-            if (token) {
-                console.log("Token retrieved:", token); // Debugging purposes
+        const queryParams = new URLSearchParams(window.location.search);
+        const token = queryParams.get("token");
+        const avatarUrl = queryParams.get("avatarUrl");
+        if (token) {
+            // Store token (and avatarUrl if needed) in sessionStorage
+            sessionStorage.setItem("authToken", token);
+            if (avatarUrl) {
+                sessionStorage.setItem("avatarUrl", avatarUrl);
             }
-        });
+            // Remove token and other query parameters from the URL
+            window.history.replaceState(null, "", window.location.pathname);
+        }
+        setAvatarUrl(avatarUrl || null);        
     }, []);
+
+    
     //Redirects to github login page
     const handleLogin = () => {
         loginUser();

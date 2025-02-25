@@ -70,14 +70,16 @@ app.get("/auth/github/callback", async (req, res) => {
 
         //console.log("🔍 GitHub Token Response Data:", tokenResponse.data); 
 
+        //assign the data to the variable 
+        const accessToken = tokenResponse.data.access_token;
         // Check if we actually received an access token
-        if (!tokenResponse.data.access_token) {
+        if (!accessToken) {
             console.error("❌ GitHub OAuth Error: No access token received!", tokenResponse.data);
             return res.status(500).json({ error: "Failed to get access token from GitHub" });
         }
 
-        //assign the data to the variable 
-        const accessToken = tokenResponse.data.access_token;
+        
+
        //console.log("✅ GitHub Access Token Received:", accessToken);
 
         // Fetch user details from GitHub using the access token
@@ -85,14 +87,16 @@ app.get("/auth/github/callback", async (req, res) => {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-       //console.log("✅ GitHub User Data Received:", userResponse.data);
-
-        // Store user info in session
-        req.session.accessToken = accessToken;
-        req.session.user = userResponse.data;
-
-       //console.log("🔁 Redirecting user back to frontend...");
-        res.redirect(FRONTEND_URL);
+        //console.log("✅ GitHub User Data Received:", userResponse.data);
+        const avatarUrl = userResponse.data.avatar_url;     
+        // End the session immediately after login.
+        req.session.destroy(err => {
+            if (err) {
+                console.error("Error destroying session:", err);
+            }
+        });
+        res.redirect(`${FRONTEND_URL}/?token=${accessToken}&avatarUrl=${encodeURIComponent(avatarUrl)}`);
+        
     } catch (error) {
         console.error("❌ GitHub OAuth Error:", error.response?.data || error);
         res.status(500).json({ error: "Failed to authenticate with GitHub" });
@@ -100,20 +104,30 @@ app.get("/auth/github/callback", async (req, res) => {
 });
 
 // Step 3: API to get logged-in user data (without exposing the token)
-app.get("/auth/user", (req, res) => {
-    // User not logged in
-    if (!req.session.user) {
+app.get("/auth/user", async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
         return res.status(401).json({ error: "Not authenticated" });
     }
-    res.json({ avatarUrl: req.session.user.avatar_url, token: req.session.accessToken  }); // Avatar ⇨ sending
-   //console.log("🛫 Sending avatar data");
+    const token = authHeader.split(" ")[1]; // expecting "Bearer <token>"
+    try {
+        const userResponse = await axios.get("https://api.github.com/user", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        res.json({
+            avatarUrl: userResponse.data.avatar_url,
+            token: token // Optionally send it back
+        });
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        res.status(401).json({ error: "Invalid token" });
+    }
 });
 
+
 // Step 4: Logout and destroy session
-app.post("/auth/logout", (req, res) => {
-    req.session.destroy(() => {
-        res.json({ message: "Logged out" });
-    }); //Destroy session
+app.post("/auth/logout", (req, res) => {    
+    res.json({ message: "Logged out" });
    //console.log("🔑 User logged out session destroyed.");
 });
 

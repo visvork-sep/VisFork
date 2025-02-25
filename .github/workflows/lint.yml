@@ -1,0 +1,24 @@
+name: Lint Check
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint:
+    name: Run ESLint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Run inside a docker container for consistency
+      - name: Run ESLint
+        run: docker run --rm visfork-ci npm run lint
+

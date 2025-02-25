@@ -16,7 +16,7 @@ export function createCommitQueryParams(
     repo: string,
     since?: string,
     until?: string,
-    perPage: number = 30
+    perPage = 30
 ): CommitQueryParams {
     return {
         path: { owner, repo },
@@ -42,8 +42,8 @@ export function createForkQueryParams(
     owner: string,
     repo: string,
     sort: "newest" | "oldest" | "stargazers" | "watchers" = "newest",
-    perPage: number = 30,
-    page: number = 1
+    perPage = 30,
+    page = 1
 ): ForkQueryParams {
     return {
         path: { owner, repo },
@@ -69,7 +69,7 @@ export function createForkQueryParams(
 export function createForkQueryParamsGql(
     owner: string,
     name: string,
-    numForks: number = 10,
+    numForks: 10,
     repositoryOrder: RepositoryOrder = { direction : OrderDirection.Desc, field : RepositoryOrderField.Stargazers } ,
     after?: string
 ): GetForksQueryVariables {

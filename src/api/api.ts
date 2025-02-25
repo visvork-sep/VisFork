@@ -1,21 +1,34 @@
 import {BACKEND_URL} from "../Components/Configuration/Configuration";
+// Define an interface for the GitHub user data.
+export interface GitHubUser {
+    login: string;
+    id: number;
+    avatar_url: string;
+    name?: string;
+  }
 
 export async function fetchUser() {
     const token = sessionStorage.getItem("authToken");
     if (!token) {
         return null;
     }
-    const response = await fetch(`${BACKEND_URL}/auth/user`, { 
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
+    try {
+        const response = await fetch("https://api.github.com/user", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error("Failed to fetch GitHub user data");
         }
-    });
-    if (!response.ok) return null;
-    const data = await response.json();
-    return data;
+        const data : GitHubUser = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching GitHub user profile", error);
+        return null;
+    }
 }
+    
 
 export async function logoutUser() {
     const token = sessionStorage.getItem("authToken");

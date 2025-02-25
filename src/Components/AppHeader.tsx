@@ -2,7 +2,7 @@ import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
 import { Avatar, Box, Button, Dialog, Header } from "@primer/react";
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useEffect, useState } from "react";
-import { fetchUser, logoutUser, loginUser } from "../api/api";
+import { fetchUser, logoutUser, loginUser, GitHubUser } from "../api/api";
 
 
 function AppHeader() {
@@ -28,19 +28,20 @@ function AppHeader() {
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const token = queryParams.get("token");
-        const avatarUrl = queryParams.get("avatarUrl");
         if (token) {
             // Store token (and avatarUrl if needed) in sessionStorage
             sessionStorage.setItem("authToken", token);
-            if (avatarUrl) {
-                sessionStorage.setItem("avatarUrl", avatarUrl);
-            }
             // Remove token and other query parameters from the URL
             window.history.replaceState(null, "", window.location.pathname);
         }
-        setAvatarUrl(avatarUrl || null);        
+        
+        // Now fetch the GitHub user data using the helper from api.ts
+        fetchUser().then((userData:GitHubUser | null) => {
+            if (userData) {
+                setAvatarUrl(userData.avatar_url);
+            }
+        });
     }, []);
-
     
     //Redirects to github login page
     const handleLogin = () => {

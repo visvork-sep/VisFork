@@ -1,4 +1,4 @@
-import { CommitQueryParams } from "../Types/githubTypes";
+import { CommitQueryParams, ForkQueryParams } from "../Types/githubTypes";
 import { GetForksQueryVariables, RepositoryOrder, OrderDirection, RepositoryOrderField } from "@generated/graphql";
 
 /**
@@ -28,9 +28,36 @@ export function createCommitQueryParams(
     };
 }
 
+/**
+ * Helper function to create a ForkQueryParams object with default values.
+ *
+ * @param owner - The repository owner's GitHub username.
+ * @param repo - The repository name.
+ * @param sort - Sorting criteria for forks ("newest", "oldest", "stargazers", "watchers").
+ * @param perPage - Number of results per page (default: 30).
+ * @param page - Page number for pagination (default: 1).
+ * @returns A properly structured ForkQueryParams object.
+ */
+export function createForkQueryParams(
+    owner: string,
+    repo: string,
+    sort: "newest" | "oldest" | "stargazers" | "watchers" = "newest",
+    perPage: number = 30,
+    page: number = 1
+): ForkQueryParams {
+    return {
+        path: { owner, repo },
+        query: {
+            sort,
+            per_page: perPage,
+            page
+        }
+    };
+}
+
 
 /**
- * Helper function to create a GetForksQueryVariables object with defaults.
+ * Helper function to create a GetForksQueryVariables object with defaults to be used for GraphQL.
  *
  * @param owner Repository owner's GitHub username.
  * @param name Repository name.
@@ -39,7 +66,7 @@ export function createCommitQueryParams(
  * @param after (Optional) Pagination cursor.
  * @returns A properly structured GetForksQueryVariables object.
  */
-export function createForkQueryParams(
+export function createForkQueryParamsGql(
     owner: string,
     name: string,
     numForks: number = 10,

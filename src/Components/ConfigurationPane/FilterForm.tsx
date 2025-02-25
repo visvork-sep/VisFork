@@ -116,6 +116,23 @@ function FilterForm() {
         });
     }, []);
 
+    const handleForksOrderAscDescChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+        const value = event.target.value;
+        
+        //TODO: add validation
+        if (value != "ascending" && value != "descending") {
+            return;
+        }
+        
+        setForm((perviousform) => {
+            return {
+                ...perviousform,
+                forksAscDesc: value
+            };
+        });
+    }, []);
+
+
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  
         console.log(form);
@@ -146,7 +163,7 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <ForksQueryOrderAscDescInput/> 
+                        <ForksQueryOrderAscDescInput onChangeHandler={handleForksOrderAscDescChange}/> 
                     </Stack.Item>
 
                     <Stack.Item>

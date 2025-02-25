@@ -68,8 +68,6 @@ app.get("/auth/github/callback", async (req, res) => {
             { headers: { Accept: "application/json" } }
         );
 
-        //console.log("🔍 GitHub Token Response Data:", tokenResponse.data); 
-
         //assign the data to the variable 
         const accessToken = tokenResponse.data.access_token;
         // Check if we actually received an access token
@@ -77,25 +75,14 @@ app.get("/auth/github/callback", async (req, res) => {
             console.error("❌ GitHub OAuth Error: No access token received!", tokenResponse.data);
             return res.status(500).json({ error: "Failed to get access token from GitHub" });
         }
-
-        
-
-       //console.log("✅ GitHub Access Token Received:", accessToken);
-
-        // Fetch user details from GitHub using the access token
-        const userResponse = await axios.get("https://api.github.com/user", {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        });
-
-        //console.log("✅ GitHub User Data Received:", userResponse.data);
-        const avatarUrl = userResponse.data.avatar_url;     
+ 
         // End the session immediately after login.
         req.session.destroy(err => {
             if (err) {
                 console.error("Error destroying session:", err);
             }
         });
-        res.redirect(`${FRONTEND_URL}/?token=${accessToken}&avatarUrl=${encodeURIComponent(avatarUrl)}`);
+        res.redirect(`${FRONTEND_URL}/?token=${accessToken}`);
         
     } catch (error) {
         console.error("❌ GitHub OAuth Error:", error.response?.data || error);

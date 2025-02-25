@@ -2,7 +2,7 @@ import { GetForksDocument, GetForksQueryVariables } from "@generated/graphql";
 import { paths } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-import { CommitQueryParams, ForkQueryParams } from "../Types/githubTypes";
+import { CommitQueryParams, ForkQueryParams } from "../Filters/Types/githubTypes";
 
 const API_URL = process.env.API_URL!;
 const GRAPHQL_URL = `${API_URL}/graphql`;

@@ -27,3 +27,7 @@ export interface ForkFilters {
     updatedInLastMonths?: number;
 }
 
+/**  */
+export interface CommitFilters {
+    dateRange: DateRange;
+}

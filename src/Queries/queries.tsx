@@ -1,6 +1,6 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchForks, fetchCommits } from "./rawQueries";
-import { CommitQueryParams, ForkQueryParams } from "../Types/githubTypes"
+import { CommitQueryParams, ForkQueryParams } from "../Filters/Types/githubTypes"
 
 /**
  * Fetches fork data using a GraphQL query.

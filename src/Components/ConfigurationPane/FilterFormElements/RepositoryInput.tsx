@@ -1,12 +1,14 @@
 import { FormControl, TextInput } from "@primer/react";
+import { ChangeEvent } from "react";
 
 type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameError" | "unknownError";
 
 interface RepositoryInputProps {
     validation?: RepositoryInputValidation;
+    onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-function RepositoryInput({ validation } : RepositoryInputProps) {
+function RepositoryInput({ validation, onChangeHandler } : RepositoryInputProps) {
     let validationText: string | undefined;
 
     switch(validation) {
@@ -26,7 +28,7 @@ function RepositoryInput({ validation } : RepositoryInputProps) {
     return (
         <FormControl required id="repository">
             <FormControl.Label>Repository</FormControl.Label>
-            <TextInput type="text" placeholder="torvalds/linux" name="repository"/>
+            <TextInput type="text" placeholder="torvalds/linux" name="repository" onChange={onChangeHandler}/>
             <FormControl.Caption>
                 This is the repository that the visualizations will be based upon
             </FormControl.Caption>

@@ -1,13 +1,15 @@
 import { FormControl, TextInput } from "@primer/react";
 import { MIN_FORKS, MAX_FORKS } from "@Utils/Constants";
+import { ChangeEvent } from "react";
 
 type ForksCountInputValidation = "lessThanMinForksError" | "greaterThanMaxForksError" | "unknownError";
 
 interface ForksCountInputProps {
-    validation?: ForksCountInputValidation
+    validation?: ForksCountInputValidation;
+    onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-function ForksCountInput({ validation }: ForksCountInputProps) {
+function ForksCountInput({ validation, onChangeHandler }: ForksCountInputProps) {
     let validationText: string | undefined;
 
     switch(validation) {
@@ -27,7 +29,7 @@ function ForksCountInput({ validation }: ForksCountInputProps) {
             <FormControl.Caption>
                 The amount of forks to analyze
             </FormControl.Caption>
-            <TextInput type="number" placeholder="5" min={MIN_FORKS} max={MAX_FORKS} />
+            <TextInput type="number" placeholder="5" min={MIN_FORKS} max={MAX_FORKS} onChange={onChangeHandler}/>
             {validationText &&
                 <FormControl.Validation variant="error">
                     {validationText}

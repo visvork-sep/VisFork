@@ -21,7 +21,6 @@ export default [
             "semi": ["error", "always"],
             "max-len": ["error", { code: 120, tabWidth: 4 }],
             "indent": ["error", 4, { SwitchCase: 1 }],
-            "semi":  ["error"],
             "react/jsx-indent": ["error", 4],
             "react/jsx-indent-props": ["error", 4],
             "react/react-in-jsx-scope": "off" // Ignore "React must be in scope" rule

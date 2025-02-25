@@ -19,8 +19,7 @@ import { OrganizationTypeFilterInput }
 import { CommitsDateRangeUntilInputValidation, CommitsDateRangeUntilInput } 
     from "./FilterFormElements/CommitsDateRangeUntilInput";
 
-
-
+// TODO: extract form logic to some other file
 interface FormState {
     repositoryOwner: string,
     repositoryName: string,

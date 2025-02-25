@@ -8,14 +8,17 @@ import { ForksCountInput, ForksCountInputValidation }
     from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
 import { RecentlyUpdatedInput, RecentlyUpdatedInputValidation } 
     from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
-import { CommitDateRangeInputs, CommitDateRangeInputsValidation } 
-    from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeInputs";
+import {CommitDateRangeFromInput, CommitDateRangeFromInputValidation}
+    from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
 import { ForksQueryOrderAscDescInput } 
     from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilter";
 import { OrganizationTypeFilterInput } 
     from "@Components/ConfigurationPane/FilterFormElements/OrganizationTypeFilterInput";
+import { CommitDateRangeUntilInputValidation, CommitsDateRangeUntilInput } 
+    from "./FilterFormElements/CommitsDateRangeUntilInput";
+
 
 
 interface FormState {
@@ -55,8 +58,10 @@ function FilterForm() {
     const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();
     const [recentlyUpdatedInputValidation, setRecentlyUpdatedInputValidation] =
          useState<RecentlyUpdatedInputValidation>();
-    const [commitDateRangeInputsValidation, setCommitDateRangeInputsValidation] = 
-        useState<CommitDateRangeInputsValidation>();
+    const [commitDateRangeFromInputValidation, setCommitDateRangeFromInputValidation] = 
+        useState<CommitDateRangeFromInputValidation>();
+    const [commitDateRangeUntilInputValidation, setCommitDateRangeUntilInputValidation] 
+        = useState<CommitDateRangeUntilInputValidation>();
 
     const [form, setForm] = useState<FormState>(initialForm);
 
@@ -139,7 +144,8 @@ function FilterForm() {
         setRepositoryInputValidation("repositoryNameError");
         setForksCountInputValidation("lessThanMinForksError");
         setRecentlyUpdatedInputValidation("outOfInputRange");
-        setCommitDateRangeInputsValidation("futureUntilDateError");
+        setCommitDateRangeFromInputValidation("laterFromDateError");
+        setCommitDateRangeUntilInputValidation("laterFromDateError");
         // set url variables
     };
 
@@ -167,7 +173,11 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitDateRangeInputs validation={commitDateRangeInputsValidation}/> 
+                        <CommitDateRangeFromInput validation={commitDateRangeFromInputValidation}/>
+                    </Stack.Item>
+
+                    <Stack.Item>
+                        <CommitsDateRangeUntilInput validation={commitDateRangeUntilInputValidation}/>
                     </Stack.Item>
                 </Stack>
             </Stack.Item>

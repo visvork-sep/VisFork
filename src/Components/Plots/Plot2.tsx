@@ -9,7 +9,7 @@ interface Commit {
   date: Date;
 }
 
-interface RawCommit {
+export interface RawCommit {
   id: string;
   parentIds: string[];
   repo: string;

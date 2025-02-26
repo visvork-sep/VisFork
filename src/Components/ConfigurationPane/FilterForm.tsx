@@ -14,8 +14,8 @@ import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormEl
 import { ForksQueryOrderAscDescInput } 
     from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilter";
-import { OrganizationTypeFilterInput } 
-    from "@Components/ConfigurationPane/FilterFormElements/OrganizationTypeFilterInput";
+import { OwnerTypeFilterInput } 
+    from "@Components/ConfigurationPane/FilterFormElements/OwnertypeFilterInput";
 import { CommitsDateRangeUntilInputValidation, CommitsDateRangeUntilInput } 
     from "./FilterFormElements/CommitsDateRangeUntilInput";
 
@@ -142,7 +142,22 @@ function FilterForm() {
 
     const handleCommitsDateRangeUntilChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         console.log(event.target.value);
-    }, []);;
+    }, []);
+
+    const handleForksTypeFilterChange = useCallback((selected: string[], event?: ChangeEvent<HTMLInputElement>) => {
+        console.log(selected);
+        console.log(event);
+    }, []);
+
+    const handleOwnerTypeFilterChange = useCallback((selected: string[], event?: ChangeEvent<HTMLInputElement>) => {
+        console.log(selected);
+        console.log(event);
+    }, []);
+
+    const handleRecentlyUpdatedChange = useCallback((input: string) => {
+        console.log(input);
+    }, []);
+
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  
@@ -195,15 +210,16 @@ function FilterForm() {
             <Stack.Item>
                 <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
-                        <ForksTypeFilterInput/> 
+                        <ForksTypeFilterInput onChangeHandler={handleForksTypeFilterChange}/> 
                     </Stack.Item>
 
                     <Stack.Item>
-                        <OrganizationTypeFilterInput/>
+                        <OwnerTypeFilterInput onChangeHandler={handleOwnerTypeFilterChange}/>
                     </Stack.Item>
 
                     <Stack.Item>
-                        <RecentlyUpdatedInput validation={recentlyUpdatedInputValidation}/>
+                        <RecentlyUpdatedInput validation={recentlyUpdatedInputValidation} 
+                            onChangeHandler={handleRecentlyUpdatedChange}/>
                     </Stack.Item>
                 </Stack>
             </Stack.Item>

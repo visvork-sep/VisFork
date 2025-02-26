@@ -1,8 +1,13 @@
 import { CheckboxGroup, FormControl, Checkbox } from "@primer/react";
+import { ChangeEvent } from "react";
 
-function ForksTypeFilterInput() {
+interface ForksTypeFilterInputProps {
+    onChangeHandler: (selected: string[], event?: ChangeEvent<HTMLInputElement>) => void;
+}
+
+function ForksTypeFilterInput({ onChangeHandler } : ForksTypeFilterInputProps) {
     return(
-        <CheckboxGroup>
+        <CheckboxGroup required onChange={onChangeHandler}>
             <CheckboxGroup.Label>Included forks</CheckboxGroup.Label>
             <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
             <FormControl>
@@ -24,3 +29,4 @@ function ForksTypeFilterInput() {
 export {
     ForksTypeFilterInput
 };
+export type { ForksTypeFilterInputProps };

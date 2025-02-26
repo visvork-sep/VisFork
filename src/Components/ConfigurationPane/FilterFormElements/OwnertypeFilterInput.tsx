@@ -1,8 +1,13 @@
 import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
+import { ChangeEvent } from "react";
 
-function OrganizationTypeFilterInput() {
+interface OwnerTypeFilterInputProps {
+    onChangeHandler: (selected: string[], event?: ChangeEvent<HTMLInputElement>) => void;
+}
+
+function OwnerTypeFilterInput({ onChangeHandler } : OwnerTypeFilterInputProps) {
     return (
-        <CheckboxGroup>
+        <CheckboxGroup onChange={onChangeHandler}>
             <CheckboxGroup.Label>Included Owners</CheckboxGroup.Label>
             <FormControl>
                 <FormControl.Label>User</FormControl.Label>
@@ -17,5 +22,5 @@ function OrganizationTypeFilterInput() {
 }
 
 export {
-    OrganizationTypeFilterInput
+    OwnerTypeFilterInput
 };

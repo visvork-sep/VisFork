@@ -47,11 +47,14 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
   
-    // Use scaleBand for equal spacing
+    // Convert Date to String for xScale
+    const formattedDates = Array.from(frequency.keys()).map(d => d3.timeFormat("%b %Y")(d));
+  
+    // Use scaleBand with string-based domain
     const xScale = d3.scaleBand()
-      .domain(Array.from(frequency.keys()).map(d => d3.timeFormat("%b %Y")(d)))
+      .domain(formattedDates)
       .range([0, chartWidth])
-      .padding(0.1); // Adds space between bars
+      .padding(0.1);
   
     const yScale = d3.scaleLinear()
       .domain([0, d3.max(Array.from(frequency.values())) || 1])
@@ -67,31 +70,37 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
   
     // Draw background bars
     chart.selectAll(".bg-bar")
-      .data(Array.from(frequency))
-      .enter()
-      .append("rect")
-      .attr("class", "bg-bar")
-      .attr("x", (d) => xScale(d3.timeFormat("%b %Y")(d[0])) || 0)
-      .attr("y", chartHeight - 100)
-      .attr("width", barWidth)
-      .attr("height", 100)
-      .attr("fill", "white")
-      .attr("opacity", 0.1);
-  
+    .data(Array.from(frequency))
+    .enter()
+    .append("rect")
+    .attr("class", "bg-bar")
+    .attr("x", (d) => xScale(d3.timeFormat("%b %Y")(d[0])) || 0) 
+    .attr("y", 0) 
+    .attr("width", barWidth)
+    .attr("height", chartHeight)
+    .attr("fill", "lightgray")
+    .attr("opacity", 0.05); 
+
     // Draw frequency bars
     chart.selectAll(".bar")
       .data(Array.from(frequency))
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", (d) => xScale(d3.timeFormat("%b %Y")(d[0])) || 0)
+      .attr("x", (d) => xScale(d3.timeFormat("%b %Y")(d[0])) || 0) // Convert Date → String
       .attr("y", (d) => yScale(d[1]))
       .attr("width", barWidth)
       .attr("height", (d) => chartHeight - yScale(d[1]))
       .attr("fill", "steelblue");
   
-    // Update x-axis
-    const xAxis = d3.axisBottom(xScale);
+    // Dynamically adjust x-axis ticks
+    const tickInterval = Math.max(1, Math.ceil(formattedDates.length / (chartWidth / 80)));
+    const filteredTicks = formattedDates.filter((_, i) => i % tickInterval === 0);
+  
+    const xAxis = d3.axisBottom(xScale)
+      .tickValues(filteredTicks) // Use formatted date strings
+      .tickFormat(d => d); // No reformatting needed
+  
     chart.append("g")
       .attr("transform", `translate(0, ${chartHeight})`)
       .call(xAxis)
@@ -103,7 +112,6 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
   
     chart.select(".domain").remove();
   }, [frequency]);
-  
 
   /////
   // Render (on window resize)

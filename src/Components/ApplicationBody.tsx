@@ -1,6 +1,6 @@
 import { Stack } from "@primer/react";
-import RangeSlider from "./Plots/RangeSlider";
 import exampleData from "../Components/Plots/commit_data_example.json";
+import facebookData from "../Components/Plots/facebook_react-commit_data.json";
 import { Blankslate } from "@primer/react/experimental";
 import Barchart from "./Plots/Barchart";
 
@@ -16,11 +16,3 @@ function ApplicationBody() {
 }
 
 export default ApplicationBody;
-
-
-{/* <Blankslate border>
-      <RangeSlider
-        raw={exampleData}
-        onSelection={(selected: any) => console.log(selected)}
-      />
-      </Blankslate> */}

@@ -1,11 +1,10 @@
 import { FormControl, TextInput } from "@primer/react";
-import { ChangeEvent } from "react";
 
 type CommitsDateRangeUntilInputValidation = "laterFromDateError" | "futureUntilDateError" | "unknownError";
 
 interface CommitsDateRangeUntilInputProps {
     validation? : CommitsDateRangeUntilInputValidation
-    onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
+    onChangeHandler: (input: string) => void;
 };
 
 function CommitsDateRangeUntilInput({ validation, onChangeHandler } : CommitsDateRangeUntilInputProps) {
@@ -26,7 +25,7 @@ function CommitsDateRangeUntilInput({ validation, onChangeHandler } : CommitsDat
         <FormControl>
             <FormControl.Label>Commits until</FormControl.Label>
             <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
-            <TextInput type="date" onChange={onChangeHandler}/>
+            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)}/>
             {validationText && 
                 <FormControl.Validation variant="error">
                     {validationText}

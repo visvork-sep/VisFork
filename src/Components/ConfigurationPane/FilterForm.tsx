@@ -1,6 +1,6 @@
 import { Box, Button, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
-import { ChangeEvent, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
 import {RepositoryInput, RepositoryInputValidation} 
     from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
@@ -65,11 +65,10 @@ function FilterForm() {
     const [form, setForm] = useState<FormState>(initialForm);
 
 
-    const handleRepositoryChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
+    const handleRepositoryChange = useCallback((input: string) => {
 
         // maybe seperate
-        const words = value.split("/");
+        const words = input.split("/");
         if (words.length != 2) {
             return;
         }
@@ -83,13 +82,12 @@ function FilterForm() {
         });
     }, []);
 
-    const handleForksCountChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
+    const handleForksCountChange = useCallback((input: string) => {
         const regex = new RegExp(/[1-9]([0-9]*)/);
-        if (!regex.test(value)) {
+        if (!regex.test(input)) {
             return;
         }
-        const parsed = Number(value);
+        const parsed = Number(input);
 
         if (!Number.isSafeInteger(parsed)) {
             return;
@@ -103,9 +101,7 @@ function FilterForm() {
         });
     }, []);
 
-    const handleForksOrderChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-        const value = event.target.value;
-        
+    const handleForksOrderChange = useCallback((value: string) => {        
         //TODO: add validation
         if (value != "stargazers" && value != "watchers" &&
             value != "last commit" && value != "author" && value != "date") {
@@ -120,9 +116,7 @@ function FilterForm() {
         });
     }, []);
 
-    const handleForksOrderAscDescChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-        const value = event.target.value;
-        
+    const handleForksOrderAscDescChange = useCallback((value: string) => {        
         //TODO: add validation
         if (value != "ascending" && value != "descending") {
             return;
@@ -136,20 +130,20 @@ function FilterForm() {
         });
     }, []);
 
-    const handleCommitsDateRangeFromChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value);
+    const handleCommitsDateRangeFromChange = useCallback((input: string) => {
+        console.log(input);
     }, []);
 
-    const handleCommitsDateRangeUntilChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value);
+    const handleCommitsDateRangeUntilChange = useCallback((input: string) => {
+        console.log(input);
     }, []);
 
-    const handleForksTypeFilterChange = useCallback((selected: string[], event?: ChangeEvent<HTMLInputElement>) => {
+    const handleForksTypeFilterChange = useCallback((selected: string[]) => {
         console.log(selected);
         console.log(event);
     }, []);
 
-    const handleOwnerTypeFilterChange = useCallback((selected: string[], event?: ChangeEvent<HTMLInputElement>) => {
+    const handleOwnerTypeFilterChange = useCallback((selected: string[]) => {
         console.log(selected);
         console.log(event);
     }, []);

@@ -1,8 +1,7 @@
 import { FormControl, Select } from "@primer/react";
-import { ChangeEvent } from "react";
 
 interface ForksQueryOrderAscDescInputProps {
-    onChangeHandler: (event: ChangeEvent<HTMLSelectElement>) => void;
+    onChangeHandler: (value: string) => void;
 }
 
 
@@ -11,7 +10,7 @@ function ForksQueryOrderAscDescInput({ onChangeHandler } : ForksQueryOrderAscDes
         <FormControl>
             <FormControl.Label>Retrieval order</FormControl.Label>
             <FormControl.Caption>Order of fork retrieval</FormControl.Caption>
-            <Select onChange={onChangeHandler}>
+            <Select onChange={e => onChangeHandler(e.target.value)}>
                 <Select.Option value="ascending">Ascending</Select.Option>
                 <Select.Option value="descending">Descending</Select.Option>
             </Select>

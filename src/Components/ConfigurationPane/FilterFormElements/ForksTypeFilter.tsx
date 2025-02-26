@@ -1,8 +1,8 @@
 import { CheckboxGroup, FormControl, Checkbox } from "@primer/react";
-import { ChangeEvent } from "react";
+
 
 interface ForksTypeFilterInputProps {
-    onChangeHandler: (selected: string[], event?: ChangeEvent<HTMLInputElement>) => void;
+    onChangeHandler: (selected: string[]) => void;
 }
 
 function ForksTypeFilterInput({ onChangeHandler } : ForksTypeFilterInputProps) {

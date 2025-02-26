@@ -1,8 +1,7 @@
 import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
-import { ChangeEvent } from "react";
 
 interface OwnerTypeFilterInputProps {
-    onChangeHandler: (selected: string[], event?: ChangeEvent<HTMLInputElement>) => void;
+    onChangeHandler: (selected: string[]) => void;
 }
 
 function OwnerTypeFilterInput({ onChangeHandler } : OwnerTypeFilterInputProps) {

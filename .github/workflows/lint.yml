@@ -18,6 +18,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Build Docker image
+      - name: Build Docker image
+        run: docker build -t visfork-ci -f Dockerfile.build .
+
       # Run inside a docker container for consistency
       - name: Run ESLint
         run: docker run --rm visfork-ci npm run lint

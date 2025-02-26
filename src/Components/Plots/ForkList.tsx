@@ -1,6 +1,6 @@
-import { Box, Text, Select } from '@primer/react'
-import { DataTable, Table } from '@primer/react/experimental'
-import { useState } from 'react'
+import { Box, Text, Select } from "@primer/react";
+import { DataTable, Table } from "@primer/react/experimental";
+import { useState } from "react";
 
 // Interface of a fork
 interface Fork {
@@ -17,13 +17,13 @@ interface ForkListProps {
 function ForkList({ forks }: ForkListProps) {
 
     // States to control page size and current page index
-    const [pageSize, setPageSize] = useState(10)
-    const [pageIndex, setPageIndex] = useState(0)
+    const [pageSize, setPageSize] = useState(10);
+    const [pageIndex, setPageIndex] = useState(0);
 
     // Calculate the items to display on the current page
-    const start = pageIndex * pageSize
-    const end = start + pageSize
-    const forksToShow = forks.slice(start, end)
+    const start = pageIndex * pageSize;
+    const end = start + pageSize;
+    const forksToShow = forks.slice(start, end);
 
     return (
         <Table.Container>
@@ -40,8 +40,8 @@ function ForkList({ forks }: ForkListProps) {
                         size="medium"
                         // Set the page size the user chosen value and reset the page index
                         onChange={(e) => {
-                            setPageIndex(0)
-                            setPageSize(Number(e.target.value))
+                            setPageIndex(0);
+                            setPageSize(Number(e.target.value));
                         }}
                         defaultValue={pageSize.toString()}
                     >
@@ -67,13 +67,13 @@ function ForkList({ forks }: ForkListProps) {
                 data={forksToShow}
                 columns={[
                     {
-                        header: 'Name',
-                        field: 'full_name',
+                        header: "Name",
+                        field: "full_name",
                         rowHeader: true,
                     },
                     {
-                        header: 'Description',
-                        field: 'description',
+                        header: "Description",
+                        field: "description",
                         rowHeader: true,
                     },
                 ]}
@@ -87,11 +87,11 @@ function ForkList({ forks }: ForkListProps) {
                 pageSize={pageSize}
                 totalCount={forks.length}
                 onChange={({ pageIndex }) => {
-                    setPageIndex(pageIndex)
+                    setPageIndex(pageIndex);
                 }}
             />
         </Table.Container>
-    )
+    );
 }
 
 export default ForkList;

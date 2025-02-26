@@ -2,7 +2,16 @@ import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
 import { Avatar, Box, Button, Dialog, Header } from "@primer/react";
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useEffect, useState } from "react";
-import { fetchUser, logoutUser, loginUser, GitHubUser } from "../api/api";
+import { logoutUser, loginUser } from "../api/api";
+import { useFetchClient } from "./hooks/useFetchClient"; // Adjust path as needed
+import { BACKEND_URL } from "./Configuration/Configuration";
+
+export interface GitHubUser {
+    login: string; // GitHub username
+    id: number; // GitHub user ID
+    avatarUrl: string; // User's profile picture URL
+    name?: string; // Optional full name of the user
+}
 
 /**
  * AppHeader Component
@@ -11,6 +20,8 @@ import { fetchUser, logoutUser, loginUser, GitHubUser } from "../api/api";
  * display settings (dark mode, colorblind mode), and a side panel for additional user options.
  */
 function AppHeader() {
+    const fetchClient = useFetchClient();
+    
     /** Stores the avatar URL of the logged-in user */
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     
@@ -31,25 +42,26 @@ function AppHeader() {
         setDarkMode((darkMode) => !darkMode);
     }, []);
 
-    /**
+    /** 
      * Fetch user authentication data from the URL and API.
      * If a token is found in the URL parameters, it is stored in session storage.
      * Then, user data is fetched and the avatar URL is updated if available.
      */
     useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const token = queryParams.get("token");
-        if (token) {
-            sessionStorage.setItem("authToken", token); // Store authentication token
-            window.history.replaceState(null, "", window.location.pathname); // Remove token from URL
-        }
-        
-        // Fetch GitHub user data and update avatar URL
-        fetchUser().then((userData: GitHubUser | null) => {
-            if (userData) {
-                setAvatarUrl(userData.avatar_url);
-            }
-        });
+        const token = sessionStorage.getItem("authToken");
+        if (!token) return;
+        fetchClient.POST<GitHubUser>(`${BACKEND_URL}/auth/user`, { accessToken: token })
+            .then((userData) => {
+                if (userData.avatarUrl) {
+                    setAvatarUrl(userData.avatarUrl);
+                } else {
+                    console.error("No avatarUrl found in response.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching user data:", error);
+                sessionStorage.removeItem("authToken");
+            });
     }, []);
     
     /**
@@ -100,12 +112,9 @@ function AppHeader() {
                     <ActionList 
                         items={[
                             {text: "Colorblind mode", onClick: onToggleColorblindMode, selected: colorblindMode},
-
                             {text: darkMode ? "Light mode" : "Dark mode", onClick: onToggleDarkMode,
                                 leadingVisual: darkMode ? SunIcon : MoonIcon},
-                            
                             ActionList.Divider,
-                            
                             /** Logout option: clears user data and session storage */
                             {text: "Sign out", onClick: handleLogout, variant: "danger"}, 
                         ]}

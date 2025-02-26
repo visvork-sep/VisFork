@@ -40,26 +40,22 @@ app.use(session({
 /**
  * Step 1: Redirect users to GitHub login
  * Endpoint: GET /auth/github
- * Redirects users to GitHub's OAuth login page.
+ * Redirects users to GitHub OAuth login page.
  */
 app.get("/auth/github", (req, res) => {
-    // Construct GitHub OAuth login URL with required parameters
-    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${BACKEND_URL}/auth/github/callback&scope=read:user`;
-    res.redirect(redirectUri); // Redirect user to GitHub login page
+    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${FRONTEND_URL}/auth/github/callback&scope=read:user`;
+    res.redirect(redirectUri);
 });
 
 /**
- * Step 2: Handle GitHub callback and exchange code for an access token
- * Endpoint: GET /auth/github/callback
- * Handles the callback from GitHub, exchanges authorization code for access token,
- * and redirects the user to the frontend with the token.
+ * Step 2: Exchange code for access token (called by frontend)
+ * Endpoint: POST /auth/github/token
+ * Accepts the authorization code from the frontend, exchanges it for an access token,
+ * and returns the token to the frontend for further authentication.
  */
-app.get("/auth/github/callback", async (req, res) => {
-    const { code } = req.query; // Extract authorization code from URL
-
-    // If no code is provided, return an error response
+app.post("/auth/github/token", async (req, res) => {
+    const { code } = req.body;
     if (!code) {
-        console.error("❌ GitHub OAuth Error: No code received");
         return res.status(400).json({ error: "No code provided" });
     }
 
@@ -74,67 +70,58 @@ app.get("/auth/github/callback", async (req, res) => {
             { headers: { Accept: "application/json" } }
         );
 
-        // Extract the access token from the response
         const accessToken = tokenResponse.data.access_token;
-        
-        // If no access token is received, return an error
+
         if (!accessToken) {
-            console.error("❌ GitHub OAuth Error: No access token received!", tokenResponse.data);
             return res.status(500).json({ error: "Failed to get access token from GitHub" });
         }
-        
-        // Destroy session immediately after login to avoid session persistence
-        req.session.destroy(err => {
-            if (err) {
-                console.error("Error destroying session:", err);
-            }
-        });
-        
-        // Redirect user to frontend with access token as a query parameter
-        res.redirect(`${FRONTEND_URL}/?token=${accessToken}`);
-        
+
+        res.json({ accessToken }); // Return access token to frontend
     } catch (error) {
-        console.error("❌ GitHub OAuth Error:", error.response?.data || error);
+        console.error("GitHub OAuth Error:", error.response?.data || error);
         res.status(500).json({ error: "Failed to authenticate with GitHub" });
     }
 });
 
 /**
- * Step 3: Fetch logged-in user data from GitHub
- * Endpoint: GET /auth/user
- * Retrieves user information from GitHub API using the provided token.
+ * Step 3: Fetch GitHub user data using access token
+ * Endpoint: POST /auth/user
+ * Retrieves user details from GitHub API using the provided access token.
  */
-app.get("/auth/user", async (req, res) => {
-    const authHeader = req.headers.authorization; // Extract authorization header
-    if (!authHeader) {
-        return res.status(401).json({ error: "Not authenticated" });
+app.post("/auth/user", async (req, res) => {
+    const { accessToken } = req.body;
+
+    if (!accessToken) {
+        return res.status(400).json({ error: "No access token provided" });
     }
-    
-    const token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
+
     try {
-        // Fetch user details from GitHub API
-        const userResponse = await axios.get("https://api.github.com/user", {
-            headers: { Authorization: `Bearer ${token}` },
+        // Query GitHub API for user details
+        const githubResponse = await axios.get("https://api.github.com/user", {
+            headers: { Authorization: `Bearer ${accessToken}` },
         });
-        
-        // Return user's avatar URL and token
-        res.json({
-            avatarUrl: userResponse.data.avatar_url,
-            token: token // Optionally send back the token
-        });
+        const { login, id, avatar_url, name } = githubResponse.data;
+
+        res.json({ login, id, avatarUrl: avatar_url, name }); // Return user data
     } catch (error) {
-        console.error("Error fetching user data:", error);
-        res.status(401).json({ error: "Invalid token" });
+        console.error("GitHub API error:", error.response?.data || error);
+        res.status(500).json({ error: "Failed to fetch user data from GitHub" });
     }
 });
 
 /**
- * Step 4: Logout and destroy session
+ * Step 4: Logout endpoint
  * Endpoint: POST /auth/logout
- * Logs the user out and destroys the session.
+ * Destroys the user session and logs them out.
  */
-app.post("/auth/logout", (req, res) => {    
-    res.json({ message: "Logged out" });
+app.post("/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Logout Error:", err);
+            return res.status(500).json({ error: "Failed to log out" });
+        }
+        res.json({ message: "Logged out successfully" });
+    });
 });
 
 // Start the server and listen on port 5000

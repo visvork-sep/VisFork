@@ -9,32 +9,6 @@ export interface GitHubUser {
 }
 
 /**
- * Fetches the authenticated user's GitHub profile data from the GitHub API.
- * @returns {Promise<GitHubUser | null>} - The GitHub user data or null if authentication fails.
- */
-export async function fetchUser() {
-    const token = sessionStorage.getItem("authToken");
-    if (!token) {
-        return null;
-    }
-    try {
-        const response = await fetch("https://api.github.com/user", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (!response.ok) {
-            throw new Error("Failed to fetch GitHub user data");
-        }
-        const data: GitHubUser = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching GitHub user profile", error);
-        return null;
-    }
-}
-
-/**
  * Logs out the user by making a request to the backend logout endpoint.
  * @returns {Promise<Response>} - A Promise resolving to the response of the fetch request.
  */

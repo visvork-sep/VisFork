@@ -51,6 +51,7 @@
     "openapi-fetch": "^0.13.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.2.0",
     "styled-components": "^5.3.7"
   }
 }

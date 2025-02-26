@@ -97,3 +97,4 @@ function useFilterForm() {
 export {
     useFilterForm
 };
+export type { FormState };

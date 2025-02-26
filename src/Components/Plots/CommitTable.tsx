@@ -48,7 +48,7 @@ function CommitTable() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     aria-label="Search commit messages"
-                    style={{width: "300px"}}
+                    sx={{width: "30%"}}
                 />
             </Box>
 
@@ -75,7 +75,7 @@ function CommitTable() {
                                         href={"https://github.com/${row.repo}"} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        style={{
+                                        sx={{
                                             color: linkColor,
                                             textDecoration: "none",
                                         }}
@@ -96,7 +96,7 @@ function CommitTable() {
                                         href={"https://github.com/${row.author}"} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        style={{
+                                        sx={{
                                             color: linkColor,
                                             textDecoration: "none",
                                         }}
@@ -135,7 +135,7 @@ function CommitTable() {
                                             href={row.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            style={{
+                                            sx={{
                                                 color: linkColor,
                                                 textDecoration: "none",
                                             }}

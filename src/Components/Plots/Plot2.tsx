@@ -47,12 +47,15 @@ const CommitTimeline: React.FC<DagProps> = ({ data }) => {
             date: d.date,
         }));
 
-        const dag = d3dag.dagStratify()(dagData);
+        const builder = d3dag.graphStratify();
+        const dag = builder(dagData);
         
         // TO-DO: fix layout, see helper functions in the d3-dag notebook
-        const width = 1500; 
-        const height = 400; 
-        const layout = d3dag.sugiyama().size([height, width]); 
+        const width = 100; 
+        const height = 100; 
+        const layout = d3dag.sugiyama().tweaks([
+            d3dag.tweakSize({ width: width, height: height})
+        ]);
         
         layout(dag);
 
@@ -62,6 +65,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data }) => {
 
         // color scale for each repository
         const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+        const curveSize = 15;
 
         // create edges 
         svg.append("g")
@@ -73,15 +77,37 @@ const CommitTimeline: React.FC<DagProps> = ({ data }) => {
             .attr("stroke", "#999")
             .attr("stroke-width", 2)
             .attr("d", (d) => {
-                const M = `M${d.source.y},${d.source.x}`; 
-                const L = `L${d.target.y},${d.target.x}`; 
-                return [M, L].join(" ");
+                // Drawing the edges. Makes curves at branches and merges.
+                if (d.source.x < d.target.x) {
+                    return `
+                        M${d.source.y},${d.source.x}
+                        L${d.source.y},${d.target.x - curveSize}
+                        C${d.source.y},${d.target.x}
+                        ${d.source.y},${d.target.x}
+                        ${d.source.y + curveSize},${d.target.x}
+                        L${d.target.y},${d.target.x}
+                    `;
+                } else if (d.source.x === d.target.x) {
+                    return `
+                        M${d.source.y},${d.source.x} 
+                        L${d.target.y},${d.target.x} 
+                    `;
+                } else {
+                    return `
+                        M${d.source.y},${d.source.x}
+                        L${d.target.y - curveSize},${d.source.x}
+                        C${d.target.y},${d.source.x}
+                        ${d.target.y},${d.source.x}
+                        ${d.target.y},${d.source.x - curveSize}
+                        L${d.target.y},${d.target.x}
+                    `;
+                }
             });
 
         // create nodes
         svg.append("g")
             .selectAll("circle")
-            .data(dag.descendants())
+            .data(dag.nodes())
             .enter()
             .append("circle")
             .attr("cx", (d) => d.y ?? 0) // def value 0 to avoid eslint complaining

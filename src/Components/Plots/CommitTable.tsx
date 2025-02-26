@@ -1,7 +1,7 @@
-import {DataTable, Table} from '@primer/react/experimental';
-import { Box, Link, TextInput, useTheme } from '@primer/react';
-import commitData from './commit_data_example.json';
-import { useState } from 'react';
+import {DataTable, Table} from "@primer/react/experimental";
+import { Box, Link, TextInput, useTheme } from "@primer/react";
+import commitData from "./commit_data_example.json";
+import { useState } from "react";
 
 interface CommitInfo {
   repo: string;
@@ -25,7 +25,7 @@ function CommitTable() {
     const {colorMode} = useTheme();
 
     // To track text input for filtering
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState("");
 
     // Load commit data from JSON file
     const data: CommitInfo[] = commitData;
@@ -36,8 +36,8 @@ function CommitTable() {
     );
 
     // Determine hyperlink color based on color mode
-    const isDarkMode = colorMode === 'dark' || colorMode === 'night';
-    const linkColor = isDarkMode ? 'white' : 'black';
+    const isDarkMode = colorMode === "dark" || colorMode === "night";
+    const linkColor = isDarkMode ? "white" : "black";
 
     return (
         <Box>
@@ -48,14 +48,14 @@ function CommitTable() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     aria-label="Search commit messages"
-                    style={{width: '300px'}}
+                    style={{width: "300px"}}
                 />
             </Box>
 
             <Box
                 sx={{
-                    maxHeight: '510px',
-                    overflowY: 'auto',        
+                    maxHeight: "510px",
+                    overflowY: "auto",        
                 }}>
             
                 <Table.Container>
@@ -66,18 +66,18 @@ function CommitTable() {
                         // Define how each column will be displayed
                         columns={[
                             {
-                                header: 'Owner/Repo',
-                                field: 'repo',
+                                header: "Owner/Repo",
+                                field: "repo",
                                 rowHeader: true,
-                                width: 'auto',
+                                width: "auto",
                                 renderCell: row => (
                                     <Link
-                                        href={`https://github.com/${row.repo}`} 
+                                        href={"https://github.com/${row.repo}"} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         style={{
                                             color: linkColor,
-                                            textDecoration: 'none',
+                                            textDecoration: "none",
                                         }}
                                     >
                                         {row.repo}
@@ -85,20 +85,20 @@ function CommitTable() {
                                 )
                             },
                             {
-                                header: 'Author',
-                                field: 'author',
+                                header: "Author",
+                                field: "author",
                                 rowHeader: true,
-                                width: 'auto',
+                                width: "auto",
                                 // Note: Doesn't work perfectly rn, since author's name can differ from the username, 
                                 // and url is based on username which we don't have
                                 renderCell: row => (
                                     <Link
-                                        href={`https://github.com/${row.author}`} 
+                                        href={"https://github.com/${row.author}"} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         style={{
                                             color: linkColor,
-                                            textDecoration: 'none',
+                                            textDecoration: "none",
                                         }}
                                     >
                                         {row.author}
@@ -106,29 +106,29 @@ function CommitTable() {
                                 )
                             },
                             {
-                                header: 'Commit Date',
-                                field: 'date',
+                                header: "Commit Date",
+                                field: "date",
                                 rowHeader: true,
-                                width: 'auto',
+                                width: "auto",
                             },
                             {
-                                header: 'Commit Message',
-                                field: 'message',
+                                header: "Commit Message",
+                                field: "message",
                                 rowHeader: true,
-                                width: 'auto',
+                                width: "auto",
                             },
                             {
-                                header: 'URL',
-                                field: 'url',
+                                header: "URL",
+                                field: "url",
                                 rowHeader: true,
-                                width: 'auto',
+                                width: "auto" ,
                                 renderCell: row => (
                                     <Box
                                         sx={{
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-all',
-                                            overflowWrap: 'break-word',
-                                            minWidth: '100px'
+                                            whiteSpace: "normal",
+                                            wordBreak: "break-all",
+                                            overflowWrap: "break-word",
+                                            minWidth: "100px"
                                         }}
                                     >
                                         <Link
@@ -137,7 +137,7 @@ function CommitTable() {
                                             rel="noopener noreferrer"
                                             style={{
                                                 color: linkColor,
-                                                textDecoration: 'none',
+                                                textDecoration: "none",
                                             }}
                                         >
                                             {row.url}

@@ -36,8 +36,9 @@ interface FormState {
     recentlyUpdatedMonths: number,
 };
 
+// Change to another way to set initial values
 const initialForm : FormState = {
-    repositoryOwner: "",
+    repositoryOwner: "", 
     repositoryName: "",
     forksCount: 0,
     forksOrder: "stargazers",

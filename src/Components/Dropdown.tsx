@@ -8,8 +8,8 @@ interface DropdownProps {
 
 
 
-function Dropdown({children, summaryText} : PropsWithChildren<DropdownProps>) {
-    return(
+function Dropdown({ children, summaryText }: PropsWithChildren<DropdownProps>) {
+    return (
         <Details sx={{
             "> summary::-webkit-details-marker": {
                 display: "revert"

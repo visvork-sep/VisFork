@@ -1,4 +1,4 @@
-import {   Box, Details, Spinner, Stack } from "@primer/react";
+import { Stack } from "@primer/react";
 
 import ForkList from "@Components/Plots/ForkList";
 import { Dropdown } from "@Components/Dropdown";
@@ -12,26 +12,26 @@ function ApplicationBody() {
             <Stack.Item key={plot}>
                 <Dropdown summaryText="Fork List">
                     <ForkList forks={[
-                            {
-                                id: 0,
-                                full_name: "name",
-                                description: "description"
-                            },
-                            {
-                                id: 1,
-                                full_name: "name2",
-                                description: "description 2"
-                            }
-                        ]}/>
+                        {
+                            id: 0,
+                            full_name: "name",
+                            description: "description"
+                        },
+                        {
+                            id: 1,
+                            full_name: "name2",
+                            description: "description 2"
+                        }
+                    ]} />
                 </Dropdown>
             </Stack.Item>
         );
     });
-  
-    return(
-    <Stack>
-        {children}
-    </Stack>
+
+    return (
+        <Stack>
+            {children}
+        </Stack>
     );
 }
 

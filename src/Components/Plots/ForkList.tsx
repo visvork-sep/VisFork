@@ -15,43 +15,6 @@ interface ForkListProps {
 }
 
 function ForkList({ forks }: ForkListProps) {
-    // Dummy data
-    /* 
-    forks = [{
-    //     "id": 23352114,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "Instant  for React",
-    // }, {
-    //     "id": 1231232,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "Instant TapEvents  React",
-    // }, {
-    //     "id": 323232,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "Instant",
-    // }, {
-    //     "id": 454545,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "In TapEvents for React",
-    // }, {
-    //     "id": 7865645,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "Instaggt",
-    // }, {
-    //     "id": 34534536,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "34343434343 React",
-    // }, {
-    //     "id": 344533435,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "I----------ct",
-    // }, {
-    //     "id": 554545453,
-    //     "full_name": "zilverline/react-tap-event-plugin",
-    //     "description": "In-act",
-    // },
-     ]
-    */
 
     // States to control page size and current page index
     const [pageSize, setPageSize] = useState(10)

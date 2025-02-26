@@ -1,6 +1,6 @@
 import { Box, Button, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import {RepositoryInput, RepositoryInputValidation} 
     from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
@@ -18,6 +18,7 @@ import { OwnerTypeFilterInput }
     from "@Components/ConfigurationPane/FilterFormElements/OwnertypeFilterInput";
 import { CommitsDateRangeUntilInputValidation, CommitsDateRangeUntilInput } 
     from "./FilterFormElements/CommitsDateRangeUntilInput";
+import { useFilterForm } from "../../Hooks/useFilterForm";
 
 // TODO: extract form logic to some other file
 interface FormState {
@@ -63,96 +64,18 @@ function FilterForm() {
     const [commitsDateRangeUntilInputValidation, setCommitsDateRangeUntilInputValidation] 
         = useState<CommitsDateRangeUntilInputValidation>();
 
-    const [form, setForm] = useState<FormState>(initialForm);
-
-
-    const handleRepositoryChange = useCallback((input: string) => {
-
-        // maybe seperate
-        const words = input.split("/");
-        if (words.length != 2) {
-            return;
-        }
-
-        setForm((previousForm) => {
-            return {
-                ...previousForm,
-                repositoryOwner: words[0],
-                repositoryName: words[1]
-            };
-        });
-    }, []);
-
-    const handleForksCountChange = useCallback((input: string) => {
-        const regex = new RegExp(/[1-9]([0-9]*)/);
-        if (!regex.test(input)) {
-            return;
-        }
-        const parsed = Number(input);
-
-        if (!Number.isSafeInteger(parsed)) {
-            return;
-        }
-
-        setForm((previousForm) => {
-            return {
-                ...previousForm,
-                forksCount: parsed
-            };
-        });
-    }, []);
-
-    const handleForksOrderChange = useCallback((value: string) => {        
-        //TODO: add validation
-        if (value != "stargazers" && value != "watchers" &&
-            value != "last commit" && value != "author" && value != "date") {
-            return;
-        }
-        
-        setForm((perviousform) => {
-            return {
-                ...perviousform,
-                forksOrder: value
-            };
-        });
-    }, []);
-
-    const handleForksOrderAscDescChange = useCallback((value: string) => {        
-        //TODO: add validation
-        if (value != "ascending" && value != "descending") {
-            return;
-        }
-        
-        setForm((perviousform) => {
-            return {
-                ...perviousform,
-                forksAscDesc: value
-            };
-        });
-    }, []);
-
-    const handleCommitsDateRangeFromChange = useCallback((input: string) => {
-        console.log(input);
-    }, []);
-
-    const handleCommitsDateRangeUntilChange = useCallback((input: string) => {
-        console.log(input);
-    }, []);
-
-    const handleForksTypeFilterChange = useCallback((selected: string[]) => {
-        console.log(selected);
-        console.log(event);
-    }, []);
-
-    const handleOwnerTypeFilterChange = useCallback((selected: string[]) => {
-        console.log(selected);
-        console.log(event);
-    }, []);
-
-    const handleRecentlyUpdatedChange = useCallback((input: string) => {
-        console.log(input);
-    }, []);
-
+    const {
+        form,
+        handleRepositoryChange,
+        handleForksCountChange,
+        handleForksOrderChange,
+        handleForksOrderAscDescChange,
+        handleCommitsDateRangeFromChange,
+        handleCommitsDateRangeUntilChange,
+        handleForksTypeFilterChange,
+        handleOwnerTypeFilterChange,
+        handleRecentlyUpdatedChange
+    } = useFilterForm();
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();  

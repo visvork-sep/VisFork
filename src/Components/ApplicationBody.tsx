@@ -7,10 +7,8 @@ import Barchart from "./Plots/Barchart";
 function ApplicationBody() {
   return (
     <Stack>
-      
-      <Blankslate border>
-        <Barchart rawData={exampleData} />
-      </Blankslate>
+      <Barchart rawData={facebookData} />
+      <Barchart rawData={exampleData} />
     </Stack>
   );
 }

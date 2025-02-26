@@ -21,21 +21,27 @@ interface CommitInfo {
 
 function CommitTable() {
 
+    // Fetch current color mode (light or dark)
     const {colorMode} = useTheme();
 
+    // To track text input for filtering
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Load commit data from JSON file
     const data: CommitInfo[] = commitData;
 
+    // Filter data based on current search term
     const filteredData = data.filter((commit) =>
         commit.message.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Determine hyperlink color based on color mode
     const isDarkMode = colorMode === 'dark' || colorMode === 'night';
     const linkColor = isDarkMode ? 'white' : 'black';
 
     return (
         <Box>
+            {/* Container for search input */}
             <Box mb={2}>
                 <TextInput
                     placeholder="Search by commit message..."
@@ -54,7 +60,10 @@ function CommitTable() {
             
                 <Table.Container>
                     <DataTable
+                        // Table will be populated with filtered data
                         data={filteredData}
+
+                        // Define how each column will be displayed
                         columns={[
                             {
                                 header: 'Owner/Repo',
@@ -80,7 +89,7 @@ function CommitTable() {
                                 field: 'author',
                                 rowHeader: true,
                                 width: 'auto',
-                                // Doesn't work perfectly rn, since author's name can differ from the username, 
+                                // Note: Doesn't work perfectly rn, since author's name can differ from the username, 
                                 // and url is based on username which we don't have
                                 renderCell: row => (
                                     <Link

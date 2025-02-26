@@ -5,9 +5,6 @@ interface DropdownProps {
     summaryText: string;
 }
 
-
-
-
 function Dropdown({ children, summaryText }: PropsWithChildren<DropdownProps>) {
     return (
         <Details sx={{

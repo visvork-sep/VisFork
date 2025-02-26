@@ -145,7 +145,6 @@ function CommitTable() {
                     <DataTable
                         // Table will be populated with filtered data
                         data={filteredData}
-
                         columns={columns}
                     />
                 </Table.Container>

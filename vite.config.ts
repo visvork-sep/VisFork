@@ -15,8 +15,7 @@ export default defineConfig({
         setupFiles: ["./src/vitest.setup.ts"],
         css: true,
         coverage: {
-            reporter: ["text", "html", "json"],
-            reportsDirectory: "coverage"
+            reportsDirectory: "../coverage"
         },
         root: "./src",
         exclude: [

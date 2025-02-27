@@ -111,6 +111,18 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                 }
             });
 
+        const tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("background", "#f4f4f4")
+            .style("padding", "8px")
+            .style("border", "1px solid #ccc")
+            .style("border-radius", "4px")
+            .style("pointer-events", "none")
+            .style("opacity", 0)
+            .style("font", "var(--text-body-shorthand-medium)");
+
         // create nodes
         svg.append("g")
             .selectAll("circle")
@@ -119,8 +131,29 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .append("circle")
             .attr("cx", (d) => d.y ?? 0) // def value 0 to avoid eslint complaining
             .attr("cy", (d) => d.x ?? 0) // swap x and y to make the graph horizontal
-            .attr("r", 3)
-            .attr("fill", (d) => colorScale(d.data.repo));
+            .attr("r", nodeRadius)
+            .attr("fill", (d) => colorScale(d.data.repo))
+            .on("mouseover", (event, d) => {
+                tooltip.transition().duration(200).style("opacity", 0.9);
+                tooltip.html(
+                    `<p><strong>Commit</strong>: ${d.data.id}<p>
+                    <p><strong>Repo</strong>: ${d.data.repo}<p>
+                    <p><strong>Date</strong>: ${d.data.date.toLocaleString()}<p>`
+                )
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY) + "px");
+            })
+            .on("mousemove", (event) => {
+                tooltip.style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY) + "px");
+            })
+            .on("mouseout", () => {
+                tooltip.transition().duration(500).style("opacity", 0);
+            });;
+        
+        return () => {
+            tooltip.remove();
+        };
 
     }, [data]);
 

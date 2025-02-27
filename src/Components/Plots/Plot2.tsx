@@ -136,9 +136,9 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .on("mouseover", (event, d) => {
                 tooltip.transition().duration(200).style("opacity", 0.9);
                 tooltip.html(
-                    `<p><strong>Commit</strong>: ${d.data.id}<p>
-                    <p><strong>Repo</strong>: ${d.data.repo}<p>
-                    <p><strong>Date</strong>: ${d.data.date.toLocaleString()}<p>`
+                    `<strong>Commit</strong>: ${d.data.id}<br>
+                    <strong>Repo</strong>: ${d.data.repo}<br>
+                    <strong>Date</strong>: ${d.data.date.toLocaleString()}`
                 )
                     .style("left", (event.pageX) + "px")
                     .style("top", (event.pageY) + "px");

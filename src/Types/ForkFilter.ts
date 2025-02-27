@@ -10,14 +10,14 @@ export interface ForkFilter {
     updatedInLastMonths?: number;
 }
 
-export type DateRange = {
+export interface DateRange {
     start?: string;
     end?: string
 };
 
 /** Explanation: these criteria are provided by the GitHub API.
  * Any further sorting criteria are defined in {@link SortingCriterionExtra}.
- */ 
+ */
 export type SortingCriterionGithub = "stargazers" | "watchers" | "oldest" | "newest";
 
 export type SortingCriterionExtra = SortingCriterionGithub | "latestCommit" | "authorPopularity";

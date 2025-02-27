@@ -4,7 +4,7 @@ import request from "graphql-request";
 import createClient from "openapi-fetch";
 import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
 
-const API_URL = process.env.API_URL!;
+const API_URL = process.env.API_URL;
 const GRAPHQL_URL = `${API_URL}/graphql`;
 
 const fetchClient = createClient<paths>({ baseUrl: API_URL });

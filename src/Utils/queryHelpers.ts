@@ -1,5 +1,5 @@
-import { SortingCriterionGithub } from "../Filters/Types/filterTypes";
-import { CommitQueryParams, ForkQueryParams } from "../Filters/Types/githubTypes";
+import { SortingCriterionGithub } from "../Types/ForkFilter";
+import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
 import { GetForksQueryVariables, RepositoryOrder, OrderDirection, RepositoryOrderField } from "@generated/graphql";
 
 /**

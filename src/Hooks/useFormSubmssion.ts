@@ -9,7 +9,7 @@ import { RecentlyUpdatedInputValidation }
 import { RepositoryInputValidation } 
     from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
 import { FormState } from "@Hooks/useFilterForm";
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 function useFormSubmission(form: FormState) {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
@@ -21,7 +21,9 @@ function useFormSubmission(form: FormState) {
     const [commitsDateRangeUntilInputValidation, setCommitsDateRangeUntilInputValidation] 
         = useState<CommitsDateRangeUntilInputValidation>(); 
 
-    const onSubmit = useCallback(() => {
+    const onSubmit = useCallback((event: React.FormEvent) => {
+        event.preventDefault();
+        
         console.log(form);
         setRepositoryInputValidation("repositoryNameError");
         setForksCountInputValidation("lessThanMinForksError");

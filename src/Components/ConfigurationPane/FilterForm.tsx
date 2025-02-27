@@ -44,7 +44,7 @@ function FilterForm() {
                 <RepositoryInput validation={repositoryInputValidation} onChangeHandler={handleRepositoryChange} />
             </Stack.Item>
 
-            <Pagehead>Choose your data filters</Pagehead>
+            <Pagehead>Choose main filters</Pagehead>
 
             <Stack.Item>
                 <Stack direction={"horizontal"} wrap="wrap" gap="spacious">

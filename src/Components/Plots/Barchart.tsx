@@ -67,7 +67,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
     // Clear previous content
     svg.selectAll("*").remove();
 
-    // Set 
+    // Set chart size
     const chart = svg
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -106,9 +106,10 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
       .style("opacity", 0)
       .merge(tooltip);
 
-    // Draw background bars
+    
     const barWidth = xScale.bandwidth();
 
+    // Draw background bars and tooltip logic
     chart
       .selectAll(".bg-bar")
       .data(Array.from(frequency))
@@ -120,21 +121,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
       .attr("width", barWidth)
       .attr("height", chartHeight)
       .attr("fill", "lightgray")
-      .attr("opacity", 0.05);
-
-    // Draw frequency bars and tooltip logic
-    chart
-      .selectAll(".bar")
-      .data(Array.from(frequency))
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", (d) => xScale(d3.timeFormat("%b %Y")(d[0])) || 0)
-      .attr("y", (d) => yScale(d[1]))
-      .attr("width", barWidth)
-      .attr("height", (d) => chartHeight - yScale(d[1]))
-      .attr("fill", "steelblue")
-      .on("mouseover", function (event, d) {
+      .attr("opacity", 0.05).on("mouseover", function (event, d) {
         // Show the tooltip
         tooltip.style("opacity", 1);
       })
@@ -153,6 +140,20 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
         // Hide the tooltip
         tooltip.style("opacity", 0);
       });
+
+    // Draw frequency bars
+    chart
+      .selectAll(".bar")
+      .data(Array.from(frequency))
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", (d) => xScale(d3.timeFormat("%b %Y")(d[0])) || 0)
+      .attr("y", (d) => yScale(d[1]))
+      .attr("width", barWidth)
+      .attr("height", (d) => chartHeight - yScale(d[1]))
+      .attr("fill", "steelblue");
+      
 
     // Label x axis
     const tickInterval = Math.max(
@@ -191,6 +192,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
     return () => window.removeEventListener("resize", drawBars);
   }, [drawBars]);
 
+  // TODO: Fix color scheme of background divs
   return (
     <div
       style={{

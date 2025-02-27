@@ -20,6 +20,8 @@ export class ForkFilterService {
 
         for (let fork of forks) {
             fork = this.#applyFilter(fork, filter);
+            // FIXME: needs criteria: only add fork if it passed the filter. 
+            resultForks.push(fork);
         }
 
         return resultForks;
@@ -34,6 +36,7 @@ export class ForkFilterService {
      * @returns the filtered {@link ForkJSON}.
      */
     #applyFilter(fork: ForkJSON, filter: ForkFilter): ForkJSON {
+        // Loops through all properties of ForkJSON that have a value.
         for (const [key, value] of Object.entries(filter)) {
             if (value !== undefined && value !== null) {
                 console.log(key + ": " + value); // placeholder

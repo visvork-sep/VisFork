@@ -1,17 +1,18 @@
-import {   Spinner, Stack } from "@primer/react";
+import { Stack } from "@primer/react";
 
 import { Blankslate } from "@primer/react/experimental";
-
-const plotsData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+import { SankeyChartBuild } from "./Plots/SankeyDiagram";// Ensure this path is correct
+import commitData from "./Plots/commit_data_example.json";// Ensure this path is correct
+const plotsData = [1];
 
 function ApplicationBody() {
     const children = plotsData.map((plot) => {
         return (
             <Stack.Item key={plot}>
                 <Blankslate border>
-                    <Blankslate.Heading>Plot{plot}</Blankslate.Heading>
+                    <Blankslate.Heading>Sankey Diagram</Blankslate.Heading>
                     <Blankslate.Visual>
-                        <Spinner/>
+                        <SankeyChartBuild data={commitData} />
                     </Blankslate.Visual>
                 </Blankslate>
             </Stack.Item>

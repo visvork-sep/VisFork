@@ -12,27 +12,34 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
   // Data processing
   /////
   const frequency = useMemo(() => {
+    // Copy passed data
     const data = JSON.parse(JSON.stringify(rawData)) as DataPoint[];
+
+    // Convert each date to the first day of the month
     data.forEach((d) => {
       d.date = d3.timeMonth(new Date(d.date));
     });
 
+    // Count the frequency of each date
     const freqMap = d3.rollup(
       data,
       (v) => v.length,
       (d) => new Date(d.date)
     );
 
+    // Get daterange
     const minDate = d3.min(data, (d) => new Date(d.date)) as Date;
     const maxDate = d3.max(data, (d) => new Date(d.date)) as Date;
     const allMonths = d3.timeMonths(minDate, maxDate);
 
+    // Fill in missing months with 0 frequency
     allMonths.forEach((d) => {
       if (!freqMap.has(d)) {
         freqMap.set(d, 0);
       }
     });
 
+    // Return map sorted by date
     return new Map(
       Array.from(freqMap).sort((a, b) => d3.ascending(a[0], b[0]))
     );
@@ -51,12 +58,16 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
+    // Set SVG size
     svg
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", `0 0 ${width} ${height}`);
+    
+    // Clear previous content
     svg.selectAll("*").remove();
 
+    // Set 
     const chart = svg
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -65,7 +76,6 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
     const formattedDates = Array.from(frequency.keys()).map((d) =>
       d3.timeFormat("%b %Y")(d)
     );
-
     const xScale = d3
       .scaleBand()
       .domain(formattedDates)
@@ -78,9 +88,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
       .domain([0, d3.max(Array.from(frequency.values())) || 1])
       .range([chartHeight, 0]);
 
-    // ---- CREATE / SELECT TOOLTIP ----
-    // We'll append it to the body. If you prefer to append to a parent container,
-    // you can select that container instead.
+    // Tooltop for hover
     let tooltip = d3
       .select("body")
       .selectAll<HTMLDivElement, unknown>(".tooltip")
@@ -98,7 +106,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
       .style("opacity", 0)
       .merge(tooltip);
 
-    // ---- DRAW BACKGROUND BARS ----
+    // Draw background bars
     const barWidth = xScale.bandwidth();
 
     chart
@@ -114,7 +122,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
       .attr("fill", "lightgray")
       .attr("opacity", 0.05);
 
-    // ---- DRAW FREQUENCY BARS + ADD EVENT LISTENERS ----
+    // Draw frequency bars and tooltip logic
     chart
       .selectAll(".bar")
       .data(Array.from(frequency))
@@ -146,7 +154,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
         tooltip.style("opacity", 0);
       });
 
-    // ---- DRAW X-AXIS ----
+    // Label x axis
     const tickInterval = Math.max(
       1,
       Math.ceil(formattedDates.length / (chartWidth / 80))

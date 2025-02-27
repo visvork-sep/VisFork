@@ -34,10 +34,6 @@ function AppHeader() {
 
     return (
         <>
-            {/* <Header aria-label="nav bar" sx={{
-                backgroundColor: "canvas.subtle",
-                color: "black"
-            }}> */}
             <Stack direction="horizontal" align="center">
                 <Stack.Item>
                     <ImageIcon size={32} />
@@ -58,26 +54,6 @@ function AppHeader() {
 
                 </Stack.Item>
             </Stack>
-            {/* <Header.Item>
-                <ImageIcon size={32} />
-            </Header.Item>
-            <Header.Item full>
-                <span>VisFork</span>
-            </Header.Item>
-
-            <Header.Item aria-label="Open settings dialog">
-                {loggedIn ? (
-                    <Box onClick={onDialogOpen}>
-                        <Avatar src="https://avatars.githubusercontent.com/u/14032476?v=4" size={24} />
-                    </Box>
-
-                ) : (
-                    <Button onClick={onLogin} aria-label="Login button">
-                        Log in
-                    </Button>
-                )}
-            </Header.Item> */}
-            {/* </Header> */}
 
             {isOpen && (
                 <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">

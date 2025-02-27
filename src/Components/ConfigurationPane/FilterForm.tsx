@@ -13,7 +13,7 @@ import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormEl
 import { CommitsDateRangeUntilInput }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
 import { useFilterForm } from "@Hooks/useFilterForm";
-import { useFormSubmission } from "@Hooks/useFormSubmssion";
+import { useFormSubmission } from "@Hooks/useFormSubmission";
 
 function FilterForm() {
     const {

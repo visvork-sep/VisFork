@@ -24,8 +24,8 @@ interface DagProps {
 
 const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
-    const svgWidth = 2000; // These values have been made very big to demonstrate the scrolling
-    const svgHeight = 2000; 
+    // const svgWidth = 2000; // These values have been made very big to demonstrate the scrolling
+    // const svgHeight = 2000; 
 
 
     useEffect(() => {
@@ -54,16 +54,21 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         const builder = d3dag.graphStratify();
         const dag = builder(dagData);
         
+        const nodeRadius = 6;
+
         // TO-DO: fix layout, see helper functions in the d3-dag notebook
-        const layout = d3dag.sugiyama().tweaks([
-            d3dag.tweakSize({ width: svgWidth, height: svgHeight})
-        ]);
+        const nodeSize = [nodeRadius * 2, nodeRadius * 2] as const;
+        const shape = d3dag.tweakShape(nodeSize, d3dag.shapeEllipse);
+        const layout = d3dag.grid()
+            .nodeSize(nodeSize)
+            .gap([1, 1]) // def value placeholder, tweak for larger spacing
+            .tweaks([shape, d3dag.tweakGrid([nodeRadius, nodeRadius])]);
         
-        layout(dag);
+        const{width, height} = layout(dag); 
 
         const svg = d3.select(svgRef.current)
-            .attr("width", svgWidth)
-            .attr("height", svgHeight);
+            .attr("width", height) // note: swapped on purpose 
+            .attr("height", width);
 
         // color scale for each repository
         const colorScale = d3.scaleOrdinal(d3.schemeCategory10);

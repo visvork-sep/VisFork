@@ -1,10 +1,11 @@
 import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
 import { ActionMenu, Avatar, Box, Button, Dialog, Header, useTheme } from "@primer/react";
+//TODO replace this component with a non-deprecated one
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useState } from "react";
 
 function AppHeader() {
-    const {colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme} = useTheme();
+    const { colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
     const [loggedIn, setLoggedIn] = useState(false); // TODO: Implement login
 
@@ -36,7 +37,7 @@ function AppHeader() {
         <>
             <Header aria-label="nav bar">
                 <Header.Item>
-                    <ImageIcon size={32}/>
+                    <ImageIcon size={32} />
                 </Header.Item>
                 <Header.Item full>
                     <span>VisFork</span>
@@ -44,11 +45,11 @@ function AppHeader() {
 
                 <Header.Item aria-label="Open settings dialog">
                     {loggedIn ? (
-                        <Box onClick={onDialogOpen}> 
-                            <Avatar src="https://avatars.githubusercontent.com/u/14032476?v=4" size={24}/> 
+                        <Box onClick={onDialogOpen}>
+                            <Avatar src="https://avatars.githubusercontent.com/u/14032476?v=4" size={24} />
                         </Box>
-                        
-                    ) : ( 
+
+                    ) : (
                         <Button onClick={onLogin} aria-label="Login button">
                             Log in
                         </Button>
@@ -59,21 +60,27 @@ function AppHeader() {
             {isOpen && (
                 <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
                     <ActionMenu>
-                        <ActionList 
+                        <ActionList
                             items={[
-                                {text: "Colorblind mode", onClick: onToggleColorblindMode, 
-                                    selected: currentlyColorblindMode, "aria-label": "Toggle colrblind mode"},
-                                {text: currentlyDarkMode ? "Light mode" :"Dark mode", onClick: onToggleDarkMode,
+                                {
+                                    text: "Colorblind mode", onClick: onToggleColorblindMode,
+                                    selected: currentlyColorblindMode, "aria-label": "Toggle colrblind mode"
+                                },
+                                {
+                                    text: currentlyDarkMode ? "Light mode" : "Dark mode", onClick: onToggleDarkMode,
                                     leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon,
-                                    "aria-label": "Toggle light mode"},
+                                    "aria-label": "Toggle light mode"
+                                },
                                 ActionList.Divider,
-                                {text: "Sign out", onClick: onLogout, variant: "danger",
-                                    "aria-label": "Sign out button"},
+                                {
+                                    text: "Sign out", onClick: onLogout, variant: "danger",
+                                    "aria-label": "Sign out button"
+                                },
                             ]}>
                         </ActionList>
                     </ActionMenu>
-                    
-                    
+
+
                 </Dialog>
             )}
         </>

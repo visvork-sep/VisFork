@@ -1,5 +1,6 @@
 import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
 import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@primer/react";
+//TODO replace this component with a non-deprecated one
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useState } from "react";
 
@@ -77,8 +78,6 @@ function AppHeader() {
                             ]}>
                         </ActionList>
                     </ActionMenu>
-
-
                 </Dialog>
             )}
         </>

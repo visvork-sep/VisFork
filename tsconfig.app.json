@@ -25,6 +25,8 @@
       "paths": {
         "@generated/*": ["./__generated__/*"],
         "@Components/*": ["./src/Components/*"],
+        "@Hooks/*": ["./src/Hooks/*"],
+        "@Utils/*": ["./src/Utils/*"] 
       },
     },
     "include": ["src", "__generated__"],

@@ -18,11 +18,15 @@ export interface RawCommit {
 
 interface DagProps {
   data: RawCommit[];
+  width: number;
+  maxHeight: number;
 }
 
-const CommitTimeline: React.FC<DagProps> = ({ data }) => {
+const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const svgWidth = 2000; // These values have been made very big to demonstrate the scrolling
+    const svgHeight = 2000; 
+
 
     useEffect(() => {
         if (!svgRef.current || !data.length) return;
@@ -51,17 +55,15 @@ const CommitTimeline: React.FC<DagProps> = ({ data }) => {
         const dag = builder(dagData);
         
         // TO-DO: fix layout, see helper functions in the d3-dag notebook
-        const width = 100; 
-        const height = 100; 
         const layout = d3dag.sugiyama().tweaks([
-            d3dag.tweakSize({ width: width, height: height})
+            d3dag.tweakSize({ width: svgWidth, height: svgHeight})
         ]);
         
         layout(dag);
 
         const svg = d3.select(svgRef.current)
-            .attr("width", width)
-            .attr("height", height);
+            .attr("width", svgWidth)
+            .attr("height", svgHeight);
 
         // color scale for each repository
         const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
@@ -118,12 +120,13 @@ const CommitTimeline: React.FC<DagProps> = ({ data }) => {
     }, [data]);
 
     return (
-        <div ref={containerRef} style={{ 
-            overflowX: "auto", 
-            width: "100%", 
-            whiteSpace: "nowrap", 
+        <div style={{ 
+            width: width,
+            maxHeight: maxHeight,
+            overflow: "auto", 
+            whiteSpace: "normal"
         }}>
-            <svg ref={svgRef} width="800" height="400"> {}
+            <svg ref={svgRef}> {}
                 {}
             </svg>
         </div>

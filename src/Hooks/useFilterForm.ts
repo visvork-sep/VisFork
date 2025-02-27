@@ -54,6 +54,7 @@ function useFilterForm() {
         setForm((prev) => ({ ...prev, forksOrder: value }));
     }, []);
 
+    // TODO add better form validation
     const handleForksOrderAscDescChange = useCallback((value: string) => {
         if (value !== "ascending" && value !== "descending") return;
 

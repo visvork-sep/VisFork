@@ -22,8 +22,9 @@ function useFormSubmission(form: FormState) {
         = useState<CommitsDateRangeUntilInputValidation>(); 
 
     const onSubmit = useCallback((event: React.FormEvent) => {
+        // Prevents the page from refreshing on submission
         event.preventDefault();
-        
+
         console.log(form);
         setRepositoryInputValidation("repositoryNameError");
         setForksCountInputValidation("lessThanMinForksError");

@@ -1,15 +1,21 @@
 import AppHeader from "@Components/AppHeader";
-import DataComponents from "@Components/DataComponents";
+import ApplicationBody from "@Components/ApplicationBody";
+import ConfigurationPane from "@Components/ConfigurationPane/ConfigurationPane";
 import { SplitPageLayout } from "@primer/react";
 
 function App() {
     return (
         <SplitPageLayout>
             <SplitPageLayout.Header aria-label="Header">
-                <AppHeader/>
+                <AppHeader />
             </SplitPageLayout.Header>
-    
-            <DataComponents/>
+
+            <SplitPageLayout.Pane resizable aria-label="Configuration Pane">
+                <ConfigurationPane />
+            </SplitPageLayout.Pane >
+            <SplitPageLayout.Content aria-label="Content">
+                <ApplicationBody />
+            </SplitPageLayout.Content>
 
             <SplitPageLayout.Footer aria-label="Footer">
                 <div>Footer</div>

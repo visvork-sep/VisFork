@@ -50,7 +50,7 @@ function FilterForm() {
                 <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
                     <Stack.Item>
                         <ForksCountInput validation={forksCountInputValidation}
-                            onChangeHandler={handleForksCountChange} />
+                            onChangeHandler={handleForksCountChange} label="amount of forks" />
                     </Stack.Item>
 
                     <Stack.Item>

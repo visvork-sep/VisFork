@@ -15,7 +15,8 @@ export default defineConfig({
         setupFiles: ["./src/vitest.setup.ts"],
         css: true,
         coverage: {
-            reportsDirectory: "../coverage"
+            reportsDirectory: "../coverage",
+            exclude: ["main.tsx", "Utils/test-utils.tsx", "Utils/Constants.ts"]
         },
         root: "./src",
         exclude: [

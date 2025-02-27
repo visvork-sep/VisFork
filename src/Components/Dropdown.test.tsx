@@ -1,20 +1,21 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { Dropdown } from "./Dropdown";
 import { describe, expect, it } from "vitest";
 import { act } from "react";
+import { render } from "@Utils/test-utils";
 
-describe("Summary text", () => {
+describe("Dropdown Summary", () => {
     it("should display the summary text provided", () => {
         const summaryText = "summaryText";
 
-        const { getByText } = render(<Dropdown summaryText={summaryText} />);
-        const result = getByText(summaryText).textContent;
+        render(<Dropdown summaryText={summaryText} />);
+        const result = screen.getByText(summaryText).textContent;
 
         expect(result).toEqual(summaryText);
     });
 });
 
-describe("Content", () => {
+describe("Dropdown Content", () => {
     it("should not display content if not clicked", () => {
         const contentText = "contentText";
         const summaryText = "summaryText";
@@ -30,8 +31,8 @@ describe("Content", () => {
     });
 
     it("should display content if clicked", () => {
-        const contentText = "content";
-        const summaryText = "summary";
+        const contentText = "contentText";
+        const summaryText = "summaryText";
         render(
             <Dropdown summaryText={summaryText}>
                 {contentText}

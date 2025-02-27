@@ -1,5 +1,9 @@
 {
   "files": [],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"

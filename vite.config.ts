@@ -5,7 +5,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react(), tsconfigPaths()],
@@ -15,7 +14,10 @@ export default defineConfig({
         environment: "jsdom",
         setupFiles: ["./src/vitest.setup.ts"],
         css: true,
-        reporters: ["verbose"],
+        coverage: {
+            reporter: ["text", "html", "json"],
+            reportsDirectory: "coverage"
+        },
         root: "./src",
         exclude: [
             "**/*.d.ts", // Exclude TypeScript declaration files

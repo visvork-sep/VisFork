@@ -23,7 +23,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "outDir": "dist",
     "paths": {
       "@generated/*": [
         "./__generated__/*"

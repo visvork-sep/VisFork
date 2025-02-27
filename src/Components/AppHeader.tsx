@@ -1,5 +1,5 @@
 import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
-import { ActionMenu, Avatar, Box, Button, Dialog, Header, useTheme } from "@primer/react";
+import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@primer/react";
 //TODO replace this component with a non-deprecated one
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useState } from "react";
@@ -35,27 +35,26 @@ function AppHeader() {
 
     return (
         <>
-            <Header aria-label="nav bar">
-                <Header.Item>
+            <Stack direction="horizontal" align="center">
+                <Stack.Item>
                     <ImageIcon size={32} />
-                </Header.Item>
-                <Header.Item full>
+                </Stack.Item>
+                <Stack.Item grow>
                     <span>VisFork</span>
-                </Header.Item>
-
-                <Header.Item aria-label="Open settings dialog">
+                </Stack.Item>
+                <Stack.Item>
                     {loggedIn ? (
                         <Box onClick={onDialogOpen}>
                             <Avatar src="https://avatars.githubusercontent.com/u/14032476?v=4" size={24} />
                         </Box>
-
                     ) : (
                         <Button onClick={onLogin} aria-label="Login button">
                             Log in
                         </Button>
                     )}
-                </Header.Item>
-            </Header>
+
+                </Stack.Item>
+            </Stack>
 
             {isOpen && (
                 <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
@@ -64,7 +63,7 @@ function AppHeader() {
                             items={[
                                 {
                                     text: "Colorblind mode", onClick: onToggleColorblindMode,
-                                    selected: currentlyColorblindMode, "aria-label": "Toggle colrblind mode"
+                                    selected: currentlyColorblindMode, "aria-label": "Toggle colorblind mode"
                                 },
                                 {
                                     text: currentlyDarkMode ? "Light mode" : "Dark mode", onClick: onToggleDarkMode,
@@ -79,8 +78,6 @@ function AppHeader() {
                             ]}>
                         </ActionList>
                     </ActionMenu>
-
-
                 </Dialog>
             )}
         </>

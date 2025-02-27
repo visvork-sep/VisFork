@@ -1,8 +1,9 @@
 /// For numforks input: Minimum amount of forks to query for
-export const MIN_FORKS = 1;
+export const MIN_QUERIABLE_FORKS = 1;
 /// For numforks input: Maximum amount of forks to query for
-export const MAX_FORKS = 200;
-/// For recent activity filter: Lower bound for recenct activity filtering
-export const MOST_RECENT_UPDATE = 1;
-/// For recent activity filter: Upper bound for recenct activity filtering
-export const LEAST_RECENT_UPDATE = 12;
+export const MAX_QUERIABLE_FORKS = 200;
+/// Lower bound for recent activity filtering (most recent updates)
+export const RECENT_ACTIVITY_MIN_MONTHS = 1; 
+/// Upper bound for recent activity filtering (least recent updates)
+export const RECENT_ACTIVITY_MAX_MONTHS = 12;
+

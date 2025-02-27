@@ -4,17 +4,17 @@ interface OwnerTypeFilterInputProps {
     onChangeHandler: (selected: string[]) => void;
 }
 
-function OwnerTypeFilterInput({ onChangeHandler } : OwnerTypeFilterInputProps) {
+function OwnerTypeFilterInput({ onChangeHandler }: OwnerTypeFilterInputProps) {
     return (
         <CheckboxGroup onChange={onChangeHandler}>
-            <CheckboxGroup.Label>Included Owners</CheckboxGroup.Label>
+            <CheckboxGroup.Label>Included owners</CheckboxGroup.Label>
             <FormControl>
                 <FormControl.Label>User</FormControl.Label>
-                <Checkbox value="user"/>
+                <Checkbox value="user" />
             </FormControl>
             <FormControl>
                 <FormControl.Label>Organization</FormControl.Label>
-                <Checkbox value="organization"/>
+                <Checkbox value="organization" />
             </FormControl>
         </CheckboxGroup>
     );

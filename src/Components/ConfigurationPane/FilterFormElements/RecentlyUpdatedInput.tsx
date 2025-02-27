@@ -1,5 +1,5 @@
 import { FormControl, TextInput } from "@primer/react";
-import { MOST_RECENT_UPDATE, LEAST_RECENT_UPDATE } from "@Utils/Constants";
+import { RECENT_ACTIVITY_MIN_MONTHS, RECENT_ACTIVITY_MAX_MONTHS } from "@Utils/Constants";
 
 type RecentlyUpdatedInputValidation = "outOfInputRange" | "unknownError";
 
@@ -8,23 +8,24 @@ interface RecentlyUpdatedInputProps {
     onChangeHandler: (input: string) => void;
 };
 
-function RecentlyUpdatedInput({ validation, onChangeHandler } : RecentlyUpdatedInputProps) {
+function RecentlyUpdatedInput({ validation, onChangeHandler }: RecentlyUpdatedInputProps) {
     let validationText;
-    
+
     switch (validation) {
         case "outOfInputRange":
-            validationText = `Can only check between ${LEAST_RECENT_UPDATE} and ${MOST_RECENT_UPDATE} months`;
+            validationText = `Can only check between ${RECENT_ACTIVITY_MIN_MONTHS} and ` +
+                `${RECENT_ACTIVITY_MAX_MONTHS} months`;
             break;
         case "unknownError":
             validationText = "Unknown Error in field";
     }
-    
+
     return (
         <FormControl>
-            <FormControl.Label>Recently Updated</FormControl.Label>
-            <FormControl.Caption>Months since latest update (max {LEAST_RECENT_UPDATE})</FormControl.Caption>
-            <TextInput type="number" min={MOST_RECENT_UPDATE} max={LEAST_RECENT_UPDATE} 
-                onChange={(e) => onChangeHandler(e.target.value)}/>
+            <FormControl.Label>Recently updated</FormControl.Label>
+            <FormControl.Caption>Months since last update (max {RECENT_ACTIVITY_MAX_MONTHS})</FormControl.Caption>
+            <TextInput type="number" min={RECENT_ACTIVITY_MIN_MONTHS} max={RECENT_ACTIVITY_MAX_MONTHS}
+                onChange={(e) => onChangeHandler(e.target.value)} />
             {validationText &&
                 <FormControl.Validation variant="error">
                     {validationText}

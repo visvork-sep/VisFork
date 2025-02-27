@@ -1,16 +1,16 @@
 import { Box, Button, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 
-import {RepositoryInput} from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
+import { RepositoryInput } from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
 import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
 import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
-import {CommitsDateRangeFromInput}from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
+import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { ForksQueryOrderAscDescInput } 
+import { ForksQueryOrderAscDescInput }
     from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilter";
 import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnertypeFilterInput";
-import { CommitsDateRangeUntilInput } 
+import { CommitsDateRangeUntilInput }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
 import { useFilterForm } from "@Hooks/useFilterForm";
 import { useFormSubmission } from "@Hooks/useFormSubmssion";
@@ -41,53 +41,53 @@ function FilterForm() {
     return <Box as="form" onSubmit={onSubmit}>
         <Stack direction={"vertical"}>
             <Stack.Item>
-                <RepositoryInput validation={repositoryInputValidation} onChangeHandler={handleRepositoryChange}/> 
+                <RepositoryInput validation={repositoryInputValidation} onChangeHandler={handleRepositoryChange} />
             </Stack.Item>
 
-            <Pagehead>Data retrieval</Pagehead>
+            <Pagehead>Choose your data filters</Pagehead>
 
             <Stack.Item>
                 <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
                     <Stack.Item>
-                        <ForksCountInput validation={forksCountInputValidation} 
-                            onChangeHandler={handleForksCountChange}/>
+                        <ForksCountInput validation={forksCountInputValidation}
+                            onChangeHandler={handleForksCountChange} />
                     </Stack.Item>
 
                     <Stack.Item>
-                        <ForksQueryOrderInput onChangeHandler={handleForksOrderChange}/> 
+                        <ForksQueryOrderInput onChangeHandler={handleForksOrderChange} />
                     </Stack.Item>
 
                     <Stack.Item>
-                        <ForksQueryOrderAscDescInput onChangeHandler={handleForksOrderAscDescChange}/> 
+                        <ForksQueryOrderAscDescInput onChangeHandler={handleForksOrderAscDescChange} />
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitsDateRangeFromInput validation={commitsDateRangeFromInputValidation} 
-                            onChangeHandler={handleCommitsDateRangeFromChange}/>
+                        <CommitsDateRangeFromInput validation={commitsDateRangeFromInputValidation}
+                            onChangeHandler={handleCommitsDateRangeFromChange} />
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitsDateRangeUntilInput validation={commitsDateRangeUntilInputValidation} 
-                            onChangeHandler={handleCommitsDateRangeUntilChange}/>
+                        <CommitsDateRangeUntilInput validation={commitsDateRangeUntilInputValidation}
+                            onChangeHandler={handleCommitsDateRangeUntilChange} />
                     </Stack.Item>
                 </Stack>
             </Stack.Item>
 
-            <Pagehead>Client side filters</Pagehead>
+            <Pagehead>Additional filters</Pagehead>
 
             <Stack.Item>
                 <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
-                        <ForksTypeFilterInput onChangeHandler={handleForksTypeFilterChange}/> 
+                        <ForksTypeFilterInput onChangeHandler={handleForksTypeFilterChange} />
                     </Stack.Item>
 
                     <Stack.Item>
-                        <OwnerTypeFilterInput onChangeHandler={handleOwnerTypeFilterChange}/>
+                        <OwnerTypeFilterInput onChangeHandler={handleOwnerTypeFilterChange} />
                     </Stack.Item>
 
                     <Stack.Item>
-                        <RecentlyUpdatedInput validation={recentlyUpdatedInputValidation} 
-                            onChangeHandler={handleRecentlyUpdatedChange}/>
+                        <RecentlyUpdatedInput validation={recentlyUpdatedInputValidation}
+                            onChangeHandler={handleRecentlyUpdatedChange} />
                     </Stack.Item>
                 </Stack>
             </Stack.Item>

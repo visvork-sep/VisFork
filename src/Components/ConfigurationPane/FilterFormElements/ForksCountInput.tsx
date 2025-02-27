@@ -1,5 +1,5 @@
 import { FormControl, TextInput } from "@primer/react";
-import { MIN_FORKS, MAX_FORKS } from "@Utils/Constants";
+import { MIN_QUERIABLE_FORKS, MAX_QUERIABLE_FORKS } from "@Utils/Constants";
 
 type ForksCountInputValidation = "lessThanMinForksError" | "greaterThanMaxForksError" | "unknownError";
 
@@ -11,12 +11,12 @@ interface ForksCountInputProps {
 function ForksCountInput({ validation, onChangeHandler }: ForksCountInputProps) {
     let validationText: string | undefined;
 
-    switch(validation) {
+    switch (validation) {
         case "lessThanMinForksError":
-            validationText = "Number of forks must be greater than" + {MIN_FORKS};
+            validationText = "Number of forks must be greater than" + { MIN_FORKS: MIN_QUERIABLE_FORKS };
             break;
         case "greaterThanMaxForksError":
-            validationText = "Number of forks msut be less than" + {MAX_FORKS};
+            validationText = "Number of forks must be less than" + { MAX_FORKS: MAX_QUERIABLE_FORKS };
             break;
         case "unknownError":
             validationText = "Unknown error in field";
@@ -26,10 +26,10 @@ function ForksCountInput({ validation, onChangeHandler }: ForksCountInputProps) 
         <FormControl id="forksCount">
             <FormControl.Label>Forks</FormControl.Label>
             <FormControl.Caption>
-                The amount of forks to analyze
+                The number of forks to analyze
             </FormControl.Caption>
-            <TextInput type="number" placeholder="5" min={MIN_FORKS} max={MAX_FORKS} 
-                onChange={e => onChangeHandler(e.target.value)}/>
+            <TextInput type="number" placeholder="5" min={MIN_QUERIABLE_FORKS} max={MAX_QUERIABLE_FORKS}
+                onChange={e => onChangeHandler(e.target.value)} />
             {validationText &&
                 <FormControl.Validation variant="error">
                     {validationText}

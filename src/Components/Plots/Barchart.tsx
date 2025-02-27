@@ -121,7 +121,8 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
       .attr("width", barWidth)
       .attr("height", chartHeight)
       .attr("fill", "lightgray")
-      .attr("opacity", 0.05).on("mouseover", function (event, d) {
+      .attr("opacity", 0.05)
+      .on("mouseover", function () {
         // Show the tooltip
         tooltip.style("opacity", 1);
       })
@@ -141,7 +142,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
         tooltip.style("opacity", 0);
       });
 
-    // Draw frequency bars
+    // Draw frequency bars and tooltip logic
     chart
       .selectAll(".bar")
       .data(Array.from(frequency))
@@ -152,13 +153,32 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
       .attr("y", (d) => yScale(d[1]))
       .attr("width", barWidth)
       .attr("height", (d) => chartHeight - yScale(d[1]))
-      .attr("fill", "steelblue");
+      .attr("fill", "steelblue")
+      .on("mouseover", function () {
+        // Show the tooltip
+        tooltip.style("opacity", 1);
+      })
+      .on("mousemove", function (event, d) {
+        // Format the date as needed
+        const dateStr = d3.timeFormat("%b %Y")(d[0]);
+        const commits = d[1];
+
+        // Position the tooltip near the mouse cursor
+        tooltip
+          .html(`Date: ${dateStr}<br/>Commits: ${commits}`)
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + 10 + "px");
+      })
+      .on("mouseout", function () {
+        // Hide the tooltip
+        tooltip.style("opacity", 0);
+      });
       
 
-    // Label x axis
+    // Label x axis dynamically
     const tickInterval = Math.max(
       1,
-      Math.ceil(formattedDates.length / (chartWidth / 80))
+      Math.ceil(formattedDates.length / (chartWidth / 40)) // Sets number of labels
     );
     const filteredTicks = formattedDates.filter(
       (_, i) => i % tickInterval === 0
@@ -181,6 +201,29 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
 
     // Remove the default axis line
     chart.select(".domain").remove();
+
+    // Create brush
+    const brush = d3.brushX().extent([[0, 0], [chartWidth, chartHeight]]).on("brush", brushed).on("end", brushended);
+    const brushG = chart.append("g").call(brush);
+
+    // 
+    function brushed({ selection }: { selection: [number, number] | null }) {
+      if (selection) {
+        const [x0, x1] = selection;
+        const selectedDates = Array.from(frequency).filter(
+          (d) =>
+            xScale(d3.timeFormat("%b %Y")(d[0])) as number >= x0 &&
+            xScale(d3.timeFormat("%b %Y")(d[0])) as number <= x1
+        );
+        console.log(selectedDates);
+      }
+    }
+  
+    function brushended({ selection }: { selection: [number, number] | null }) {
+      if (!selection) {
+        brushG.call(brush.move, [0, 0]);
+      }
+    }
   }, [frequency]);
 
   /////

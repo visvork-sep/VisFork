@@ -1,3 +1,15 @@
+// Define the filter state structure
+/** See URD Section 3.1.3. "Filtering and Sorting Options". */
+export interface ForkFilter {
+    dateRange: DateRange;
+    sortBy: SortingCriterionExtra;
+    activeForksOnly?: boolean;
+    forkType?: ForkType;
+    // sortByLastCommit?: boolean; -> moved to SortingCriterionExtra "latestCommit"
+    ownerType?: OwnerType;
+    updatedInLastMonths?: number;
+}
+
 export type DateRange = {
     start?: string;
     end?: string
@@ -13,21 +25,3 @@ export type SortingCriterionExtra = SortingCriterionGithub | "latestCommit" | "a
 export type ForkType = "adaptive" | "corrective" | "perfective";
 
 export type OwnerType = "user" | "organization";
-
-
-// Define the filter state structure
-/** See URD Section 3.1.3. "Filtering and Sorting Options". */
-export interface ForkFilters {
-    dateRange: DateRange;
-    sortBy: SortingCriterionExtra;
-    activeForksOnly?: boolean;
-    forkType?: ForkType;
-    // sortByLastCommit?: boolean; -> moved to SortingCriterion "latestCommit"
-    ownerType?: OwnerType;
-    updatedInLastMonths?: number;
-}
-
-/**  */
-export interface CommitFilters {
-    dateRange: DateRange;
-}

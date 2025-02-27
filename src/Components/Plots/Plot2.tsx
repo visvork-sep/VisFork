@@ -26,6 +26,12 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     // const svgWidth = 2000; // These values have been made very big to demonstrate the scrolling
     // const svgHeight = 2000; 
+    
+    const dateRankOperator: d3dag.Rank<Commit, unknown> = (
+        node: d3dag.GraphNode<Commit, unknown>
+    ): number => {
+        return node.data.date.getTime();
+    };
 
 
     useEffect(() => {
@@ -41,7 +47,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         }));
 
         // sort 
-        commits.sort((a, b) => b.date.getTime() - a.date.getTime());
+        commits.sort((a, b) => a.date.getTime() - b.date.getTime());
 
         // convert data for d3-dag
         const dagData = commits.map((d) => ({
@@ -61,8 +67,10 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         const shape = d3dag.tweakShape(nodeSize, d3dag.shapeEllipse);
         const layout = d3dag.grid()
             .nodeSize(nodeSize)
-            .gap([1, 1]) // def value placeholder, tweak for larger spacing
-            .tweaks([shape, d3dag.tweakGrid([nodeRadius, nodeRadius])]);
+            .gap([15, 4]) // def value placeholder, tweak for larger spacing
+            .tweaks([shape, d3dag.tweakGrid([nodeRadius, nodeRadius])])
+            .rank(dateRankOperator)
+            .lane(d3dag.laneGreedy().topDown(true));
         
         const{width, height} = layout(dag); 
 
@@ -71,7 +79,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .attr("height", width);
 
         // color scale for each repository
-        const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+        const colorScale = d3.scaleOrdinal(d3.schemeObservable10);
         const curveSize = 15;
 
         // create edges 

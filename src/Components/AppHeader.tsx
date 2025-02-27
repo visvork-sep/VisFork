@@ -62,7 +62,7 @@ function AppHeader() {
                             items={[
                                 {
                                     text: "Colorblind mode", onClick: onToggleColorblindMode,
-                                    selected: currentlyColorblindMode, "aria-label": "Toggle colrblind mode"
+                                    selected: currentlyColorblindMode, "aria-label": "Toggle colorblind mode"
                                 },
                                 {
                                     text: currentlyDarkMode ? "Light mode" : "Dark mode", onClick: onToggleDarkMode,

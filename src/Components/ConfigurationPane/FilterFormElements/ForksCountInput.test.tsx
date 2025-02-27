@@ -19,7 +19,6 @@ describe("ForksCountInput validation", () => {
         render(<ForksCountInput validation="lessThanMinForksError" onChangeHandler={vi.fn()} label="" />);
 
         const result = screen.queryByText("Number of forks must be greater than", { exact: false });
-        screen.debug();
 
         expect(result).not.toBeNull();
     });

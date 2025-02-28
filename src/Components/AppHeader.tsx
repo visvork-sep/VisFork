@@ -47,9 +47,9 @@ function AppHeader() {
         (
             <Box onClick={onDialogOpen}>
                 {avatarUrl ?
-                    <Avatar src={avatarUrl} />
+                    <Avatar src={avatarUrl} size={32} />
                     :
-                    <SkeletonAvatar />
+                    <SkeletonAvatar size={32} />
                 }
             </Box>
         )

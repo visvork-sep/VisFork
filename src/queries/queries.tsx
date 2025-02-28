@@ -47,7 +47,6 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
     });
 }
 
-
 /**
  * REST API query for fetching commits, based on openapi spec. 
  * .contrib/github-rest-api/api.github.com.2022-11-28.yaml

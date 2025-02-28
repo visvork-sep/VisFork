@@ -4,7 +4,7 @@ import { SplitPageLayout } from "@primer/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import GitHubCallback from "./Components/GitHubCallback"; // Import the new component
 
-function App() {     
+function App() {
     //Sending data to AppHeader below
     return (
         <>
@@ -14,19 +14,19 @@ function App() {
                     <Route path="/" element={
                         <SplitPageLayout>
                             <SplitPageLayout.Header aria-label="Header">
-                                <AppHeader/>      
-                            </SplitPageLayout.Header>  
-                            <DataComponents/>
+                                <AppHeader />
+                            </SplitPageLayout.Header>
+                            <DataComponents />
                             <SplitPageLayout.Footer aria-label="Footer">
                                 <div>Footer</div>
                             </SplitPageLayout.Footer>
                         </SplitPageLayout>
                     } />
-                    
+
                     {/* GitHub OAuth callback handler */}
-                    <Route path="/auth/github/callback" element={<GitHubCallback />} />
+                    <Route path="/github/callback" element={<GitHubCallback />} />
                 </Routes>
-            </Router>              
+            </Router>
         </>
 
     );

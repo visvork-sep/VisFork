@@ -4,9 +4,8 @@ import { Pagehead } from "@primer/react/deprecated";
 
 const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-// set url variables
+    // set url variables
 };
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 function Configuration() {
     return (
@@ -33,9 +32,9 @@ function Configuration() {
                                 <Stack.Item>
                                     <FormControl id="forksCount">
                                         <FormControl.Label>Forks</FormControl.Label>
-                                        <TextInput type="number" placeholder="5" min={1} max={500}/>
+                                        <TextInput type="number" placeholder="5" min={1} max={500} />
                                     </FormControl>
-                                </Stack.Item> 
+                                </Stack.Item>
 
                                 <Stack.Item>
                                     <FormControl id="sortingOrder">
@@ -66,7 +65,7 @@ function Configuration() {
                                         </Select>
                                     </FormControl>
                                 </Stack.Item>
-                
+
                                 <Stack.Item>
                                     <FormControl>
                                         <FormControl.Label>Order</FormControl.Label>
@@ -76,7 +75,7 @@ function Configuration() {
                                         </Select>
                                     </FormControl>
                                 </Stack.Item>
-                
+
                                 <Stack.Item>
                                     <FormControl>
                                         <FormControl.Label>Order</FormControl.Label>
@@ -86,7 +85,7 @@ function Configuration() {
                                         </Select>
                                     </FormControl>
                                 </Stack.Item>
-                
+
                             </Stack>
                         </Stack.Item>
                         <Stack.Item>
@@ -94,7 +93,7 @@ function Configuration() {
                         </Stack.Item>
                     </Stack>
                 </Box>
-            </Stack.Item> 
+            </Stack.Item>
 
 
             <Pagehead>Import/Export</Pagehead>
@@ -112,7 +111,7 @@ function Configuration() {
                     </Stack.Item>
                 </Stack>
 
-            </Stack.Item>             
+            </Stack.Item>
         </Stack>
     );
 }

@@ -1,0 +1,5 @@
+query getAvatarUrl {
+    viewer {
+        avatarUrl
+    }
+}

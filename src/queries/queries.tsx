@@ -1,13 +1,15 @@
 /// TODO: Add middleware for Authorization
 /// TODO: Create factories for parameter creation
 
-import { GetForksDocument, GetForksQueryVariables } from "@generated/graphql";
+import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, GetForksQueryVariables } from "@generated/graphql";
 import { paths } from "@generated/rest-schema";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
+import { useAuth } from "../Utils/AuthProvider";
+const API_URL = import.meta.env.VITE_API_URL;
 
-const API_URL = process.env.API_URL;
+
 const GRAPHQL_URL = API_URL + "/graphql";
 
 /**
@@ -26,6 +28,25 @@ export function useFetchForks(parameters: GetForksQueryVariables) {
         enabled: !!parameters //dependent on variables
     });
 }
+
+/**
+ *  Gets to avatar url
+ * @returns response of request to get avatar
+ */
+export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
+    const { isAuthenticated, getAccessToken } = useAuth();
+    const accessToken = getAccessToken();
+
+    return useQuery({
+        queryKey: ["avatarUrl"],
+        queryFn: async () => {
+            return request(GRAPHQL_URL, GetAvatarUrlDocument, parameters, [["Authorization", "bearer " + accessToken]])
+        },
+        gcTime: 0, // dont store
+        enabled: isAuthenticated
+    });
+}
+
 
 /**
  * REST API query for fetching commits, based on openapi spec. 
@@ -53,7 +74,7 @@ export function useFetchCommits(parameters: paths["/repos/{owner}/{repo}/commits
  */
 export function useFetchCommitsBatch(parametersList: [paths["/repos/{owner}/{repo}/commits"]["get"]["parameters"]]) {
     return useQueries({
-        queries: parametersList 
+        queries: parametersList
             ? parametersList.map((parameters) => {
                 return {
                     queryKey: ["commits", parameters],
@@ -64,3 +85,4 @@ export function useFetchCommitsBatch(parametersList: [paths["/repos/{owner}/{rep
             }) : [],
     });
 }
+

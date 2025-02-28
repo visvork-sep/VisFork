@@ -1,0 +1,12 @@
+.details {
+    >summary::-webkit-details-marker {
+        display: revert;
+    }
+
+    >summary {
+        background-color: var(--bgColor-neutral-muted);
+        padding: 5px;
+        display: revert;
+        list-style: revert;
+    }
+}

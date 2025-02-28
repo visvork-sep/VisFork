@@ -1,5 +1,6 @@
 import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
-import { Avatar, Box, Button, Dialog, Header, useTheme } from "@primer/react";
+import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@primer/react";
+//TODO replace this component with a non-deprecated one
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useState } from "react";
 import { useAuth } from "../Utils/AuthProvider";
@@ -14,25 +15,14 @@ import { SkeletonAvatar } from "@primer/react/experimental";
  */
 function AppHeader() {
     /** Controls the visibility of the settings side panel */
-    const { isAuthenticated, login, logout } = useAuth();
+    const { isAuthenticated, logout } = useAuth();
     const avatarUrl = useAvatarUrl();
 
+    const { colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
+
     const onDialogClose = useCallback(() => setIsOpen(false), []);
     const onDialogOpen = useCallback(() => setIsOpen(true), []);
-
-    /** Colorblind mode toggle state */
-    const [colorblindMode, setColorblindMode] = useState(false); // TODO: Implement colorblind mode functionality
-    const onToggleColorblindMode = useCallback(() => {
-        setColorblindMode((colorblindMode) => !colorblindMode);
-    }, [colorblindMode]);
-
-    /** Dark mode toggle state */
-    const [darkMode, setDarkMode] = useState(false); // TODO: Implement dark mode functionality
-    const onToggleDarkMode = useCallback(() => {
-        setDarkMode((darkMode) => !darkMode);
-    }, []);
-
 
     const handleLogout = useCallback(() => {
         logout();
@@ -58,37 +48,57 @@ function AppHeader() {
             <Button onClick={handleLogin}>Login</Button>
         );
 
+    const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";
+    const onToggleColorblindMode = useCallback(() => {
+        const newDayScheme = currentlyColorblindMode ? "light" : "light_colorblind";
+        const newNightScheme = currentlyColorblindMode ? "dark" : "dark_colorblind";
+        setDayScheme(newDayScheme);
+        setNightScheme(newNightScheme);
+    }, [currentlyColorblindMode, setDayScheme, setNightScheme]);
+
+    const currentlyDarkMode = colorMode === "dark" || colorMode === "night";
+    const onToggleDarkMode = useCallback(() => {
+        const newMode = currentlyDarkMode ? "day" : "dark";
+        setColorMode(newMode);
+    }, [currentlyDarkMode, setColorMode]);
+
     return (
         <>
-            {/* Application header section */}
-            <Header aria-label="nav bar">
-                <Header.Item>
+            <Stack direction="horizontal" align="center">
+                <Stack.Item>
                     <ImageIcon size={32} />
-                </Header.Item>
-                <Header.Item full>
-                    <span>VisFork</span> {/* Application title */}
-                </Header.Item>
-
-                <Header.Item>
+                </Stack.Item>
+                <Stack.Item grow>
+                    <span>VisFork</span>
+                </Stack.Item>
+                <Stack.Item>
                     {loginOrAvatar}
-                </Header.Item>
-            </Header>
+                </Stack.Item>
+            </Stack>
 
             {/* Side panel for user settings, opens when 'isOpen' is true */}
             {isOpen && (
                 <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
-                    <ActionList
-                        items={[
-                            { text: "Colorblind mode", onClick: onToggleColorblindMode, selected: colorblindMode },
-                            {
-                                text: darkMode ? "Light mode" : "Dark mode", onClick: onToggleDarkMode,
-                                leadingVisual: darkMode ? SunIcon : MoonIcon
-                            },
-                            ActionList.Divider,
-                            /** Logout option: clears user data and session storage */
-                            { text: "Sign out", onClick: handleLogout, variant: "danger" },
-                        ]}
-                    />
+                    <ActionMenu>
+                        <ActionList
+                            items={[
+                                {
+                                    text: "Colorblind mode", onClick: onToggleColorblindMode,
+                                    selected: currentlyColorblindMode, "aria-label": "Toggle colorblind mode"
+                                },
+                                {
+                                    text: currentlyDarkMode ? "Light mode" : "Dark mode", onClick: onToggleDarkMode,
+                                    leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon,
+                                    "aria-label": "Toggle light mode"
+                                },
+                                ActionList.Divider,
+                                {
+                                    text: "Sign out", onClick: handleLogout, variant: "danger",
+                                    "aria-label": "Sign out button"
+                                },
+                            ]}>
+                        </ActionList>
+                    </ActionMenu>
                 </Dialog>
             )}
         </>

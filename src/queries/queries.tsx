@@ -84,4 +84,3 @@ export function useFetchCommitsBatch(parametersList: [paths["/repos/{owner}/{rep
             }) : [],
     });
 }
-

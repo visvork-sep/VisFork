@@ -4,8 +4,9 @@ import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@prime
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useState } from "react";
 import { useAuth } from "../Utils/AuthProvider";
-import { redirectLogin, useAvatarUrl } from "../Utils/Auth";
+import { redirectLogin } from "../Utils/Auth";
 import { SkeletonAvatar } from "@primer/react/experimental";
+import { useAvatarUrl } from "@Hooks/useAvatarUrl";
 
 /**
  * AppHeader Component

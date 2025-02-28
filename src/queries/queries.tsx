@@ -7,8 +7,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
 import { useAuth } from "../Utils/AuthProvider";
-const API_URL = import.meta.env.VITE_API_URL;
-
+import { API_URL } from "@Utils/Constants";
 
 const GRAPHQL_URL = API_URL + "/graphql";
 

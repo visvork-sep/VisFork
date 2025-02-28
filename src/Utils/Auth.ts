@@ -2,7 +2,7 @@ import createClient from "openapi-fetch";
 import { useFetchAvatarUrl } from "../queries/queries";
 import { paths } from "@generated/auth-schema";
 import { useQuery } from "@tanstack/react-query";
-const AUTH_URL = import.meta.env.VITE_AUTH_URL;
+import { AUTH_URL } from "@Utils/Constants";
 
 const fetchClient = createClient<paths>({
     baseUrl: AUTH_URL

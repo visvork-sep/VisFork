@@ -2,10 +2,7 @@ import { BACKEND_URL } from "../Components/Configuration/Configuration";
 
 // Define an interface for the GitHub user data.
 export interface GitHubUser {
-    login: string; // GitHub username
-    id: number; // GitHub user ID
     avatar_url: string; // User's profile picture URL
-    name?: string; // Optional full name of the user
 }
 
 /**
@@ -13,14 +10,7 @@ export interface GitHubUser {
  * @returns {Promise<Response>} - A Promise resolving to the response of the fetch request.
  */
 export async function logoutUser() {
-    const token = sessionStorage.getItem("authToken");
-    return fetch(`${BACKEND_URL}/auth/logout`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-        }
-    });
+    sessionStorage.removeItem("authToken"); // Remove the token
 }
 
 /**

@@ -7,10 +7,7 @@ import { useFetchClient } from "./hooks/useFetchClient"; // Adjust path as neede
 import { BACKEND_URL } from "./Configuration/Configuration";
 
 export interface GitHubUser {
-    login: string; // GitHub username
-    id: number; // GitHub user ID
     avatarUrl: string; // User's profile picture URL
-    name?: string; // Optional full name of the user
 }
 
 /**
@@ -23,7 +20,7 @@ function AppHeader() {
     const fetchClient = useFetchClient();
     
     /** Stores the avatar URL of the logged-in user */
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
     
     /** Controls the visibility of the settings side panel */
     const [isOpen, setIsOpen] = useState(false);
@@ -76,11 +73,10 @@ function AppHeader() {
      */
     const handleLogout = () => {
         logoutUser().then(() => {
-            setAvatarUrl(null);
-            sessionStorage.removeItem("authToken"); // Remove stored authentication token
+            setAvatarUrl(undefined);
         });
         setIsOpen(false);
-    };
+    };// Trigger the rest of the application
     
     return (
         <>

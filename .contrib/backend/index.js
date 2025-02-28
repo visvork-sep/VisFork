@@ -109,20 +109,6 @@ app.post("/auth/user", async (req, res) => {
     }
 });
 
-/**
- * Step 4: Logout endpoint
- * Endpoint: POST /auth/logout
- * Destroys the user session and logs them out.
- */
-app.post("/auth/logout", (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error("Logout Error:", err);
-            return res.status(500).json({ error: "Failed to log out" });
-        }
-        res.json({ message: "Logged out successfully" });
-    });
-});
 
 // Start the server and listen on port 5000
 app.listen(5000, () => {

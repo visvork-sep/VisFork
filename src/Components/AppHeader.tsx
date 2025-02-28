@@ -3,8 +3,8 @@ import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@prime
 //TODO replace this component with a non-deprecated one
 import { ActionList } from "@primer/react/deprecated";
 import { useCallback, useState } from "react";
-import { useAuth } from "../Utils/AuthProvider";
-import { redirectLogin } from "../Utils/Auth";
+import { useAuth } from "@Providers/AuthProvider";
+import { redirectLogin } from "@Utils/Auth";
 import { SkeletonAvatar } from "@primer/react/experimental";
 import { useAvatarUrl } from "@Hooks/useAvatarUrl";
 

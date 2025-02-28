@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Spinner } from "@primer/react";
-import { useAuth } from "../Utils/AuthProvider";
-import { useExchangeAccessToken } from "../Utils/Auth";
+import { useAuth } from "@Providers/AuthProvider";
+import { useExchangeAccessToken } from "@Utils/Auth";
 import { useEffect } from "react";
 
 

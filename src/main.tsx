@@ -2,7 +2,7 @@ import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { AuthProvider } from "./Utils/AuthProvider.tsx";
+import { AuthProvider } from "@Providers/AuthProvider.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 

@@ -1,5 +1,4 @@
 import createClient from "openapi-fetch";
-import { useFetchAvatarUrl } from "../queries/queries";
 import { paths } from "@generated/auth-schema";
 import { useQuery } from "@tanstack/react-query";
 import { AUTH_URL } from "@Utils/Constants";
@@ -30,4 +29,3 @@ export {
     redirectLogin,
     useExchangeAccessToken
 };
-

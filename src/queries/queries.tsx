@@ -6,7 +6,7 @@ import { paths } from "@generated/rest-schema";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-import { useAuth } from "../Utils/AuthProvider";
+import { useAuth } from "@Providers/AuthProvider";
 import { API_URL } from "@Utils/Constants";
 
 const GRAPHQL_URL = API_URL + "/graphql";

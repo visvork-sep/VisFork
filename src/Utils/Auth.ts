@@ -15,8 +15,9 @@ function useAvatarUrl() {
 }
 
 function redirectLogin() {
-    console.log(AUTH_URL);
-    window.location.href = AUTH_URL + "/auth/github";
+    setTimeout(() => {
+        window.location.href = AUTH_URL + "/auth/github";
+    }, 250);
 }
 
 export {

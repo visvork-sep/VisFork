@@ -24,7 +24,7 @@ const app = express();
 
 // Enable Cross-Origin Resource Sharing (CORS) to allow requests from the frontend
 app.use(cors({
-    origin: "*", // Allow requests from the frontend URL
+    origin: FRONTEND_URL,// Allow requests from the frontend URL
     methods: ["GET", "POST"], // Allow only GET and POST methods
     credentials: true, // Enable sending cookies with requests
     allowedHeaders: ["Content-Type", "Authorization"] // Allow these headers in requests
@@ -45,13 +45,13 @@ app.get("/auth/github", (req, res) => {
 });
 
 /**
- * Step 2: Exchange code for access token (called by frontend)
+ * Step 2: Exchange code for access tok en (called by frontend)
  * Endpoint: GET /auth/github/token
  * Accepts the authorization code from the frontend, exchanges it for an access token,
  * and returns the token to the frontend for further authentication.
  */
 app.get("/auth/github/token", async (req, res) => {
-    const { code } = req.accessToken;
+    const { code } = req.query;
     if (!code) {
         return res.status(400).json({ error: "No code provided" });
     }
@@ -81,6 +81,6 @@ app.get("/auth/github/token", async (req, res) => {
 });
 
 // Start the server and listen on port 5000
-app.listen(4000, () => {
-    console.log("Server running on http://localhost:5000");
+app.listen(4000, "0.0.0.0", () => {
+    console.log("Server running on http://localhost:4000");
 });

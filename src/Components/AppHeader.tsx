@@ -36,6 +36,7 @@ function AppHeader() {
 
     const handleLogout = useCallback(() => {
         logout();
+        setIsOpen(false);
     }, []);
 
     const handleLogin = useCallback(() => {

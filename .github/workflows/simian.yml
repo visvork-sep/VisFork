@@ -30,10 +30,15 @@ jobs:
           path: simian-4.0.0.jar
           key: simian-4.0.0
 
-      - name: Download Simian JAR (if not cached)
-        if: steps.cache-simian.outputs.cache-hit != 'true'
+      - name: Setup SSH Key
         run: |
-          curl -L -o simian-4.0.0.jar https://github.com/visvork-sep/visvork-sep/releases/download/v0.1-alpha/simian-4.0.0.jar
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 visfork.win.tue.nl >> ~/.ssh/known_hosts
+
+      - name: Download Simian JAR from VM
+        run: scp -i ~/.ssh/id_ed25519 tue20224374@visfork.win.tue.nl:/var/www/html/files/simian-4.0.0.jar .
 
       - name: Run Simian Analysis
         run: |

@@ -1,8 +1,8 @@
-import AppHeader from "./Components/AppHeader";
+import AppHeader from "@Components/AppHeader";
 import DataComponents from "@Components/DataComponents";
 import { SplitPageLayout } from "@primer/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import GitHubCallback from "./Components/GitHubCallback"; // Import the new component
+import GitHubCallback from "@Components/GitHubCallback"; // Import the new component
 
 function App() {
     //Sending data to AppHeader below

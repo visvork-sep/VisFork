@@ -32,7 +32,7 @@ function AppHeader() {
 
     const handleLogin = useCallback(() => {
         redirectLogin();
-    }, [])
+    }, []);
 
     const loginOrAvatar = isAuthenticated ?
         (

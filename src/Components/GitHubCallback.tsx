@@ -3,7 +3,15 @@ import { Spinner } from "@primer/react";
 import { useAuth } from "@Providers/AuthProvider";
 import { useExchangeAccessToken } from "@Utils/Auth";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { paths } from "@generated/auth-schema";
+import createClient from "openapi-fetch";
+import { AUTH_URL } from "@Utils/Constants";
 
+
+const fetchClient = createClient<paths>({
+    baseUrl: AUTH_URL
+});
 
 /**
  * GitHubCallback Component
@@ -18,22 +26,16 @@ function GitHubCallback() {
     const code = searchParams.get("code"); // Extract GitHub OAuth authorization code
     const { isAuthenticated, login } = useAuth();
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            console.log("already logged in");
-            navigate("/")
-        }
 
-        if (!code) {
-            console.log("incorrect path route back");
-            navigate("/");
-        }
-    }, [isAuthenticated, code, navigate])
-
-    const { isSuccess, isPending, data } = useExchangeAccessToken({
-        query: {
-            code: code!
-        }
+    const { isSuccess, isPending, data } = useQuery({
+        queryKey: ["Login"],
+        queryFn: async () => {
+            return fetchClient.GET("/auth/github/token", {
+                params: { query: { code: code || "" } }
+            });
+        },
+        gcTime: 0,
+        enabled: !!code && !isAuthenticated
     });
 
     if (isPending) {

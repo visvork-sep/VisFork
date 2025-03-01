@@ -1,8 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Spinner } from "@primer/react";
 import { useAuth } from "@Providers/AuthProvider";
-import { useExchangeAccessToken } from "@Utils/Auth";
-import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { paths } from "@generated/auth-schema";
 import createClient from "openapi-fetch";
@@ -26,7 +24,6 @@ function GitHubCallback() {
     const code = searchParams.get("code"); // Extract GitHub OAuth authorization code
     const { isAuthenticated, login } = useAuth();
 
-
     const { isSuccess, isPending, data } = useQuery({
         queryKey: ["Login"],
         queryFn: async () => {
@@ -39,7 +36,7 @@ function GitHubCallback() {
     });
 
     if (isPending) {
-        return <Spinner />
+        return <Spinner />;
     }
 
     if (isSuccess) {

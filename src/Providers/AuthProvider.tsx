@@ -7,20 +7,7 @@ interface AuthContextType {
     getAccessToken: () => string | null;
 }
 
-const defaultContext: AuthContextType = {
-    isAuthenticated: false,
-    login(token) {
-        console.log(token);
-    },
-    logout() {
-        console.log("log out")
-    },
-    getAccessToken() {
-        return null;
-    },
-}
-
-const AuthContext = createContext<AuthContextType>(defaultContext);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 function AuthProvider({ children }: PropsWithChildren) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -53,11 +40,15 @@ function AuthProvider({ children }: PropsWithChildren) {
 };
 
 function useAuth() {
-    return useContext(AuthContext);
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("Context must be used inside provider");
+    }
+    return context;
 };
 
 export {
     AuthProvider,
     useAuth,
-}
+};
 export type { AuthContextType };

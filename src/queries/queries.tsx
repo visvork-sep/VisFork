@@ -1,7 +1,8 @@
 /// TODO: Add middleware for Authorization
 /// TODO: Create factories for parameter creation
 
-import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, GetForksQueryVariables } from "@generated/graphql";
+import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, GetForksQueryVariables }
+    from "@generated/graphql";
 import { paths } from "@generated/rest-schema";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
@@ -39,7 +40,7 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
     return useQuery({
         queryKey: ["avatarUrl"],
         queryFn: async () => {
-            return request(GRAPHQL_URL, GetAvatarUrlDocument, parameters, [["Authorization", "bearer " + accessToken]])
+            return request(GRAPHQL_URL, GetAvatarUrlDocument, parameters, [["Authorization", "bearer " + accessToken]]);
         },
         gcTime: 0, // dont store
         enabled: isAuthenticated

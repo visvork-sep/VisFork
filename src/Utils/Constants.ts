@@ -14,6 +14,6 @@ export const FORKSORDER_OPTIONS = ["stargazers", "watchers", "last commit", "aut
 /// ForksAscDesc options: String values for ascending and descending
 export const FORKSASCDESC = ["ascending", "descending"];
 /// ForkTypes: Options for filtering fork types
-export const FORKTYPES = ["adaptive", "corrective", "perfective"];
+export const FORKTYPES = ["Adaptive", "Corrective", "Perfective"];
 /// OwnerTypes: Options for filtering owner types
-export const OWNERTYPES = ["user", "organization"];
+export const OWNERTYPES = ["User", "Organization"];

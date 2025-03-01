@@ -1,0 +1,37 @@
+name: SonarQube Analysis
+
+on:
+    push:
+      branches:
+        - main
+        - develop
+    pull_request:
+      branches:
+        - main
+        - develop
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H visfork.win.tue.nl >> ~/.ssh/known_hosts
+
+      - name: Run SonarQube Analysis on VM
+        run: |
+          ssh -i ~/.ssh/id_ed25519 tue20224374@visfork.win.tue.nl << 'EOF'
+            export PATH=$PATH:/opt/sonar-scanner/bin
+            sonar-scanner \
+              -Dsonar.host.url="http://localhost:9000" \
+              -Dsonar.token="${{ secrets.SONAR_TOKEN }}" \
+              -Dsonar.projectKey=Visfork \
+              -Dsonar.sources=.
+          EOF

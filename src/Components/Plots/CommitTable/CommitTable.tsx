@@ -1,6 +1,6 @@
 import {Column, DataTable, Table} from "@primer/react/experimental";
 import { Box, Link, TextInput, useTheme } from "@primer/react";
-import commitData from "./commit_data_example.json";
+import commitData from "../commit_data_example.json";
 import { useState } from "react";
 
 interface CommitInfo {

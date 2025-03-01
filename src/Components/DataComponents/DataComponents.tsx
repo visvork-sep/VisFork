@@ -1,7 +1,7 @@
 import { SplitPageLayout } from "@primer/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ConfigurationPane from "@Components/ConfigurationPane/ConfigurationPane";
-import ApplicationBody from "@Components/ApplicationBody";
+import ApplicationBody from "@Components/ApplicationBody/ApplicationBody";
 
 const queryClient = new QueryClient();
 

@@ -1,5 +1,5 @@
-import AppHeader from "@Components/AppHeader";
-import DataComponents from "@Components/DataComponents";
+import AppHeader from "@Components/AppHeader/AppHeader";
+import DataComponents from "@Components/DataComponents/DataComponents";
 import { SplitPageLayout } from "@primer/react";
 
 function App() {

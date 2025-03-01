@@ -1,19 +1,19 @@
 import { Box, Button, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 
-import { RepositoryInput } from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
-import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
-import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
-import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
-import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
+import { RepositoryInput } from "@Components/ConfigurationPane/FilterForm/RepositoryInput/RepositoryInput";
+import { ForksCountInput } from "@Components/ConfigurationPane/FilterForm/ForksCountInput/ForksCountInput";
+import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterForm/RecentlyUpdatedInput/RecentlyUpdatedInput";
+import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterForm/CommitsDateRangeFromInput/CommitsDateRangeFromInput";
+import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterForm/ForksQueryOrderInput/ForksQueryOrderInput";
 import { ForksQueryOrderAscDescInput }
-    from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
-import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilter";
-import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnertypeFilterInput";
+    from "@Components/ConfigurationPane/FilterForm/ForksQueryOrderAscDescInput/ForksQueryOrderAscDescInput";
+import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterForm/ForksTypeFilterInput/ForksTypeFilter";
+import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterForm/OwnerTypeFilterInput/OwnertypeFilterInput";
 import { CommitsDateRangeUntilInput }
-    from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
-import { useFilterForm } from "@Hooks/useFilterForm";
-import { useFormSubmission } from "@Hooks/useFormSubmission";
+    from "@Components/ConfigurationPane/FilterForm/CommitsDateRangeUntilInput/CommitsDateRangeUntilInput";
+import { useFilterForm } from "@Hooks/useFilterForm/useFilterForm";
+import { useFormSubmission } from "@Hooks/useFormSubmission/useFormSubmission";
 
 function FilterForm() {
     const {

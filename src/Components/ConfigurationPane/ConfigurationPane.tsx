@@ -1,7 +1,7 @@
 import { Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
-import FilterForm from "@Components/ConfigurationPane/FilterForm";
-import FileButtons from "@Components/ConfigurationPane/FileButtons";
+import FilterForm from "@Components/ConfigurationPane/FilterForm/FilterForm";
+import FileButtons from "@Components/ConfigurationPane/FileButtons/FileButtons";
 
 function ConfigurationPane() {
     return (

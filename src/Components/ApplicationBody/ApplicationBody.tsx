@@ -1,7 +1,7 @@
 import { Stack } from "@primer/react";
 
-import ForkList from "@Components/Plots/ForkList";
-import { Dropdown } from "@Components/Dropdown";
+import ForkList from "@Components/Plots/ForkList/ForkList";
+import { Dropdown } from "@Components/Dropdown/Dropdown";
 
 const plotsData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 

@@ -1,3 +1,4 @@
+import { FORKSASCDESC, FORKSCOUNT_INITAL_VALUE, FORKSORDER_OPTIONS, FORKTYPES, OWNERTYPES } from "@Utils/Constants";
 import { useState, useCallback } from "react";
 
 interface FormState {
@@ -16,11 +17,11 @@ interface FormState {
 const initialForm: FormState = {
     repositoryOwner: "",
     repositoryName: "",
-    forksCount: 0,
-    forksOrder: "stargazers",
-    forksAscDesc: "ascending",
-    forksTypeFilter: [],
-    ownerTypeFilter: [],
+    forksCount: FORKSCOUNT_INITAL_VALUE,
+    forksOrder: FORKSORDER_OPTIONS[0],
+    forksAscDesc: FORKSASCDESC[0],
+    forksTypeFilter: FORKTYPES,
+    ownerTypeFilter: OWNERTYPES,
 };
 
 function useFilterForm() {
@@ -28,7 +29,12 @@ function useFilterForm() {
 
     const handleRepositoryChange = useCallback((input: string) => {
         const words = input.split("/");
-        if (words.length !== 2) return;
+        if (words.length !== 2) {
+            setForm((previousForm) => ({
+                ...previousForm,
+                repositoryOwner: words[0]
+            }));
+        }
 
         setForm((prev) => ({
             ...prev,
@@ -48,8 +54,7 @@ function useFilterForm() {
     }, []);
 
     const handleForksOrderChange = useCallback((value: string) => {
-        const validOrders = ["stargazers", "watchers", "last commit", "author", "date"];
-        if (!validOrders.includes(value)) return;
+        if (!FORKSORDER_OPTIONS.includes(value)) return;
 
         setForm((prev) => ({ ...prev, forksOrder: value }));
     }, []);

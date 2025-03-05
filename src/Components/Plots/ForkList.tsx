@@ -3,7 +3,7 @@ import { DataTable, Table } from "@primer/react/experimental";
 import { useState } from "react";
 
 // Interface of a fork
-interface Fork {
+export interface Fork {
     id: number,
     full_name: string, // Name in the Owner/Repository format
     description: string | null,

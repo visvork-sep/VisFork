@@ -10,7 +10,7 @@ export const RECENT_ACTIVITY_MAX_MONTHS = 12;
 /// Initial Value in Configuration pane ForksCount
 export const FORKSCOUNT_INITAL_VALUE = 5;
 /// ForksOrder options: ways to order forks
-export const FORKSORDER_OPTIONS = ["stargazers", "watchers", "last commit", "author", "date"];
+export const FORKSORDER_OPTIONS = ["Stargazers", "Watchers", "Recent commits", "Author stars", "Date of creation"];
 /// ForksAscDesc options: String values for ascending and descending
 export const FORKSASCDESC = ["ascending", "descending"];
 /// ForkTypes: Options for filtering fork types

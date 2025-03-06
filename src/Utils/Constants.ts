@@ -12,7 +12,7 @@ export const FORKSCOUNT_INITAL_VALUE = 5;
 /// ForksOrder options: ways to order forks
 export const FORKSORDER_OPTIONS = ["Stargazers", "Watchers", "Recent commits", "Author stars", "Date of creation"];
 /// ForksAscDesc options: String values for ascending and descending
-export const FORKSASCDESC = ["ascending", "descending"];
+export const FORKSASCDESC = ["Ascending", "Descending"];
 /// ForkTypes: Options for filtering fork types
 export const FORKTYPES = ["Adaptive", "Corrective", "Perfective"];
 /// OwnerTypes: Options for filtering owner types

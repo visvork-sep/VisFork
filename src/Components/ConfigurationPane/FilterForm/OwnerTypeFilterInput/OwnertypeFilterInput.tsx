@@ -1,16 +1,17 @@
 import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
 import { OWNERTYPES } from "@Utils/Constants";
+import { useMemo } from "react";
 
 interface OwnerTypeFilterInputProps {
     onChangeHandler: (selected: string[]) => void;
 }
 
 function OwnerTypeFilterInput({ onChangeHandler }: OwnerTypeFilterInputProps) {
-    const checkBoxes = OWNERTYPES.map((ownerType) => (
+    const checkBoxes = useMemo(() => OWNERTYPES.map((ownerType) => (
         <FormControl key={ownerType}>
             <FormControl.Label>{ownerType}</FormControl.Label>
             <Checkbox value={ownerType} />
-        </FormControl>));
+        </FormControl>)), []);
 
 
     return (

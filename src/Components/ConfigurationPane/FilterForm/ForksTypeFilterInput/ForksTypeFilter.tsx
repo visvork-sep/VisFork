@@ -1,5 +1,6 @@
 import { CheckboxGroup, FormControl, Checkbox } from "@primer/react";
 import { FORKTYPES } from "@Utils/Constants";
+import { useMemo } from "react";
 
 
 interface ForksTypeFilterInputProps {
@@ -7,12 +8,12 @@ interface ForksTypeFilterInputProps {
 }
 
 function ForksTypeFilterInput({ onChangeHandler }: ForksTypeFilterInputProps) {
-    const checkBoxes = FORKTYPES.map((forkType) => (
+    const checkBoxes = useMemo(() => FORKTYPES.map((forkType) => (
         <FormControl key={forkType}>
             <FormControl.Label>{forkType}</FormControl.Label>
             <Checkbox value={forkType} />
         </FormControl>
-    ));
+    )), [FORKTYPES]);
 
     return (
         <CheckboxGroup required onChange={onChangeHandler}>

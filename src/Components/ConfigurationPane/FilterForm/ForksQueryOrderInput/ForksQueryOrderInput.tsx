@@ -1,14 +1,15 @@
 import { FormControl, Select } from "@primer/react";
 import { FORKSORDER_OPTIONS } from "@Utils/Constants";
+import { useMemo } from "react";
 
 interface ForksQueryOrderInputProps {
     onChangeHandler: (value: string) => void;
 }
 
 function ForksQueryOrderInput({ onChangeHandler }: ForksQueryOrderInputProps) {
-    const selectOptions = FORKSORDER_OPTIONS.map((option) => (
-        <Select.Option value={option} key={option}>{option}</Select.Option>
-    ));
+    const selectOptions = useMemo(() => FORKSORDER_OPTIONS.map(
+        (option) => (<Select.Option value={option} key={option}>{option}</Select.Option>)
+    ), [FORKSORDER_OPTIONS]);
 
     return (
         <FormControl>

@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import cloud from "d3-cloud";
+import { stemmer } from "stemmer";
+import { lemmatizer } from "lemmatizer";
 import {removeStopwords} from "stopword";
 
 interface Word {
@@ -16,7 +18,12 @@ const tokenize = (text: string) => {
     return text.split(/\W+/).filter((token) => token.length > 1);
 };
 
-const processCommitMessages = (data: any) => {
+// Define the processing functions
+const stemmingFunction = (token: string) => stemmer(token);
+const lemmatizationFunction = (token: string) => lemmatizer(token);
+
+
+const processCommitMessages = (data: any, processToken: (token: string) => string) => {
     const wordFreq: {[key: string]: number} = {};
 
     data.forEach((commit: any) => {
@@ -29,7 +36,16 @@ const processCommitMessages = (data: any) => {
         console.log("Filtered Tokens:", filteredTokens);
         
         filteredTokens.forEach((token: string) => {
-            const processedWord = token.toLowerCase();
+            let processedWord
+            try {
+                processedWord = processToken(token.toLowerCase());
+                if (typeof processedWord !== 'string') {
+                    throw new Error('Invalid processed word');
+                }
+            } catch (error) {
+                console.error(`Error processing token "${token}":`, error);
+                processedWord = token.toLowerCase(); // Fallback to the original token
+            }
             console.log("Processed Word:", processedWord);
 
             if (wordFreq[processedWord]) {
@@ -58,7 +74,7 @@ const testCommitData = [
 ];
 
 
-const words = processCommitMessages(testCommitData);
+const words = processCommitMessages(testCommitData, lemmatizationFunction);
 
 const WordCloud: React.FC = () => {
     const svgRef = useRef<SVGSVGElement>(null);

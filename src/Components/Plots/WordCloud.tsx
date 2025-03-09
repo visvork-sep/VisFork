@@ -23,7 +23,7 @@ const stemmingFunction = (token: string) => stemmer(token);
 const lemmatizationFunction = (token: string) => lemmatizer(token);
 
 
-const processCommitMessages = (data: any, processToken: (token: string) => string) => {
+const processCommitMessages = (data: any, processToken: (token: string) => string, start: number, finish: number) => {
     const wordFreq: {[key: string]: number} = {};
 
     data.forEach((commit: any) => {
@@ -56,11 +56,23 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
         });
     });
 
-    console.log("Word Frequency:", wordFreq);
-    return Object.keys(wordFreq).map((word) => ({
+    // Object.keys(wordFreq).map((word) => ({
+    //     text: word,
+    //     freq: wordFreq[word],
+    //     size: wordFreq[word] * 10, // Adjust size as needed
+    // }))
+
+    // Sort the words by frequency
+    const sortedWords = Object.keys(wordFreq)
+    .map((word) => ({
         text: word,
+        freq: wordFreq[word],
         size: wordFreq[word] * 10, // Adjust size as needed
-    }));
+    })).sort((a, b) => b.freq - a.freq).slice(start, finish)
+
+    // console.log("Word Frequency:", sortedWords);
+    console.log("Sorted Words:", JSON.stringify(sortedWords, null, 2));
+    return sortedWords;
 }
 
 // Test with a specific commit message
@@ -73,8 +85,11 @@ const testCommitData = [
     // }
 ];
 
-
-const words = processCommitMessages(testCommitData, lemmatizationFunction);
+// Choose the processing function (either stemming or lemmatization)
+const start = 0;
+const finish = 8;
+const processingFunction = lemmatizationFunction;
+const words = processCommitMessages(testCommitData, processingFunction, start, finish);
 
 const WordCloud: React.FC = () => {
     const svgRef = useRef<SVGSVGElement>(null);

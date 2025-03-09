@@ -27,8 +27,7 @@ jobs:
       - name: Get Simian JAR
         id: get-simian
         run: |
-          mkdir -p "/var/www/html/files/"
-          if [ -f /var/www/html/files/simian-4.0.0.jar ]; then
+          if [ -f ./simian-4.0.0.jar ]; then
             echo "Simian JAR is already present."
           else
             echo "Copying Simian JAR..."

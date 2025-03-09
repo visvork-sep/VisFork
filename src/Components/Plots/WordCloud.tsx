@@ -2,9 +2,9 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import cloud from "d3-cloud";
 import commitData from "./commit_data_example.json";
-import { stemmer } from "stemmer";
+// import { stemmer } from "stemmer";
 import { lemmatizer } from "lemmatizer";
-import {removeStopwords} from "stopword";
+import { removeStopwords } from "stopword";
 
 interface Word {
     text: string;
@@ -20,12 +20,12 @@ const tokenize = (text: string) => {
 };
 
 // Define the processing functions
-const stemmingFunction = (token: string) => stemmer(token);
+// const stemmingFunction = (token: string) => stemmer(token);
 const lemmatizationFunction = (token: string) => lemmatizer(token);
 
 
 const processCommitMessages = (data: any, processToken: (token: string) => string, start: number, finish: number) => {
-    const wordFreq: {[key: string]: number} = {};
+    const wordFreq: { [key: string]: number } = {};
 
     data.forEach((commit: any) => {
         console.log("Original Message:", commit.message);
@@ -35,7 +35,7 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
 
         const filteredTokens = removeStopwords(tokens).filter(token => isNaN(Number(token)));
         console.log("Filtered Tokens:", filteredTokens);
-        
+
         filteredTokens.forEach((token: string) => {
             let processedWord
             try {
@@ -65,11 +65,11 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
 
     // Sort the words by frequency
     const sortedWords = Object.keys(wordFreq)
-    .map((word) => ({
-        text: word,
-        freq: wordFreq[word],
-        size: wordFreq[word], // Adjust size as needed
-    })).sort((a, b) => b.freq - a.freq).slice(start, finish)
+        .map((word) => ({
+            text: word,
+            freq: wordFreq[word],
+            size: wordFreq[word], // Adjust size as needed
+        })).sort((a, b) => b.freq - a.freq).slice(start, finish)
 
     // console.log("Word Frequency:", sortedWords);
     console.log("Sorted Words:", JSON.stringify(sortedWords, null, 2));
@@ -86,11 +86,9 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
 //     // }
 // ];
 
-
-
 // Choose the processing function (either stemming or lemmatization)
 const start = 0;
-const finish = 8;
+const finish = 50;
 const processingFunction = lemmatizationFunction;
 const words = processCommitMessages(commitData, processingFunction, start, finish);
 

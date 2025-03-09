@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import cloud from "d3-cloud";
+import {removeStopwords} from "stopword";
 
 interface Word {
     text: string;
@@ -24,7 +25,10 @@ const processCommitMessages = (data: any) => {
         const tokens = tokenize(commit.message);
         console.log("Tokens:", tokens);
 
-        tokens.forEach((token: string) => {
+        const filteredTokens = removeStopwords(tokens).filter(token => isNaN(Number(token)));
+        console.log("Filtered Tokens:", filteredTokens);
+        
+        filteredTokens.forEach((token: string) => {
             const processedWord = token.toLowerCase();
             console.log("Processed Word:", processedWord);
 

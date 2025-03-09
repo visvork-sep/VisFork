@@ -24,22 +24,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cache Simian JAR
-        id: cache-simian
-        uses: actions/cache@v3
-        with:
-          path: simian-4.0.0.jar
-          key: simian-4.0.0
-
-      - name: Setup SSH Key
+      - name: Get Simian JAR
+        id: get-simian
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -t ed25519 visfork.win.tue.nl >> ~/.ssh/known_hosts
-
-      - name: Download Simian JAR from VM
-        run: scp -i ~/.ssh/id_ed25519 tue20224374@visfork.win.tue.nl:/var/www/html/files/simian-4.0.0.jar .
+          mkdir -p "/var/www/html/files/"
+          if [ -f /var/www/html/files/simian-4.0.0.jar ]; then
+            echo "Simian JAR is already present."
+          else
+            echo "Copying Simian JAR..."
+            cp /var/www/html/files/simian-4.0.0.jar .
 
       - name: Run Simian Analysis
         run: |

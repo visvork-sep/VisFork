@@ -53,16 +53,6 @@ const testCommitData = [
     // }
 ];
 
-// const words: Word[] = [
-//     { text: "React", size: 40 },
-//     { text: "D3", size: 30 },
-//     { text: "JavaScript", size: 20 },
-//     { text: "TypeScript", size: 25 },
-//     { text: "Visualization", size: 35 },
-//     { text: "SVG", size: 15 },
-//     { text: "HTML", size: 10 },
-//     { text: "CSS", size: 20 },
-// ];
 
 const words = processCommitMessages(testCommitData);
 

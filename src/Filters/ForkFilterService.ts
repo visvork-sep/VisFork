@@ -138,6 +138,12 @@ export class ForkFilterService {
         return result;
     }
 
+    /**
+     * If {@param nrOfMonths} is not undefined, this function determines whether
+     * the {@param fork} was updated in the previous {@code nrOfMonths}.
+     * 
+     * @returns True if {@code fork} was updated in the previous {@code nrOfMonths}, false otherwise.
+     */
     #isForkUpdatedInLastMonths(fork: Fork, nrOfMonths: number | undefined): boolean {
         if (nrOfMonths === undefined) {
             return true; // since the user is not filtering based on this

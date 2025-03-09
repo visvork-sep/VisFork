@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import cloud from "d3-cloud";
+import commitData from "./commit_data_example.json";
 import { stemmer } from "stemmer";
 import { lemmatizer } from "lemmatizer";
 import {removeStopwords} from "stopword";
@@ -67,7 +68,7 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
     .map((word) => ({
         text: word,
         freq: wordFreq[word],
-        size: wordFreq[word] * 10, // Adjust size as needed
+        size: wordFreq[word], // Adjust size as needed
     })).sort((a, b) => b.freq - a.freq).slice(start, finish)
 
     // console.log("Word Frequency:", sortedWords);
@@ -76,34 +77,51 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
 }
 
 // Test with a specific commit message
-const testCommitData = [
-    {
-        message: "Downgrade to ffmpeg 4 for Intel build\n\nfix: iina-plus/iina#25 iina-plus/iina#52"
-    }
-    // {
-    //     message: "fix, failure, constructor constructor constructor constructor constructdfs"
-    // }
-];
+// const testCommitData = [
+//     {
+//         message: "Downgrade to ffmpeg 4 for Intel build\n\nfix: iina-plus/iina#25 iina-plus/iina#52"
+//     }
+//     // {
+//     //     message: "fix, failure, constructor constructor constructor constructor constructdfs"
+//     // }
+// ];
+
+
 
 // Choose the processing function (either stemming or lemmatization)
 const start = 0;
 const finish = 8;
 const processingFunction = lemmatizationFunction;
-const words = processCommitMessages(testCommitData, processingFunction, start, finish);
+const words = processCommitMessages(commitData, processingFunction, start, finish);
 
 const WordCloud: React.FC = () => {
     const svgRef = useRef<SVGSVGElement>(null);
+    const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (svgRef.current) {
+                const { clientWidth, clientHeight } = svgRef.current;
+                setDimensions({ width: clientWidth, height: clientHeight });
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+        handleResize();
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     useEffect(() => {
         if (!svgRef.current) return;
 
         const layout = cloud<Word>()
-            .size([500, 500])
+            .size([dimensions.width, dimensions.height])
             .words(words)
             .padding(5)
             .rotate(() => (~~(Math.random() * 2) * 90))
             .font("Impact")
-            .fontSize((d) => d.size)
+            .fontSize((d) => Math.sqrt(d.size) * 10) // Adjust size calculation
             .on("end", draw);
 
         layout.start();
@@ -162,9 +180,9 @@ const WordCloud: React.FC = () => {
                 tooltip.remove();
             };
         }
-    }, []);
+    }, [words, dimensions]);
 
-    return <svg ref={svgRef}></svg>;
+    return <svg ref={svgRef} style={{ width: "100%", height: "100%" }}></svg>;
 };
 
 export default WordCloud;

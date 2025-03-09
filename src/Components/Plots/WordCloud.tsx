@@ -10,16 +10,61 @@ interface Word {
     y?: number;
 }
 
-const words: Word[] = [
-    { text: "React", size: 40 },
-    { text: "D3", size: 30 },
-    { text: "JavaScript", size: 20 },
-    { text: "TypeScript", size: 25 },
-    { text: "Visualization", size: 35 },
-    { text: "SVG", size: 15 },
-    { text: "HTML", size: 10 },
-    { text: "CSS", size: 20 },
+// Simple tokenizer function
+const tokenize = (text: string) => {
+    return text.split(/\W+/).filter((token) => token.length > 1);
+};
+
+const processCommitMessages = (data: any) => {
+    const wordFreq: {[key: string]: number} = {};
+
+    data.forEach((commit: any) => {
+        console.log("Original Message:", commit.message);
+
+        const tokens = tokenize(commit.message);
+        console.log("Tokens:", tokens);
+
+        tokens.forEach((token: string) => {
+            const processedWord = token.toLowerCase();
+            console.log("Processed Word:", processedWord);
+
+            if (wordFreq[processedWord]) {
+                wordFreq[processedWord]++;
+            } else {
+                wordFreq[processedWord] = 1;
+            }
+        });
+    });
+
+    console.log("Word Frequency:", wordFreq);
+    return Object.keys(wordFreq).map((word) => ({
+        text: word,
+        size: wordFreq[word] * 10, // Adjust size as needed
+    }));
+}
+
+// Test with a specific commit message
+const testCommitData = [
+    {
+        message: "Downgrade to ffmpeg 4 for Intel build\n\nfix: iina-plus/iina#25 iina-plus/iina#52"
+    }
+    // {
+    //     message: "fix, failure, constructor constructor constructor constructor constructdfs"
+    // }
 ];
+
+// const words: Word[] = [
+//     { text: "React", size: 40 },
+//     { text: "D3", size: 30 },
+//     { text: "JavaScript", size: 20 },
+//     { text: "TypeScript", size: 25 },
+//     { text: "Visualization", size: 35 },
+//     { text: "SVG", size: 15 },
+//     { text: "HTML", size: 10 },
+//     { text: "CSS", size: 20 },
+// ];
+
+const words = processCommitMessages(testCommitData);
 
 const WordCloud: React.FC = () => {
     const svgRef = useRef<SVGSVGElement>(null);

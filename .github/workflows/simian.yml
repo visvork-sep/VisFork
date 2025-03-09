@@ -33,6 +33,7 @@ jobs:
           else
             echo "Copying Simian JAR..."
             cp /var/www/html/files/simian-4.0.0.jar .
+          fi
 
       - name: Run Simian Analysis
         run: |

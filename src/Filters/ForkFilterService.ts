@@ -54,7 +54,7 @@ export class ForkFilterService {
     }
 
     /**
-     * Determines if the {@param fork} is in the date range given by {@param dateRange}.
+     * Determines if the {@param fork} was created in the date range given by {@param dateRange}.
      * 
      * @returns True if {@code fork.date >= dateRange.start && fork.date <= dateRange.end}.
      * 
@@ -62,20 +62,23 @@ export class ForkFilterService {
      * @throws TypeError, if both the start and end properties of {@param dateRange} are undefined.
      */
     #isForkInDateRange(fork: ForkJSON, dateRange: DateRange): boolean {
-        // if (fork.date === undefined) {
-        //     throw TypeError("Fork date property is undefined");
-        // }
+        if (fork.created_at === undefined || fork.created_at === null) {
+            throw TypeError("Fork date property is undefined");
+        }
 
         if (dateRange.start === undefined && dateRange.end === undefined) {
             throw TypeError("dateRange is improperly defined (no start and end property)");
         }
 
         let result: boolean = false;
+        if (dateRange.start !== undefined) {
+            result = fork.created_at >= dateRange.start;
+        }
 
-        // TODO result = fork.date >= dateRange.start;
-
-        // TODO result = fork.date <= dateRange.end;
-
+        if (dateRange.end !== undefined) {
+            result = fork.created_at <= dateRange.end;
+        }
+        
         return result;
     }
 

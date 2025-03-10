@@ -86,7 +86,8 @@ export class ForkFilterService {
      * If {@param activeForksOnly} is not undefined or false, this function determines
      * whether {@param fork} is active or not.
      * 
-     * @returns True if {@code activeForksOnly === undefined || !activeForksOnly || fork.active === true}, false otherwise.
+     * @returns True if {@code activeForksOnly === undefined || !activeForksOnly || fork.archived || fork.disabled},
+     * false otherwise.
      */
     #isForkActive(fork: ForkJSON, activeForksOnly: boolean | undefined): boolean {
         let result: boolean = false;
@@ -94,7 +95,13 @@ export class ForkFilterService {
         if (activeForksOnly === undefined || !activeForksOnly) {
             result = true; // since activity is not a criterion in this case
         } else {
-            // result = fork.active;
+            // TODO definition of active??
+            if (fork.archived !== undefined) {
+                result = fork.archived
+            }
+            if (fork.disabled !== undefined) {
+                result = fork.disabled;
+            }
         }
 
         return result;

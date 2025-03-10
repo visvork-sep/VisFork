@@ -1,11 +1,9 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
 import * as d3 from "d3";
 
-interface DataPoint {
-    date: Date;
-}
+// Destruct the dates from the props into an array of dates
+const Barchart = ({ dates }: { dates: Date[] }) => {
 
-const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
 
     /////
@@ -13,7 +11,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
     /////
     const frequency = useMemo(() => {
         // Copy passed data
-        const data = JSON.parse(JSON.stringify(rawData)) as DataPoint[];
+        const data = dates.map((d) => ({ date: d }));
 
         // Convert each date to the first day of the month
         data.forEach((d) => {
@@ -43,7 +41,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
         return new Map(
             Array.from(freqMap).sort((a, b) => d3.ascending(a[0], b[0]))
         );
-    }, [rawData]);
+    }, [dates]);
 
     /////
     // Visualization
@@ -109,6 +107,21 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
 
         const barWidth = xScale.bandwidth();
 
+        // Create brush
+        const brush = d3.brushX()
+            .extent([[0, 0], [chartWidth, chartHeight]]) // Cover full chart
+            .on("brush", brushed)
+            .on("end", brushended);
+
+        // Append a large transparent rect to capture interactions
+        const brushG = chart.append("g")
+            .attr("class", "brush")
+            .call(brush);
+
+        brushG.selectAll(".overlay")
+            .style("pointer-events", "all"); // Ensure it listens to clicks everywhere
+
+
         // Draw background bars and tooltip logic
         chart
             .selectAll(".bg-bar")
@@ -121,9 +134,10 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
             .attr("width", barWidth)
             .attr("height", chartHeight)
             .attr("fill", "lightgray")
-            .attr("opacity", 0.05)
+            .attr("opacity", 0.3)
             .on("mouseover", function () {
                 // Show the tooltip
+
                 tooltip.style("opacity", 1);
             })
             .on("mousemove", function (event, d) {
@@ -140,6 +154,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
             .on("mouseout", function () {
                 // Hide the tooltip
                 tooltip.style("opacity", 0);
+
             });
 
         // Draw frequency bars and tooltip logic
@@ -156,6 +171,7 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
             .attr("fill", "steelblue")
             .on("mouseover", function () {
                 // Show the tooltip
+
                 tooltip.style("opacity", 1);
             })
             .on("mousemove", function (event, d) {
@@ -202,9 +218,6 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
         // Remove the default axis line
         chart.select(".domain").remove();
 
-        // Create brush
-        const brush = d3.brushX().extent([[0, 0], [chartWidth, chartHeight]]).on("brush", brushed).on("end", brushended);
-        const brushG = chart.append("g").call(brush);
 
         // 
         function brushed({ selection }: { selection: [number, number] | null }) {
@@ -241,13 +254,11 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
             style={{
                 textAlign: "center",
                 padding: "20px",
-                background: "#121212",
                 borderRadius: "10px",
             }}
         >
             <h1
                 style={{
-                    color: "white",
                     fontSize: "18px",
                     marginBottom: "10px",
                     fontWeight: "bold",
@@ -260,9 +271,8 @@ const Barchart = ({ rawData }: { rawData: DataPoint[] }) => {
                 style={{
                     width: "100%",
                     height: "150px",
-                    background: "#202020",
+                    background: "fg.subtle",
                     borderRadius: "8px",
-                    boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
                     marginBottom: "10px",
                 }}
             ></svg>

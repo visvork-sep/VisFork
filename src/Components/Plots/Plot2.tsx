@@ -8,6 +8,7 @@ interface Commit {
   repo: string;
   branch_name:string;
   date: string;
+  url: string;
 }
 
 interface DagProps {
@@ -136,6 +137,9 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             })
             .on("mouseout", () => {
                 tooltip.transition().duration(500).style("opacity", 0);
+            })
+            .on("click", (_event, d) => {
+                window.open(d.data.url);
             });;
         
         return () => {

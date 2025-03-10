@@ -10,7 +10,7 @@ interface ForksCountInputProps {
 
 function ForksCountInput({ error, onChangeHandler, value }: ForksCountInputProps) {
     return (
-        <FormControl id="forksCount">
+        <FormControl id="forksCount" required>
             <FormControl.Label>Forks</FormControl.Label>
             <FormControl.Caption>
                 The number of forks to analyze

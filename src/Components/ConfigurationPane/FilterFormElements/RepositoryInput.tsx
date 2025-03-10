@@ -5,9 +5,10 @@ type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameE
 interface RepositoryInputProps {
     validation?: RepositoryInputValidation;
     onChangeHandler: (input: string) => void;
+    value?: string
 }
 
-function RepositoryInput({ validation, onChangeHandler } : RepositoryInputProps) {
+function RepositoryInput({ validation, onChangeHandler, value } : RepositoryInputProps) {
     let validationText: string | undefined;
 
     switch(validation) {

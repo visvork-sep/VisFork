@@ -6,9 +6,10 @@ type ForksCountInputValidation = "lessThanMinForksError" | "greaterThanMaxForksE
 interface ForksCountInputProps {
     validation?: ForksCountInputValidation;
     onChangeHandler: (input: string) => void;
+    value: number
 };
 
-function ForksCountInput({ validation, onChangeHandler }: ForksCountInputProps) {
+function ForksCountInput({ validation, onChangeHandler, value }: ForksCountInputProps) {
     let validationText: string | undefined;
 
     switch (validation) {
@@ -29,7 +30,7 @@ function ForksCountInput({ validation, onChangeHandler }: ForksCountInputProps) 
                 The number of forks to analyze
             </FormControl.Caption>
             <TextInput type="number" placeholder="5" min={MIN_QUERIABLE_FORKS} max={MAX_QUERIABLE_FORKS}
-                onChange={e => onChangeHandler(e.target.value)} />
+                onChange={e => onChangeHandler(e.target.value)} value={value} />
             {validationText &&
                 <FormControl.Validation variant="error">
                     {validationText}

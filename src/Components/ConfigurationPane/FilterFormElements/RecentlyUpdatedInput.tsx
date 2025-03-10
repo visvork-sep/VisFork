@@ -5,10 +5,11 @@ type RecentlyUpdatedInputValidation = "outOfInputRange" | "unknownError";
 
 interface RecentlyUpdatedInputProps {
     validation?: RecentlyUpdatedInputValidation
-    onChangeHandler: (input: string) => void;
+    onChangeHandler: (input: string) => void
+    value?: string
 };
 
-function RecentlyUpdatedInput({ validation, onChangeHandler }: RecentlyUpdatedInputProps) {
+function RecentlyUpdatedInput({ validation, onChangeHandler, value }: RecentlyUpdatedInputProps) {
     let validationText;
 
     switch (validation) {
@@ -25,7 +26,7 @@ function RecentlyUpdatedInput({ validation, onChangeHandler }: RecentlyUpdatedIn
             <FormControl.Label>Recently updated</FormControl.Label>
             <FormControl.Caption>Months since last update (max {RECENT_ACTIVITY_MAX_MONTHS})</FormControl.Caption>
             <TextInput type="number" min={RECENT_ACTIVITY_MIN_MONTHS} max={RECENT_ACTIVITY_MAX_MONTHS}
-                onChange={(e) => onChangeHandler(e.target.value)} />
+                onChange={(e) => onChangeHandler(e.target.value)} value={value} />
             {validationText &&
                 <FormControl.Validation variant="error">
                     {validationText}

@@ -1,11 +1,12 @@
 import { FormControl, Select } from "@primer/react";
 
 interface ForksQueryOrderAscDescInputProps {
-    onChangeHandler: (value: string) => void;
+    onChangeHandler: (value: string) => void
+    selected: string
 }
 
 
-function ForksQueryOrderAscDescInput({ onChangeHandler } : ForksQueryOrderAscDescInputProps) {
+function ForksQueryOrderAscDescInput({ onChangeHandler, selected }: ForksQueryOrderAscDescInputProps) {
     return (
         <FormControl>
             <FormControl.Label>Retrieval order</FormControl.Label>

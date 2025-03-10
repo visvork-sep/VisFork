@@ -1,10 +1,11 @@
 import { FormControl, Select } from "@primer/react";
 
 interface ForksQueryOrderInputProps {
-    onChangeHandler: (value: string) => void;
+    onChangeHandler: (value: string) => void
+    selected: string;
 }
 
-function ForksQueryOrderInput({ onChangeHandler }: ForksQueryOrderInputProps) {
+function ForksQueryOrderInput({ onChangeHandler, selected }: ForksQueryOrderInputProps) {
     return (
         <FormControl>
             <FormControl.Label>Select forks by</FormControl.Label>

@@ -4,10 +4,11 @@ type CommitsDateRangeUntilInputValidation = "laterFromDateError" | "futureUntilD
 
 interface CommitsDateRangeUntilInputProps {
     validation?: CommitsDateRangeUntilInputValidation
-    onChangeHandler: (input: string) => void;
+    onChangeHandler: (input: string) => void
+    value?: string;
 };
 
-function CommitsDateRangeUntilInput({ validation, onChangeHandler }: CommitsDateRangeUntilInputProps) {
+function CommitsDateRangeUntilInput({ validation, onChangeHandler, value }: CommitsDateRangeUntilInputProps) {
     let validationText;
 
     switch (validation) {
@@ -25,7 +26,7 @@ function CommitsDateRangeUntilInput({ validation, onChangeHandler }: CommitsDate
         <FormControl>
             <FormControl.Label>Commits until</FormControl.Label>
             <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
-            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} />
+            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} value={value} />
             {validationText &&
                 <FormControl.Validation variant="error">
                     {validationText}

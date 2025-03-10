@@ -2,10 +2,11 @@ import { CheckboxGroup, FormControl, Checkbox } from "@primer/react";
 
 
 interface ForksTypeFilterInputProps {
-    onChangeHandler: (selected: string[]) => void;
+    onChangeHandler: (selected: string[]) => void
+    checked: string[]
 }
 
-function ForksTypeFilterInput({ onChangeHandler } : ForksTypeFilterInputProps) {
+function ForksTypeFilterInput({ onChangeHandler, checked } : ForksTypeFilterInputProps) {
     return(
         <CheckboxGroup required onChange={onChangeHandler}>
             <CheckboxGroup.Label>Included forks</CheckboxGroup.Label>

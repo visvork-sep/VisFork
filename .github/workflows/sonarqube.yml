@@ -1,3 +1,5 @@
+# Source: SonarQube Community Documentation
+# Accessible when logged in and creating new local project
 name: SonarQube Analysis
 
 on:
@@ -17,13 +19,16 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Run SonarQube Analysis
-        run: |
-          export PATH=$PATH:/opt/sonar-scanner/bin
-          sonar-scanner \
-            -Dsonar.host.url="http://localhost:9000" \
-            -Dsonar.token="${{ secrets.SONAR_TOKEN }}" \
-            -Dsonar.projectKey=Visfork \
-            -Dsonar.sources=.
-      
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Run Analysis
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      - uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

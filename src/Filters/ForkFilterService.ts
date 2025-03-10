@@ -89,7 +89,7 @@ export class ForkFilterService {
      * @returns True if {@code activeForksOnly === undefined || !activeForksOnly || fork.archived || fork.disabled},
      * false otherwise.
      */
-    #isForkActive(fork: ForkJSON, activeForksOnly: boolean | undefined): boolean {
+    #isForkActive(fork: ForkJSON, activeForksOnly?: boolean): boolean {
         let result: boolean = false;
 
         if (activeForksOnly === undefined || !activeForksOnly) {
@@ -113,7 +113,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code forkType === undefined || fork.type === forkType}, false otherwise.
      */
-    #isForkOfType(fork: ForkJSON, forkType: ForkType | undefined): boolean {
+    #isForkOfType(fork: ForkJSON, forkType?: ForkType): boolean {
         if (forkType === undefined) {
             return true; // since the user is not filtering based on this
         }
@@ -131,7 +131,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code ownerType === undefined || fork.ownerType === ownerType}, false otherwise.
      */
-    #isOwnerOfType(fork: ForkJSON, ownerType: OwnerType | undefined): boolean {
+    #isOwnerOfType(fork: ForkJSON, ownerType?: OwnerType): boolean {
         if (ownerType === undefined) {
             return true; // since the user is not filtering based on this
         }
@@ -145,7 +145,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code fork} was updated in the previous {@code nrOfMonths}, false otherwise.
      */
-    #isForkUpdatedInLastMonths(fork: ForkJSON, nrOfMonths: number | undefined): boolean {
+    #isForkUpdatedInLastMonths(fork: ForkJSON, nrOfMonths?: number): boolean {
         if (nrOfMonths === undefined) {
             return true; // since the user is not filtering based on this
         }

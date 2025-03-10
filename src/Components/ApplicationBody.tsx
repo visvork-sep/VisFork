@@ -29,19 +29,19 @@ function ApplicationBody() {
                 </div>}
                 {plot === 2 &&
                     <Dropdown summaryText="Fork List">
-                    <ForkList forks={[
-                        {
-                            id: 0,
-                            full_name: "name",
-                            description: "description"
-                        },
-                        {
-                            id: 1,
-                            full_name: "name2",
-                            description: "description 2"
-                        }
-                    ]} />
-                </Dropdown>}
+                        <ForkList forks={[
+                            {
+                                id: 0,
+                                full_name: "name",
+                                description: "description"
+                            },
+                            {
+                                id: 1,
+                                full_name: "name2",
+                                description: "description 2"
+                            }
+                        ]} />
+                    </Dropdown>}
             </Stack.Item>
         );
     });

@@ -5,13 +5,13 @@ type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameE
 interface RepositoryInputProps {
     validation?: RepositoryInputValidation;
     onChangeHandler: (input: string) => void;
-    value?: string
+    value: string
 }
 
-function RepositoryInput({ validation, onChangeHandler, value } : RepositoryInputProps) {
+function RepositoryInput({ validation, onChangeHandler, value }: RepositoryInputProps) {
     let validationText: string | undefined;
 
-    switch(validation) {
+    switch (validation) {
         case "syntaxError":
             validationText = "Syntax must match <Owner>/<RepositoryName>";
             break;
@@ -28,12 +28,12 @@ function RepositoryInput({ validation, onChangeHandler, value } : RepositoryInpu
     return (
         <FormControl required id="repository">
             <FormControl.Label>Repository</FormControl.Label>
-            <TextInput type="text" placeholder="torvalds/linux" name="repository" 
-                onChange={e => onChangeHandler(e.target.value)}/>
+            <TextInput type="text" placeholder="torvalds/linux" name="repository"
+                onChange={e => onChangeHandler(e.target.value)} />
             <FormControl.Caption>
                 This is the repository that the visualizations will be based upon
             </FormControl.Caption>
-            {validationText && 
+            {validationText &&
                 <FormControl.Validation variant="error">
                     {validationText}
                 </FormControl.Validation>

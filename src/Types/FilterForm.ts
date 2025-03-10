@@ -2,8 +2,7 @@
  * Interface for Form state, for selecting the data to be visualized.
  */
 interface FilterFormState {
-    repositoryOwner: string;
-    repositoryName: string;
+    repository: string;
     forksCount: number;
     forksOrder: string;
     forksAscDesc: string;

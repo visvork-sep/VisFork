@@ -4,8 +4,7 @@ import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPE
     from "@Utils/Constants";
 
 const initialForm: FilterFormState = {
-    repositoryOwner: "",
-    repositoryName: "",
+    repository: "",
     forksCount: FORKS_COUNT_INPUT_INITIAL,
     forksOrder: FORKS_SORTING_ORDERS.STARGAZERS.value,
     forksAscDesc: SORT_DIRECTION.ASCENDING.value,

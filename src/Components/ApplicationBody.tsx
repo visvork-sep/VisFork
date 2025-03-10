@@ -4,6 +4,9 @@ import CommitTimeline from "../Components/Plots/Plot2.tsx";
 import commitData from "./Plots/commit_data_example.json";
 import { useMeasure } from "@uidotdev/usehooks";
 
+import ForkList from "@Components/Plots/ForkList";
+import { Dropdown } from "@Components/Dropdown";
+
 const plotsData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 function ApplicationBody() {
@@ -14,7 +17,7 @@ function ApplicationBody() {
     const children = plotsData.map((plot) => {
         return (
             <Stack.Item key={plot}>
-                <div ref={plot === 1 ? measureRefCommitTimeline : undefined}>
+                {plot === 1 && <div ref={measureRefCommitTimeline}>
                     <Blankslate border>
                         <Blankslate.Heading>Plot{plot}</Blankslate.Heading>
                         <Blankslate.Visual>
@@ -23,12 +26,31 @@ function ApplicationBody() {
                                 maxHeight={maxHeightCommitTimeline}/> : <Spinner/>}
                         </Blankslate.Visual>
                     </Blankslate>
-                </div>
+                </div>}
+                {plot === 2 &&
+                    <Dropdown summaryText="Fork List">
+                    <ForkList forks={[
+                        {
+                            id: 0,
+                            full_name: "name",
+                            description: "description"
+                        },
+                        {
+                            id: 1,
+                            full_name: "name2",
+                            description: "description 2"
+                        }
+                    ]} />
+                </Dropdown>}
             </Stack.Item>
         );
     });
-  
-    return children;
+
+    return (
+        <Stack>
+            {children}
+        </Stack>
+    );
 }
 
 export default ApplicationBody;

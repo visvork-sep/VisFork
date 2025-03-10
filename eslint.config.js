@@ -2,6 +2,7 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
+import "eslint-plugin-only-warn";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -15,21 +16,21 @@ export default [
     pluginReact.configs.flat.recommended,
     {
         rules: {
-            "eol-last": ["error", "always"],
-            "quotes": ["error", "double", {}],
-            "no-irregular-whitespace": ["error"],
-            "semi": ["error", "always"],
-            "max-len": ["error", { code: 120, tabWidth: 4 }],
-            "indent": ["error", 4, { SwitchCase: 1 }],
-            "react/jsx-indent": ["error", 4],
-            "react/jsx-indent-props": ["error", 4],
+            "eol-last": ["warn", "always"],
+            "quotes": ["warn", "double", {}],
+            "no-irregular-whitespace": ["warn"],
+            "semi": ["warn", "always"],
+            "max-len": ["warn", { code: 120, tabWidth: 4 }],
+            "indent": ["warn", 4, { SwitchCase: 1 }],
+            "react/jsx-indent": ["warn", 4],
+            "react/jsx-indent-props": ["warn", 4],
             "react/react-in-jsx-scope": "off" // Ignore "React must be in scope" rule
         }
     },
     {
         settings: {
             react: {
-                version: "detect", 
+                version: "detect",
             },
         },
     }

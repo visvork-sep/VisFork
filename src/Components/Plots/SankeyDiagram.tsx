@@ -50,7 +50,7 @@ export function SankeyChart(
     {
         nodes, // an iterable of node objects (typically [{id}, …]); implied by links if missing
         links, // an iterable of link objects (typically [{source, target}, …])
-    }: { nodes?: d3Sankey.SankeyNodeMinimal<any, any>[]; links: d3Sankey.SankeyLinkMinimal<any, any>[] },
+    }: { nodes?: d3Sankey.SankeyNodeMinimal<{ id: string }, any>[]; links: d3Sankey.SankeyLinkMinimal<any, any>[] },
     {
         format = d3.format(","), // a function or format specifier for values in titles
         align = "justify", // convenience shorthand for nodeAlign
@@ -88,7 +88,7 @@ export function SankeyChart(
             nodeGroup?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => number; 
             nodeGroups: Iterable<number>;
             nodeLabel?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string; 
-            nodeTitle?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string; 
+            nodeTitle?: (n: d3Sankey.SankeyNodeMinimal<{ id: string }, any>) => string; 
             nodeAlign?: (node: d3Sankey.SankeyNodeMinimal<any, any>, n: number) => number; 
             nodeWidth?: number;
             nodePadding?: number;
@@ -154,22 +154,21 @@ export function SankeyChart(
         .nodeId(({ index: i }) => i !== undefined ? N[i] : undefined).nodeAlign(nodeAlign));
     console.log("nodes", nodes);
     console.log("links", links);
-    console.log("nodeId", );
+    console.log("nodeId", nodeId(nodes[0]));
+    //console.log("NODEID:", nodes.id);
     console.log("nodeId check - first node:", nodes[0]); 
     // Compute the Sankey layout.
+
     d3Sankey
-        .sankey()
-        .nodeId((d) => {
-            console.log("nodeId output:", d.index); // Log what we return
-            return d.id; // Use id instead of N[i]
-        })
+        .sankey<{ id: string }, any>()
+        .nodeId((d) => d.id)
         .nodeAlign(nodeAlign)
         .nodeWidth(nodeWidth)
         .nodePadding(nodePadding)
         .extent([
             [marginLeft, marginTop],
             [width - marginRight, height - marginBottom],
-        ])({ nodes, links });
+        ])({ nodes: nodes as d3Sankey.SankeyNode<{ id: string }, any>[], links });
 
     // Compute titles and labels using layout nodes, so as to access aggregate values.
     if (typeof format !== "function") format = d3.format(format);

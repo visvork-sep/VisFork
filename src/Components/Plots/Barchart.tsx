@@ -171,6 +171,7 @@ const Barchart = ({ dates }: { dates: Date[] }) => {
             .attr("fill", "steelblue")
             .on("mouseover", function () {
                 // Show the tooltip
+                console.log("neshto");
 
                 tooltip.style("opacity", 1);
             })

@@ -2,9 +2,9 @@ import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
 import { OWNER_TYPES } from "@Utils/Constants";
 
 interface OwnerTypeFilterInputProps {
-    onChangeHandler: (selected: string[]) => void
+    onChangeHandler: (selected: string[]) => void;
     checked: string[];
-}
+};
 
 function OwnerTypeFilterInput({ onChangeHandler, checked }: OwnerTypeFilterInputProps) {
     const checkBoxes = Object.values(OWNER_TYPES).map(t => (

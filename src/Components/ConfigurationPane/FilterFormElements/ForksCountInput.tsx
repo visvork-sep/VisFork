@@ -5,7 +5,7 @@ import { ForksCountInputErrorsType } from "../../../Types/FormErrors";
 interface ForksCountInputProps {
     error?: ForksCountInputErrorsType;
     onChangeHandler: (input: string) => void;
-    value?: number
+    value?: number;
 };
 
 function ForksCountInput({ error, onChangeHandler, value }: ForksCountInputProps) {

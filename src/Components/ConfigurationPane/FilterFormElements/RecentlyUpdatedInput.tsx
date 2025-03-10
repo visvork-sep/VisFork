@@ -3,9 +3,9 @@ import { RECENT_ACTIVITY_MIN_MONTHS, RECENT_ACTIVITY_MAX_MONTHS } from "@Utils/C
 import { RecentlyUpdatedInputErrorsType } from "../../../Types/FormErrors";
 
 interface RecentlyUpdatedInputProps {
-    error?: RecentlyUpdatedInputErrorsType
-    onChangeHandler: (input: string) => void
-    value?: string
+    error?: RecentlyUpdatedInputErrorsType;
+    onChangeHandler: (input: string) => void;
+    value?: string;
 };
 
 function RecentlyUpdatedInput({ error, onChangeHandler, value }: RecentlyUpdatedInputProps) {

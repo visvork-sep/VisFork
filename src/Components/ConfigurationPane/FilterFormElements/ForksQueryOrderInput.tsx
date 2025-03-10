@@ -2,9 +2,9 @@ import { FormControl, Select } from "@primer/react";
 import { FORKS_SORTING_ORDERS } from "@Utils/Constants";
 
 interface ForksQueryOrderInputProps {
-    onChangeHandler: (value: string) => void
+    onChangeHandler: (value: string) => void;
     selected: string;
-}
+};
 
 const options = Object.values(FORKS_SORTING_ORDERS).map((option) =>
     (<Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)

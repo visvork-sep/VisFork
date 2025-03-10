@@ -4,8 +4,8 @@ import { RepositoryInputErrorsType } from "../../../Types/FormErrors";
 interface RepositoryInputProps {
     error?: RepositoryInputErrorsType;
     onChangeHandler: (input: string) => void;
-    value: string
-}
+    value: string;
+};
 
 function RepositoryInput({ error, onChangeHandler, value }: RepositoryInputProps) {
     return (

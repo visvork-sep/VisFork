@@ -1,27 +1,27 @@
-import { CommitsDateRangeFromInputValidation } 
+import { CommitsDateRangeFromInputValidation }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { CommitsDateRangeUntilInputValidation }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
-import { ForksCountInputValidation } 
+import { ForksCountInputValidation }
     from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
-import { RecentlyUpdatedInputValidation } 
+import { RecentlyUpdatedInputValidation }
     from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
-import { RepositoryInputValidation } 
+import { RepositoryInputValidation }
     from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
-import { FormState } from "@Hooks/useFilterForm";
-import React, { useCallback, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
+import { FilterFormState } from "../Types/FilterForm";
 
-function useFormSubmission(form: FormState) {
+function useFormSubmission(form: FilterFormState) {
     const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
     const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();
     const [recentlyUpdatedInputValidation, setRecentlyUpdatedInputValidation] =
-         useState<RecentlyUpdatedInputValidation>();
-    const [commitsDateRangeFromInputValidation, setCommitsDateRangeFromInputValidation] = 
+        useState<RecentlyUpdatedInputValidation>();
+    const [commitsDateRangeFromInputValidation, setCommitsDateRangeFromInputValidation] =
         useState<CommitsDateRangeFromInputValidation>();
-    const [commitsDateRangeUntilInputValidation, setCommitsDateRangeUntilInputValidation] 
-        = useState<CommitsDateRangeUntilInputValidation>(); 
+    const [commitsDateRangeUntilInputValidation, setCommitsDateRangeUntilInputValidation]
+        = useState<CommitsDateRangeUntilInputValidation>();
 
-    const onSubmit = useCallback((event: React.FormEvent) => {
+    const onSubmit = useCallback((event: FormEvent) => {
         // Prevents the page from refreshing on submission
         event.preventDefault();
 

@@ -1,19 +1,7 @@
 import { useState, useCallback } from "react";
+import { FilterFormState } from "../Types/FilterForm";
 
-interface FormState {
-    repositoryOwner: string;
-    repositoryName: string;
-    forksCount: number;
-    forksOrder: string;
-    forksAscDesc: string;
-    commitsDateRangeFrom?: string;
-    commitsDateRangeUntil?: string;
-    forksTypeFilter: string[];
-    ownerTypeFilter: string[];
-    recentlyUpdated?: string;
-}
-
-const initialForm: FormState = {
+const initialForm: FilterFormState = {
     repositoryOwner: "",
     repositoryName: "",
     forksCount: 0,
@@ -24,7 +12,7 @@ const initialForm: FormState = {
 };
 
 function useFilterForm() {
-    const [form, setForm] = useState<FormState>(initialForm);
+    const [form, setForm] = useState<FilterFormState>(initialForm);
 
     const handleRepositoryChange = useCallback((input: string) => {
         const words = input.split("/");
@@ -98,4 +86,3 @@ function useFilterForm() {
 export {
     useFilterForm
 };
-export type { FormState };

@@ -8,8 +8,8 @@ const initialForm: FilterFormState = {
     forksCount: FORKS_COUNT_INPUT_INITIAL,
     forksOrder: FORKS_SORTING_ORDERS.STARGAZERS.value,
     forksAscDesc: SORT_DIRECTION.ASCENDING.value,
-    forksTypeFilter: [FORK_TYPES.ADAPTIVE.value, FORK_TYPES.CORRECTIVE.value, FORK_TYPES.PERFECTIVE.value],
-    ownerTypeFilter: [OWNER_TYPES.ORGANIZATION.value, OWNER_TYPES.USER.value],
+    forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value),
+    ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value),
 };
 
 function useFilterForm() {
@@ -33,16 +33,11 @@ function useFilterForm() {
     }, []);
 
     const handleForksOrderChange = useCallback((value: string) => {
-        const validOrders = ["stargazers", "watchers", "last commit", "author", "date"];
-        if (!validOrders.includes(value)) return;
-
         setForm((prev) => ({ ...prev, forksOrder: value }));
     }, []);
 
     // TODO add better form validation
     const handleForksOrderAscDescChange = useCallback((value: string) => {
-        if (value !== "ascending" && value !== "descending") return;
-
         setForm((prev) => ({ ...prev, forksAscDesc: value }));
     }, []);
 

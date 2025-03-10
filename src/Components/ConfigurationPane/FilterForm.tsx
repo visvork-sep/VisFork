@@ -31,17 +31,17 @@ function FilterForm() {
 
     const {
         onSubmit,
-        repositoryInputValidation,
-        forksCountInputValidation,
-        recentlyUpdatedInputValidation,
-        commitsDateRangeFromInputValidation,
-        commitsDateRangeUntilInputValidation
+        repositoryInputError,
+        forksCountInputError,
+        recentlyUpdatedInputError,
+        commitsDateRangeFromInputError,
+        commitsDateRangeUntilInputError
     } = useFormSubmission(form);
 
     return <Box as="form" onSubmit={onSubmit}>
         <Stack direction={"vertical"}>
             <Stack.Item>
-                <RepositoryInput validation={repositoryInputValidation}
+                <RepositoryInput error={repositoryInputError}
                     onChangeHandler={handleRepositoryChange} value={form.repository} />
             </Stack.Item>
 
@@ -50,7 +50,7 @@ function FilterForm() {
             <Stack.Item>
                 <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
                     <Stack.Item>
-                        <ForksCountInput validation={forksCountInputValidation}
+                        <ForksCountInput error={forksCountInputError}
                             onChangeHandler={handleForksCountChange} value={form.forksCount} />
                     </Stack.Item>
 
@@ -64,12 +64,12 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitsDateRangeFromInput validation={commitsDateRangeFromInputValidation}
+                        <CommitsDateRangeFromInput error={commitsDateRangeFromInputError}
                             onChangeHandler={handleCommitsDateRangeFromChange} value={form.commitsDateRangeFrom} />
                     </Stack.Item>
 
                     <Stack.Item>
-                        <CommitsDateRangeUntilInput validation={commitsDateRangeUntilInputValidation}
+                        <CommitsDateRangeUntilInput error={commitsDateRangeUntilInputError}
                             onChangeHandler={handleCommitsDateRangeUntilChange} value={form.commitsDateRangeUntil} />
                     </Stack.Item>
                 </Stack>
@@ -90,7 +90,7 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <RecentlyUpdatedInput validation={recentlyUpdatedInputValidation}
+                        <RecentlyUpdatedInput error={recentlyUpdatedInputError}
                             onChangeHandler={handleRecentlyUpdatedChange} value={form.recentlyUpdated} />
                     </Stack.Item>
                 </Stack>

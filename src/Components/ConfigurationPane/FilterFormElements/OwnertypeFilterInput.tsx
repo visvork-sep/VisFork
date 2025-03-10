@@ -7,10 +7,7 @@ interface OwnerTypeFilterInputProps {
 }
 
 function OwnerTypeFilterInput({ onChangeHandler, checked }: OwnerTypeFilterInputProps) {
-    const checkBoxes = [
-        OWNER_TYPES.USER,
-        OWNER_TYPES.ORGANIZATION
-    ].map(t => (
+    const checkBoxes = Object.values(OWNER_TYPES).map(t => (
         <FormControl key={t.value}>
             <FormControl.Label>{t.label}</FormControl.Label>
             <Checkbox value={t.value} checked={checked.includes(t.value)} />
@@ -28,3 +25,4 @@ function OwnerTypeFilterInput({ onChangeHandler, checked }: OwnerTypeFilterInput
 export {
     OwnerTypeFilterInput
 };
+export type { OwnerTypeFilterInputProps };

@@ -6,10 +6,7 @@ interface ForksQueryOrderAscDescInputProps {
     selected: string
 }
 
-const options = [
-    SORT_DIRECTION.ASCENDING,
-    SORT_DIRECTION.DESCENDING
-].map((option) =>
+const options = Object.values(SORT_DIRECTION).map((option) =>
     (<Select.Option value={option.value} key={option.label}>{option.label}</Select.Option>)
 );
 
@@ -28,3 +25,5 @@ function ForksQueryOrderAscDescInput({ onChangeHandler, selected }: ForksQueryOr
 export {
     ForksQueryOrderAscDescInput
 };
+export type { ForksQueryOrderAscDescInputProps };
+

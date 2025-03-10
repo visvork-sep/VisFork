@@ -6,14 +6,8 @@ interface ForksQueryOrderInputProps {
     selected: string;
 }
 
-const options = [
-    FORKS_SORTING_ORDERS.STARGAZERS,
-    FORKS_SORTING_ORDERS.AUTHOR_STARS,
-    FORKS_SORTING_ORDERS.DATE,
-    FORKS_SORTING_ORDERS.LAST_COMMIT,
-    FORKS_SORTING_ORDERS.WATCHERS
-].map((option) =>
-    (<Select.Option value={option.value} key={option.label}>{option.label}</Select.Option>)
+const options = Object.values(FORKS_SORTING_ORDERS).map((option) =>
+    (<Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>)
 );
 
 function ForksQueryOrderInput({ onChangeHandler, selected }: ForksQueryOrderInputProps) {

@@ -7,11 +7,7 @@ interface ForksTypeFilterInputProps {
 }
 
 function ForksTypeFilterInput({ onChangeHandler, checked }: ForksTypeFilterInputProps) {
-    const checkBoxes = [
-        FORK_TYPES.ADAPTIVE,
-        FORK_TYPES.CORRECTIVE,
-        FORK_TYPES.PERFECTIVE
-    ].map(t => (
+    const checkBoxes = Object.values(FORK_TYPES).map(t => (
         <FormControl key={t.value}>
             <FormControl.Label>{t.label}</FormControl.Label>
             <Checkbox value={t.value} checked={checked.includes(t.value)} />

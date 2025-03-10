@@ -1,30 +1,13 @@
 import { FormControl, TextInput } from "@primer/react";
-
-type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameError" | "unknownError";
+import { RepositoryInputErrorsType } from "../../../Types/FormErrors";
 
 interface RepositoryInputProps {
-    validation?: RepositoryInputValidation;
+    error?: RepositoryInputErrorsType;
     onChangeHandler: (input: string) => void;
     value: string
 }
 
-function RepositoryInput({ validation, onChangeHandler, value }: RepositoryInputProps) {
-    let validationText: string | undefined;
-
-    switch (validation) {
-        case "syntaxError":
-            validationText = "Syntax must match <Owner>/<RepositoryName>";
-            break;
-        case "ownerError":
-            validationText = "Invalid repository owner";
-            break;
-        case "repositoryNameError":
-            validationText = "Invalid repository name";
-            break;
-        case "unknownError":
-            validationText = "Unknown error in field";
-    }
-
+function RepositoryInput({ error, onChangeHandler, value }: RepositoryInputProps) {
     return (
         <FormControl required id="repository">
             <FormControl.Label>Repository</FormControl.Label>
@@ -33,9 +16,9 @@ function RepositoryInput({ validation, onChangeHandler, value }: RepositoryInput
             <FormControl.Caption>
                 This is the repository that the visualizations will be based upon
             </FormControl.Caption>
-            {validationText &&
+            {error &&
                 <FormControl.Validation variant="error">
-                    {validationText}
+                    {error.message}
                 </FormControl.Validation>
             }
         </FormControl>
@@ -45,4 +28,4 @@ function RepositoryInput({ validation, onChangeHandler, value }: RepositoryInput
 export {
     RepositoryInput
 };
-export type { RepositoryInputProps, RepositoryInputValidation };
+export type { RepositoryInputProps };

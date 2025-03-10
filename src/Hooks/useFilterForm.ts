@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { FilterFormState } from "../Types/FilterForm";
-import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION } 
+import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION }
     from "@Utils/Constants";
 
 const initialForm: FilterFormState = {
@@ -27,13 +27,9 @@ function useFilterForm() {
     }, []);
 
     const handleForksCountChange = useCallback((input: string) => {
-        const regex = /^[1-9]\d*$/;
-        if (!regex.test(input)) return;
+        const value = Number(input);
 
-        const parsed = Number(input);
-        if (!Number.isSafeInteger(parsed)) return;
-
-        setForm((prev) => ({ ...prev, forksCount: parsed }));
+        setForm((prev) => ({ ...prev, forksCount: value ? value : undefined }));
     }, []);
 
     const handleForksOrderChange = useCallback((value: string) => {

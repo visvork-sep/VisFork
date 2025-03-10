@@ -1,4 +1,5 @@
 import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
+import { OWNER_TYPES } from "@Utils/Constants";
 
 interface OwnerTypeFilterInputProps {
     onChangeHandler: (selected: string[]) => void
@@ -6,17 +7,20 @@ interface OwnerTypeFilterInputProps {
 }
 
 function OwnerTypeFilterInput({ onChangeHandler, checked }: OwnerTypeFilterInputProps) {
+    const checkBoxes = [
+        OWNER_TYPES.USER,
+        OWNER_TYPES.ORGANIZATION
+    ].map(t => (
+        <FormControl key={t.value}>
+            <FormControl.Label>{t.label}</FormControl.Label>
+            <Checkbox value={t.value} checked={checked.includes(t.value)} />
+        </FormControl>
+    ));
+
     return (
         <CheckboxGroup onChange={onChangeHandler}>
             <CheckboxGroup.Label>Included owners</CheckboxGroup.Label>
-            <FormControl>
-                <FormControl.Label>User</FormControl.Label>
-                <Checkbox value="user" />
-            </FormControl>
-            <FormControl>
-                <FormControl.Label>Organization</FormControl.Label>
-                <Checkbox value="organization" />
-            </FormControl>
+            {checkBoxes}
         </CheckboxGroup>
     );
 }

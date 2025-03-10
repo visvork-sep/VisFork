@@ -29,7 +29,7 @@ function RepositoryInput({ validation, onChangeHandler, value }: RepositoryInput
         <FormControl required id="repository">
             <FormControl.Label>Repository</FormControl.Label>
             <TextInput type="text" placeholder="torvalds/linux" name="repository"
-                onChange={e => onChangeHandler(e.target.value)} />
+                onChange={e => onChangeHandler(e.target.value)} value={value} />
             <FormControl.Caption>
                 This is the repository that the visualizations will be based upon
             </FormControl.Caption>

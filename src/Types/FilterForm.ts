@@ -3,7 +3,7 @@
  */
 interface FilterFormState {
     repository: string;
-    forksCount: number;
+    forksCount?: number;
     forksOrder: string;
     forksAscDesc: string;
     commitsDateRangeFrom?: string;

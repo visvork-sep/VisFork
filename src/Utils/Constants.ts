@@ -31,11 +31,11 @@ export const SORT_DIRECTION = {
 export const FORK_TYPES = {
     PERFECTIVE: { label: "Perfective", value: "perfective" },
     ADAPTIVE: { label: "Adaptive", value: "Perfective" },
-    CORRECTIVE: { lable: "Corrective", value: "Corrective" }
+    CORRECTIVE: { label: "Corrective", value: "Corrective" }
 };
 
 /// Types of repository owners
 export const OWNER_TYPES = {
     USER: { label: "User", value: "user" },
-    ORGANIZATION: { Label: "Organization", value: "org" }
+    ORGANIZATION: { label: "Organization", value: "org" }
 };

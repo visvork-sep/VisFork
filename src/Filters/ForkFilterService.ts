@@ -1,26 +1,21 @@
 import { ForkFilter, DateRange, ForkType, OwnerType } from "../Types/ForkFilter";
-import { Fork } from "../Components/Plots/ForkList";
+import { ForkJSON } from "../Types/GithubTypes";
 
 
 export class ForkFilterService {
     /**
-     * Filters an array of {@link Fork} objects according to the passed {@link ForkFilter}.
+     * Filters an array of {@link ForkJSON} objects according to the passed {@link ForkFilter}.
      *
-     * @param forks Collection of {@link Fork}s to be filtered.
+     * @param forks Collection of {@link ForkJSON}s to be filtered.
      * @param filter The {@link ForkFilter} based on which the function picks out the desired forks.
      * 
-     * @returns an array of {@link Fork}s that do not contain forks that do not pass the filter,
+     * @returns an array of {@link ForkJSON}s that do not contain forks that do not pass the filter,
      * and all forks that do are in the returned array.
      */
-    filterAll(forks: Fork[], filter: ForkFilter): Fork[] {
-        const resultForks: Fork[] = [];
-
-        for (let fork of forks) {
-            const filteredFork: Fork | null = this.filter(fork, filter);
-            if (filteredFork !== null) {
-                resultForks.push(filteredFork);
-            }
-        }
+    applyAll(forks: ForkJSON[], filter: ForkFilter): ForkJSON[] {
+         const resultForks: ForkJSON[] = forks.filter(fork => {
+            this.#isValidForkByFilter(fork, filter);
+         });
 
         /* TODO sortBy */
 
@@ -28,14 +23,14 @@ export class ForkFilterService {
     }
 
     /**
-     * Function to apply a filter to a single {@link Fork} object.
+     * Function to apply a filter to a single {@link ForkJSON} object.
      *
-     * @param fork the {@link Fork} object to be filtered.
+     * @param fork the {@link ForkJSON} object to be filtered.
      * @param filter the {@link ForkFilter} to be applied.
      *
      * @returns the {@param fork} if it is valid according to the filter, {@code null} otherwise.
      */
-    filter(fork: Fork, filter: ForkFilter): Fork | null {
+    apply(fork: ForkJSON, filter: ForkFilter): ForkJSON | null {
         return this.#isValidForkByFilter(fork, filter) ? fork : null;
     }
 
@@ -46,7 +41,7 @@ export class ForkFilterService {
      * 
      * @throws Error, if {@param fork} is null or undefined.
      */
-    #isValidForkByFilter(fork: Fork, filter: ForkFilter): boolean {
+    #isValidForkByFilter(fork: ForkJSON, filter: ForkFilter): boolean {
         if (fork === null || fork === undefined) {
             throw Error("Fork is null or undefined");
         }
@@ -66,7 +61,7 @@ export class ForkFilterService {
      * @throws TypeError, if the date property of {@param fork} is undefined.
      * @throws TypeError, if both the start and end properties of {@param dateRange} are undefined.
      */
-    #isForkInDateRange(fork: Fork, dateRange: DateRange): boolean {
+    #isForkInDateRange(fork: ForkJSON, dateRange: DateRange): boolean {
         // if (fork.date === undefined) {
         //     throw TypeError("Fork date property is undefined");
         // }
@@ -90,7 +85,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code activeForksOnly === undefined || !activeForksOnly || fork.active === true}, false otherwise.
      */
-    #isForkActive(fork: Fork, activeForksOnly: boolean | undefined): boolean {
+    #isForkActive(fork: ForkJSON, activeForksOnly: boolean | undefined): boolean {
         let result: boolean = false;
 
         if (activeForksOnly === undefined || !activeForksOnly) {
@@ -108,7 +103,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code forkType === undefined || fork.type === forkType}, false otherwise.
      */
-    #isForkOfType(fork: Fork, forkType: ForkType | undefined): boolean {
+    #isForkOfType(fork: ForkJSON, forkType: ForkType | undefined): boolean {
         if (forkType === undefined) {
             return true; // since the user is not filtering based on this
         }
@@ -126,7 +121,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code ownerType === undefined || fork.ownerType === ownerType}, false otherwise.
      */
-    #isOwnerOfType(fork: Fork, ownerType: OwnerType | undefined): boolean {
+    #isOwnerOfType(fork: ForkJSON, ownerType: OwnerType | undefined): boolean {
         if (ownerType === undefined) {
             return true; // since the user is not filtering based on this
         }
@@ -144,7 +139,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code fork} was updated in the previous {@code nrOfMonths}, false otherwise.
      */
-    #isForkUpdatedInLastMonths(fork: Fork, nrOfMonths: number | undefined): boolean {
+    #isForkUpdatedInLastMonths(fork: ForkJSON, nrOfMonths: number | undefined): boolean {
         if (nrOfMonths === undefined) {
             return true; // since the user is not filtering based on this
         }

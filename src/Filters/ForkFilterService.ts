@@ -136,11 +136,7 @@ export class ForkFilterService {
             return true; // since the user is not filtering based on this
         }
 
-        let result: boolean = false; // placeholder
-
-        // let result: boolean = fork.ownerType === ownerType;
-
-        return result;
+        return fork.owner.type.toLowerCase() === ownerType;
     }
 
     /**

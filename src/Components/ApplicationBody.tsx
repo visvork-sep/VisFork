@@ -1,6 +1,6 @@
 import { Spinner, Stack } from "@primer/react";
 import { Blankslate } from "@primer/react/experimental";
-import CommitTimeline, { RawCommit } from "../Components/Plots/Plot2.tsx";
+import CommitTimeline from "../Components/Plots/Plot2.tsx";
 import commitData from "./Plots/commit_data_example.json";
 import { useMeasure } from "@uidotdev/usehooks";
 
@@ -18,7 +18,7 @@ function ApplicationBody() {
                     <Blankslate border>
                         <Blankslate.Heading>Plot{plot}</Blankslate.Heading>
                         <Blankslate.Visual>
-                            {plot === 1 ? <CommitTimeline data={commitData as RawCommit[]} 
+                            {plot === 1 ? <CommitTimeline data={commitData}
                                 width={(width ?? widthMeasurementError) - widthMeasurementError} 
                                 maxHeight={maxHeightCommitTimeline}/> : <Spinner/>}
                         </Blankslate.Visual>

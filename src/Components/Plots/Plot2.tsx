@@ -6,18 +6,12 @@ interface Commit {
   id: string;
   parentIds: string[];
   repo: string;
-  date: Date;
-}
-
-export interface RawCommit {
-  id: string;
-  parentIds: string[];
-  repo: string;
+  branch_name:string;
   date: string;
 }
 
 interface DagProps {
-  data: RawCommit[];
+  data: Commit[];
   width: number;
   maxHeight: number;
 }
@@ -30,7 +24,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const dateRankOperator: d3dag.Rank<Commit, unknown> = (
         node: d3dag.GraphNode<Commit, unknown>
     ): number => {
-        return node.data.date.getTime();
+        const date = new Date(node.data.date);
+        return date.getTime();
     };
 
 
@@ -40,25 +35,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         // clear previous visualization
         d3.select(svgRef.current).selectAll("*").remove();
 
-        // turn dates from the commit data into date objects for sorting
-        const commits: Commit[] = data.map((commit) => ({
-            ...commit,
-            date: new Date(commit.date),
-        }));
-
-        // sort 
-        commits.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-        // convert data for d3-dag
-        const dagData = commits.map((d) => ({
-            id: d.id,
-            parentIds: d.parentIds,
-            repo: d.repo,
-            date: d.date,
-        }));
-
         const builder = d3dag.graphStratify();
-        const dag = builder(dagData);
+        const dag = builder(data);
         
         const nodeRadius = 6;
 
@@ -146,6 +124,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                 tooltip.html(
                     `<strong>Commit</strong>: ${d.data.id}<br>
                     <strong>Repo</strong>: ${d.data.repo}<br>
+                    <strong>Branch</strong>: ${d.data.branch_name}<br>
                     <strong>Date</strong>: ${d.data.date.toLocaleString()}`
                 )
                     .style("left", (event.pageX) + "px")

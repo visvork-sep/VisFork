@@ -1,14 +1,16 @@
 import { useState, useCallback } from "react";
 import { FilterFormState } from "../Types/FilterForm";
+import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION } 
+    from "@Utils/Constants";
 
 const initialForm: FilterFormState = {
     repositoryOwner: "",
     repositoryName: "",
-    forksCount: 0,
-    forksOrder: "stargazers",
-    forksAscDesc: "ascending",
-    forksTypeFilter: [],
-    ownerTypeFilter: [],
+    forksCount: FORKS_COUNT_INPUT_INITIAL,
+    forksOrder: FORKS_SORTING_ORDERS.STARGAZERS.value,
+    forksAscDesc: SORT_DIRECTION.ASCENDING.value,
+    forksTypeFilter: [FORK_TYPES.ADAPTIVE.value, FORK_TYPES.CORRECTIVE.value, FORK_TYPES.PERFECTIVE.value],
+    ownerTypeFilter: [OWNER_TYPES.ORGANIZATION.value, OWNER_TYPES.USER.value],
 };
 
 function useFilterForm() {

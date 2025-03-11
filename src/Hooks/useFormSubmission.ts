@@ -29,6 +29,8 @@ function useFormSubmission(form: FilterFormState) {
         event.preventDefault();
 
         console.log(form);
+        //TODO add proper verification and error handling
+        //Error passing - not implemented
         setRepositoryInputError(RepositoryInputErrors.UnknownError);
         setForksCountInputError(ForksCountInputErrors.UnknownError);
         setRecentlyUpdatedInputError(RecentlyUpdatedInputErrors.UnknownError);

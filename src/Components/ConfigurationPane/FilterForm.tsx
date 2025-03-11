@@ -9,7 +9,7 @@ import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormEl
 import { ForksQueryOrderAscDescInput }
     from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilterInput";
-import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnertypeFilterInput";
+import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnerTypeFilterInput";
 import { CommitsDateRangeUntilInput }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
 import { useFilterForm } from "@Hooks/useFilterForm";

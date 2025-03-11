@@ -4,7 +4,7 @@ import { CommitsDateRangeUntilInputErrorsType } from "../../../Types/FormErrors"
 interface CommitsDateRangeUntilInputProps {
     error?: CommitsDateRangeUntilInputErrorsType;
     onChangeHandler: (input: string) => void;
-    value?: string;
+    value: string;
 };
 
 function CommitsDateRangeUntilInput({ error, onChangeHandler, value }: CommitsDateRangeUntilInputProps) {
@@ -12,7 +12,7 @@ function CommitsDateRangeUntilInput({ error, onChangeHandler, value }: CommitsDa
         <FormControl>
             <FormControl.Label>Commits until</FormControl.Label>
             <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
-            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} value={value ?? ""} />
+            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} value={value} />
             {error &&
                 <FormControl.Validation variant="error">
                     {error.message}

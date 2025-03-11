@@ -10,26 +10,24 @@ const initialForm: FilterFormState = {
     forksAscDesc: SORT_DIRECTION.ASCENDING.value,
     forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value),
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value),
+    commitsDateRangeFrom: "",
+    commitsDateRangeUntil: ""
 };
 
 function useFilterForm() {
     const [form, setForm] = useState<FilterFormState>(initialForm);
 
     const handleRepositoryChange = useCallback((input: string) => {
-        const words = input.split("/");
-        if (words.length !== 2) return;
-
         setForm((prev) => ({
             ...prev,
-            repositoryOwner: words[0],
-            repositoryName: words[1],
+            repository: input
         }));
     }, []);
 
     const handleForksCountChange = useCallback((input: string) => {
-        const value = Number(input);
+        const value = Number(input) || undefined;
 
-        setForm((prev) => ({ ...prev, forksCount: value ? value : undefined }));
+        setForm((prev) => ({ ...prev, forksCount: value }));
     }, []);
 
     const handleForksOrderChange = useCallback((value: string) => {

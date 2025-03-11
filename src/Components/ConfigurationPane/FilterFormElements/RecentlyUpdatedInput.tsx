@@ -14,7 +14,7 @@ function RecentlyUpdatedInput({ error, onChangeHandler, value }: RecentlyUpdated
             <FormControl.Label>Recently updated</FormControl.Label>
             <FormControl.Caption>Months since last update (max {RECENT_ACTIVITY_MAX_MONTHS})</FormControl.Caption>
             <TextInput type="number" min={RECENT_ACTIVITY_MIN_MONTHS} max={RECENT_ACTIVITY_MAX_MONTHS}
-                onChange={(e) => onChangeHandler(e.target.value)} value={value} />
+                onChange={(e) => onChangeHandler(e.target.value)} value={value ?? ""} />
             {error &&
                 <FormControl.Validation variant="error">
                     {error.message}

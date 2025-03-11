@@ -6,8 +6,8 @@ interface FilterFormState {
     forksCount?: number;
     forksOrder: string;
     forksAscDesc: string;
-    commitsDateRangeFrom?: string;
-    commitsDateRangeUntil?: string;
+    commitsDateRangeFrom: string;
+    commitsDateRangeUntil: string;
     forksTypeFilter: string[];
     ownerTypeFilter: string[];
     recentlyUpdated?: string;

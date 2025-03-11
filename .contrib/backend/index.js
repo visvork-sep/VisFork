@@ -11,7 +11,7 @@ const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 if (!FRONTEND_URL || !CLIENT_ID || !CLIENT_SECRET) {
-    console.error("env not set");
+    console.error("Environmen variables missing");
     return;
 }
 

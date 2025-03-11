@@ -95,9 +95,9 @@ export class ForkFilterService {
         if (activeForksOnly === undefined || !activeForksOnly) {
             result = true; // since activity is not a criterion in this case
         } else {
-            // TODO definition of active??
+            // TODO definition of active?? modified within past year? CHECK URD
             if (fork.archived !== undefined) {
-                result = fork.archived
+                result = fork.archived;
             }
             if (fork.disabled !== undefined) {
                 result = fork.disabled;

@@ -54,7 +54,6 @@ export function SankeyChart(
     {
         format = d3.format(","), // a function or format specifier for values in titles
         align = "justify", // convenience shorthand for nodeAlign
-        nodeId = (n) => n.index, // given d in nodes, returns a unique identifier (string)
         nodeGroup, // given d in nodes, returns an (ordinal) value for color
         nodeGroups = [], // an array of ordinal values representing the node groups
         nodeLabel, // given d in (computed) nodes, text to label the associated rect
@@ -74,7 +73,7 @@ export function SankeyChart(
         linkTitle = (l) => `${l.source.id} => ${l.target.id}`, // given d in (computed) links
         linkColor = "source-target", // source, target, source-target, or static color
         linkStrokeOpacity = 0.5, // link stroke opacity
-        linkMixBlendMode = "multiply", // link blending mode
+        linkMixBlendMode = "normal", // link blending mode
         colors = d3.schemeTableau10, // array of colors
         width = 640, // outer width, in pixels
         height = 400, // outer height, in pixels
@@ -84,11 +83,11 @@ export function SankeyChart(
         marginLeft = 1, // left margin, in pixels
     }: {    format?: (n: number) => string ; 
             align?: AlignType; 
-            nodeId?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => number | undefined;
+            nodeId?: (n: d3Sankey.SankeyNodeMinimal<{ id: string }, any>) => number | undefined;
             nodeGroup?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => number; 
             nodeGroups: Iterable<number>;
             nodeLabel?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string; 
-            nodeTitle?: (n: d3Sankey.SankeyNodeMinimal<{ id: string }, any>) => string; 
+            nodeTitle?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string; 
             nodeAlign?: (node: d3Sankey.SankeyNodeMinimal<any, any>, n: number) => number; 
             nodeWidth?: number;
             nodePadding?: number;
@@ -130,7 +129,8 @@ export function SankeyChart(
     if (nodes === undefined) {
         nodes = Array.from(d3.union(LS, LT), (id, index) => ({ id, index, x0: 0, x1: 0, y0: 0, y1: 0 }));
     }
-    const N = d3.map(nodes, nodeId).map(intern);
+    const N = d3.map(nodes as d3Sankey.SankeyNode<{ id: string }, any>[],(n) => n.id).map(intern);
+    console.log("N", N);
     const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
     // Replace the input nodes and links with mutable objects for the simulation.
     //nodes = d3.map(nodes, (_, i) => ({ id: N[i], index: i, x0: 0, x1: 0, y0: 0, y1: 0 }));
@@ -149,16 +149,8 @@ export function SankeyChart(
 
     // Construct the scales.
     const color = d3.scaleOrdinal(nodeGroups, colors);
- 
-    console.log("d3Sankey.sankey()", d3Sankey.sankey()
-        .nodeId(({ index: i }) => i !== undefined ? N[i] : undefined).nodeAlign(nodeAlign));
-    console.log("nodes", nodes);
-    console.log("links", links);
-    console.log("nodeId", nodeId(nodes[0]));
-    //console.log("NODEID:", nodes.id);
-    console.log("nodeId check - first node:", nodes[0]); 
-    // Compute the Sankey layout.
 
+    // Compute the Sankey layout.
     d3Sankey
         .sankey<{ id: string }, any>()
         .nodeId((d) => d.id)
@@ -262,6 +254,7 @@ export function SankeyChart(
             .append("g")
             .attr("font-family", "sans-serif")
             .attr("font-size", 10)
+            .attr("fill", "currentColor")
             .selectAll("text")
             .data(nodes)
             .join("text")

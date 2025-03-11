@@ -19,6 +19,14 @@ interface DagProps {
 
 const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
+    const colorMap = new Map();
+    const repoNames = new Set();
+    data.forEach(item => {
+        repoNames.add(item.repo);
+    });
+    for (const [i, repo] of [...repoNames].entries()) {
+        colorMap.set(repo, d3.interpolateRainbow(i / repoNames.size));
+    }
     // const svgWidth = 2000; // These values have been made very big to demonstrate the scrolling
     // const svgHeight = 2000; 
     
@@ -57,8 +65,6 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .attr("width", height) // note: swapped on purpose 
             .attr("height", width);
 
-        // color scale for each repository
-        const colorScale = d3.scaleOrdinal(d3.schemeObservable10);
         const curveSize = 15;
 
         // create edges 
@@ -119,7 +125,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .attr("cx", (d) => d.y ?? 0) // def value 0 to avoid eslint complaining
             .attr("cy", (d) => d.x ?? 0) // swap x and y to make the graph horizontal
             .attr("r", nodeRadius)
-            .attr("fill", (d) => colorScale(d.data.repo))
+            .attr("fill", (d) => colorMap.get(d.data.repo))
             .on("mouseover", (event, d) => {
                 tooltip.transition().duration(200).style("opacity", 0.9);
                 tooltip.html(

@@ -17,6 +17,18 @@ interface DagProps {
   maxHeight: number;
 }
 
+const CURVE_SIZE = 15;
+const EDGE_WIDTH = 2;
+const TOOLTIP_BG = "#f4f4f4";
+const TOOLTIP_BORDER = "1px solid #ccc";
+const TOOLTIP_PADDING = "8px";
+const TOOLTIP_BORDER_RADIUS = "4px";
+const TOOLTIP_FONT = "var(--text-body-shorthand-medium)";
+const TOOLTIP_MOUSEOVER_DUR = 200;
+const TOOLTIP_MOUSEOUT_DUR = 500;
+const LEGEND_DOT_SIZE = 10;
+const LEGEND_TEXT_MARGIN = "10px";
+
 const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const colorMap = new Map();
@@ -27,9 +39,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     for (const [i, repo] of [...repoNames].entries()) {
         colorMap.set(repo, d3.interpolateRainbow(i / repoNames.size));
     }
-    // const svgWidth = 2000; // These values have been made very big to demonstrate the scrolling
-    // const svgHeight = 2000; 
-    
+
     const dateRankOperator: d3dag.Rank<Commit, unknown> = (
         node: d3dag.GraphNode<Commit, unknown>
     ): number => {
@@ -49,7 +59,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         
         const nodeRadius = 6;
 
-        // TO-DO: fix layout, see helper functions in the d3-dag notebook
+        // TODO: fix layout, see helper functions in the d3-dag notebook
         const nodeSize = [nodeRadius * 2, nodeRadius * 2] as const;
         const shape = d3dag.tweakShape(nodeSize, d3dag.shapeEllipse);
         const layout = d3dag.grid()
@@ -65,8 +75,6 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .attr("width", height) // note: swapped on purpose 
             .attr("height", width);
 
-        const curveSize = 15;
-
         // create edges 
         svg.append("g")
             .selectAll("path")
@@ -75,16 +83,17 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .append("path")
             .attr("fill", "none")
             .attr("stroke", "#999")
-            .attr("stroke-width", 2)
+            .attr("stroke-width", EDGE_WIDTH)
             .attr("d", (d) => {
                 // Drawing the edges. Makes curves at branches and merges.
+                // TODO: change to work better for vertical up branching
                 if (d.source.x < d.target.x) {
                     return `
                         M${d.source.y},${d.source.x}
-                        L${d.source.y},${d.target.x - curveSize}
+                        L${d.source.y},${d.target.x - CURVE_SIZE}
                         C${d.source.y},${d.target.x}
                         ${d.source.y},${d.target.x}
-                        ${d.source.y + curveSize},${d.target.x}
+                        ${d.source.y + CURVE_SIZE},${d.target.x}
                         L${d.target.y},${d.target.x}
                     `;
                 } else if (d.source.x === d.target.x) {
@@ -95,10 +104,10 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                 } else {
                     return `
                         M${d.source.y},${d.source.x}
-                        L${d.target.y - curveSize},${d.source.x}
+                        L${d.target.y - CURVE_SIZE},${d.source.x}
                         C${d.target.y},${d.source.x}
                         ${d.target.y},${d.source.x}
-                        ${d.target.y},${d.source.x - curveSize}
+                        ${d.target.y},${d.source.x - CURVE_SIZE}
                         L${d.target.y},${d.target.x}
                     `;
                 }
@@ -108,13 +117,13 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .append("div")
             .attr("class", "tooltip")
             .style("position", "absolute")
-            .style("background", "#f4f4f4")
-            .style("padding", "8px")
-            .style("border", "1px solid #ccc")
-            .style("border-radius", "4px")
+            .style("background", TOOLTIP_BG)
+            .style("padding", TOOLTIP_PADDING)
+            .style("border", TOOLTIP_BORDER)
+            .style("border-radius", TOOLTIP_BORDER_RADIUS)
             .style("pointer-events", "none")
             .style("opacity", 0)
-            .style("font", "var(--text-body-shorthand-medium)");
+            .style("font", TOOLTIP_FONT);
 
         // create nodes
         svg.append("g")
@@ -127,7 +136,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .attr("r", nodeRadius)
             .attr("fill", (d) => colorMap.get(d.data.repo))
             .on("mouseover", (event, d) => {
-                tooltip.transition().duration(200).style("opacity", 0.9);
+                tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
                 tooltip.html(
                     `<strong>Commit</strong>: ${d.data.id}<br>
                     <strong>Repo</strong>: ${d.data.repo}<br>
@@ -142,7 +151,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                     .style("top", (event.pageY) + "px");
             })
             .on("mouseout", () => {
-                tooltip.transition().duration(500).style("opacity", 0);
+                tooltip.transition().duration(TOOLTIP_MOUSEOUT_DUR).style("opacity", 0);
             })
             .on("click", (_event, d) => {
                 window.open(d.data.url);
@@ -159,20 +168,18 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             div
                 .append("svg")
                 .style("overflow", "visible")
-                .attr("width", 10)
-                .attr("height", 10)
+                .attr("width", LEGEND_DOT_SIZE)
+                .attr("height", LEGEND_DOT_SIZE)
                 .append("circle")
-                .attr("cx", 5)
-                .attr("cy", 5)
-                .attr("r", 5)
+                .attr("cx", LEGEND_DOT_SIZE / 2)
+                .attr("cy", LEGEND_DOT_SIZE / 2)
+                .attr("r",  LEGEND_DOT_SIZE / 2)
                 .attr("fill", value);
             // append a text to this div
             div.append("text")
                 .text(key)
                 .style("display", "inline-block")
-                .style("font-size", "1em")
-                .style("margin-left", "10px")
-                .style("margin-top", "0px");
+                .style("margin-left", LEGEND_TEXT_MARGIN);
         });
         
         return () => {

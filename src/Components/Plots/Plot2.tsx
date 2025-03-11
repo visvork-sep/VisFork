@@ -19,7 +19,7 @@ interface DagProps {
 
 const CURVE_SIZE = 15;
 const EDGE_WIDTH = 2;
-const TOOLTIP_BG = "#f4f4f4";
+const TOOLTIP_BG_COLOR = "#f4f4f4";
 const TOOLTIP_BORDER = "1px solid #ccc";
 const TOOLTIP_PADDING = "8px";
 const TOOLTIP_BORDER_RADIUS = "4px";
@@ -28,6 +28,7 @@ const TOOLTIP_MOUSEOVER_DUR = 200;
 const TOOLTIP_MOUSEOUT_DUR = 500;
 const LEGEND_DOT_SIZE = 10;
 const LEGEND_TEXT_MARGIN = "10px";
+const EDGE_STROKE_COLOR = "#999";
 
 const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
@@ -82,7 +83,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .enter()
             .append("path")
             .attr("fill", "none")
-            .attr("stroke", "#999")
+            .attr("stroke", EDGE_STROKE_COLOR)
             .attr("stroke-width", EDGE_WIDTH)
             .attr("d", (d) => {
                 // Drawing the edges. Makes curves at branches and merges.
@@ -117,7 +118,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .append("div")
             .attr("class", "tooltip")
             .style("position", "absolute")
-            .style("background", TOOLTIP_BG)
+            .style("background", TOOLTIP_BG_COLOR)
             .style("padding", TOOLTIP_PADDING)
             .style("border", TOOLTIP_BORDER)
             .style("border-radius", TOOLTIP_BORDER_RADIUS)

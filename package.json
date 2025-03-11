@@ -15,7 +15,8 @@
     "lint": " eslint . --max-warnings 0",
     "test": "npm run test-coverage",
     "test-coverage": "jest --forceExit --coverage --verbose",
-    "test-slim": "jest --forceExit --passWithNoTests"
+    "test-slim": "jest --forceExit --passWithNoTests",
+    "start": "npm install && npm run dev"
   },
   "author": "Ren Fu",
   "license": "MIT",

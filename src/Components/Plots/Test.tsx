@@ -75,7 +75,7 @@ const Test: React.FC = () => {
             .range([contextHeight, 0]);
 
         // Define scales for focus chart
-        const xScaleFocus = d3.scaleBand().domain(formattedDates).range([0, focusWidth]).padding(0.1);
+        let xScaleFocus = d3.scaleBand().domain(formattedDates).range([0, focusWidth]).padding(0.1);
         const yScaleFocus = d3.scaleLinear()
             .domain([0, d3.max(Array.from(frequency.values())) || 1])
             .range([focusHeight, 0]);
@@ -132,10 +132,7 @@ const Test: React.FC = () => {
 
         // Brush setup
         const brush = d3.brushX()
-            .extent([[0, 0], [contextWidth
-                , contextHeight
-
-            ]])
+            .extent([[0, 0], [contextWidth, contextHeight]])
             .on("brush", ({ selection }) => {
                 if (selection) {
                     const [x0, x1] = selection;
@@ -150,6 +147,42 @@ const Test: React.FC = () => {
                         return pos >= x0 && pos <= x1;
                     });
                     console.log("Selected Dates:", selectedDates);
+
+                    xScaleFocus = d3.scaleBand()
+                        .domain(selectedDates.map(d => d3.timeFormat("%b %Y")(d[0])))
+                        .range([0, focusWidth])
+                        .padding(0.1);
+                    chartFocus.selectAll(".bar").remove();
+
+                    chartFocus.selectAll(".bar-bg")
+                        .data(Array.from(selectedDates))
+                        .enter()
+                        .append("rect")
+                        .attr("class", "bar-bg")
+                        .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
+                        .attr("y", 0)
+                        .attr("width", xScaleFocus.bandwidth())
+                        .attr("height", focusHeight)
+                        .style("fill", "gray");
+
+                    chartFocus.selectAll(".bar")
+                        .data(Array.from(selectedDates))
+                        .enter()
+                        .append("rect")
+                        .attr("class", "bar")
+                        .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
+                        .attr("y", d => yScaleFocus(d[1]))
+                        .attr("width", xScaleFocus.bandwidth())
+                        .attr("height", d => focusHeight - yScaleFocus(d[1]))
+                        .style("fill", "blue")
+                        .on("mouseover", function () { tooltip.style("opacity", 1); })
+                        .on("mousemove", function (event, d) {
+                            tooltip.html(`Date: ${d3.timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`)
+                                .style("left", event.pageX + 10 + "px")
+                                .style("top", event.pageY + 10 + "px");
+                        })
+                        .on("mouseout", function () { tooltip.style("opacity", 0); });
+
                 }
             });
 
@@ -176,34 +209,8 @@ const Test: React.FC = () => {
         //     .attr("width", focusWidth)
         //     .attr("height", focusHeight)
         //     .style("fill", "beige");
-        chartFocus.selectAll(".bar-bg")
-            .data(Array.from(frequency))
-            .enter()
-            .append("rect")
-            .attr("class", "bar-bg")
-            .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
-            .attr("y", 0)
-            .attr("width", xScaleFocus.bandwidth())
-            .attr("height", focusHeight)
-            .style("fill", "gray");
 
-        chartFocus.selectAll(".bar")
-            .data(Array.from(frequency))
-            .enter()
-            .append("rect")
-            .attr("class", "bar")
-            .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
-            .attr("y", d => yScaleFocus(d[1]))
-            .attr("width", xScaleFocus.bandwidth())
-            .attr("height", d => focusHeight - yScaleFocus(d[1]))
-            .style("fill", "blue")
-            .on("mouseover", function () { tooltip.style("opacity", 1); })
-            .on("mousemove", function (event, d) {
-                tooltip.html(`Date: ${d3.timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`)
-                    .style("left", event.pageX + 10 + "px")
-                    .style("top", event.pageY + 10 + "px");
-            })
-            .on("mouseout", function () { tooltip.style("opacity", 0); });
+
 
 
         // Tooltip setup

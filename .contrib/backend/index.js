@@ -1,12 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const axios = require("axios");
-require("dotenv").config();
-
-
-// Load environment variables from .env file
-dotenv.config();
+require("dotenv").config(); // Load environment variables from .env file
 
 // Load frontend and backend URLs from environment variables
 const FRONTEND_URL = process.env.FRONTEND_URL;

@@ -147,6 +147,33 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .on("click", (_event, d) => {
                 window.open(d.data.url);
             });;
+            
+        // display legends for the colors in #dag-legends
+        const legend = d3.select("#dag-legends");
+        legend.selectAll("div").remove();
+        colorMap.forEach((value, key) => {
+            const div = legend
+                .append("div")
+                .style("align-items", "center");
+            // append a circle to this div
+            div
+                .append("svg")
+                .style("overflow", "visible")
+                .attr("width", 10)
+                .attr("height", 10)
+                .append("circle")
+                .attr("cx", 5)
+                .attr("cy", 5)
+                .attr("r", 5)
+                .attr("fill", value);
+            // append a text to this div
+            div.append("text")
+                .text(key)
+                .style("display", "inline-block")
+                .style("font-size", "1em")
+                .style("margin-left", "10px")
+                .style("margin-top", "0px");
+        });
         
         return () => {
             tooltip.remove();
@@ -164,6 +191,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             <svg ref={svgRef}> {}
                 {}
             </svg>
+            <div id="dag-legends">{/* Legends */}</div>
         </div>
     );
 };

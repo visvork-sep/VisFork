@@ -45,14 +45,11 @@ function GitHubCallback() {
         if (accessToken) {
             login(accessToken);
             navigate("/");
+        } else {
+            return <div>Error: Invalid access token received</div>;
         }
     }
-
-    return (
-        <>
-            An error has occurred
-        </>
-    );
+    return <div>Error: Authentication failed. Please try again.</div>;
 }
 
 export default GitHubCallback;

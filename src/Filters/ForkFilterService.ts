@@ -150,10 +150,20 @@ export class ForkFilterService {
             return true; // since the user is not filtering based on this
         }
 
-        let result: boolean = false; // placeholder
+        let lastUpdatedMilliseconds: number = -1;
 
-        // let result: boolean = fork.lastUpdated.getMilliseconds() > Date.now() - nrOfMonths.toMilliseconds();
+        if (fork.updated_at !== undefined && fork.updated_at !== null) {
+            lastUpdatedMilliseconds = Date.parse(fork.updated_at);
+        }
 
-        return result;
+        const thresholdMilliseconds = Date.now() - this.#getDateMonthsBeforeMilliseconds(nrOfMonths);
+
+        return lastUpdatedMilliseconds >= thresholdMilliseconds;
+    }
+
+    #getDateMonthsBeforeMilliseconds(nrOfMonths: number): number {
+        const now = new Date();
+        now.setMonth(now.getMonth() - nrOfMonths);
+        return now.getMilliseconds();
     }
 }

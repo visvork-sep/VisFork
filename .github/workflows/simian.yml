@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
@@ -26,7 +27,7 @@ jobs:
         id: cache-simian
         uses: actions/cache@v3
         with:
-          path: simian.jar
+          path: simian-4.0.0.jar
           key: simian-4.0.0
 
       - name: Download Simian JAR (if not cached)

@@ -1,33 +1,37 @@
-import js from "@eslint/js";
 import globals from "globals";
-import pluginQuery from '@tanstack/eslint-plugin-query'
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
+import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
+import pluginReact from "eslint-plugin-react";
+import "eslint-plugin-only-warn";
 
-export default tseslint.config(
-  { ignores: ["dist"] },
-  {
-    extends: [js.configs.recommended, tseslint.configs.recommended, pluginQuery.configs["flat/recommended"]],
-    files: ["**/*.{ts,tsx}"],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+    {ignores: ["dist/", "node_modules/", "__generated__/"]},
+    {files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"]},
+    {languageOptions: { globals: globals.browser }},
+    pluginJs.configs.recommended,
+    ...tseslint.configs.recommended,
+    ...tseslint.configs.strict,
+    ...tseslint.configs.stylistic,
+    pluginReact.configs.flat.recommended,
+    {
+        rules: {
+            "eol-last": ["warn", "always"],
+            "quotes": ["warn", "double", {}],
+            "no-irregular-whitespace": ["warn"],
+            "semi": ["warn", "always"],
+            "max-len": ["warn", { code: 120, tabWidth: 4 }],
+            "indent": ["warn", 4, { SwitchCase: 1 }],
+            "react/jsx-indent": ["warn", 4],
+            "react/jsx-indent-props": ["warn", 4],
+            "react/react-in-jsx-scope": "off" // Ignore "React must be in scope" rule
+        }
     },
-    plugins: {
-      "react-hooks": reactHooks,
-      "react-refresh": reactRefresh,
-    },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      semi: ["error", "always"],
-      quotes: ["error", "double"],
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
-    },
-  },
-);
+    {
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
+    }
+];

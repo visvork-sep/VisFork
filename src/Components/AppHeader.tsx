@@ -1,7 +1,6 @@
 import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
 import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@primer/react";
-//TODO replace this component with a non-deprecated one
-import { ActionList } from "@primer/react/deprecated";
+import { ActionList } from "@primer/react";
 import { useCallback, useState } from "react";
 import { useAuth } from "@Providers/AuthProvider";
 import { redirectLogin } from "@Utils/Auth";
@@ -62,7 +61,6 @@ function AppHeader() {
         const newMode = currentlyDarkMode ? "day" : "dark";
         setColorMode(newMode);
     }, [currentlyDarkMode, setColorMode]);
-
     return (
         <>
             <Stack direction="horizontal" align="center">
@@ -76,28 +74,31 @@ function AppHeader() {
                     {loginOrAvatar}
                 </Stack.Item>
             </Stack>
-
+    
             {/* Side panel for user settings, opens when 'isOpen' is true */}
             {isOpen && (
-                <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
+                <Dialog title="Settings" onClose={onDialogClose} position="right" width="small">
                     <ActionMenu>
-                        <ActionList
-                            items={[
-                                {
-                                    text: "Colorblind mode", onClick: onToggleColorblindMode,
-                                    selected: currentlyColorblindMode, "aria-label": "Toggle colorblind mode"
-                                },
-                                {
-                                    text: currentlyDarkMode ? "Light mode" : "Dark mode", onClick: onToggleDarkMode,
-                                    leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon,
-                                    "aria-label": "Toggle light mode"
-                                },
-                                ActionList.Divider,
-                                {
-                                    text: "Sign out", onClick: handleLogout, variant: "danger",
-                                    "aria-label": "Sign out button"
-                                },
-                            ]}>
+                        <ActionList>
+                            <ActionList.Item onClick={onToggleColorblindMode} aria-label="Toggle colorblind mode">
+                                Colorblind mode
+                            </ActionList.Item>
+    
+                            <ActionList.Item 
+                                onClick={onToggleDarkMode} 
+                                aria-label="Toggle light mode"
+                            >
+                                <ActionList.LeadingVisual>
+                                    {currentlyDarkMode ? <SunIcon /> : <MoonIcon />}
+                                </ActionList.LeadingVisual>
+                                {currentlyDarkMode ? "Light mode" : "Dark mode"}
+                            </ActionList.Item>
+    
+                            <ActionList.Divider />
+    
+                            <ActionList.Item onClick={handleLogout} variant="danger" aria-label="Sign out button">
+                                Sign out
+                            </ActionList.Item>
                         </ActionList>
                     </ActionMenu>
                 </Dialog>
@@ -105,5 +106,4 @@ function AppHeader() {
         </>
     );
 }
-
 export default AppHeader;

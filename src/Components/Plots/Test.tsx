@@ -18,9 +18,10 @@ const Test: React.FC = () => {
         new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
         new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01")
         , new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
-        new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
+        new Date("2020-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
         new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01")
+        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
+
     ], []);
 
     /**
@@ -50,15 +51,17 @@ const Test: React.FC = () => {
         const svg = d3.select(svgRef.current);
         const container = svg.node()?.parentElement as HTMLElement;
         const width = container.clientWidth;
-        const height = 682;
+        const height = 400;
 
-        const smallMargin = { top: 12, right: 0, bottom: 48, left: 0 };
-        const smallHeight = 100;
+        const smallMargin = { top: 12, right: 10, bottom: 48, left: 10 };
+        const smallHeight = 0.25 * height - smallMargin.top - smallMargin.bottom;
         const smallWidth = width - smallMargin.left - smallMargin.right;
 
-        const bigMargin = { top: 48, right: 0, bottom: 24, left: 0 };
-        const bigHeight = 450;
+        const bigMargin = { top: 48, right: 10, bottom: 24, left: 10 };
+        const bigHeight = 0.75 * height - bigMargin.top - bigMargin.bottom;
         const bigWidth = width - bigMargin.left - bigMargin.right;
+
+
 
         // const margin = { top: 10, right: 20, bottom: 50, left: 20 };
         // const chartWidth = width - margin.left - margin.right;
@@ -78,12 +81,38 @@ const Test: React.FC = () => {
             .range([bigHeight, 0]);
 
         // Set SVG size
-        svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
+        svg.attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .style("border", "1px solid black");
         svg.selectAll("*").remove();
+
+        // const sq = svg.append("g").attr("transform", "translate(0,1700)").style("fill", "red");
+        // sq.append("rect").attr("x", 0).attr("y", 0).attr("width", 100).attr("height", 100);
 
         const chartSmall = svg.append("g")
             .attr("class", "chartSmall")
-            .attr("transform", `translate(${smallMargin.left},${smallMargin.top})`);
+            .attr("transform", `translate(${smallMargin.left},
+            ${bigHeight + bigMargin.top + bigMargin.bottom + smallMargin.top})`);
+
+        chartSmall.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", smallWidth)
+            .attr("height", smallHeight)
+            .style("fill", "beige");
+
+        chartSmall.selectAll(".bar-bg")
+            .data(Array.from(frequency))
+            .enter()
+            .append("rect")
+            .attr("class", "bar-bg")
+            .attr("x", d => xScaleSmall(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("y", 0)
+            .attr("width", xScaleSmall.bandwidth())
+            .attr("height", smallHeight)
+            .style("fill", "gray");
+
 
         // Draw bars for small chart
         chartSmall.selectAll(".bar")
@@ -96,6 +125,7 @@ const Test: React.FC = () => {
             .attr("width", xScaleSmall.bandwidth())
             .attr("height", d => smallHeight - yScaleSmall(d[1]))
             .style("fill", "green");
+
 
         // Brush setup
         const brush = d3.brushX()
@@ -130,20 +160,45 @@ const Test: React.FC = () => {
             .attr("transform", "rotate(-45)");
 
         // Draw bars for big chart
-        // const chartBig = svg.append("g")
-        //     .attr("class", "chartBig")
-        //     .attr("transform", `translate(${bigMargin.left},${bigMargin.top})`);
+        const chartBig = svg.append("g")
+            .attr("class", "chartBig")
+            .attr("transform", `translate(${bigMargin.left},${bigMargin.top})`);
 
-        // chartBig.selectAll(".bar")
-        //     .data(Array.from(frequency))
-        //     .enter()
-        //     .append("rect")
-        //     .attr("class", "bar")
-        //     .attr("x", d => xScaleBig(d3.timeFormat("%b %Y")(d[0])) || 0)
-        //     .attr("y", d => yScaleBig(d[1]))
-        //     .attr("width", xScaleBig.bandwidth())
-        //     .attr("height", d => bigHeight - yScaleBig(d[1]))
-        //     .style("fill", "blue");
+        // chartBig.append("rect")
+        //     .attr("x", 0)
+        //     .attr("y", 0)
+        //     .attr("width", bigWidth)
+        //     .attr("height", bigHeight)
+        //     .style("fill", "beige");
+        chartBig.selectAll(".bar-bg")
+            .data(Array.from(frequency))
+            .enter()
+            .append("rect")
+            .attr("class", "bar-bg")
+            .attr("x", d => xScaleBig(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("y", 0)
+            .attr("width", xScaleBig.bandwidth())
+            .attr("height", bigHeight)
+            .style("fill", "gray");
+
+        chartBig.selectAll(".bar")
+            .data(Array.from(frequency))
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", d => xScaleBig(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("y", d => yScaleBig(d[1]))
+            .attr("width", xScaleBig.bandwidth())
+            .attr("height", d => bigHeight - yScaleBig(d[1]))
+            .style("fill", "blue")
+            .on("mouseover", function () { tooltip.style("opacity", 1); })
+            .on("mousemove", function (event, d) {
+                tooltip.html(`Date: ${d3.timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`)
+                    .style("left", event.pageX + 10 + "px")
+                    .style("top", event.pageY + 10 + "px");
+            })
+            .on("mouseout", function () { tooltip.style("opacity", 0); });
+
 
         // Tooltip setup
         const tooltip = d3.select("body").append("div")
@@ -155,15 +210,6 @@ const Test: React.FC = () => {
             .style("border-radius", "4px")
             .style("pointer-events", "none")
             .style("opacity", 0);
-
-
-        // .on("mouseover", function () { tooltip.style("opacity", 1); })
-        // .on("mousemove", function (event, d) {
-        //     tooltip.html(`Date: ${d3.timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`)
-        //         .style("left", event.pageX + 10 + "px")
-        //         .style("top", event.pageY + 10 + "px");
-        // })
-        // .on("mouseout", function () { tooltip.style("opacity", 0); });
 
     }, [frequency]);
 
@@ -177,7 +223,7 @@ const Test: React.FC = () => {
         <div style={{ textAlign: "center", padding: "20px", borderRadius: "10px" }}>
             <h1 style={{ fontSize: "18px", marginBottom: "10px", fontWeight: "bold" }}>Slide to select a date range</h1>
             <svg ref={svgRef} style={
-                { width: "100%", height: "150px", borderRadius: "8px", marginBottom: "10px" }
+                { width: "100%", height: "100%", borderRadius: "8px", marginBottom: "10px" }
             }></svg>
         </div>
     );

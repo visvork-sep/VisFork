@@ -11,8 +11,8 @@ const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 const PORT = process.env.PORT;
 if (!FRONTEND_URL || !CLIENT_ID || !CLIENT_SECRET) {
-    console.error("Environmen variables missing");
-    return;
+    console.error("Missing required environment variables: FRONTEND_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET");
+    process.exit(1);
 }
 
 // Initialize Express application

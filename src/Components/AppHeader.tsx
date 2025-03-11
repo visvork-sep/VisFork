@@ -3,9 +3,22 @@ import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@prime
 import { ActionList } from "@primer/react";
 import { useCallback, useState } from "react";
 import { useAuth } from "@Providers/AuthProvider";
-import { redirectLogin } from "@Utils/Auth";
 import { SkeletonAvatar } from "@primer/react/experimental";
 import { useAvatarUrl } from "@Hooks/useAvatarUrl";
+import { AUTH_URL } from "@Utils/Constants";
+
+/**
+ * Redirects the user to GitHub OAuth login.
+ *
+ * This function initiates the authentication flow by redirecting the user 
+ * to the GitHub OAuth authorization endpoint. A small timeout is used 
+ * to accommodate Safari's behavior with redirects.
+ */
+function redirectLogin() {
+    setTimeout(() => { // timeout for Safari behavior
+        window.location.href = AUTH_URL + "/auth/github";
+    }, 250);
+}
 
 /**
  * AppHeader Component

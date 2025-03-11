@@ -4,8 +4,8 @@ import { ActionList } from "@primer/react";
 import { useCallback, useState } from "react";
 import { useAuth } from "@Providers/AuthProvider";
 import { SkeletonAvatar } from "@primer/react/experimental";
-import { useAvatarUrl } from "@Hooks/useAvatarUrl";
 import { AUTH_URL } from "@Utils/Constants";
+import { useFetchAvatarUrl } from "../queries/queries";
 
 /**
  * Redirects the user to GitHub OAuth login.
@@ -29,7 +29,8 @@ function redirectLogin() {
 function AppHeader() {
     /** Controls the visibility of the settings side panel */
     const { isAuthenticated, logout } = useAuth();
-    const avatarUrl = useAvatarUrl();
+    const { data } = useFetchAvatarUrl({});
+    const avatarUrl = data?.viewer.avatarUrl as string | undefined;
 
     const { colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);

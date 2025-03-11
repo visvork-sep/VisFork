@@ -53,32 +53,32 @@ const Test: React.FC = () => {
         const width = container.clientWidth;
         const height = 400;
 
-        const smallMargin = { top: 12, right: 10, bottom: 48, left: 10 };
-        const smallHeight = 0.25 * height - smallMargin.top - smallMargin.bottom;
-        const smallWidth = width - smallMargin.left - smallMargin.right;
+        const contextMargin = { top: 12, right: 10, bottom: 48, left: 10 };
+        const contextHeight = 0.25 * height - contextMargin.top - contextMargin.bottom;
+        const contextWidth = width - contextMargin.left - contextMargin.right;
 
-        const bigMargin = { top: 48, right: 10, bottom: 24, left: 10 };
-        const bigHeight = 0.75 * height - bigMargin.top - bigMargin.bottom;
-        const bigWidth = width - bigMargin.left - bigMargin.right;
-
-
+        const focusMargin = { top: 48, right: 10, bottom: 24, left: 10 };
+        const focusHeight = 0.75 * height - focusMargin.top - focusMargin.bottom;
+        const focusWidth = width - focusMargin.left - focusMargin.right;
 
         // const margin = { top: 10, right: 20, bottom: 50, left: 20 };
         // const chartWidth = width - margin.left - margin.right;
         // const chartHeight = height - margin.top - margin.bottom;
 
-        // Define scales for small chart
+        // Define scales for context chart
         const formattedDates = Array.from(frequency.keys()).map(d => d3.timeFormat("%b %Y")(d));
-        const xScaleSmall = d3.scaleBand().domain(formattedDates).range([0, smallWidth]).padding(0.1);
-        const yScaleSmall = d3.scaleLinear()
-            .domain([0, d3.max(Array.from(frequency.values())) || 1])
-            .range([smallHeight, 0]);
+        const xScaleContext = d3.scaleBand().domain(formattedDates).range([0, contextWidth
 
-        // Define scales for big chart
-        const xScaleBig = d3.scaleBand().domain(formattedDates).range([0, bigWidth]).padding(0.1);
-        const yScaleBig = d3.scaleLinear()
+        ]).padding(0.1);
+        const yScaleContext = d3.scaleLinear()
             .domain([0, d3.max(Array.from(frequency.values())) || 1])
-            .range([bigHeight, 0]);
+            .range([contextHeight, 0]);
+
+        // Define scales for focus chart
+        const xScaleFocus = d3.scaleBand().domain(formattedDates).range([0, focusWidth]).padding(0.1);
+        const yScaleFocus = d3.scaleLinear()
+            .domain([0, d3.max(Array.from(frequency.values())) || 1])
+            .range([focusHeight, 0]);
 
         // Set SVG size
         svg.attr("width", width)
@@ -90,106 +90,116 @@ const Test: React.FC = () => {
         // const sq = svg.append("g").attr("transform", "translate(0,1700)").style("fill", "red");
         // sq.append("rect").attr("x", 0).attr("y", 0).attr("width", 100).attr("height", 100);
 
-        const chartSmall = svg.append("g")
-            .attr("class", "chartSmall")
-            .attr("transform", `translate(${smallMargin.left},
-            ${bigHeight + bigMargin.top + bigMargin.bottom + smallMargin.top})`);
+        const chartContext = svg.append("g")
+            .attr("class", "chartContext")
+            .attr("transform", `translate(${contextMargin.left},
+            ${focusHeight + focusMargin.top + focusMargin.bottom + contextMargin.top})`);
 
-        chartSmall.append("rect")
+        chartContext.append("rect")
             .attr("x", 0)
             .attr("y", 0)
-            .attr("width", smallWidth)
-            .attr("height", smallHeight)
+            .attr("width", contextWidth
+
+            )
+            .attr("height", contextHeight
+
+            )
             .style("fill", "beige");
 
-        chartSmall.selectAll(".bar-bg")
+        chartContext.selectAll(".bar-bg")
             .data(Array.from(frequency))
             .enter()
             .append("rect")
             .attr("class", "bar-bg")
-            .attr("x", d => xScaleSmall(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("x", d => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
             .attr("y", 0)
-            .attr("width", xScaleSmall.bandwidth())
-            .attr("height", smallHeight)
+            .attr("width", xScaleContext.bandwidth())
+            .attr("height", contextHeight
+
+            )
             .style("fill", "gray");
 
 
-        // Draw bars for small chart
-        chartSmall.selectAll(".bar")
+        // Draw bars for context chart
+        chartContext.selectAll(".bar")
             .data(Array.from(frequency))
             .enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", d => xScaleSmall(d3.timeFormat("%b %Y")(d[0])) || 0)
-            .attr("y", d => yScaleSmall(d[1]))
-            .attr("width", xScaleSmall.bandwidth())
-            .attr("height", d => smallHeight - yScaleSmall(d[1]))
+            .attr("x", d => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("y", d => yScaleContext(d[1]))
+            .attr("width", xScaleContext.bandwidth())
+            .attr("height", d => contextHeight
+                - yScaleContext(d[1]))
             .style("fill", "green");
 
 
         // Brush setup
         const brush = d3.brushX()
-            .extent([[0, 0], [smallWidth, smallHeight]])
+            .extent([[0, 0], [contextWidth
+                , contextHeight
+
+            ]])
             .on("brush", ({ selection }) => {
                 if (selection) {
                     const [x0, x1] = selection;
-                    chartSmall.selectAll(".bar").style("fill", (d: unknown) => {
+                    chartContext.selectAll(".bar").style("fill", (d: unknown) => {
                         const data = d as [Date, number];
-                        const pos = xScaleSmall(d3.timeFormat("%b %Y")(data[0])) as number;
+                        const pos = xScaleContext(d3.timeFormat("%b %Y")(data[0])) as number;
                         return pos >= x0 && pos <= x1 ? "red" : "green";
                     });
                     // .style("fill", d => selected.indexOf(d.x) > -1 ? "ref" : "green");
                     const selectedDates = Array.from(frequency).filter(d => {
-                        const pos = xScaleSmall(d3.timeFormat("%b %Y")(d[0])) as number;
+                        const pos = xScaleContext(d3.timeFormat("%b %Y")(d[0])) as number;
                         return pos >= x0 && pos <= x1;
                     });
                     console.log("Selected Dates:", selectedDates);
                 }
             });
 
-        chartSmall.append("g").attr("class", "brush").call(brush);
+        chartContext.append("g").attr("class", "brush").call(brush);
 
         // Draw x-axis
-        chartSmall.append("g")
-            .attr("transform", `translate(0, ${smallHeight})`)
-            .call(d3.axisBottom(xScaleSmall).tickFormat(d => d))
+        chartContext.append("g")
+            .attr("transform", `translate(0, ${contextHeight})`)
+            .call(d3.axisBottom(xScaleContext).tickFormat(d => d))
             .selectAll("text")
             .style("text-anchor", "end")
             .attr("dx", "-0.8em")
             .attr("dy", "0.15em")
             .attr("transform", "rotate(-45)");
 
-        // Draw bars for big chart
-        const chartBig = svg.append("g")
-            .attr("class", "chartBig")
-            .attr("transform", `translate(${bigMargin.left},${bigMargin.top})`);
+        // Draw bars for focus chart
+        const chartFocus = svg.append("g")
+            .attr("class", "chartFocus")
+            .attr("transform", `translate(${focusMargin.left},${focusMargin.top})`);
 
-        // chartBig.append("rect")
+        // chartFocus.append("rect")
         //     .attr("x", 0)
         //     .attr("y", 0)
-        //     .attr("width", bigWidth)
-        //     .attr("height", bigHeight)
+        //     .attr("width", focusWidth)
+        //     .attr("height", focusHeight)
         //     .style("fill", "beige");
-        chartBig.selectAll(".bar-bg")
+        chartFocus.selectAll(".bar-bg")
             .data(Array.from(frequency))
             .enter()
             .append("rect")
             .attr("class", "bar-bg")
-            .attr("x", d => xScaleBig(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
             .attr("y", 0)
-            .attr("width", xScaleBig.bandwidth())
-            .attr("height", bigHeight)
+            .attr("width", xScaleFocus.bandwidth())
+            .attr("height", focusHeight)
             .style("fill", "gray");
 
-        chartBig.selectAll(".bar")
+        chartFocus.selectAll(".bar")
             .data(Array.from(frequency))
             .enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", d => xScaleBig(d3.timeFormat("%b %Y")(d[0])) || 0)
-            .attr("y", d => yScaleBig(d[1]))
-            .attr("width", xScaleBig.bandwidth())
-            .attr("height", d => bigHeight - yScaleBig(d[1]))
+            .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("y", d => yScaleFocus(d[1]))
+            .attr("width", xScaleFocus.bandwidth())
+            .attr("height", d => focusHeight - yScaleFocus(d[1]))
             .style("fill", "blue")
             .on("mouseover", function () { tooltip.style("opacity", 1); })
             .on("mousemove", function (event, d) {

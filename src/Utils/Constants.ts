@@ -28,8 +28,8 @@ export const SORT_DIRECTION = {
 /// Types of forks adaptive corrective perfective
 export const FORK_TYPES = {
     PERFECTIVE: { label: "Perfective", value: "perfective" },
-    ADAPTIVE: { label: "Adaptive", value: "Perfective" },
-    CORRECTIVE: { label: "Corrective", value: "Corrective" }
+    ADAPTIVE: { label: "Adaptive", value: "adaptive" },
+    CORRECTIVE: { label: "Corrective", value: "corrective" }
 };
 
 /// Types of repository owners

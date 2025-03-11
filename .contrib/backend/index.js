@@ -9,7 +9,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL;
 // Load GitHub OAuth credentials from environment variables
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-
+const PORT = process.env.PORT;
 if (!FRONTEND_URL || !CLIENT_ID || !CLIENT_SECRET) {
     console.error("Environmen variables missing");
     return;
@@ -75,7 +75,7 @@ app.get("/auth/github/token", async (req, res) => {
     }
 });
 
-// Start the server and listen on port 5000
-app.listen(process.env.PORT, "0.0.0.0", () => {
+// Start the server and listen on port PORT :)
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

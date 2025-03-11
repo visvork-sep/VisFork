@@ -1,6 +1,5 @@
 import { BrowserRouter as Router } from "react-router-dom";
-import AppRoutes from "./AppRoutes"; // Import the new routing component
-
+import AppRoutes from "./AppRoutes";
 function App() {
     //Sending data to AppHeader below
     return (

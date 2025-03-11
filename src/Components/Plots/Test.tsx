@@ -12,12 +12,12 @@ const Test: React.FC = () => {
         new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
         new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
         new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01")
-        , new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
+        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
+        new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
         new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
         new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01")
-        , new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
+        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
+        new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
         new Date("2020-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
         new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
         new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
@@ -98,12 +98,8 @@ const Test: React.FC = () => {
         chartContext.append("rect")
             .attr("x", 0)
             .attr("y", 0)
-            .attr("width", contextWidth
-
-            )
-            .attr("height", contextHeight
-
-            )
+            .attr("width", contextWidth)
+            .attr("height", contextHeight)
             .style("fill", "beige");
 
         chartContext.selectAll(".bar-bg")

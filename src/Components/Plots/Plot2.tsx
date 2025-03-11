@@ -198,7 +198,6 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         }
 
         // create edges 
-        const curveSize = 12; 
         svg.append("g")
             .selectAll("path")
             .data(dag.links())

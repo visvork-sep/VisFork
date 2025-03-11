@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const axios = require("axios");
-const session = require("express-session");
+require("dotenv").config();
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -15,7 +16,7 @@ const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 if (!FRONTEND_URL || !CLIENT_ID || !CLIENT_SECRET) {
-    console.log("env not set");
+    console.error("env not set");
     return;
 }
 
@@ -39,7 +40,6 @@ app.use(express.json());
  * Redirects users to GitHub OAuth login page.
  */
 app.get("/auth/github", (req, res) => {
-    console.log("redirecting");
     const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${FRONTEND_URL}/github/callback&scope=read:user`;
     res.redirect(redirectUri);
 });

@@ -43,10 +43,6 @@ function AppHeader() {
         setIsOpen(false);
     }, []);
 
-    const handleLogin = useCallback(() => {
-        redirectLogin();
-    }, []);
-
     const loginOrAvatar = isAuthenticated ?
         (
             <Box onClick={onDialogOpen}>
@@ -59,7 +55,7 @@ function AppHeader() {
         )
         :
         (
-            <Button onClick={handleLogin}>Login</Button>
+            <Button onClick={redirectLogin}>Login</Button>
         );
 
     const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";

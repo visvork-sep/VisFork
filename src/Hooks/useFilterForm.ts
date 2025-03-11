@@ -1,63 +1,41 @@
 import { useState, useCallback } from "react";
+import { FilterFormState } from "../Types/FilterForm";
+import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION }
+    from "@Utils/Constants";
 
-interface FormState {
-    repositoryOwner: string;
-    repositoryName: string;
-    forksCount: number;
-    forksOrder: string;
-    forksAscDesc: string;
-    commitsDateRangeFrom?: string;
-    commitsDateRangeUntil?: string;
-    forksTypeFilter: string[];
-    ownerTypeFilter: string[];
-    recentlyUpdated?: string;
-}
-
-const initialForm: FormState = {
-    repositoryOwner: "",
-    repositoryName: "",
-    forksCount: 0,
-    forksOrder: "stargazers",
-    forksAscDesc: "ascending",
-    forksTypeFilter: [],
-    ownerTypeFilter: [],
+const initialForm: FilterFormState = {
+    repository: "",
+    forksCount: FORKS_COUNT_INPUT_INITIAL,
+    forksOrder: FORKS_SORTING_ORDERS.STARGAZERS.value,
+    forksAscDesc: SORT_DIRECTION.ASCENDING.value,
+    forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value),
+    ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value),
+    commitsDateRangeFrom: "",
+    commitsDateRangeUntil: ""
 };
 
 function useFilterForm() {
-    const [form, setForm] = useState<FormState>(initialForm);
+    const [form, setForm] = useState<FilterFormState>(initialForm);
 
     const handleRepositoryChange = useCallback((input: string) => {
-        const words = input.split("/");
-        if (words.length !== 2) return;
-
         setForm((prev) => ({
             ...prev,
-            repositoryOwner: words[0],
-            repositoryName: words[1],
+            repository: input
         }));
     }, []);
 
     const handleForksCountChange = useCallback((input: string) => {
-        const regex = /^[1-9]\d*$/;
-        if (!regex.test(input)) return;
+        const value = Number(input) || undefined;
 
-        const parsed = Number(input);
-        if (!Number.isSafeInteger(parsed)) return;
-
-        setForm((prev) => ({ ...prev, forksCount: parsed }));
+        setForm((prev) => ({ ...prev, forksCount: value }));
     }, []);
 
     const handleForksOrderChange = useCallback((value: string) => {
-        const validOrders = ["stargazers", "watchers", "last commit", "author", "date"];
-        if (!validOrders.includes(value)) return;
-
         setForm((prev) => ({ ...prev, forksOrder: value }));
     }, []);
 
     // TODO add better form validation
     const handleForksOrderAscDescChange = useCallback((value: string) => {
-        if (value !== "ascending" && value !== "descending") return;
-
         setForm((prev) => ({ ...prev, forksAscDesc: value }));
     }, []);
 
@@ -98,4 +76,3 @@ function useFilterForm() {
 export {
     useFilterForm
 };
-export type { FormState };

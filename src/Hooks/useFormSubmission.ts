@@ -1,46 +1,51 @@
-import { CommitsDateRangeFromInputValidation } 
-    from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
-import { CommitsDateRangeUntilInputValidation }
-    from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
-import { ForksCountInputValidation } 
-    from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
-import { RecentlyUpdatedInputValidation } 
-    from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
-import { RepositoryInputValidation } 
-    from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
-import { FormState } from "@Hooks/useFilterForm";
-import React, { useCallback, useState } from "react";
 
-function useFormSubmission(form: FormState) {
-    const [repositoryInputValidation, setRepositoryInputValidation] = useState<RepositoryInputValidation>();
-    const [forksCountInputValidation, setForksCountInputValidation] = useState<ForksCountInputValidation>();
-    const [recentlyUpdatedInputValidation, setRecentlyUpdatedInputValidation] =
-         useState<RecentlyUpdatedInputValidation>();
-    const [commitsDateRangeFromInputValidation, setCommitsDateRangeFromInputValidation] = 
-        useState<CommitsDateRangeFromInputValidation>();
-    const [commitsDateRangeUntilInputValidation, setCommitsDateRangeUntilInputValidation] 
-        = useState<CommitsDateRangeUntilInputValidation>(); 
+import { FormEvent, useCallback, useState } from "react";
+import { FilterFormState } from "../Types/FilterForm";
+import {
+    CommitsDateRangeFromInputErrors,
+    CommitsDateRangeFromInputErrorsType,
+    CommitsDateRangeUntilInputErrors,
+    CommitsDateRangeUntilInputErrorsType,
+    ForksCountInputErrors,
+    ForksCountInputErrorsType,
+    RecentlyUpdatedInputErrors,
+    RecentlyUpdatedInputErrorsType,
+    RepositoryInputErrors,
+    RepositoryInputErrorsType
+} from "../Types/FormErrors";
 
-    const onSubmit = useCallback((event: React.FormEvent) => {
+function useFormSubmission(form: FilterFormState) {
+    const [repositoryInputError, setRepositoryInputError] = useState<RepositoryInputErrorsType>();
+    const [forksCountInputError, setForksCountInputError] = useState<ForksCountInputErrorsType>();
+    const [recentlyUpdatedInputError, setRecentlyUpdatedInputError] =
+        useState<RecentlyUpdatedInputErrorsType>();
+    const [commitsDateRangeFromInputError, setCommitsDateRangeFromInputError] =
+        useState<CommitsDateRangeFromInputErrorsType>();
+    const [commitsDateRangeUntilInputError, setCommitsDateRangeUntilInputError]
+        = useState<CommitsDateRangeUntilInputErrorsType>();
+
+    const onSubmit = useCallback((event: FormEvent) => {
         // Prevents the page from refreshing on submission
         event.preventDefault();
 
         console.log(form);
-        setRepositoryInputValidation("repositoryNameError");
-        setForksCountInputValidation("lessThanMinForksError");
-        setRecentlyUpdatedInputValidation("outOfInputRange");
-        setCommitsDateRangeFromInputValidation("laterFromDateError");
-        setCommitsDateRangeUntilInputValidation("laterFromDateError");
+        //TODO add proper verification and error handling
+        //Error passing - not implemented
+        setRepositoryInputError(RepositoryInputErrors.UnknownError);
+        setForksCountInputError(ForksCountInputErrors.UnknownError);
+        setRecentlyUpdatedInputError(RecentlyUpdatedInputErrors.UnknownError);
+        setCommitsDateRangeFromInputError(CommitsDateRangeFromInputErrors.UnknownError);
+        setCommitsDateRangeUntilInputError(CommitsDateRangeUntilInputErrors.UnknownError);
         // set url variables
     }, [form]);
 
     return {
         onSubmit,
-        repositoryInputValidation,
-        forksCountInputValidation,
-        commitsDateRangeFromInputValidation,
-        commitsDateRangeUntilInputValidation,
-        recentlyUpdatedInputValidation
+        repositoryInputError,
+        forksCountInputError,
+        commitsDateRangeFromInputError,
+        commitsDateRangeUntilInputError,
+        recentlyUpdatedInputError
     };
 }
 

@@ -77,5 +77,5 @@ app.get("/auth/github/token", async (req, res) => {
 
 // Start the server and listen on port 5000
 app.listen(process.env.PORT, "0.0.0.0", () => {
-    console.log("Server running on http://localhost:4000");
+    console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -61,10 +61,6 @@ const Test: React.FC = () => {
         const focusHeight = 0.75 * height - focusMargin.top - focusMargin.bottom;
         const focusWidth = width - focusMargin.left - focusMargin.right;
 
-        // const margin = { top: 10, right: 20, bottom: 50, left: 20 };
-        // const chartWidth = width - margin.left - margin.right;
-        // const chartHeight = height - margin.top - margin.bottom;
-
         // Define scales for context chart
         const formattedDates = Array.from(frequency.keys()).map(d => d3.timeFormat("%b %Y")(d));
         const xScaleContext = d3.scaleBand().domain(formattedDates).range([0, contextWidth
@@ -87,20 +83,10 @@ const Test: React.FC = () => {
             .style("border", "1px solid black");
         svg.selectAll("*").remove();
 
-        // const sq = svg.append("g").attr("transform", "translate(0,1700)").style("fill", "red");
-        // sq.append("rect").attr("x", 0).attr("y", 0).attr("width", 100).attr("height", 100);
-
         const chartContext = svg.append("g")
             .attr("class", "chartContext")
             .attr("transform", `translate(${contextMargin.left},
             ${focusHeight + focusMargin.top + focusMargin.bottom + contextMargin.top})`);
-
-        chartContext.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", contextWidth)
-            .attr("height", contextHeight)
-            .style("fill", "beige");
 
         chartContext.selectAll(".bar-bg")
             .data(Array.from(frequency))
@@ -110,9 +96,7 @@ const Test: React.FC = () => {
             .attr("x", d => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
             .attr("y", 0)
             .attr("width", xScaleContext.bandwidth())
-            .attr("height", contextHeight
-
-            )
+            .attr("height", contextHeight)
             .style("fill", "gray");
 
 
@@ -125,8 +109,7 @@ const Test: React.FC = () => {
             .attr("x", d => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
             .attr("y", d => yScaleContext(d[1]))
             .attr("width", xScaleContext.bandwidth())
-            .attr("height", d => contextHeight
-                - yScaleContext(d[1]))
+            .attr("height", d => contextHeight - yScaleContext(d[1]))
             .style("fill", "green");
 
 
@@ -152,7 +135,7 @@ const Test: React.FC = () => {
                         .domain(selectedDates.map(d => d3.timeFormat("%b %Y")(d[0])))
                         .range([0, focusWidth])
                         .padding(0.1);
-                    chartFocus.selectAll(".bar").remove();
+                    chartFocus.selectAll("*").remove();
 
                     chartFocus.selectAll(".bar-bg")
                         .data(Array.from(selectedDates))
@@ -202,16 +185,6 @@ const Test: React.FC = () => {
         const chartFocus = svg.append("g")
             .attr("class", "chartFocus")
             .attr("transform", `translate(${focusMargin.left},${focusMargin.top})`);
-
-        // chartFocus.append("rect")
-        //     .attr("x", 0)
-        //     .attr("y", 0)
-        //     .attr("width", focusWidth)
-        //     .attr("height", focusHeight)
-        //     .style("fill", "beige");
-
-
-
 
         // Tooltip setup
         const tooltip = d3.select("body").append("div")

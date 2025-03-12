@@ -17,6 +17,11 @@ interface DagProps {
   maxHeight: number;
 }
 
+const NODE_RADIUS = 8;
+const MARGIN = { top: 10, right: 0, bottom: 10, left: 150 };
+const NODE_SIZE = [NODE_RADIUS * 2, NODE_RADIUS * 2] as const;
+const LANE_GAP = NODE_RADIUS * 2;
+
 const CURVE_SIZE = 15;
 const EDGE_WIDTH = 2;
 const TOOLTIP_BG_COLOR = "#f4f4f4";
@@ -28,7 +33,7 @@ const TOOLTIP_MOUSEOVER_DUR = 200;
 const TOOLTIP_MOUSEOUT_DUR = 500;
 const LEGEND_DOT_SIZE = 10;
 const LEGEND_TEXT_MARGIN = "10px";
-const EDGE_STROKE_COLOR = "#999";
+const EDGE_STROKE_COLOR = "#999"; 
 
 const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
@@ -99,15 +104,9 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
 
         const builder = d3dag.graphStratify();
         const dag = builder(data);
-        
-        const nodeRadius = 8;
-        const margin = { top: 10, right: 0, bottom: 10, left: 150 };
-
-        const nodeSize = [nodeRadius * 2, nodeRadius * 2] as const;
-        const laneGap = nodeRadius * 2;
 
         const layout = d3dag.grid()
-            .nodeSize(nodeSize)
+            .nodeSize(NODE_SIZE)
             .gap([5, 5]) 
             .rank(dateRankOperator)
             .lane(d3dag.laneGreedy().topDown(true).compressed(false));
@@ -117,10 +116,10 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
 
         // swap intial width and height for horizontal layout
         const svg = d3.select(svgRef.current)
-            .attr("width", height + margin.left + margin.right) 
-            .attr("height", width + margin.top + margin.bottom); 
+            .attr("width", height + MARGIN.left + MARGIN.right) 
+            .attr("height", width + MARGIN.top + MARGIN.bottom); 
         const g = svg.append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+            .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
 
 
         // sort nodes by date
@@ -129,27 +128,27 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         });
 
         // apply custom layout 
-        const {lanes, totalHeight} = adjustRepoXCoordinates(sortedNodes, laneGap);
+        const {lanes, totalHeight} = adjustRepoXCoordinates(sortedNodes, LANE_GAP);
         // adjust height to custom layout
-        d3.select(svgRef.current).attr("height", totalHeight + margin.top + margin.bottom); 
+        d3.select(svgRef.current).attr("height", totalHeight + MARGIN.top + MARGIN.bottom); 
 
         // lane shading and author labels
         const backgrounds = g.append("g").attr("class", "repo-backgrounds");
         Object.entries(lanes).forEach(([repo, { minX, maxX }], i) => {
             const laneColor = i % 2 === 0 ? "#eef" : "#fff";
             backgrounds.append("rect")
-                .attr("x", -margin.left)
-                .attr("y", minX - nodeRadius)
-                .attr("width", height + margin.left + margin.right)
-                .attr("height", maxX - minX + laneGap) 
+                .attr("x", -MARGIN.left)
+                .attr("y", minX - NODE_RADIUS)
+                .attr("width", height + MARGIN.left + MARGIN.right)
+                .attr("height", maxX - minX + LANE_GAP) 
                 .attr("fill", laneColor)
                 .attr("stroke","#dde")
                 .attr("stroke-width", "1")
                 .attr("opacity", 0.3);
     
             backgrounds.append("text")
-                .attr("x", -margin.left + 5)
-                .attr("y", (minX - nodeRadius) + (maxX - minX + laneGap) / 2)
+                .attr("x", -MARGIN.left + 5)
+                .attr("y", (minX - NODE_RADIUS) + (maxX - minX + LANE_GAP) / 2)
                 .attr("text-anchor", "start")
                 .attr("alignment-baseline", "middle")
                 .text(repo.split("/")[0])
@@ -185,7 +184,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
 
                 monthGroup.append("text")
                     .attr("x", node.y + (isNewYear ? 24 : 8))
-                    .attr("y", totalHeight-margin.bottom + 10)
+                    .attr("y", totalHeight-MARGIN.bottom + 10)
                     .attr("font-size", 12)
                     .style("text-anchor", "end")
                     .text(labelText);
@@ -196,61 +195,6 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                 }
             }
         }
-        
-        let brushSelection: any = []; // Type assertion
-
-        const brushStart = (event: d3.D3BrushEvent<unknown>) => {
-            if (event.sourceEvent && event.sourceEvent.type !== "end") {
-                brushSelection = [];
-            }
-        };
-
-        const brushed = (event: d3.D3BrushEvent<unknown>) => {
-            if (!event.selection) return;
-
-            const [[x0, y0], [x1, y1]] = event.selection as [[number, number], [number, number]];
-
-            const nodesArray = Array.from(sortedNodes);
-
-            // Get nodes and filter based on selection
-            const selectedNodes = nodesArray.filter((node) => {
-                const x = node.y + nodeRadius; // Swapped x and y because graph is horizontal
-                const y = node.x + nodeRadius;
-                return x >= x0 && x <= x1 && y >= y0 && y <= y1;
-            });
-
-            console.log("Selected Nodes:", selectedNodes);
-        };        
-        
-
-        function brushEnd(event: d3.D3BrushEvent<unknown>) {
-            if (!event.selection) return; // Exit if no selection
-        
-            if (brushSelection) {
-                const [x0, y0] = brushSelection[0];
-                const [x1, y1] = brushSelection[1];
-
-                const nodesArray = Array.from(dag.nodes());
-                console.log(nodesArray);
-        
-                // Get nodes and filter based on selection
-                const selectedNodes = nodesArray.filter((node) => {
-                    const x = node.y + nodeRadius; // Swapped x and y because graph is horizontal
-                    const y = node.x + nodeRadius;
-                    return x >= x0 && x <= x1 && y >= y0 && y <= y1;
-                });
-
-                console.log(selectedNodes);
-            }
-        }
-        
-        const brush = d3
-            .brush()
-            .on("start", brushStart)
-            .on("brush", brushed)
-            .on("end", brushEnd);
-
-        g.call(brush);
 
         // create edges 
         g.append("g")
@@ -310,7 +254,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .append("circle")
             .attr("cx", (d) => d.y ?? 0) // def value 0 to avoid eslint complaining
             .attr("cy", (d) => d.x ?? 0) // swap x and y to make the graph horizontal
-            .attr("r", nodeRadius)
+            .attr("r", NODE_RADIUS)
             .attr("fill", (d) => colorMap.get(d.data.repo))
             .on("mouseover", (event, d) => {
                 tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
@@ -366,19 +310,17 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     }, [data]);
 
     return (
-        <>
-            <div style={{ 
-                width: width,
-                maxHeight: maxHeight,
-                overflow: "auto", 
-                whiteSpace: "normal"
-            }}>
-                <svg ref={svgRef}> {}
-                    {}
-                </svg>
-            </div>
+        <div style={{ 
+            width: width,
+            maxHeight: maxHeight,
+            overflow: "auto", 
+            whiteSpace: "normal"
+        }}>
+            <svg ref={svgRef}> {}
+                {}
+            </svg>
             <div id="dag-legends">{/* Legends */}</div>
-        </>
+        </div>
     );
 };
 

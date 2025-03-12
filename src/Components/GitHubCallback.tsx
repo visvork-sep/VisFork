@@ -6,7 +6,6 @@ import { paths } from "@generated/auth-schema";
 import createClient from "openapi-fetch";
 import { AUTH_URL } from "@Utils/Constants";
 
-
 const fetchClient = createClient<paths>({
     baseUrl: AUTH_URL
 });

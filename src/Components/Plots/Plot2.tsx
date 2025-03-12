@@ -311,17 +311,19 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     }, [data]);
 
     return (
-        <div style={{ 
-            width: width,
-            maxHeight: maxHeight,
-            overflow: "auto", 
-            whiteSpace: "normal"
-        }}>
-            <svg ref={svgRef}> {}
-                {}
-            </svg>
+        <>
+            <div style={{ 
+                width: width,
+                maxHeight: maxHeight,
+                overflow: "auto", 
+                whiteSpace: "normal"
+            }}>
+                <svg ref={svgRef}> {}
+                    {}
+                </svg>
+            </div>
             <div id="dag-legends">{/* Legends */}</div>
-        </div>
+        </>
     );
 };
 

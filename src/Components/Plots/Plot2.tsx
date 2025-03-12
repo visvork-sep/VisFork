@@ -196,9 +196,64 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                 }
             }
         }
+        
+        let brushSelection: any = []; // Type assertion
+
+        const brushStart = (event: d3.D3BrushEvent<unknown>) => {
+            if (event.sourceEvent && event.sourceEvent.type !== "end") {
+                brushSelection = [];
+            }
+        };
+
+        const brushed = (event: d3.D3BrushEvent<unknown>) => {
+            if (!event.selection) return;
+
+            const [[x0, y0], [x1, y1]] = event.selection as [[number, number], [number, number]];
+
+            const nodesArray = Array.from(sortedNodes);
+
+            // Get nodes and filter based on selection
+            const selectedNodes = nodesArray.filter((node) => {
+                const x = node.y + nodeRadius; // Swapped x and y because graph is horizontal
+                const y = node.x + nodeRadius;
+                return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+            });
+
+            console.log("Selected Nodes:", selectedNodes);
+        };        
+        
+
+        function brushEnd(event: d3.D3BrushEvent<unknown>) {
+            if (!event.selection) return; // Exit if no selection
+        
+            if (brushSelection) {
+                const [x0, y0] = brushSelection[0];
+                const [x1, y1] = brushSelection[1];
+
+                const nodesArray = Array.from(dag.nodes());
+                console.log(nodesArray);
+        
+                // Get nodes and filter based on selection
+                const selectedNodes = nodesArray.filter((node) => {
+                    const x = node.y + nodeRadius; // Swapped x and y because graph is horizontal
+                    const y = node.x + nodeRadius;
+                    return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+                });
+
+                console.log(selectedNodes);
+            }
+        }
+        
+        const brush = d3
+            .brush()
+            .on("start", brushStart)
+            .on("brush", brushed)
+            .on("end", brushEnd);
+
+        g.call(brush);
 
         // create edges 
-        svg.append("g")
+        g.append("g")
             .selectAll("path")
             .data(dag.links())
             .enter()
@@ -248,7 +303,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .style("font", TOOLTIP_FONT);
 
         // create nodes
-        svg.append("g")
+        g.append("g")
             .selectAll("circle")
             .data(dag.nodes())
             .enter()

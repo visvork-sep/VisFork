@@ -1,4 +1,5 @@
-import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, GetForksQueryVariables } from "@generated/graphql";
+import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, GetForksQueryVariables } 
+    from "@generated/graphql";
 import { paths } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";

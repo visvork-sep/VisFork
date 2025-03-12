@@ -1,4 +1,4 @@
-import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
+import { MoonIcon, SunIcon } from "@primer/octicons-react";
 import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@primer/react";
 import { ActionList } from "@primer/react";
 import { useCallback, useState } from "react";
@@ -6,6 +6,7 @@ import { useAuth } from "@Providers/AuthProvider";
 import { SkeletonAvatar } from "@primer/react/experimental";
 import { AUTH_URL } from "@Utils/Constants";
 import { useFetchAvatarUrl } from "../Queries/queries";
+import visForkIcon from "/visForkIcon.svg";
 
 /**
  * Redirects the user to GitHub OAuth login.
@@ -75,7 +76,7 @@ function AppHeader() {
         <>
             <Stack direction="horizontal" align="center">
                 <Stack.Item>
-                    <ImageIcon size={32} />
+                    <Avatar src={visForkIcon} size={32} />
                 </Stack.Item>
                 <Stack.Item grow>
                     <span>VisFork</span>

@@ -231,6 +231,34 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
 
         g.call(brush);
 
+        function drawEdgeCurve(d: d3dag.MutGraphLink<Commit, undefined>) {
+            // Drawing the edges. Makes curves at branches and merges.
+            if (d.source.x < d.target.x) {
+                return `
+                    M${d.source.y},${d.source.x}
+                    L${d.source.y},${d.target.x - CURVE_SIZE}
+                    C${d.source.y},${d.target.x}
+                    ${d.source.y},${d.target.x}
+                    ${d.source.y + CURVE_SIZE},${d.target.x}
+                    L${d.target.y},${d.target.x}
+                `;
+            } else if (d.source.x === d.target.x) {
+                return `
+                    M${d.source.y},${d.source.x} 
+                    L${d.target.y},${d.target.x} 
+                `;
+            } else {
+                return `
+                    M${d.source.y},${d.source.x}
+                    L${d.target.y - CURVE_SIZE},${d.source.x}
+                    C${d.target.y},${d.source.x}
+                    ${d.target.y},${d.source.x}
+                    ${d.target.y},${d.source.x - CURVE_SIZE}
+                    L${d.target.y},${d.target.x}
+                `;
+            }
+        }
+
         // create edges 
         g.append("g")
             .selectAll("path")
@@ -240,34 +268,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             .attr("fill", "none")
             .attr("stroke", EDGE_STROKE_COLOR)
             .attr("stroke-width", EDGE_WIDTH)
-            .attr("d", (d) => {
-                // Drawing the edges. Makes curves at branches and merges.
-                // TODO: change to work better for vertical up branching
-                if (d.source.x < d.target.x) {
-                    return `
-                        M${d.source.y},${d.source.x}
-                        L${d.source.y},${d.target.x - CURVE_SIZE}
-                        C${d.source.y},${d.target.x}
-                        ${d.source.y},${d.target.x}
-                        ${d.source.y + CURVE_SIZE},${d.target.x}
-                        L${d.target.y},${d.target.x}
-                    `;
-                } else if (d.source.x === d.target.x) {
-                    return `
-                        M${d.source.y},${d.source.x} 
-                        L${d.target.y},${d.target.x} 
-                    `;
-                } else {
-                    return `
-                        M${d.source.y},${d.source.x}
-                        L${d.target.y - CURVE_SIZE},${d.source.x}
-                        C${d.target.y},${d.source.x}
-                        ${d.target.y},${d.source.x}
-                        ${d.target.y},${d.source.x - CURVE_SIZE}
-                        L${d.target.y},${d.target.x}
-                    `;
-                }
-            });
+            .attr("d", drawEdgeCurve);
 
         const tooltip = d3.select("body")
             .append("div")

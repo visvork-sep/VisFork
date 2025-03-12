@@ -10,7 +10,7 @@ interface FilterFormState {
     commitsDateRangeUntil: string;
     forksTypeFilter: string[];
     ownerTypeFilter: string[];
-    recentlyUpdated?: string;
+    recentlyUpdated?: number;
 };
 
 export type { FilterFormState };

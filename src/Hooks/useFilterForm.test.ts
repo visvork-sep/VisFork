@@ -69,7 +69,7 @@ describe("useFiterForm - Repository", () => {
 });
 
 describe("useFilterForm - forksCount", () => {
-    it("should change the value of respositoryCount when its changehandler is called with a valid number", () => {
+    it("should change the value of forksCount when its changehandler is called with a valid number", () => {
         const { result } = renderHook(useFilterForm);
         const newValue = "1";
         const handler = result.current.handleForksCountChange;
@@ -79,7 +79,7 @@ describe("useFilterForm - forksCount", () => {
         expect(result.current.form.forksCount).toEqual(Number(1));
     });
 
-    it("should change the value of respositoryCount to undefined" +
+    it("should change the value of forksCount to undefined" +
             "when its changehandler is called with an invalid number", () => {
         const { result } = renderHook(useFilterForm);
         const newValue = "invalid";
@@ -90,7 +90,7 @@ describe("useFilterForm - forksCount", () => {
         expect(result.current.form.forksCount).toBeUndefined();
     });
 
-    it ("should change the value of repository count to undefined" + 
+    it ("should change the value of forksCount to undefined" + 
             "when its changehandler is called with an empty string", () => {
         const { result } = renderHook(useFilterForm);
         const newValue = "";
@@ -115,7 +115,7 @@ describe("useFilterForm - forksOrder", () => {
 
     it("should change the value of forksOrder if changed to Date (defined in constants)", () => {
         const { result } = renderHook(useFilterForm);
-        const newValue = FORKS_SORTING_ORDERS.DATE.label;
+        const newValue = FORKS_SORTING_ORDERS.DATE.value;
         const handler = result.current.handleForksOrderChange;
 
         act(() => handler(newValue));
@@ -125,7 +125,7 @@ describe("useFilterForm - forksOrder", () => {
 
     it("should change the value of forksOrder if changed to Last commit (defined in constants)", () => {
         const { result } = renderHook(useFilterForm);
-        const newValue = FORKS_SORTING_ORDERS.LAST_COMMIT.label;
+        const newValue = FORKS_SORTING_ORDERS.LAST_COMMIT.value;
         const handler = result.current.handleForksOrderChange;
 
         act(() => handler(newValue));
@@ -135,7 +135,7 @@ describe("useFilterForm - forksOrder", () => {
 
     it("should change the value of forksOrder if changed to stargazers (defined in constants)", () => {
         const { result } = renderHook(useFilterForm);
-        const newValue = FORKS_SORTING_ORDERS.STARGAZERS.label;
+        const newValue = FORKS_SORTING_ORDERS.STARGAZERS.value;
         const handler = result.current.handleForksOrderChange;
 
         act(() => handler(newValue));
@@ -145,7 +145,7 @@ describe("useFilterForm - forksOrder", () => {
 
     it("should change the value of forksOrder if changed to watchers (defined in constants)", () => {
         const { result } = renderHook(useFilterForm);
-        const newValue = FORKS_SORTING_ORDERS.WATCHERS.label;
+        const newValue = FORKS_SORTING_ORDERS.WATCHERS.value;
         const handler = result.current.handleForksOrderChange;
 
         act(() => handler(newValue));
@@ -153,3 +153,126 @@ describe("useFilterForm - forksOrder", () => {
         expect(result.current.form.forksOrder).toEqual(newValue);
     });
 });
+
+describe("useFilterForm - forksAscDesc", () => {
+    it("should change the value of forksAscDesc if changed to ascending (defined in constants)", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = SORT_DIRECTION.ASCENDING.value;
+        const handler = result.current.handleForksOrderAscDescChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksAscDesc).toEqual(newValue);
+    });
+
+    it("should change the value of forksAscDesc if changed to descending (defined in constants)", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = SORT_DIRECTION.DESCENDING.value;
+        const handler = result.current.handleForksOrderAscDescChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksAscDesc).toEqual(newValue);
+    });
+});
+
+describe("useFilterForm - forksTypeFilter", () => {
+    it("should change the value of forksTypeFilter to empty if set to empty list", () => {
+        const { result } = renderHook(useFilterForm);
+        const handler = result.current.handleForksTypeFilterChange;
+
+        act(() => handler([]));
+       
+        expect(result.current.form.forksTypeFilter).toEqual([]);
+    });
+
+    it("should change the value of forksTypeFilter to any fork type", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = [FORK_TYPES.ADAPTIVE.value, FORK_TYPES.CORRECTIVE.value, FORK_TYPES.PERFECTIVE.value];
+        const handler = result.current.handleForksTypeFilterChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksTypeFilter).toEqual(newValue);
+    });
+});
+
+describe("useFilterForm - ownerTypeFilter", () => {
+    it("should change the value of ownerTypeFilter to empty if set to empty list", () => {
+        const { result } = renderHook(useFilterForm);
+        const handler = result.current.handleOwnerTypeFilterChange;
+
+        act(() => handler([]));
+
+        expect(result.current.form.ownerTypeFilter).toEqual([]);
+    });
+
+    it("should change the value of ownerTypeFilter to any owner type", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = [OWNER_TYPES.ORGANIZATION.value, OWNER_TYPES.USER.value];
+        const handler = result.current.handleOwnerTypeFilterChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.ownerTypeFilter).toEqual(newValue);
+    });
+});
+
+describe("useFiterForm - commitsDateRangeFrom", () => {
+    it("should change the value of commitsDateRangeFrom when its changeHandler is called with a valid string", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = "updated";
+        const handler = result.current.handleCommitsDateRangeFromChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.commitsDateRangeFrom).toEqual(newValue);
+    });
+});
+
+describe("useFiterForm - commitsDateRangeUntil", () => {
+    it("should change the value of commitsDateRangeUntil when its changeHandler is called with a valid string", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = "updated";
+        const handler = result.current.handleCommitsDateRangeUntilChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.commitsDateRangeUntil).toEqual(newValue);
+    });
+});
+
+describe("useFilterForm - recentlyUpdated", () => {
+    it("should change the value of recentlyUpdated when its changehandler is called with a valid number", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = "1";
+        const handler = result.current.handleRecentlyUpdatedChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.recentlyUpdated).toEqual(Number(1));
+    });
+
+    it("should change the value of recentlyUpdated to undefined" +
+        "when its changehandler is called with an invalid number", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = "invalid";
+        const handler = result.current.handleRecentlyUpdatedChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.recentlyUpdated).toBeUndefined();
+    });
+
+    it("should change the value of recentlyUpdated to undefined" +
+        "when its changehandler is called with an empty string", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = "";
+        const handler = result.current.handleRecentlyUpdatedChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.recentlyUpdated).toBeUndefined();
+    });
+});
+

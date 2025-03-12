@@ -90,7 +90,9 @@ function useFilterForm() {
      * Note that the count will be set to undefined if the input is not a number.
      */
     const handleRecentlyUpdatedChange = useCallback((input: string) => {
-        setForm((prev) => ({ ...prev, recentlyUpdated: input }));
+        const value = Number(input) || undefined; 
+
+        setForm((prev) => ({ ...prev, recentlyUpdated: value }));
     }, []);
 
     return {

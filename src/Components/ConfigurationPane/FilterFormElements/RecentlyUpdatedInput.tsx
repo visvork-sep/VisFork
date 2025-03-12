@@ -5,7 +5,7 @@ import { RecentlyUpdatedInputErrorsType } from "../../../Types/FormErrors";
 interface RecentlyUpdatedInputProps {
     error?: RecentlyUpdatedInputErrorsType;
     onChangeHandler: (input: string) => void;
-    value?: string;
+    value?: number;
 };
 
 function RecentlyUpdatedInput({ error, onChangeHandler, value }: RecentlyUpdatedInputProps) {

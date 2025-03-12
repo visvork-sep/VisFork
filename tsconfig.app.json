@@ -27,6 +27,9 @@
       "@generated/*": [
         "./__generated__/*"
       ],
+      "@Providers/*": [
+        "./src/Providers/*"
+      ],
       "@Components/*": [
         "./src/Components/*"
       ],

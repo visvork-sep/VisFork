@@ -24,37 +24,71 @@ function useFilterForm() {
         }));
     }, []);
 
+    /**
+     * Modifies the state of forksCount
+     * Note that the count will be set to undefined if the input is not a number.
+     */
     const handleForksCountChange = useCallback((input: string) => {
         const value = Number(input) || undefined;
 
         setForm((prev) => ({ ...prev, forksCount: value }));
     }, []);
 
+
+    /**
+     * Changes the state for forksOrder,
+     * 
+     * @precondition value \in Object.values(FORKS_SORTING_ORDERS).map(t => t.value)
+     */
     const handleForksOrderChange = useCallback((value: string) => {
         setForm((prev) => ({ ...prev, forksOrder: value }));
     }, []);
 
-    // TODO add better form validation
+    /**
+     * Changes the state for forksOrderAscDesc
+     * 
+     * @precondition value \in Object.values(SORT_DIRECTION).map(t => t.value) 
+     */
     const handleForksOrderAscDescChange = useCallback((value: string) => {
         setForm((prev) => ({ ...prev, forksAscDesc: value }));
     }, []);
 
+    /**
+     * Changes the state of commitsDateRangeFrom
+     */
     const handleCommitsDateRangeFromChange = useCallback((input: string) => {
         setForm((prev) => ({ ...prev, commitsDateRangeFrom: input }));
     }, []);
 
+    /**
+     * Changes the state of commitsDateRangeUntil
+     */
     const handleCommitsDateRangeUntilChange = useCallback((input: string) => {
         setForm((prev) => ({ ...prev, commitsDateRangeUntil: input }));
     }, []);
 
+    /**
+     * Changes the state of forksTypeFilter
+     * 
+     * @precondition (\all : string s \in selected : s \in FORK_TYPES)
+     */
     const handleForksTypeFilterChange = useCallback((selected: string[]) => {
         setForm((prev) => ({ ...prev, forksTypeFilter: selected }));
     }, []);
 
+    /**
+     * Changes the state of onwerTypeFilter
+     * 
+     * @precondition (\all : string s \in selected : s \in OWNER_TYPES)
+     */
     const handleOwnerTypeFilterChange = useCallback((selected: string[]) => {
         setForm((prev) => ({ ...prev, ownerTypeFilter: selected }));
     }, []);
 
+    /**
+     * Modifies the state of recentlyUpdated
+     * Note that the count will be set to undefined if the input is not a number.
+     */
     const handleRecentlyUpdatedChange = useCallback((input: string) => {
         setForm((prev) => ({ ...prev, recentlyUpdated: input }));
     }, []);

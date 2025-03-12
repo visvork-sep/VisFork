@@ -101,3 +101,55 @@ describe("useFilterForm - forksCount", () => {
         expect(result.current.form.forksCount).toBeUndefined();
     });
 });
+
+describe("useFilterForm - forksOrder", () => {
+    it("should change the value of forksOrder if changed to Author stars (defined in constants)", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = FORKS_SORTING_ORDERS.AUTHOR_STARS.value;
+        const handler = result.current.handleForksOrderChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksOrder).toEqual(newValue);
+    });
+
+    it("should change the value of forksOrder if changed to Date (defined in constants)", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = FORKS_SORTING_ORDERS.DATE.label;
+        const handler = result.current.handleForksOrderChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksOrder).toEqual(newValue);
+    });
+
+    it("should change the value of forksOrder if changed to Last commit (defined in constants)", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = FORKS_SORTING_ORDERS.LAST_COMMIT.label;
+        const handler = result.current.handleForksOrderChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksOrder).toEqual(newValue);
+    });
+
+    it("should change the value of forksOrder if changed to stargazers (defined in constants)", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = FORKS_SORTING_ORDERS.STARGAZERS.label;
+        const handler = result.current.handleForksOrderChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksOrder).toEqual(newValue);
+    });
+
+    it("should change the value of forksOrder if changed to watchers (defined in constants)", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = FORKS_SORTING_ORDERS.WATCHERS.label;
+        const handler = result.current.handleForksOrderChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksOrder).toEqual(newValue);
+    });
+});

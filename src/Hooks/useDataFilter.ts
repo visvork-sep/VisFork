@@ -31,7 +31,7 @@ export function useDataFilter() {
     });
 
     // TODO: Fix pagination
-    const resultCommits = useFetchCommitsBatch(commitQueries).flat();
+    const resultCommits = useFetchCommitsBatch(commitQueries);
 
     return { filteredData, isLoading, error, setQuerryParams, setFilters, resultCommits };
 

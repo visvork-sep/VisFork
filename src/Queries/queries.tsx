@@ -29,10 +29,13 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
  * @returns The result object from `useQuery`, containing data, loading, and error states.
  */
 export function useFetchForks(parameters: ForkQueryParams) {
+    const { isAuthenticated, getAccessToken } = useAuth();
+    const accessToken = getAccessToken() ?? "";
+
     return useQuery({
         queryKey: ["forks", parameters],
-        queryFn: () => fetchForks(parameters),
-        enabled: !!parameters //dependent on variables
+        queryFn: () => fetchForks(parameters, accessToken),
+        enabled: isAuthenticated //dependent on variables
     });
 }
 
@@ -44,10 +47,14 @@ export function useFetchForks(parameters: ForkQueryParams) {
  * @returns The result object from `useQuery`, containing data, loading, and error states.
  */
 export function useFetchCommits(parameters: CommitQueryParams) {
+
+    const { isAuthenticated, getAccessToken } = useAuth();
+    const accessToken = getAccessToken() ?? "";
+
     return useQuery({
         queryKey: ["commits", parameters],
-        queryFn: () => fetchCommits(parameters),
-        enabled: !!parameters //dependent on variables
+        queryFn: () => fetchCommits(parameters, accessToken),
+        enabled: isAuthenticated //dependent on variables
     });
 }
 
@@ -60,13 +67,24 @@ export function useFetchCommits(parameters: CommitQueryParams) {
  * @returns An array of result objects, where each entry corresponds to a commit query.
  */
 export function useFetchCommitsBatch(parametersList: CommitQueryParams[]) {
-    return useQueries({
+    const { isAuthenticated, getAccessToken } = useAuth();
+    const accessToken = getAccessToken() ?? "";
+
+    const queries =  useQueries({
         queries: parametersList
             ? parametersList.map((parameters) => {
                 return {
                     queryKey: ["commits", parameters],
-                    queryFn: async () => fetchCommits(parameters),
+                    queryFn: async () => fetchCommits(parameters, accessToken),
+                    enabled: isAuthenticated,
                 };
             }) : [],
     });
+
+    // Aggregate data
+    const allData = queries.flatMap(q => q.data?.data ?? []);  // Flatten all data arrays
+    const isLoading = queries.some(q => q.isLoading); // If any request is loading, return true
+    const error = queries.find(q => q.error)?.error || null; // Return first error found
+
+    return { data: allData, isLoading, error };
 }

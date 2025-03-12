@@ -196,21 +196,24 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             }
         }
         
-        let brushSelection: any = []; // Type assertion
+        let brushSelection: [[number, number], [number, number]] = [[0,0], [0,0]];
 
         const brushStart = (event: d3.D3BrushEvent<unknown>) => {
             if (event.sourceEvent && event.sourceEvent.type !== "end") {
-                brushSelection = [];
+                brushSelection = [[0,0], [0,0]];
             }
         };
+        
 
-        const brushed = (event: d3.D3BrushEvent<unknown>) => {
-            if (!event.selection) return;
+        function brushEnd(event: d3.D3BrushEvent<unknown>) {
+            if (event.selection === null) return; // Exit if no selection
+        
+            brushSelection = event.selection as [[number, number], [number, number]];
+            const [x0, y0] = brushSelection[0];
+            const [x1, y1] = brushSelection[1];
 
-            const [[x0, y0], [x1, y1]] = event.selection as [[number, number], [number, number]];
-
-            const nodesArray = Array.from(sortedNodes);
-
+            const nodesArray = Array.from(dag.nodes());
+    
             // Get nodes and filter based on selection
             const selectedNodes = nodesArray.filter((node) => {
                 const x = node.y + NODE_RADIUS; // Swapped x and y because graph is horizontal
@@ -219,34 +222,11 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             });
 
             console.log("Selected Nodes:", selectedNodes);
-        };        
-        
-
-        function brushEnd(event: d3.D3BrushEvent<unknown>) {
-            if (!event.selection) return; // Exit if no selection
-        
-            if (brushSelection) {
-                const [x0, y0] = brushSelection[0];
-                const [x1, y1] = brushSelection[1];
-
-                const nodesArray = Array.from(dag.nodes());
-                console.log(nodesArray);
-        
-                // Get nodes and filter based on selection
-                const selectedNodes = nodesArray.filter((node) => {
-                    const x = node.y + NODE_RADIUS; // Swapped x and y because graph is horizontal
-                    const y = node.x + NODE_RADIUS;
-                    return x >= x0 && x <= x1 && y >= y0 && y <= y1;
-                });
-
-                console.log(selectedNodes);
-            }
         }
         
         const brush = d3
             .brush()
             .on("start", brushStart)
-            .on("brush", brushed)
             .on("end", brushEnd);
 
         g.call(brush);

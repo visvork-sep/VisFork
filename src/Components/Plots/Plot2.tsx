@@ -21,7 +21,6 @@ const NODE_RADIUS = 8;
 const MARGIN = { top: 10, right: 0, bottom: 10, left: 150 };
 const NODE_SIZE = [NODE_RADIUS * 2, NODE_RADIUS * 2] as const;
 const LANE_GAP = NODE_RADIUS * 2;
-
 const CURVE_SIZE = 15;
 const EDGE_WIDTH = 2;
 const TOOLTIP_BG_COLOR = "#f4f4f4";
@@ -33,7 +32,7 @@ const TOOLTIP_MOUSEOVER_DUR = 200;
 const TOOLTIP_MOUSEOUT_DUR = 500;
 const LEGEND_DOT_SIZE = 10;
 const LEGEND_TEXT_MARGIN = "10px";
-const EDGE_STROKE_COLOR = "#999"; 
+const EDGE_STROKE_COLOR = "#999";
 
 const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     const svgRef = useRef<SVGSVGElement>(null);
@@ -183,10 +182,11 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                     : currentMonth;
 
                 monthGroup.append("text")
-                    .attr("x", node.y + (isNewYear ? 24 : 8))
-                    .attr("y", totalHeight-MARGIN.bottom + 10)
+                    .attr("x", node.y)
+                    .attr("y", totalHeight + MARGIN.bottom -10)
                     .attr("font-size", 12)
-                    .style("text-anchor", "end")
+                    .style("text-anchor", "middle")
+                    .style("fill", "black")
                     .text(labelText);
 
                 lastMonth = currentMonth;
@@ -195,6 +195,61 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                 }
             }
         }
+        
+        let brushSelection: any = []; // Type assertion
+
+        const brushStart = (event: d3.D3BrushEvent<unknown>) => {
+            if (event.sourceEvent && event.sourceEvent.type !== "end") {
+                brushSelection = [];
+            }
+        };
+
+        const brushed = (event: d3.D3BrushEvent<unknown>) => {
+            if (!event.selection) return;
+
+            const [[x0, y0], [x1, y1]] = event.selection as [[number, number], [number, number]];
+
+            const nodesArray = Array.from(sortedNodes);
+
+            // Get nodes and filter based on selection
+            const selectedNodes = nodesArray.filter((node) => {
+                const x = node.y + NODE_RADIUS; // Swapped x and y because graph is horizontal
+                const y = node.x + NODE_RADIUS;
+                return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+            });
+
+            console.log("Selected Nodes:", selectedNodes);
+        };        
+        
+
+        function brushEnd(event: d3.D3BrushEvent<unknown>) {
+            if (!event.selection) return; // Exit if no selection
+        
+            if (brushSelection) {
+                const [x0, y0] = brushSelection[0];
+                const [x1, y1] = brushSelection[1];
+
+                const nodesArray = Array.from(dag.nodes());
+                console.log(nodesArray);
+        
+                // Get nodes and filter based on selection
+                const selectedNodes = nodesArray.filter((node) => {
+                    const x = node.y + NODE_RADIUS; // Swapped x and y because graph is horizontal
+                    const y = node.x + NODE_RADIUS;
+                    return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+                });
+
+                console.log(selectedNodes);
+            }
+        }
+        
+        const brush = d3
+            .brush()
+            .on("start", brushStart)
+            .on("brush", brushed)
+            .on("end", brushEnd);
+
+        g.call(brush);
 
         // create edges 
         g.append("g")
@@ -310,17 +365,19 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
     }, [data]);
 
     return (
-        <div style={{ 
-            width: width,
-            maxHeight: maxHeight,
-            overflow: "auto", 
-            whiteSpace: "normal"
-        }}>
-            <svg ref={svgRef}> {}
-                {}
-            </svg>
+        <>
+            <div style={{ 
+                width: width,
+                maxHeight: maxHeight,
+                overflow: "auto", 
+                whiteSpace: "normal"
+            }}>
+                <svg ref={svgRef}> {}
+                    {}
+                </svg>
+            </div>
             <div id="dag-legends">{/* Legends */}</div>
-        </div>
+        </>
     );
 };
 

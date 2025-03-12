@@ -1,6 +1,33 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchForks, fetchCommits } from "./rawQueries";
 import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
+import request from "graphql-request";
+import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables}
+    from "@generated/graphql";
+import { useAuth } from "@Providers/AuthProvider";
+import { API_URL } from "@Utils/Constants";
+
+const GRAPHQL_URL = API_URL + "/graphql";
+
+/**
+ *  Gets to avatar url
+ * @returns response of request to get avatar
+ */
+export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
+    const { isAuthenticated, getAccessToken } = useAuth();
+    const accessToken = getAccessToken();
+
+    return useQuery({
+        queryKey: ["avatarUrl"],
+        queryFn: async () => {
+            return request(GRAPHQL_URL, GetAvatarUrlDocument, parameters, [["Authorization", "bearer " + accessToken]]);
+        },
+        gcTime: 0, // dont store
+        enabled: isAuthenticated
+    });
+}
+
+
 
 /**
  * Fetches fork data using a GraphQL query.

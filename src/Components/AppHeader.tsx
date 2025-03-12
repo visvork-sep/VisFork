@@ -5,13 +5,13 @@ import { useCallback, useState } from "react";
 import { useAuth } from "@Providers/AuthProvider";
 import { SkeletonAvatar } from "@primer/react/experimental";
 import { AUTH_URL } from "@Utils/Constants";
-import { useFetchAvatarUrl } from "../queries/queries";
+import { useFetchAvatarUrl } from "../Queries/queries";
 
 /**
  * Redirects the user to GitHub OAuth login.
  *
- * This function initiates the authentication flow by redirecting the user 
- * to the GitHub OAuth authorization endpoint. A small timeout is used 
+ * This function initiates the authentication flow by redirecting the user
+ * to the GitHub OAuth authorization endpoint. A small timeout is used
  * to accommodate Safari's behavior with redirects.
  */
 function redirectLogin() {
@@ -22,7 +22,7 @@ function redirectLogin() {
 
 /**
  * AppHeader Component
- * 
+ *
  * This component represents the navigation bar for the application, handling user authentication,
  * display settings (dark mode, colorblind mode), and a side panel for additional user options.
  */
@@ -84,7 +84,7 @@ function AppHeader() {
                     {loginOrAvatar}
                 </Stack.Item>
             </Stack>
-    
+
             {/* Side panel for user settings, opens when 'isOpen' is true */}
             {isOpen && (
                 <Dialog title="Settings" onClose={onDialogClose} position="right" width="small">
@@ -93,9 +93,9 @@ function AppHeader() {
                             <ActionList.Item onClick={onToggleColorblindMode} aria-label="Toggle colorblind mode">
                                 Colorblind mode
                             </ActionList.Item>
-    
-                            <ActionList.Item 
-                                onClick={onToggleDarkMode} 
+
+                            <ActionList.Item
+                                onClick={onToggleDarkMode}
                                 aria-label="Toggle light mode"
                             >
                                 <ActionList.LeadingVisual>
@@ -103,9 +103,9 @@ function AppHeader() {
                                 </ActionList.LeadingVisual>
                                 {currentlyDarkMode ? "Light mode" : "Dark mode"}
                             </ActionList.Item>
-    
+
                             <ActionList.Divider />
-    
+
                             <ActionList.Item onClick={handleLogout} variant="danger" aria-label="Sign out button">
                                 Sign out
                             </ActionList.Item>

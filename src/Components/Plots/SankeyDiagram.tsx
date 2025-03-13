@@ -3,6 +3,7 @@ import * as d3Sankey from "d3-sankey";
 import * as d3 from "d3";
 import { Repository } from "./repo";
 import {useEffect} from "react";
+import { FC } from "react";
 
 type ParsedDataItem = {
     name: string;
@@ -12,6 +13,10 @@ type ParsedDataItem = {
 
 //nodeAlligh doesn't have the values defined by the library and it was needed to create a custom type
 type AlignType = "justify" | "left" | "right" | "center";
+
+interface SankeyChartBuildProps {
+    data: Repository[];
+}
 
 // Function to map string to d3-sankey alignment functions
 const getNodeAlignFunction = (align: AlignType) => {
@@ -46,12 +51,13 @@ export function parseData(data: Repository[]):ParsedDataItem[] {
     return Object.values(parsedData);
 }
 
+// Main function to render the Sankey chart
 export function SankeyChart(
-    {
+    {   // nodes and links defining the graph
         nodes, // an iterable of node objects (typically [{id}, …]); implied by links if missing
         links, // an iterable of link objects (typically [{source, target}, …])
     }: { nodes?: d3Sankey.SankeyNodeMinimal<{ id: string }, any>[]; links: d3Sankey.SankeyLinkMinimal<any, any>[] },
-    {
+    {   // configuration options with defaults
         format = d3.format(","), // a function or format specifier for values in titles
         align = "justify", // convenience shorthand for nodeAlign
         nodeGroup, // given d in nodes, returns an (ordinal) value for color
@@ -70,7 +76,8 @@ export function SankeyChart(
         linkTarget = (l) => l.target, // given d in links, returns a node identifier string
         linkValue = (l) => l.value, // given d in links, returns the quantitative value
         linkPath = d3Sankey.sankeyLinkHorizontal(), // given d in (computed) links, returns the SVG path
-        linkTitle = (l) => `${l.source.id} => ${l.target.id}`, // given d in (computed) links
+        linkTitle = (l) => 
+            `${l.source.id} => ${l.target.id}\n${format(l.value)} commits`, // given d in (computed) links
         linkColor = "source-target", // source, target, source-target, or static color
         linkStrokeOpacity = 0.5, // link stroke opacity
         linkMixBlendMode = "normal", // link blending mode
@@ -113,27 +120,21 @@ export function SankeyChart(
             marginLeft?: number;
         }
 ) {
-    // Convert nodeAlign from a name to a function (since d3-sankey is not part of core d3).
-    // if (typeof nodeAlign !== "function")
-    //     nodeAlign =
-    // 		{
-    // 		    left: d3Sankey.sankeyLeft,
-    // 		    right: d3Sankey.sankeyRight,
-    // 		    center: d3Sankey.sankeyCenter,
-    // 		}[nodeAlign] ?? d3Sankey.sankeyJustify;
-    // Compute values.
+    //Mapping the soruce, target and value of the links
     const LS = d3.map(links, linkSource).map(intern);
     const LT = d3.map(links, linkTarget).map(intern);
     const LV = d3.map(links, linkValue);
 
+    // If nodes is not defined, create a new array of nodes
     if (nodes === undefined) {
         nodes = Array.from(d3.union(LS, LT), (id, index) => ({ id, index, x0: 0, x1: 0, y0: 0, y1: 0 }));
     }
+
+    // Mapping the nodes to their id
     const N = d3.map(nodes as d3Sankey.SankeyNode<{ id: string }, any>[],(n) => n.id).map(intern);
-    console.log("N", N);
     const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
-    // Replace the input nodes and links with mutable objects for the simulation.
-    //nodes = d3.map(nodes, (_, i) => ({ id: N[i], index: i, x0: 0, x1: 0, y0: 0, y1: 0 }));
+
+    // Construct the links
     links = d3.map(links, (_, i) => ({
         source: LS[i],
         target: LT[i],
@@ -150,7 +151,7 @@ export function SankeyChart(
     // Construct the scales.
     const color = d3.scaleOrdinal(nodeGroups, colors);
 
-    // Compute the Sankey layout.
+    // Computing the layout of the diagram using d3Sankey
     d3Sankey
         .sankey<{ id: string }, any>()
         .nodeId((d) => d.id)
@@ -304,13 +305,6 @@ export function SankeyChart(
         return Object.assign(svgNode, { scales: { color } });
     }
     return null;
-}
-
-import { FC } from "react";
-
-
-interface SankeyChartBuildProps {
-    data: Repository[];
 }
 
 export const SankeyChartBuild: FC<SankeyChartBuildProps> = 

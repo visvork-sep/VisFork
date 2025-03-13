@@ -4,7 +4,7 @@ import * as d3 from "d3";
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
  */
-const Test: React.FC = () => {
+const Histogram: React.FC = () => {
     const svgRef = useRef<SVGSVGElement | null>(null);
 
     // Sample date data
@@ -215,4 +215,4 @@ const Test: React.FC = () => {
     );
 };
 
-export default Test;
+export default Histogram;

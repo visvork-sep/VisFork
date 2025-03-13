@@ -1,22 +1,63 @@
-import { ImageIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
-import { ActionMenu, Avatar, Box, Button, Dialog, Header, useTheme } from "@primer/react";
-import { ActionList } from "@primer/react/deprecated";
+import { MoonIcon, SunIcon } from "@primer/octicons-react";
+import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@primer/react";
+import { ActionList } from "@primer/react";
 import { useCallback, useState } from "react";
+import { useAuth } from "@Providers/AuthProvider";
+import { SkeletonAvatar } from "@primer/react/experimental";
+import { AUTH_URL } from "@Utils/Constants";
+import { useFetchAvatarUrl } from "../Queries/queries";
+import visForkIcon from "/visForkIcon.svg";
 
+/**
+ * Redirects the user to GitHub OAuth login.
+ *
+ * This function initiates the authentication flow by redirecting the user
+ * to the GitHub OAuth authorization endpoint. A small timeout is used
+ * to accommodate Safari's behavior with redirects.
+ */
+function redirectLogin() {
+    setTimeout(() => { // timeout for Safari behavior
+        window.location.href = AUTH_URL + "/auth/github";
+    }, 250);
+}
+
+/**
+ * AppHeader Component
+ *
+ * This component represents the navigation bar for the application, handling user authentication,
+ * display settings (dark mode, colorblind mode), and a side panel for additional user options.
+ */
 function AppHeader() {
-    const {colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme} = useTheme();
-    const [isOpen, setIsOpen] = useState(false);
-    const [loggedIn, setLoggedIn] = useState(false); // TODO: Implement login
+    /** Controls the visibility of the settings side panel */
+    const { isAuthenticated, logout } = useAuth();
+    const { data } = useFetchAvatarUrl({});
+    const avatarUrl = data?.viewer.avatarUrl as string | undefined;
 
+    const { colorMode, setColorMode, dayScheme, nightScheme, setDayScheme, setNightScheme } = useTheme();
+    const [isOpen, setIsOpen] = useState(false);
 
     const onDialogClose = useCallback(() => setIsOpen(false), []);
     const onDialogOpen = useCallback(() => setIsOpen(true), []);
-    const onLogin = useCallback(() => setLoggedIn(true), []);
-    const onLogout = useCallback(() => {
-        onDialogClose();
-        setLoggedIn(false);
-    }, [onDialogClose]);
 
+    const handleLogout = useCallback(() => {
+        logout();
+        setIsOpen(false);
+    }, []);
+
+    const loginOrAvatar = isAuthenticated ?
+        (
+            <Box onClick={onDialogOpen}>
+                {avatarUrl ?
+                    <Avatar src={avatarUrl} size={32} />
+                    :
+                    <SkeletonAvatar size={32} />
+                }
+            </Box>
+        )
+        :
+        (
+            <Button onClick={redirectLogin}>Login</Button>
+        );
 
     const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";
     const onToggleColorblindMode = useCallback(() => {
@@ -31,53 +72,49 @@ function AppHeader() {
         const newMode = currentlyDarkMode ? "day" : "dark";
         setColorMode(newMode);
     }, [currentlyDarkMode, setColorMode]);
-
     return (
         <>
-            <Header aria-label="nav bar">
-                <Header.Item>
-                    <ImageIcon size={32}/>
-                </Header.Item>
-                <Header.Item full>
+            <Stack direction="horizontal" align="center">
+                <Stack.Item>
+                    <Avatar src={visForkIcon} size={32} />
+                </Stack.Item>
+                <Stack.Item grow>
                     <span>VisFork</span>
-                </Header.Item>
+                </Stack.Item>
+                <Stack.Item>
+                    {loginOrAvatar}
+                </Stack.Item>
+            </Stack>
 
-                <Header.Item aria-label="Open settings dialog">
-                    {loggedIn ? (
-                        <Box onClick={onDialogOpen}> 
-                            <Avatar src="https://avatars.githubusercontent.com/u/14032476?v=4" size={24}/> 
-                        </Box>
-                        
-                    ) : ( 
-                        <Button onClick={onLogin} aria-label="Login button">
-                            Log in
-                        </Button>
-                    )}
-                </Header.Item>
-            </Header>
-
+            {/* Side panel for user settings, opens when 'isOpen' is true */}
             {isOpen && (
-                <Dialog title="Settings" onClose={onDialogClose} position={"right"} width="small">
+                <Dialog title="Settings" onClose={onDialogClose} position="right" width="small">
                     <ActionMenu>
-                        <ActionList 
-                            items={[
-                                {text: "Colorblind mode", onClick: onToggleColorblindMode, 
-                                    selected: currentlyColorblindMode, "aria-label": "Toggle colrblind mode"},
-                                {text: currentlyDarkMode ? "Light mode" :"Dark mode", onClick: onToggleDarkMode,
-                                    leadingVisual: currentlyDarkMode ? SunIcon : MoonIcon,
-                                    "aria-label": "Toggle light mode"},
-                                ActionList.Divider,
-                                {text: "Sign out", onClick: onLogout, variant: "danger",
-                                    "aria-label": "Sign out button"},
-                            ]}>
+                        <ActionList>
+                            <ActionList.Item onClick={onToggleColorblindMode} aria-label="Toggle colorblind mode">
+                                Colorblind mode
+                            </ActionList.Item>
+
+                            <ActionList.Item
+                                onClick={onToggleDarkMode}
+                                aria-label="Toggle light mode"
+                            >
+                                <ActionList.LeadingVisual>
+                                    {currentlyDarkMode ? <SunIcon /> : <MoonIcon />}
+                                </ActionList.LeadingVisual>
+                                {currentlyDarkMode ? "Light mode" : "Dark mode"}
+                            </ActionList.Item>
+
+                            <ActionList.Divider />
+
+                            <ActionList.Item onClick={handleLogout} variant="danger" aria-label="Sign out button">
+                                Sign out
+                            </ActionList.Item>
                         </ActionList>
                     </ActionMenu>
-                    
-                    
                 </Dialog>
             )}
         </>
     );
 }
-
 export default AppHeader;

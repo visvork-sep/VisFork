@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   run-simian:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout Repository
@@ -22,17 +24,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cache Simian JAR
-        id: cache-simian
-        uses: actions/cache@v3
-        with:
-          path: simian-4.0.0.jar
-          key: simian-4.0.0
-
-      - name: Download Simian JAR (if not cached)
-        if: steps.cache-simian.outputs.cache-hit != 'true'
+      - name: Get Simian JAR
+        id: get-simian
         run: |
-          curl -L -o simian-4.0.0.jar https://github.com/visvork-sep/visvork-sep/releases/download/v0.1-alpha/simian-4.0.0.jar
+          if [ -f ./simian-4.0.0.jar ]; then
+            echo "Simian JAR is already present."
+          else
+            echo "Copying Simian JAR..."
+            cp /var/www/html/files/simian-4.0.0.jar .
+          fi
 
       - name: Run Simian Analysis
         run: |

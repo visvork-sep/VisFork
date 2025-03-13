@@ -25,7 +25,8 @@
 		"vscode": {
 			"extensions": [
 				"GraphQL.vscode-graphql",
-				"dbaeumer.vscode-eslint"
+				"dbaeumer.vscode-eslint",
+				"vitest.explorer"
 			]
 		}
 	}

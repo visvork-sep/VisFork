@@ -8,11 +8,14 @@ interface FormError {
 // Dynamic error-generating methods that return objects
 const unknownError = (): FormError => ({ message: "Unknown error" });
 
-const laterFromDateError = () => (
-    { message: "The date range is not valid, make sure the from date is before the until date." }
+const laterFromDateError = (from: string, until: string) => (
+    { message: `The date range is not valid, make sure the from date is before the until date.
+        from: ${from}, until: ${until}` }
 );
 
-const futureUntilDateError = () => ({ message: "Future dates are not allowed for the until field" });
+const futureUntilDateError = (date: string) => (
+    { message: `Future dates are not allowed for the until field: ${date}` }
+);
 
 const lessThanMinForksError = () => ({ message: `Number of forks must be greater than ${MIN_QUERIABLE_FORKS}` });
 

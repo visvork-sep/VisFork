@@ -7,3 +7,5 @@ export const RECENT_ACTIVITY_MIN_MONTHS = 1;
 /// Upper bound for recent activity filtering (least recent updates)
 export const RECENT_ACTIVITY_MAX_MONTHS = 12;
 
+/** Number of months since last update such that a fork is still considered active. */
+export const ACTIVE_FORK_NROF_MONTHS = 12;

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3Sankey from "d3-sankey";
 import * as d3 from "d3";
-import { Repository } from "./repo";
 import {useEffect} from "react";
 import { FC } from "react";
 
@@ -9,6 +8,22 @@ type ParsedDataItem = {
     name: string;
     type: string;
     count: number;
+};
+
+export type Repository = {
+    repo: string;
+    sha: string;
+    id: string;
+    parentIds: string[];
+    branch_name: string;
+    branch_id: string;
+    node_id: string;
+    author: string;
+    date: string;
+    url: string;
+    message: string;
+    commit_type: string;
+    mergedNodes: string[];
 };
 
 //nodeAlligh doesn't have the values defined by the library and it was needed to create a custom type

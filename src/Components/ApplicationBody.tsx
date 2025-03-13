@@ -9,8 +9,6 @@ function ApplicationBody() {
     const data: Date[] = facebookData.map((d: { date: string }) => new Date(d.date));
     return (
         <Stack>
-            <Barchart dates={data} />
-            {/* <Barchart rawData={exampleData} /> */}
             <Histogram />
         </Stack>
     );

@@ -60,13 +60,13 @@ const Histogram: React.FC = () => {
         const svg = d3.select(svgRef.current);
         const container = svg.node()?.parentElement as HTMLElement;
         const width = container.clientWidth;
-        const height = 400;
+        const height = 300;
 
-        const contextMargin = { top: 12, right: 10, bottom: 48, left: 10 };
+        const contextMargin = { top: 12, right: 10, bottom: 30, left: 10 };
         const contextHeight = 0.25 * height - contextMargin.top - contextMargin.bottom;
         const contextWidth = width - contextMargin.left - contextMargin.right;
 
-        const focusMargin = { top: 48, right: 10, bottom: 24, left: 10 };
+        const focusMargin = { top: 0, right: 10, bottom: 24, left: 10 };
         const focusHeight = 0.75 * height - focusMargin.top - focusMargin.bottom;
         const focusWidth = width - focusMargin.left - focusMargin.right;
 
@@ -88,8 +88,7 @@ const Histogram: React.FC = () => {
         // Set SVG size
         svg.attr("width", width)
             .attr("height", height)
-            .attr("viewBox", `0 0 ${width} ${height}`)
-            .style("border", "1px solid black");
+            .attr("viewBox", `0 0 ${width} ${height}`);
         svg.selectAll("*").remove();
 
         // Initialize context chart
@@ -209,7 +208,9 @@ const Histogram: React.FC = () => {
             .attr("transform", `translate(${focusMargin.left},${focusMargin.top})`);
 
         // Append brush to context chart
-        chartContext.append("g").attr("class", "brush").call(brush)
+        chartContext.append("g")
+            .attr("class", "brush")
+            .call(brush)
             .call(brush.move, [0, contextWidth / 5]);
 
         // Tooltip setup
@@ -232,8 +233,8 @@ const Histogram: React.FC = () => {
     }, [drawChart]);
 
     return (
-        <div style={{ textAlign: "center", padding: "20px", borderRadius: "10px" }}>
-            <h1 style={{ fontSize: "18px", marginBottom: "10px", fontWeight: "bold" }}>Slide to select a date range</h1>
+        <div style={{ textAlign: "center", borderRadius: "10px" }}>
+            <h1 style={{ fontSize: "18px", marginBottom: "0px", fontWeight: "bold" }}>Slide to select a date range</h1>
             <svg ref={svgRef} style={
                 { width: "100%", height: "100%", borderRadius: "8px", marginBottom: "10px" }
             }></svg>

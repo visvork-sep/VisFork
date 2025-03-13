@@ -1,6 +1,12 @@
-function assertFn(condition: boolean, message: string) {
+class AssertionError extends Error {
+    constructor(message?: string) {
+        super(message);
+        this.name = "AssertionError";
+    }
+}
+function assertFn(condition: boolean, message?: string) {
     if (!condition) {
-        throw new Error(message);
+        throw new AssertionError(message);
     }
 }
 

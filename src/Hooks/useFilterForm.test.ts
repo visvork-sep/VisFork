@@ -103,6 +103,16 @@ describe("useFilterForm - forksOrder", () => {
 
             expect(result.current.form.forksOrder).toEqual(newValue);
         });
+
+    it("should not allow it's precondition to be broken", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = "N";
+        const handler = result.current.handleForksOrderChange;
+
+        act(() => handler(newValue));
+
+        expect(result.current.form.forksOrder).toThrowError("Precondition broken");
+    });
 });
 
 describe("useFilterForm - forksAscDesc", () => {

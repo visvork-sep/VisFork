@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { FilterFormState } from "../Types/FilterForm";
 import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION }
     from "@Utils/Constants";
+import { assert } from "@Utils/Assert";
 
 const initialForm: FilterFormState = {
     repository: "",
@@ -42,6 +43,8 @@ function useFilterForm() {
      * @precondition value \in Object.values(FORKS_SORTING_ORDERS).map(t => t.value)
      */
     const handleForksOrderChange = useCallback((value: string) => {
+        assert(Object.values(FORKS_SORTING_ORDERS).map(t => t.value).includes(value), "Precondition broken");
+
         setForm((prev) => ({ ...prev, forksOrder: value }));
     }, []);
 

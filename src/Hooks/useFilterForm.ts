@@ -31,8 +31,6 @@ function useFilterForm() {
      * Note that the count will be set to undefined if the input is not a number.
      */
     const handleForksCountChange = useCallback((input: string) => {
-
-
         setForm((prev) => ({ ...prev, forksCount: input }));
     }, []);
 
@@ -54,6 +52,8 @@ function useFilterForm() {
      * @precondition value \in Object.values(SORT_DIRECTION).map(t => t.value) 
      */
     const handleForksOrderAscDescChange = useCallback((value: string) => {
+        assert(Object.values(SORT_DIRECTION).map(t => t.value).includes(value), "Precondition broken");
+
         setForm((prev) => ({ ...prev, forksAscDesc: value }));
     }, []);
 

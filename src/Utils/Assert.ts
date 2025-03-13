@@ -12,3 +12,6 @@ function assertFn(condition: boolean, message?: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const assert = import.meta.env.DEV ? assertFn : () => {};
+export {
+    AssertionError
+};

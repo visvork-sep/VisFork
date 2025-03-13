@@ -9,6 +9,7 @@ import {
     OWNER_TYPES,
 } from "@Utils/Constants";
 import { act } from "react";
+import { AssertionError } from "@Utils/Assert";
 
 describe("useFilterForm - Initial values", () => {
     it("should set the initial value of repository to an empty string", () => {
@@ -109,9 +110,9 @@ describe("useFilterForm - forksOrder", () => {
         const newValue = "N";
         const handler = result.current.handleForksOrderChange;
 
-        act(() => handler(newValue));
-
-        expect(result.current.form.forksOrder).toThrowError("Precondition broken");
+        expect(() => {
+            act(() => handler(newValue));
+        }).toThrowError(AssertionError);
     });
 });
 

@@ -77,6 +77,8 @@ function useFilterForm() {
      * @precondition (\all : string s \in selected : s \in FORK_TYPES)
      */
     const handleForksTypeFilterChange = useCallback((selected: string[]) => {
+        assert(selected.every(s => Object.values(FORK_TYPES).map(t => t.value).includes(s)));
+
         setForm((prev) => ({ ...prev, forksTypeFilter: selected }));
     }, []);
 
@@ -86,6 +88,8 @@ function useFilterForm() {
      * @precondition (\all : string s \in selected : s \in OWNER_TYPES)
      */
     const handleOwnerTypeFilterChange = useCallback((selected: string[]) => {
+        assert(selected.every(s => Object.values(OWNER_TYPES).map(t => t.value).includes(s)));
+
         setForm((prev) => ({ ...prev, ownerTypeFilter: selected }));
     }, []);
 

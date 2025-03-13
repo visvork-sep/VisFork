@@ -5,11 +5,11 @@ import { useFetchCommitsBatch, useFetchForks } from "../Queries/queries";
 import { ForkFilterService } from "../Filters/ForkFilterService";
 
 export function useDataFilter() {
-    const [querryParams, setQuerryParams] = useState<ForkQueryParams>({
-        path: {owner : "" , repo: ""}
+    const [forkQueryParams, setForkQueryParams] = useState<ForkQueryParams>( {
+        path: {owner: "", repo: ""}
     });
 
-    const {data, isLoading, error} = useFetchForks(querryParams);
+    const {data, isLoading, error} = useFetchForks(forkQueryParams);
 
     const [filters, setFilters] = useState<ForkFilter>({
         sortBy: "newest",
@@ -20,7 +20,7 @@ export function useDataFilter() {
 
     const filteredData = useMemo(() => {
         if (!data?.data) return [];
-        return filterService.filterForks(data.data, filters);
+        return filterService.filterForks(data?.data, filters);
     }, [data?.data, filters]);
 
     const commitQueries = filteredData.map((fork) => {
@@ -33,7 +33,7 @@ export function useDataFilter() {
     // TODO: Fix pagination
     const resultCommits = useFetchCommitsBatch(commitQueries);
 
-    return { filteredData, isLoading, error, setQuerryParams, setFilters, resultCommits };
+    return { filteredData, isLoading, error, setForkQueryParams, setFilters, resultCommits };
 
 }
 

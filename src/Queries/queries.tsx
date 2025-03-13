@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery} from "@tanstack/react-query";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "./rawQueries";
 import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
 import { GetAvatarUrlQueryVariables}
@@ -26,6 +26,7 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
  * Uses `react-query` to manage caching, loading states, and refetching.
  *
  * @param parameters - Query variables required for fetching forks.
+ * If required params are empty query will be disabled.
  * @returns The result object from `useQuery`, containing data, loading, and error states.
  */
 export function useFetchForks(parameters: ForkQueryParams) {
@@ -35,7 +36,10 @@ export function useFetchForks(parameters: ForkQueryParams) {
     return useQuery({
         queryKey: ["forks", parameters],
         queryFn: () => fetchForks(parameters, accessToken),
-        enabled: isAuthenticated //dependent on variables
+        // Done so query is not triggered on first render.
+        enabled: isAuthenticated
+            && !!parameters.path.owner
+            && !!parameters.path.repo
     });
 }
 

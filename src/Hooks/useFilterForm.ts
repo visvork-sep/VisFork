@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { FilterFormState } from "../Types/FilterForm";
-import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION } 
+import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION }
     from "@Utils/Constants";
 import { assert } from "@Utils/Assert";
 
@@ -22,8 +22,7 @@ function useFilterForm() {
 
     /**
      * Updates the repository input field in the form state.
-     * 
-     * @param input - The new repository name entered by the user.
+     * @param {string} input - The new repository name entered by the user.
      */
     const handleRepositoryChange = useCallback((input: string) => {
         setForm((prev) => ({
@@ -34,9 +33,7 @@ function useFilterForm() {
 
     /**
      * Updates the forks count filter in the form state.
-     * 
-     * @param input - The new fork count input as a string.
-     *                If the input is not a valid number, the state will be set to undefined.
+     * @param {string} input - The new fork count input as a string.
      */
     const handleForksCountChange = useCallback((input: string) => {
         setForm((prev) => ({ ...prev, forksCount: input }));
@@ -44,32 +41,27 @@ function useFilterForm() {
 
     /**
      * Updates the forks sorting order.
-     * 
-     * @param value - The selected sorting order.
-     * @precondition The value must be one of the defined sorting options in FORKS_SORTING_ORDERS.
+     * @param {string} value - The selected sorting order.
+     * @throws {Error} If the value is not one of the defined sorting options in FORKS_SORTING_ORDERS.
      */
     const handleForksOrderChange = useCallback((value: string) => {
         assert(Object.values(FORKS_SORTING_ORDERS).map(t => t.value).includes(value), "Invalid sorting order selected");
-
         setForm((prev) => ({ ...prev, forksOrder: value }));
     }, []);
 
     /**
      * Updates the sorting direction (ascending/descending) for forks.
-     * 
-     * @param value - The selected sorting direction.
-     * @precondition The value must be one of the defined sorting directions in SORT_DIRECTION.
+     * @param {string} value - The selected sorting direction.
+     * @throws {Error} If the value is not one of the defined sorting directions in SORT_DIRECTION.
      */
     const handleForksOrderAscDescChange = useCallback((value: string) => {
         assert(Object.values(SORT_DIRECTION).map(t => t.value).includes(value), "Invalid sorting direction selected");
-
         setForm((prev) => ({ ...prev, forksAscDesc: value }));
     }, []);
 
     /**
      * Updates the start date for commit filtering.
-     * 
-     * @param input - The new start date entered by the user.
+     * @param {string} input - The new start date entered by the user.
      */
     const handleCommitsDateRangeFromChange = useCallback((input: string) => {
         setForm((prev) => ({ ...prev, commitsDateRangeFrom: input }));
@@ -77,8 +69,7 @@ function useFilterForm() {
 
     /**
      * Updates the end date for commit filtering.
-     * 
-     * @param input - The new end date entered by the user.
+     * @param {string} input - The new end date entered by the user.
      */
     const handleCommitsDateRangeUntilChange = useCallback((input: string) => {
         setForm((prev) => ({ ...prev, commitsDateRangeUntil: input }));
@@ -86,35 +77,29 @@ function useFilterForm() {
 
     /**
      * Updates the selected fork types for filtering.
-     * 
-     * @param selected - An array of selected fork type values.
-     * @precondition All selected values must be present in the predefined FORK_TYPES.
+     * @param {string[]} selected - An array of selected fork type values.
+     * @throws {Error} If any selected value is not present in the predefined FORK_TYPES.
      */
     const handleForksTypeFilterChange = useCallback((selected: string[]) => {
         assert(selected.every(s => Object.values(FORK_TYPES).map(t => t.value).includes(s)),
             "Invalid fork type selected");
-
         setForm((prev) => ({ ...prev, forksTypeFilter: selected }));
     }, []);
 
     /**
      * Updates the selected owner types for filtering.
-     * 
-     * @param selected - An array of selected owner type values.
-     * @precondition All selected values must be present in the predefined OWNER_TYPES.
+     * @param {string[]} selected - An array of selected owner type values.
+     * @throws {Error} If any selected value is not present in the predefined OWNER_TYPES.
      */
     const handleOwnerTypeFilterChange = useCallback((selected: string[]) => {
         assert(selected.every(s => Object.values(OWNER_TYPES).map(t => t.value).includes(s)),
             "Invalid owner type selected");
-
         setForm((prev) => ({ ...prev, ownerTypeFilter: selected }));
     }, []);
 
     /**
      * Updates the recently updated filter input.
-     * 
-     * @param input - The new value for the recently updated filter.
-     *                If the input is not a valid number, the state will be set to undefined.
+     * @param {string} input - The new value for the recently updated filter.
      */
     const handleRecentlyUpdatedChange = useCallback((input: string) => {
         setForm((prev) => ({ ...prev, recentlyUpdated: input }));

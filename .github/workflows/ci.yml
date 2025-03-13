@@ -11,7 +11,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       # Step 1

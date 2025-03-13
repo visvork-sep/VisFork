@@ -23,7 +23,8 @@ function ApplicationBody() {
                         <Blankslate.Visual>
                             {plot === 1 ? <CommitTimeline data={commitData}
                                 width={(width ?? widthMeasurementError) - widthMeasurementError} 
-                                maxHeight={maxHeightCommitTimeline}/> : <Spinner/>}
+                                maxHeight={maxHeightCommitTimeline}
+                                defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
                         </Blankslate.Visual>
                     </Blankslate>
                 </div>}

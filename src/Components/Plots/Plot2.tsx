@@ -15,6 +15,7 @@ interface DagProps {
   data: Commit[];
   width: number;
   maxHeight: number;
+  defaultBranches: Record<string, string>;
 }
 
 const NODE_RADIUS = 8;
@@ -34,7 +35,7 @@ const LEGEND_DOT_SIZE = 10;
 const LEGEND_TEXT_MARGIN = "10px";
 const EDGE_STROKE_COLOR = "#999";
 
-const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
+const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBranches }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const colorMap = new Map();
     const repoNames = new Set();
@@ -172,7 +173,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
                     .attr("x1", node.y)
                     .attr("x2", node.y)
                     .attr("y1", 0)
-                    .attr("y2", totalHeight - 10) 
+                    .attr("y2", totalHeight - 10)
                     .attr("stroke", "gray")
                     .attr("stroke-dasharray", "3,3");
 
@@ -285,7 +286,11 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
         // create nodes
         g.append("g")
             .selectAll("circle")
-            .data(dag.nodes())
+            .data(Array.from(dag.nodes()).filter((node) => {
+                    const default_branch = defaultBranches[node.data.repo];
+                    return node.data.branch_name === default_branch;
+                }
+            ))
             .enter()
             .append("circle")
             .attr("cx", (d) => d.y ?? 0) // def value 0 to avoid eslint complaining
@@ -312,7 +317,50 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight }) => {
             })
             .on("click", (_event, d) => {
                 window.open(d.data.url);
-            });;
+            });
+        
+        g.append("g")
+            .selectAll("polygon")
+            .data(Array.from(dag.nodes()).filter((node) => {
+                    const default_branch = defaultBranches[node.data.repo];
+                    console.log(default_branch);
+                    if (node.data.branch_name === default_branch) {
+                        console.log("interesting");
+                    }
+                    return node.data.branch_name !== default_branch;
+                }
+            ))
+            .enter()
+            .append("polygon")
+            .attr("points", `0,-${NODE_RADIUS} ${NODE_RADIUS},${NODE_RADIUS} -${NODE_RADIUS},${NODE_RADIUS}`)
+            .attr("transform", d => {
+                // Ensure that d.x and d.y are properly defined, or else default to (0,0)
+                const x = d.y ?? 0;
+                const y = d.x ?? 0;
+                return `translate(${x},${y})`;
+            })
+            .attr("fill", (d) => colorMap.get(d.data.repo))
+            .on("mouseover", (event, d) => {
+                tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
+                tooltip.html(
+                    `<strong>Commit</strong>: ${d.data.id}<br>
+                    <strong>Repo</strong>: ${d.data.repo}<br>
+                    <strong>Branch</strong>: ${d.data.branch_name}<br>
+                    <strong>Date</strong>: ${d.data.date.toLocaleString()}`
+                )
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY) + "px");
+            })
+            .on("mousemove", (event) => {
+                tooltip.style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY) + "px");
+            })
+            .on("mouseout", () => {
+                tooltip.transition().duration(TOOLTIP_MOUSEOUT_DUR).style("opacity", 0);
+            })
+            .on("click", (_event, d) => {
+                window.open(d.data.url);
+            });
             
         // display legends for the colors in #dag-legends
         const legend = d3.select("#dag-legends");

@@ -1,11 +1,18 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
 import * as d3 from "d3";
+import { useTheme, themeGet } from "@primer/react";
 
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
  */
 const Histogram: React.FC = () => {
     const svgRef = useRef<SVGSVGElement | null>(null);
+    const { theme } = useTheme();
+    const bgColor = themeGet("colors.neutral.subtle")({ theme });
+    const bgColorSelected = themeGet("colors.neutral.emphasis")({ theme });
+    const barColor = themeGet("colors.accent.muted")({ theme });
+    const barColorSelected = themeGet("colors.accent.emphasis")({ theme });
+
 
     // Sample date data
     const dates = useMemo(() => [
@@ -97,7 +104,7 @@ const Histogram: React.FC = () => {
             .attr("y", 0)
             .attr("width", xScaleContext.bandwidth())
             .attr("height", contextHeight)
-            .style("fill", "gray");
+            .style("fill", bgColor);
 
 
         // Draw bars for context chart
@@ -110,7 +117,7 @@ const Histogram: React.FC = () => {
             .attr("y", d => yScaleContext(d[1]))
             .attr("width", xScaleContext.bandwidth())
             .attr("height", d => contextHeight - yScaleContext(d[1]))
-            .style("fill", "green");
+            .style("fill", barColor);
 
 
         // Brush setup
@@ -119,12 +126,18 @@ const Histogram: React.FC = () => {
             .on("brush", ({ selection }) => {
                 if (selection) {
                     const [x0, x1] = selection;
+                    chartContext.selectAll(".bar-bg")
+                        .style("fill", (d: unknown) => {
+                            const data = d as [Date, number];
+                            const pos = xScaleContext(d3.timeFormat("%b %Y")(data[0])) as number;
+                            return pos >= x0 && pos <= x1 ? bgColorSelected : bgColor;
+                        });
+
                     chartContext.selectAll(".bar").style("fill", (d: unknown) => {
                         const data = d as [Date, number];
                         const pos = xScaleContext(d3.timeFormat("%b %Y")(data[0])) as number;
-                        return pos >= x0 && pos <= x1 ? "red" : "green";
+                        return pos >= x0 && pos <= x1 ? barColorSelected : barColor;
                     });
-                    // .style("fill", d => selected.indexOf(d.x) > -1 ? "ref" : "green");
                     const selectedDates = Array.from(frequency).filter(d => {
                         const pos = xScaleContext(d3.timeFormat("%b %Y")(d[0])) as number;
                         return pos >= x0 && pos <= x1;
@@ -146,7 +159,7 @@ const Histogram: React.FC = () => {
                         .attr("y", 0)
                         .attr("width", xScaleFocus.bandwidth())
                         .attr("height", focusHeight)
-                        .style("fill", "gray");
+                        .style("fill", bgColor);
 
                     chartFocus.selectAll(".bar")
                         .data(Array.from(selectedDates))
@@ -157,7 +170,7 @@ const Histogram: React.FC = () => {
                         .attr("y", d => yScaleFocus(d[1]))
                         .attr("width", xScaleFocus.bandwidth())
                         .attr("height", d => focusHeight - yScaleFocus(d[1]))
-                        .style("fill", "blue")
+                        .style("fill", barColorSelected)
                         .on("mouseover", function () { tooltip.style("opacity", 1); })
                         .on("mousemove", function (event, d) {
                             tooltip.html(`Date: ${d3.timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`)
@@ -170,6 +183,7 @@ const Histogram: React.FC = () => {
             });
 
         chartContext.append("g").attr("class", "brush").call(brush);
+
 
         // Draw x-axis
         chartContext.append("g")

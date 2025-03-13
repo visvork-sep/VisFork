@@ -1,3 +1,4 @@
+import { ACTIVE_FORK_NROF_MONTHS } from "@Utils/Constants";
 import { ForkFilter, DateRange, ForkType, OwnerType } from "../Types/ForkFilter";
 import { ForkJSON } from "../Types/GithubTypes";
 
@@ -95,13 +96,7 @@ export class ForkFilterService {
         if (activeForksOnly === undefined || !activeForksOnly) {
             result = true; // since activity is not a criterion in this case
         } else {
-            // TODO definition of active?? modified within past year? CHECK URD
-            if (fork.archived !== undefined) {
-                result = fork.archived;
-            }
-            if (fork.disabled !== undefined) {
-                result = fork.disabled;
-            }
+            result = this.#isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS);
         }
 
         return result;
@@ -142,6 +137,9 @@ export class ForkFilterService {
     /**
      * If {@param nrOfMonths} is not undefined, this function determines whether
      * the {@param fork} was updated in the previous {@code nrOfMonths}.
+     * 
+     * If {@code fork.updated_at} is undefined or null, the function will return false (since it was not updated
+     * in the previous {@code nrOfMonths} months).
      * 
      * @returns True if {@code fork} was updated in the previous {@code nrOfMonths}, false otherwise.
      */

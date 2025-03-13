@@ -21,9 +21,11 @@ interface CommitInfo {
 
 // Graph node type: author or repo
 interface Node extends d3.SimulationNodeDatum {
-  id: string;           
-  group: "author" | "repo";
-}
+    id: string;
+    group: "author" | "repo";
+    radius?: number;
+    commits?: number;
+  }  
 
 // Graph link type: connects author to repo
 interface Link extends d3.SimulationLinkDatum<Node> {
@@ -44,6 +46,9 @@ function CollaborationGraph() {
         const repos = new Set<string>();
         const links: Link[] = [];
 
+        const authorCommitCounts: Record<string, number> = {};
+        const repoCommitCounts: Record<string, number> = {};
+
         // Make sure each set of authors and repos is unique
         commitData.forEach((entry: CommitInfo) => {
             authors.add(entry.author);
@@ -52,19 +57,26 @@ function CollaborationGraph() {
                 source: entry.author,
                 target: entry.repo,
             });
+        
+            authorCommitCounts[entry.author] = (authorCommitCounts[entry.author] || 0) + 1;
+            repoCommitCounts[entry.repo] = (repoCommitCounts[entry.repo] || 0) + 1;
         });
 
         // Create nodes
         const nodes: Node[] = [
             ...Array.from(authors).map((author) => ({
                 id: author,
-                group: "author" as const, 
+                group: "author" as const,
+                radius: 4 + Math.log(authorCommitCounts[author] || 1) * 2,
+                commits: authorCommitCounts[author] || 0,
             })),
             ...Array.from(repos).map((repo) => ({
                 id: repo,
-                group: "repo" as const, 
+                group: "repo" as const,
+                radius: 4 + Math.log(repoCommitCounts[repo] || 1) * 2,
+                commits: repoCommitCounts[repo] || 0,
             })),
-        ];
+        ];        
           
         // D3 setup
         const svg = d3.select(svgRef.current);
@@ -97,7 +109,8 @@ function CollaborationGraph() {
             .data(nodes)
             .enter()
             .append("circle")
-            .attr("r", 8)
+            .attr("r", (d) => d.radius ?? 8)
+            .attr("dy", (d) => `-${(d.radius ?? 8) + 4}px`)
             // Color nodes by their type
             .attr("fill", (d) => (d.group === "author" ? "#1f77b4" : "#ff7f0e"))
             // Dragging
@@ -130,16 +143,21 @@ function CollaborationGraph() {
             .text((d) => d.id)
             .attr("font-size", "10px")
             // Position text slightly above the node
-            .attr("dy", "-0.9em") 
+            .attr("dy", (d) => `-${(d.radius ?? 8) + 4}px`)
             .attr("text-anchor", "middle")
             // Allow clicks to pass through
             .attr("pointer-events", "none") 
             .attr("fill", "#333")
+            // Make labels non-selectable
+            .attr("pointer-events", "none") 
+            .style("user-select", "none")
             // Shorten long names
             .text((d) => d.id.length > 12 ? d.id.slice(0, 12) + "…" : d.id);
 
-
-        node.append("title").text((d) => d.id);
+        // Show full name and number of commits on hover
+        node.append("title").text((d) => {
+            return `${d.id}\nCommits: ${d.commits ?? 0}`;
+        });            
 
         simulation.on("tick", () => {
             // Clamp positions so nodes stay within the viewbox
@@ -162,6 +180,40 @@ function CollaborationGraph() {
                 .attr("x", (d) => d.x ?? 0)
                 .attr("y", (d) => d.y ?? 0);
         });
+
+        // Add legend
+        const legendData = [
+            { label: "Author", color: "#1f77b4" },
+            { label: "Repository", color: "#ff7f0e" },
+        ];
+  
+        const legend = svg
+            .append("g")
+            .attr("transform", `translate(${width - 110}, 20)`); // Position top-right
+  
+        legend
+            .selectAll("rect")
+            .data(legendData)
+            .enter()
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", (_, i) => i * 20)
+            .attr("width", 12)
+            .attr("height", 12)
+            .attr("fill", (d) => d.color);
+  
+        legend
+            .selectAll("text")
+            .data(legendData)
+            .enter()
+            .append("text")
+            .attr("x", 18)
+            .attr("y", (_, i) => i * 20 + 10)
+            .attr("font-size", "12px")
+            .attr("fill", "#333")
+            .text((d) => d.label)
+            .style("user-select", "none");
+  
         
     }, []);
 

@@ -193,9 +193,6 @@ const Histogram: React.FC = () => {
                 }
             });
 
-        // Append brush to context chart
-        chartContext.append("g").attr("class", "brush").call(brush);
-
         // Draw x-axis
         chartContext.append("g")
             .attr("transform", `translate(0, ${contextHeight})`)
@@ -210,6 +207,10 @@ const Histogram: React.FC = () => {
         const chartFocus = svg.append("g")
             .attr("class", "chartFocus")
             .attr("transform", `translate(${focusMargin.left},${focusMargin.top})`);
+
+        // Append brush to context chart
+        chartContext.append("g").attr("class", "brush").call(brush)
+            .call(brush.move, [0, contextWidth / 5]);
 
         // Tooltip setup
         const tooltip = d3.select("body").append("div")

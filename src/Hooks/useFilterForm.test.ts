@@ -105,7 +105,7 @@ describe("useFilterForm - forksOrder", () => {
             expect(result.current.form.forksOrder).toEqual(newValue);
         });
 
-    it("should not allow it's precondition to be broken", () => {
+    it("should fail if the value not included in FOKRS_SORTING_ORDERS", () => {
         const { result } = renderHook(useFilterForm);
         const newValue = "N";
         const handler = result.current.handleForksOrderChange;
@@ -128,6 +128,16 @@ describe("useFilterForm - forksAscDesc", () => {
 
             expect(result.current.form.forksAscDesc).toEqual(newValue);
         });
+
+    it("should fail if the value is not included in SORT_DIRECTION", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = "N";
+        const handler = result.current.handleForksOrderChange;
+
+        expect(() => {
+            act(() => handler(newValue));
+        }).toThrowError(AssertionError);
+    });
 });
 
 describe("useFilterForm - forksTypeFilter", () => {
@@ -149,6 +159,16 @@ describe("useFilterForm - forksTypeFilter", () => {
 
         expect(result.current.form.forksTypeFilter).toEqual(newValue);
     });
+
+    it("should fail if any of the values are not included in FORK_TYPES", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = [FORK_TYPES.ADAPTIVE.value, "N"];
+        const handler = result.current.handleForksTypeFilterChange;
+
+        expect(() => {
+            act(() => handler(newValue));
+        }).toThrowError(AssertionError);
+    });
 });
 
 describe("useFilterForm - ownerTypeFilter", () => {
@@ -169,6 +189,16 @@ describe("useFilterForm - ownerTypeFilter", () => {
         act(() => handler(newValue));
 
         expect(result.current.form.ownerTypeFilter).toEqual(newValue);
+    });
+
+    it("should fail if any of the values are not included in ONWER_TYPES", () => {
+        const { result } = renderHook(useFilterForm);
+        const newValue = [OWNER_TYPES.ORGANIZATION.value, "N"];
+        const handler = result.current.handleForksTypeFilterChange;
+
+        expect(() => {
+            act(() => handler(newValue));
+        }).toThrowError(AssertionError);
     });
 });
 

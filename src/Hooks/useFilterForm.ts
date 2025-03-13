@@ -11,7 +11,8 @@ const initialForm: FilterFormState = {
     forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value),
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value),
     commitsDateRangeFrom: "",
-    commitsDateRangeUntil: ""
+    commitsDateRangeUntil: "",
+    recentlyUpdated: ""
 };
 
 function useFilterForm() {
@@ -29,9 +30,9 @@ function useFilterForm() {
      * Note that the count will be set to undefined if the input is not a number.
      */
     const handleForksCountChange = useCallback((input: string) => {
-        const value = Number(input) || undefined;
 
-        setForm((prev) => ({ ...prev, forksCount: value }));
+
+        setForm((prev) => ({ ...prev, forksCount: input }));
     }, []);
 
 
@@ -90,9 +91,7 @@ function useFilterForm() {
      * Note that the count will be set to undefined if the input is not a number.
      */
     const handleRecentlyUpdatedChange = useCallback((input: string) => {
-        const value = Number(input) || undefined; 
-
-        setForm((prev) => ({ ...prev, recentlyUpdated: value }));
+        setForm((prev) => ({ ...prev, recentlyUpdated: input}));
     }, []);
 
     return {

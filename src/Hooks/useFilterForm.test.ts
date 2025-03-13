@@ -76,21 +76,10 @@ describe("useFilterForm - forksCount", () => {
 
         act(() => handler(newValue));
 
-        expect(result.current.form.forksCount).toEqual(Number(1));
+        expect(result.current.form.forksCount).toEqual(newValue);
     });
 
-    it("should change the value of forksCount to undefined" +
-            "when its changehandler is called with an invalid number", () => {
-        const { result } = renderHook(useFilterForm);
-        const newValue = "invalid";
-        const handler = result.current.handleForksCountChange;
-
-        act(() => handler(newValue));
-
-        expect(result.current.form.forksCount).toBeUndefined();
-    });
-
-    it ("should change the value of forksCount to undefined" + 
+    it ("should change the value of forksCount to empty string" + 
             "when its changehandler is called with an empty string", () => {
         const { result } = renderHook(useFilterForm);
         const newValue = "";
@@ -98,7 +87,7 @@ describe("useFilterForm - forksCount", () => {
 
         act(() => handler(newValue));
 
-        expect(result.current.form.forksCount).toBeUndefined();
+        expect(result.current.form.forksCount).toEqual(newValue);
     });
 });
 
@@ -204,21 +193,10 @@ describe("useFilterForm - recentlyUpdated", () => {
 
         act(() => handler(newValue));
 
-        expect(result.current.form.recentlyUpdated).toEqual(Number(1));
+        expect(result.current.form.recentlyUpdated).toEqual(newValue);
     });
 
-    it("should change the value of recentlyUpdated to undefined" +
-        "when its changehandler is called with an invalid number", () => {
-        const { result } = renderHook(useFilterForm);
-        const newValue = "invalid";
-        const handler = result.current.handleRecentlyUpdatedChange;
-
-        act(() => handler(newValue));
-
-        expect(result.current.form.recentlyUpdated).toBeUndefined();
-    });
-
-    it("should change the value of recentlyUpdated to undefined" +
+    it("should change the value of recentlyUpdated to empty string" +
         "when its changehandler is called with an empty string", () => {
         const { result } = renderHook(useFilterForm);
         const newValue = "";
@@ -226,7 +204,7 @@ describe("useFilterForm - recentlyUpdated", () => {
 
         act(() => handler(newValue));
 
-        expect(result.current.form.recentlyUpdated).toBeUndefined();
+        expect(result.current.form.recentlyUpdated).toEqual(newValue);
     });
 });
 

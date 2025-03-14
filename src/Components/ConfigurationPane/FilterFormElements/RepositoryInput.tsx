@@ -1,8 +1,8 @@
 import { FormControl, TextInput } from "@primer/react";
-import { RepositoryInputErrorsType } from "../../../Types/FormErrors";
+import { InputError } from "../../../Types/FormErrors";
 
 interface RepositoryInputProps {
-    error?: RepositoryInputErrorsType;
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
     value: string;
 };

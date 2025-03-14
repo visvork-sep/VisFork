@@ -1,9 +1,9 @@
 import { FormControl, TextInput } from "@primer/react";
 import { MIN_QUERIABLE_FORKS, MAX_QUERIABLE_FORKS } from "@Utils/Constants";
-import { ForksCountInputErrorsType } from "../../../Types/FormErrors";
+import { InputError } from "../../../Types/FormErrors";
 
 interface ForksCountInputProps {
-    error?: ForksCountInputErrorsType;
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
     value: string;
 };

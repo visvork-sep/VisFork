@@ -12,7 +12,7 @@ export const AUTH_URL: string = import.meta.env.VITE_AUTH_URL;
 export const API_URL: string = import.meta.env.VITE_API_URL;
 
 /// Initial value for forks count input
-export const FORKS_COUNT_INPUT_INITIAL = 5;
+export const FORKS_COUNT_INPUT_INITIAL = "5";
 
 /// FORKS_SORTING_ORDERS ways to sort orders for the user to select
 export const FORKS_SORTING_ORDERS = {

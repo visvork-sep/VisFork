@@ -1,8 +1,7 @@
-
 import { FormEvent, useCallback, useState } from "react";
 import { FilterFormState } from "../Types/FilterForm";
 import sanitizeString from "@Utils/Sanitize";
-
+import { CommitsDateRangeFromInputErrors, CommitsDateRangeUntilInputErrors, ForksCountInputErrors, InputError, RecentlyUpdatedInputErrors, RepositoryInputErrors } from "../Types/FormErrors";
 
 function isValidDate(input: string): boolean {
     // eslint-disable-next-line max-len
@@ -17,28 +16,26 @@ function isValidInteger(input: string): boolean {
     return regex.test(input);
 }
 
-
 function useFormSubmission(form: FilterFormState) {
-    const [repositoryInputError, setRepositoryInputError] = useState<RepositoryInputErrorsType>();
-    const [forksCountInputError, setForksCountInputError] = useState<ForksCountInputErrorsType>();
+    const [repositoryInputError, setRepositoryInputError] = useState<InputError | null>(null);
+    const [forksCountInputError, setForksCountInputError] = useState<InputError | null>(null);
     const [recentlyUpdatedInputError, setRecentlyUpdatedInputError] =
-        useState<RecentlyUpdatedInputErrorsType>();
+        useState<InputError | null>(null);
     const [commitsDateRangeFromInputError, setCommitsDateRangeFromInputError] =
-        useState<CommitsDateRangeFromInputErrorsType>();
+        useState<InputError | null>(null);
     const [commitsDateRangeUntilInputError, setCommitsDateRangeUntilInputError]
-        = useState<CommitsDateRangeUntilInputErrorsType>();
+        = useState<InputError | null>(null);
 
-    const prepareRepository = useCallback((input: string): 
-        {owner: string, repositoryName: string} | RepositoryInputErrorsType => {
+    const prepareRepository = useCallback((input: string): {owner: string, repositoryName: string} => {
         const {output, conflicts} = sanitizeString(input);
         if (conflicts) {
-            return RepositoryInputErrors.ForbiddenCharacterError(conflicts.toLocaleString());
+            throw new RepositoryInputErrors.ForbiddenCharactersError(conflicts);
         }
 
         const words = output.split("/");
 
         if (words.length != 2) {
-            return RepositoryInputErrors.RepositorySyntaxError();    
+            throw new RepositoryInputErrors.RepositorySyntaxError();    
         }
 
         const owner = words[0];
@@ -50,19 +47,19 @@ function useFormSubmission(form: FilterFormState) {
         };
     }, []);
 
-    const prepareForksCount = useCallback((input?: string): number | ForksCountInputErrorsType => {
+    const prepareForksCount = useCallback((input?: string): number => {
         if (!input) {
-            return ForksCountInputErrors.NonIntegralError();
+            throw new ForksCountInputErrors.NonIntegralError();
         }
 
 
         const {output, conflicts} = sanitizeString(input);
         if (conflicts) {
-            return ForksCountInputErrors.ForbiddenCharacterError(conflicts.toLocaleString());
+            throw new  ForksCountInputErrors.ForbiddenCharactersError(conflicts);
         }
 
         if (!isValidInteger(input)) {
-            return ForksCountInputErrors.NonIntegralError();
+            throw new ForksCountInputErrors.NonIntegralError();
         }
 
         return Number(input);
@@ -80,27 +77,27 @@ function useFormSubmission(form: FilterFormState) {
         return null;
     }, []);
 
-    const prepareCommitsDateRangeFrom = useCallback((input: string): Date | CommitsDateRangeFromInputErrorsType => {
+    const prepareCommitsDateRangeFrom = useCallback((input: string): Date => {
         const {output, conflicts} = sanitizeString(input);
         if (conflicts) {
-            return CommitsDateRangeFromInputErrors.ForbiddenCharacterError(conflicts.toLocaleString());
+            throw new CommitsDateRangeFromInputErrors.ForbiddenCharactersError(conflicts);
         }
 
         if(!isValidDate(output)) {
-            return CommitsDateRangeFromInputErrors.UnknownError();
+            throw new CommitsDateRangeFromInputErrors.UnknownError();
         }
 
         return new Date(input);
     }, []);
 
-    const prepareCommitsDateRangeUntil = useCallback((input: string): Date | CommitsDateRangeUntilInputErrorsType => {
+    const prepareCommitsDateRangeUntil = useCallback((input: string): Date => {
         const { output, conflicts } = sanitizeString(input);
         if (conflicts) {
-            return CommitsDateRangeUntilInputErrors.ForbiddenCharacterError(conflicts.toLocaleString());
+            throw new CommitsDateRangeUntilInputErrors.ForbiddenCharactersError(conflicts);
         }
 
         if(!isValidDate) {
-            return CommitsDateRangeUntilInputErrors.UnknownError();
+            throw new CommitsDateRangeUntilInputErrors.UnknownError();
         }
 
         return new Date(input);
@@ -128,18 +125,18 @@ function useFormSubmission(form: FilterFormState) {
         return null;
     }, []);
 
-    const prepareRecentlyUpdated = useCallback((input?: string): number | RecentlyUpdatedInputErrorsType => {
+    const prepareRecentlyUpdated = useCallback((input?: string): number => {
         if (!input) {
-            return RecentlyUpdatedInputErrors.NonIntegralError());
+            throw new RecentlyUpdatedInputErrors.NonIntegralError();
         }
 
         const {output, conflicts} = sanitizeString(input);
         if (conflicts) {
-            return RecentlyUpdatedInputErrors.ForbiddenCharacterError(conflicts.toLocaleString());
+            throw new RecentlyUpdatedInputErrors.ForbiddenCharactersError(conflicts);
         }
 
         if(!isValidInteger(output)) {
-            return RecentlyUpdatedInputErrors.NonIntegralError();
+            throw new RecentlyUpdatedInputErrors.NonIntegralError();
         }
 
         return Number(input);
@@ -148,7 +145,7 @@ function useFormSubmission(form: FilterFormState) {
     const onSubmit = useCallback((event: FormEvent) => {
         // Prevents the page from refreshing on submission
         event.preventDefault();
-        const result = prepareRepository(form.repository);
+        const {owner, repositoryName} = prepareRepository(form.repository);
         const forksCount = prepareForksCount("");
         const forksOrder = prepareForksOrder(form.forksOrder);
         const forksAscDesc = prepareForksOrderAscDesc(form.forksAscDesc);
@@ -158,15 +155,13 @@ function useFormSubmission(form: FilterFormState) {
         const ownerTypeFilter = prepareOwnerTypeFilter(form.ownerTypeFilter);
         const recentlyUpdated = prepareRecentlyUpdated(form.recentlyUpdated);
 
-        if (result instanceof RepositoryInputErrorType)
-
-
         //TODO add proper verification and error handling
         //Error passing - not implemented
-        setForksCountInputError(ForksCountInputErrors.UnknownError());
-        setRecentlyUpdatedInputError(RecentlyUpdatedInputErrors.UnknownError());
-        setCommitsDateRangeFromInputError(CommitsDateRangeFromInputErrors.UnknownError());
-        setCommitsDateRangeUntilInputError(CommitsDateRangeUntilInputErrors.UnknownError());
+        setRepositoryInputError(null);
+        setForksCountInputError(null);
+        setRecentlyUpdatedInputError(null);
+        setCommitsDateRangeFromInputError(null);
+        setCommitsDateRangeUntilInputError(null);
         // set url variables
     }, [form]);
 

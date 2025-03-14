@@ -19,6 +19,13 @@ interface DagProps {
   defaultBranches: Record<string, string>;
 }
 
+type NodeSelection = d3.Selection<
+  SVGCircleElement | SVGPolygonElement,
+  d3dag.MutGraphNode<Commit, undefined>,
+  SVGGElement,
+  unknown
+>;
+
 const NODE_RADIUS = 8;
 const MARGIN = { top: 10, right: 0, bottom: 10, left: 150 };
 const NODE_SIZE = [NODE_RADIUS * 2, NODE_RADIUS * 2] as const;
@@ -322,10 +329,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
             })
             .attr("fill", (d) => colorMap.get(d.data.repo));
 
-        function applyToolTip(selection: d3.Selection<SVGCircleElement | SVGPolygonElement, 
-            d3dag.MutGraphNode<Commit, undefined>, 
-            SVGGElement, 
-            unknown>) {
+        function applyToolTip(selection: NodeSelection) {
             selection
                 .on("mouseover", (event, d) => {
                     tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
@@ -350,14 +354,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
                 });
         }
 
-        applyToolTip(circles as d3.Selection<SVGCircleElement | SVGPolygonElement, 
-            d3dag.MutGraphNode<Commit, undefined>, 
-            SVGGElement, 
-            unknown>);
-        applyToolTip(triangles as d3.Selection<SVGCircleElement | SVGPolygonElement, 
-            d3dag.MutGraphNode<Commit, undefined>, 
-            SVGGElement, 
-            unknown>);
+        applyToolTip(circles as NodeSelection);
+        applyToolTip(triangles as NodeSelection);
             
         // display legends for the colors in #dag-legends
         const legend = d3.select("#dag-legends");

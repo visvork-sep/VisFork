@@ -1,6 +1,12 @@
 function sanitizeString(str: string) {
-    str = str.replace(/[^a-z0-9áéíóúñü .,_-`/]/gim, "");
-    return str.trim();
+    const pattern = /[^a-z0-9áéíóúñü .,_-`/]/gim;
+
+    const output = str.replace(pattern, "").trim();
+    const conflicts = str.match(pattern);
+    return {
+        output,
+        conflicts
+    };
 }
 
 export default sanitizeString;

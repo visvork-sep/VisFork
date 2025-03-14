@@ -17,9 +17,13 @@ const futureUntilDateError = (date: string) => (
     { message: `Future dates are not allowed for the until field: ${date}` }
 );
 
-const lessThanMinForksError = () => ({ message: `Number of forks must be greater than ${MIN_QUERIABLE_FORKS}` });
+const forksCountLessThanMinForksError = () => (
+    { message: `Number of forks must be greater than ${MIN_QUERIABLE_FORKS}` }
+);
 
-const greaterThanMaxForksError = () => ({ message: `Number of forks must be less than ${MAX_QUERIABLE_FORKS}` });
+const forksCountGreaterThanMaxForksError = () => ({ message: `Number of forks must be less than ${MAX_QUERIABLE_FORKS}` });
+
+const nonIntegralError = () => ({ message: "Value must be integral"});
 
 const repositorySyntaxError = () => ({ message: "Syntax must match <Owner>/<RepositoryName>" });
 
@@ -51,10 +55,11 @@ const CommitsDateRangeUntilInputErrors = {
 } as const;
 
 const ForksCountInputErrors = {
-    LessThanMinForksError: lessThanMinForksError,
-    GreaterThanMaxForksError: greaterThanMaxForksError,
+    LessThanMinForksError: forksCountLessThanMinForksError,
+    GreaterThanMaxForksError: forksCountGreaterThanMaxForksError,
     UnknownError: unknownError,
-    ForbiddenCharacterError: forbiddenCharacterError
+    ForbiddenCharacterError: forbiddenCharacterError,
+    NonIntegralError: nonIntegralError
 } as const;
 
 const RepositoryInputErrors = {
@@ -68,7 +73,8 @@ const RepositoryInputErrors = {
 const RecentlyUpdatedInputErrors = {
     OutOfRecentlyUpdatedRangeError: outOfRecentlyUpdatedRangeError,
     UnknownError: unknownError,
-    ForbiddenCharacterError: forbiddenCharacterError
+    ForbiddenCharacterError: forbiddenCharacterError,
+    NonIntegralError: nonIntegralError
 } as const;
 
 // Deriving types based on the returned object structure (the error message)

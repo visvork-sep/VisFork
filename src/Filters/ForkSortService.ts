@@ -40,10 +40,12 @@ export class ForkSortService {
      * @returns 0 if the number of stargazers in f1 and f2 are equal
      *          -1 if the number of stargazers in f1 is less than that in f2
      *          1 if the number of stargazers in f1 is more than that in f2
+     * 
+     * @throws TypeError if the stargazers_count of either f1 or f2 is null or undefined.
      */
     #compareNumberOfStargazers(f1: ForkJSON, f2: ForkJSON): number {
-        if (f1.stargazers_count === undefined || f2.stargazers_count === undefined) {
-            throw Error("Unable to read stargazers_count property of forks");
+        if (f1.stargazers_count == null || f2.stargazers_count == null) {
+            throw TypeError("Unable to read stargazers_count property of forks");
         }
 
         return f1.stargazers_count === f2.stargazers_count ? 0 :
@@ -56,10 +58,12 @@ export class ForkSortService {
      * @returns 0 if the number of watchers in f1 and f2 are equal
      *          -1 if the number of watchers in f1 is less than that in f2
      *          1 if the number of watchers in f1 is more than that in f2
+     * 
+     * @throws TypeError if the watchers_count property of either f1 or f2 is null or undefined.
      */
     #compareNumberOfWatchers(f1: ForkJSON, f2: ForkJSON): number {
-        if (f1.watchers_count === undefined || f2.watchers_count == undefined) {
-            throw Error("Unable to read watchers_count property of forks");
+        if (f1.watchers_count == null || f2.watchers_count == null) {
+            throw TypeError("Unable to read watchers_count property of forks");
         }
 
         return f1.watchers_count === f2.watchers_count ? 0 :
@@ -72,10 +76,12 @@ export class ForkSortService {
      * @returns 0 if f1 and f2 were created in the exact same millisecond
      *          -1 if f1 was created before f2
      *          1 if f1 was created after f2
+     * 
+     * @throws TypeError if the created_at property of either f1 or f2 is null or undefined.
      */
     #compareAge(f1: ForkJSON, f2: ForkJSON): number {
-        if (f1.created_at === undefined || f2.created_at === undefined || f1.created_at === null || f2.created_at === null) {
-            throw Error("Unable to read created_at property of forks");
+        if (f1.created_at == null || f2.created_at == null) {
+            throw TypeError("Unable to read created_at property of forks");
         }
 
         const creationDateF1Milliseconds = Date.parse(f1.created_at);
@@ -91,10 +97,12 @@ export class ForkSortService {
      * @returns 0 if the date (minute/day/hour???) TODO of the latest commit of f1 and f2 are equal
      *          -1 if the number of stargazers in f1 is less than that in f2
      *          1 if the number of stargazers in f1 is more than that in f2
+     * 
+     * @throws TypeError if the updated_at property of either f1 or f2 is null or undefined.
      */
     #compareLatestCommits(f1: ForkJSON, f2: ForkJSON): number {
-        if (f1.updated_at === undefined || f2.updated_at === undefined || f1.updated_at === null || f2.updated_at === null) {
-            throw Error("Unable to read updated_at property of forks");
+        if (f1.updated_at == null || f2.updated_at == null) {
+            throw TypeError("Unable to read updated_at property of forks");
         }
 
         const lastCommitDateF1Milliseconds = Date.parse(f1.updated_at);
@@ -111,6 +119,8 @@ export class ForkSortService {
      * @returns 0 if the number of followers of the owner of f1 and f2 are equal
      *          -1 if the number of followers of f1 is less than that of the owner of f2
      *          1 if the number of followers of f1 is more than that of the owner of f2
+     * 
+     * @throws Error always.
      */
     #compareAuthorPopularity(f1: ForkJSON, f2: ForkJSON): number {
         throw Error("Not supported.");

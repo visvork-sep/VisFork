@@ -1,15 +1,14 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import * as d3dag from "d3-dag";
-import { BaseType } from "d3";
 
 interface Commit {
-  id: string;
-  parentIds: string[];
-  repo: string;
-  branch_name:string;
-  date: string;
-  url: string;
+  id: string; // hash of commit
+  parentIds: string[]; // hashes of parent commits
+  repo: string; // repo name the commit belongs to
+  branch_name:string; // branch the commit belongs to
+  date: string; // date of commit
+  url: string; // url pointing to github page of commit
 }
 
 interface DagProps {

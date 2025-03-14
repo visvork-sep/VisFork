@@ -310,10 +310,6 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
             .selectAll("polygon")
             .data(Array.from(dag.nodes()).filter((node) => {
                 const default_branch = defaultBranches[node.data.repo];
-                console.log(default_branch);
-                if (node.data.branch_name === default_branch) {
-                    console.log("interesting");
-                }
                 return node.data.branch_name !== default_branch;
             }
             ) as d3dag.MutGraphNode<Commit, undefined>[])

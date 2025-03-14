@@ -2,20 +2,9 @@ import { Box, Text, Select } from "@primer/react";
 import { DataTable, Table } from "@primer/react/experimental";
 import { useState } from "react";
 
-// Interface of a fork
-interface Fork {
-    id: number,
-    full_name: string, // Name in the Owner/Repository format
-    description: string | null,
-}
+import { ForkListData } from "@VisInterfaces/ForkListData";
 
-// Interface of the props object
-interface ForkListProps {
-    forks: Fork[]
-}
-
-function ForkList({ forks }: ForkListProps) {
-
+function ForkList({ forks }: ForkListData) {
     // States to control page size and current page index
     const [pageSize, setPageSize] = useState(10);
     const [pageIndex, setPageIndex] = useState(0);
@@ -68,7 +57,7 @@ function ForkList({ forks }: ForkListProps) {
                 columns={[
                     {
                         header: "Name",
-                        field: "full_name",
+                        field: "forkName",
                         rowHeader: true,
                     },
                     {

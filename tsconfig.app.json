@@ -38,7 +38,11 @@
       ],
       "@Utils/*": [
         "./src/Utils/*"
+      ],
+      "@Types/*": [
+        "./src/Types/*"
       ]
+
     }
   },
   "include": [

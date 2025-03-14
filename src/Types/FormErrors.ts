@@ -153,7 +153,7 @@ export {
     ForksCountInputErrors,
     RecentlyUpdatedInputErrors,
     CommitsDateRangeFromInputErrors,
-    CommitsDateRangeUntilInputErrors
+    CommitsDateRangeUntilInputErrors,
 };
 
-export type { InputError };
+export { InputError };

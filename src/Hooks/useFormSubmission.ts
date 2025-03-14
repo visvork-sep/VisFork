@@ -1,19 +1,24 @@
-import { FormEvent, useCallback, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction, useCallback, useState } from "react";
 import { FilterFormState } from "../Types/FilterForm";
-import sanitizeString from "@Utils/Sanitize";
-import { CommitsDateRangeFromInputErrors, CommitsDateRangeUntilInputErrors, ForksCountInputErrors, InputError, RecentlyUpdatedInputErrors, RepositoryInputErrors } from "../Types/FormErrors";
+import { InputError, UnknownError } from "../Types/FormErrors";
+import { 
+    prepareRepository,
+    prepareForksCount, 
+    prepareForksOrder, 
+    prepareForksSortDirection, 
+    prepareCommitsDateRangeFrom, 
+    prepareCommitsDateRangeUntil, 
+    prepareForksTypeFilter, 
+    prepareOwnerTypeFilter, 
+    prepareRecentlyUpdated 
+} from "@Utils/Sanitize";
 
-function isValidDate(input: string): boolean {
-    // eslint-disable-next-line max-len
-    const regex = /(^(y{4}|y{2})[./-](m{1,2})[./-](d{1,2})$)|(^(m{1,2})[./-](d{1,2})[./-]((y{4}|y{2})$))|(^(d{1,2})[./-](m{1,2})[./-]((y{4}|y{2})$))/gi;
-
-    return regex.test(input);
-}
-
-function isValidInteger(input: string): boolean {
-    const regex = /^(0|[1-9][0-9]*)$/;
-
-    return regex.test(input);
+function setInputError(e: unknown, setter: Dispatch<SetStateAction<InputError | null>>) {
+    if (e instanceof InputError) {
+        setter(e);
+    } else {
+        setter(new UnknownError());
+    }
 }
 
 function useFormSubmission(form: FilterFormState) {
@@ -26,144 +31,91 @@ function useFormSubmission(form: FilterFormState) {
     const [commitsDateRangeUntilInputError, setCommitsDateRangeUntilInputError]
         = useState<InputError | null>(null);
 
-    const prepareRepository = useCallback((input: string): {owner: string, repositoryName: string} => {
-        const {output, conflicts} = sanitizeString(input);
-        if (conflicts) {
-            throw new RepositoryInputErrors.ForbiddenCharactersError(conflicts);
-        }
-
-        const words = output.split("/");
-
-        if (words.length != 2) {
-            throw new RepositoryInputErrors.RepositorySyntaxError();    
-        }
-
-        const owner = words[0];
-        const repositoryName = words[1];
-
-        return {
-            owner,
-            repositoryName
-        };
-    }, []);
-
-    const prepareForksCount = useCallback((input?: string): number => {
-        if (!input) {
-            throw new ForksCountInputErrors.NonIntegralError();
-        }
-
-
-        const {output, conflicts} = sanitizeString(input);
-        if (conflicts) {
-            throw new  ForksCountInputErrors.ForbiddenCharactersError(conflicts);
-        }
-
-        if (!isValidInteger(input)) {
-            throw new ForksCountInputErrors.NonIntegralError();
-        }
-
-        return Number(input);
-    }, []);
-
-    const prepareForksOrder = useCallback((input: string): null => {
-        const {output, conflicts} = sanitizeString(input);
-
-        return null;
-    }, []);
-
-    const prepareForksOrderAscDesc = useCallback((input: string): null => {
-        const {output, conflicts} = sanitizeString(input);
-
-        return null;
-    }, []);
-
-    const prepareCommitsDateRangeFrom = useCallback((input: string): Date => {
-        const {output, conflicts} = sanitizeString(input);
-        if (conflicts) {
-            throw new CommitsDateRangeFromInputErrors.ForbiddenCharactersError(conflicts);
-        }
-
-        if(!isValidDate(output)) {
-            throw new CommitsDateRangeFromInputErrors.UnknownError();
-        }
-
-        return new Date(input);
-    }, []);
-
-    const prepareCommitsDateRangeUntil = useCallback((input: string): Date => {
-        const { output, conflicts } = sanitizeString(input);
-        if (conflicts) {
-            throw new CommitsDateRangeUntilInputErrors.ForbiddenCharactersError(conflicts);
-        }
-
-        if(!isValidDate) {
-            throw new CommitsDateRangeUntilInputErrors.UnknownError();
-        }
-
-        return new Date(input);
-    }, []);
-
-    const prepareForksTypeFilter = useCallback((forkTypes: string[]) => {
-        const outputs = [];
-        forkTypes.forEach(element => {
-            const {output, conflicts} = sanitizeString(element);
-
-            outputs.push(output);
-        });
-
-        return null;
-    }, []);
-
-    const prepareOwnerTypeFilter = useCallback((ownerTypes: string[]) => {
-        const outputs = [];
-        ownerTypes.forEach(element => {
-            const { output, conflicts } = sanitizeString(element);
-
-            outputs.push(output);
-        });
-
-        return null;
-    }, []);
-
-    const prepareRecentlyUpdated = useCallback((input?: string): number => {
-        if (!input) {
-            throw new RecentlyUpdatedInputErrors.NonIntegralError();
-        }
-
-        const {output, conflicts} = sanitizeString(input);
-        if (conflicts) {
-            throw new RecentlyUpdatedInputErrors.ForbiddenCharactersError(conflicts);
-        }
-
-        if(!isValidInteger(output)) {
-            throw new RecentlyUpdatedInputErrors.NonIntegralError();
-        }
-
-        return Number(input);
-    } ,[]);
-
     const onSubmit = useCallback((event: FormEvent) => {
         // Prevents the page from refreshing on submission
         event.preventDefault();
-        const {owner, repositoryName} = prepareRepository(form.repository);
-        const forksCount = prepareForksCount("");
-        const forksOrder = prepareForksOrder(form.forksOrder);
-        const forksAscDesc = prepareForksOrderAscDesc(form.forksAscDesc);
-        const commitsDateRangeFrom = prepareCommitsDateRangeFrom(form.commitsDateRangeFrom);
-        const commitsDateRangeUntil = prepareCommitsDateRangeUntil(form.commitsDateRangeUntil);
-        const forksTypeFilter = prepareForksTypeFilter(form.forksTypeFilter);
-        const ownerTypeFilter = prepareOwnerTypeFilter(form.ownerTypeFilter);
-        const recentlyUpdated = prepareRecentlyUpdated(form.recentlyUpdated);
+        let owner: string | undefined = undefined;
+        let repositoryName: string | undefined = undefined;
+        let forksCount: number | undefined = undefined;
+        let forksOrder: unknown | undefined = undefined;
+        let forksSortDirection: unknown | undefined = undefined;
+        let commitsDateRangeFrom: Date | undefined = undefined;
+        let commitsDateRangeUntil: Date | undefined = undefined;
+        let forksTypeFilter: unknown[] | undefined = undefined;
+        let ownerTypeFilter: unknown[] | undefined = undefined;
+        let recentlyUpdated: unknown | undefined = undefined;
+        
+        try {
+            const output = prepareRepository(form.repository);
+            owner = output.owner;
+            repositoryName = output.repositoryName;
+        } catch(e) {
+            setInputError(e, setRepositoryInputError);
+        };
 
-        //TODO add proper verification and error handling
-        //Error passing - not implemented
-        setRepositoryInputError(null);
-        setForksCountInputError(null);
-        setRecentlyUpdatedInputError(null);
-        setCommitsDateRangeFromInputError(null);
-        setCommitsDateRangeUntilInputError(null);
-        // set url variables
-    }, [form]);
+        try {
+            forksCount = prepareForksCount(form.forksCount);
+        } catch (e) {
+            setInputError(e, setForksCountInputError);
+        }
+
+        try {
+            forksOrder = prepareForksOrder(form.forksOrder);
+        } catch (e) {
+            alert(e);
+        }
+
+        try {
+            forksSortDirection = prepareForksSortDirection(form.forksAscDesc)
+        } catch (e) {
+            alert(e);
+        }
+
+        try {
+            commitsDateRangeFrom = prepareCommitsDateRangeFrom(form.commitsDateRangeFrom);
+        } catch (e) {
+            setInputError(e, setCommitsDateRangeFromInputError);
+        }
+
+        try {
+            commitsDateRangeUntil = prepareCommitsDateRangeUntil(form.commitsDateRangeUntil);
+        } catch (e) {
+            setInputError(e, setCommitsDateRangeUntilInputError);
+        }
+
+        try {
+            forksTypeFilter = prepareForksTypeFilter(form.forksTypeFilter);
+        } catch (e) {
+            alert(e);
+        }
+
+        try {
+            ownerTypeFilter = prepareOwnerTypeFilter(form.ownerTypeFilter);
+        } catch (e) {
+            alert(e);
+        }
+
+        try {
+            recentlyUpdated = prepareRecentlyUpdated(form.recentlyUpdated);
+        } catch (e) {
+            setInputError(e, setRecentlyUpdatedInputError);
+        }
+        
+        if (!owner 
+            || !repositoryName 
+            || !forksCount 
+            || !forksOrder 
+            || !forksSortDirection 
+            || !commitsDateRangeFrom 
+            || !commitsDateRangeUntil 
+            || !forksTypeFilter 
+            || !ownerTypeFilter 
+            || !recentlyUpdated
+        ) {
+            return;
+        }
+
+    }, []);
 
     return {
         onSubmit,

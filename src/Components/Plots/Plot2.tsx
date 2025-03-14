@@ -13,9 +13,15 @@ interface Commit {
 
 interface DagProps {
   data: Commit[];
-  width: number;
+  c_width: number;
   maxHeight: number;
+  merged: boolean;
   defaultBranches: Record<string, string>;
+}
+
+interface MergedNode extends Commit {
+    nodes: string[]
+    end_date: string; 
 }
 
 type NodeSelection = d3.Selection<
@@ -42,7 +48,7 @@ const LEGEND_DOT_SIZE = 10;
 const LEGEND_TEXT_MARGIN = "10px";
 const EDGE_STROKE_COLOR = "#999";
 
-const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBranches }) => {
+const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight, merged = false, defaultBranches }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const colorMap = new Map();
     const repoNames = new Set();
@@ -53,7 +59,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
         colorMap.set(repo, d3.interpolateRainbow(i / repoNames.size));
     }
 
-    const dateRankOperator: d3dag.Rank<Commit, unknown> = (
+    const dateRankOperator: d3dag.Rank<Commit | MergedNode, unknown> = (
         node: d3dag.GraphNode<Commit, unknown>
     ): number => {
         const date = new Date(node.data.date);
@@ -62,11 +68,11 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
 
     // custom layout
     function adjustRepoXCoordinates(
-        nodes: Iterable<d3dag.GraphNode<Commit, unknown>>,
+        nodes: Iterable<d3dag.GraphNode<Commit | MergedNode, unknown>>,
         repoGap = 20
     ) {
         // group nodes by repo 
-        const repoNodes = new Map<string, d3dag.GraphNode<Commit, unknown>[]>();
+        const repoNodes = new Map<string, d3dag.GraphNode<Commit | MergedNode, unknown>[]>();
         for (const node of nodes) {
             const repo = node.data.repo;
             if (!repoNodes.has(repo)) {
@@ -103,6 +109,105 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
         return { lanes, totalHeight: cumulativeOffset };
     }
 
+    function topologicalSort(commits: Commit[]): Commit[] {
+        const sortedCommits: Commit[] = [];
+        const visited = new Set<string>();
+        
+        const commitMap = new Map(commits.map(commit => [commit.id, commit]));
+      
+        function visit(commit: Commit) {
+            if (!visited.has(commit.id)) {
+                visited.add(commit.id);
+                for (const parentId of commit.parentIds) {
+                    if (commitMap.has(parentId)) {
+                        visit(commitMap.get(parentId)!);
+                    }
+                }
+                sortedCommits.push(commit);
+            }
+        }
+      
+        // sort commits initially by date
+        const dateSortedCommits = commits.slice().sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+      
+        // topological sorting
+        for (const commit of dateSortedCommits) {
+            visit(commit);
+        }
+      
+        return sortedCommits;
+    }
+
+    function groupNodes(data: Commit[]): MergedNode[] {
+        const sorted = topologicalSort(data); 
+        
+        const mergedNodes: MergedNode[] = [];
+        let currentGroupStart = 0;
+        
+        for (let i = 1; i <= sorted.length; i++) {
+            const prevCommit = sorted[i - 1];
+            const commit = sorted[i];
+          
+            // when reaching the end or when branch/repo changes, process the current group
+            if (
+                i === sorted.length ||
+                commit.branch_name !== prevCommit.branch_name ||
+                commit.repo !== prevCommit.repo
+            ) {
+            // group all commits from currentGroupStart to i-1.
+                const group = sorted.slice(currentGroupStart, i);
+                const firstCommit = group[0];
+                const lastCommit = group[group.length - 1];
+            
+                // see if there's any merged node with the same branch and repo.
+                let candidate: MergedNode | null = null;
+                for (const mnode of mergedNodes) {
+                    if (
+                        mnode.branch_name === firstCommit.branch_name &&
+                        mnode.repo === firstCommit.repo
+                    ) {
+                        candidate = mnode;
+                        break;
+                    }
+                }
+            
+                if (candidate) {
+                    candidate.nodes.push(...group.map(c => c.id));
+                    candidate.end_date = lastCommit.date;
+
+                } else {
+                    const newParentIds: string[] = [];
+                    for (const parentId of firstCommit.parentIds) {
+                        for (const mnode of mergedNodes) {
+                            if (mnode.nodes.includes(parentId) && !newParentIds.includes(mnode.id)) {
+                                newParentIds.push(mnode.id);
+                            }
+                        }
+                    }
+            
+                    const newMerged: MergedNode = {
+                        id: `${firstCommit.repo} - ${firstCommit.branch_name}`, 
+                        parentIds: newParentIds,
+                        repo: firstCommit.repo,
+                        branch_name: firstCommit.branch_name,
+                        date: firstCommit.date,
+                        url: firstCommit.url,
+                        nodes: group.map(c => c.id),
+                        end_date: lastCommit.date,
+                    };
+            
+                    mergedNodes.push(newMerged);
+                }
+            
+                currentGroupStart = i;
+            }
+        }
+        
+        return mergedNodes;
+    }
+
     useEffect(() => {
         if (!svgRef.current || !data.length) return;
 
@@ -110,7 +215,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
         d3.select(svgRef.current).selectAll("*").remove();
 
         const builder = d3dag.graphStratify();
-        const dag = builder(data);
+        const dag = builder(merged? groupNodes(data) : data);
 
         const layout = d3dag.grid()
             .nodeSize(NODE_SIZE)
@@ -239,7 +344,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
 
         g.call(brush);
 
-        function drawEdgeCurve(d: d3dag.MutGraphLink<Commit, undefined>) {
+        function drawEdgeCurve(d: d3dag.MutGraphLink<Commit | MergedNode, undefined>) {
             // Drawing the edges. Makes curves at branches and merges.
             if (d.source.x < d.target.x) {
                 return `
@@ -310,6 +415,10 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
             .selectAll("polygon")
             .data(Array.from(dag.nodes()).filter((node) => {
                 const default_branch = defaultBranches[node.data.repo];
+                console.log(default_branch);
+                if (node.data.branch_name === default_branch) {
+                    console.log("interesting");
+                }
                 return node.data.branch_name !== default_branch;
             }
             ) as d3dag.MutGraphNode<Commit, undefined>[])
@@ -386,7 +495,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
     return (
         <>
             <div style={{ 
-                width: width,
+                width: c_width,
                 maxHeight: maxHeight,
                 overflow: "auto", 
                 whiteSpace: "normal"

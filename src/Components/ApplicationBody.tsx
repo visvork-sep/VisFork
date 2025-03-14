@@ -22,8 +22,9 @@ function ApplicationBody() {
                         <Blankslate.Heading>Plot{plot}</Blankslate.Heading>
                         <Blankslate.Visual>
                             {plot === 1 ? <CommitTimeline data={commitData}
-                                width={(width ?? widthMeasurementError) - widthMeasurementError} 
+                                c_width={(width ?? widthMeasurementError) - widthMeasurementError} 
                                 maxHeight={maxHeightCommitTimeline}
+                                merged = {true}
                                 defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
                         </Blankslate.Visual>
                     </Blankslate>

@@ -33,7 +33,7 @@ function ApplicationBody() {
                                 p: 3,
                             }}
                         >
-                            <Heading variant="medium" sx={{ textAlign: "center" }}>Commit Timeline</Heading>
+                            <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
                             {plot === 1 ? <CommitTimeline data={commitData}
                                 c_width={(width ?? compensationOfPadding) - compensationOfPadding} 
                                 maxHeight={maxHeightCommitTimeline}

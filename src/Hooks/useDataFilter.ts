@@ -4,7 +4,7 @@ import { ForkFilter } from "@Types/ForkFilter";
 import { useFetchCommitsBatch, useFetchForks } from "../Queries/queries";
 import { ForkFilterService } from "../Filters/ForkFilterService";
 
-export function useDataFilter() {
+export function useFilteredData() {
     // Create the state for the query parameters
     const [forkQueryState, setForkQueryState] = useState<ForkQueryState>({
         owner: "",

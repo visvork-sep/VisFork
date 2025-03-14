@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 import * as d3dag from "d3-dag";
+import { BaseType } from "d3";
 
 interface Commit {
   id: string;
@@ -283,43 +284,23 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
             .style("opacity", 0)
             .style("font", TOOLTIP_FONT);
 
-        // create nodes
-        g.append("g")
+        // create circle nodes
+        const circles = g.append("g")
             .selectAll("circle")
             .data(Array.from(dag.nodes()).filter((node) => {
                 const default_branch = defaultBranches[node.data.repo];
                 return node.data.branch_name === default_branch;
             }
-            ))
+            ) as d3dag.MutGraphNode<Commit, undefined>[])
             .enter()
             .append("circle")
             .attr("cx", (d) => d.y ?? 0) // def value 0 to avoid eslint complaining
             .attr("cy", (d) => d.x ?? 0) // swap x and y to make the graph horizontal
             .attr("r", NODE_RADIUS)
-            .attr("fill", (d) => colorMap.get(d.data.repo))
-            .on("mouseover", (event, d) => {
-                tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
-                tooltip.html(
-                    `<strong>Commit</strong>: ${d.data.id}<br>
-                    <strong>Repo</strong>: ${d.data.repo}<br>
-                    <strong>Branch</strong>: ${d.data.branch_name}<br>
-                    <strong>Date</strong>: ${d.data.date.toLocaleString()}`
-                )
-                    .style("left", (event.pageX) + "px")
-                    .style("top", (event.pageY) + "px");
-            })
-            .on("mousemove", (event) => {
-                tooltip.style("left", (event.pageX) + "px")
-                    .style("top", (event.pageY) + "px");
-            })
-            .on("mouseout", () => {
-                tooltip.transition().duration(TOOLTIP_MOUSEOUT_DUR).style("opacity", 0);
-            })
-            .on("click", (_event, d) => {
-                window.open(d.data.url);
-            });
-        
-        g.append("g")
+            .attr("fill", (d) => colorMap.get(d.data.repo));
+
+        // create triangular nodes
+        const triangles = g.append("g")
             .selectAll("polygon")
             .data(Array.from(dag.nodes()).filter((node) => {
                 const default_branch = defaultBranches[node.data.repo];
@@ -329,7 +310,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
                 }
                 return node.data.branch_name !== default_branch;
             }
-            ))
+            ) as d3dag.MutGraphNode<Commit, undefined>[])
             .enter()
             .append("polygon")
             .attr("points", `0,-${NODE_RADIUS} ${NODE_RADIUS},${NODE_RADIUS} -${NODE_RADIUS},${NODE_RADIUS}`)
@@ -339,28 +320,44 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
                 const y = d.x ?? 0;
                 return `translate(${x},${y})`;
             })
-            .attr("fill", (d) => colorMap.get(d.data.repo))
-            .on("mouseover", (event, d) => {
-                tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
-                tooltip.html(
-                    `<strong>Commit</strong>: ${d.data.id}<br>
-                    <strong>Repo</strong>: ${d.data.repo}<br>
-                    <strong>Branch</strong>: ${d.data.branch_name}<br>
-                    <strong>Date</strong>: ${d.data.date.toLocaleString()}`
-                )
-                    .style("left", (event.pageX) + "px")
-                    .style("top", (event.pageY) + "px");
-            })
-            .on("mousemove", (event) => {
-                tooltip.style("left", (event.pageX) + "px")
-                    .style("top", (event.pageY) + "px");
-            })
-            .on("mouseout", () => {
-                tooltip.transition().duration(TOOLTIP_MOUSEOUT_DUR).style("opacity", 0);
-            })
-            .on("click", (_event, d) => {
-                window.open(d.data.url);
-            });
+            .attr("fill", (d) => colorMap.get(d.data.repo));
+
+        function applyToolTip(selection: d3.Selection<SVGCircleElement | SVGPolygonElement, 
+            d3dag.MutGraphNode<Commit, undefined>, 
+            SVGGElement, 
+            unknown>) {
+            selection
+                .on("mouseover", (event, d) => {
+                    tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
+                    tooltip.html(
+                        `<strong>Commit</strong>: ${d.data.id}<br>
+                        <strong>Repo</strong>: ${d.data.repo}<br>
+                        <strong>Branch</strong>: ${d.data.branch_name}<br>
+                        <strong>Date</strong>: ${d.data.date.toLocaleString()}`
+                    )
+                        .style("left", (event.pageX) + "px")
+                        .style("top", (event.pageY) + "px");
+                })
+                .on("mousemove", (event) => {
+                    tooltip.style("left", (event.pageX) + "px")
+                        .style("top", (event.pageY) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.transition().duration(TOOLTIP_MOUSEOUT_DUR).style("opacity", 0);
+                })
+                .on("click", (_event, d) => {
+                    window.open(d.data.url);
+                });
+        }
+
+        applyToolTip(circles as d3.Selection<SVGCircleElement | SVGPolygonElement, 
+            d3dag.MutGraphNode<Commit, undefined>, 
+            SVGGElement, 
+            unknown>);
+        applyToolTip(triangles as d3.Selection<SVGCircleElement | SVGPolygonElement, 
+            d3dag.MutGraphNode<Commit, undefined>, 
+            SVGGElement, 
+            unknown>);
             
         // display legends for the colors in #dag-legends
         const legend = d3.select("#dag-legends");

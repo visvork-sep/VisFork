@@ -26,7 +26,7 @@ interface MergedNode extends Commit {
 
 type NodeSelection = d3.Selection<
   SVGCircleElement | SVGPolygonElement,
-  d3dag.MutGraphNode<Commit, undefined>,
+  d3dag.MutGraphNode<Commit | MergedNode, undefined>,
   SVGGElement,
   unknown
 >;
@@ -215,7 +215,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
         d3.select(svgRef.current).selectAll("*").remove();
 
         const builder = d3dag.graphStratify();
-        const dag = builder(merged? groupNodes(data) : data);
+        const dag = builder(merged ? groupNodes(data) as MergedNode[] : data as Commit[]);
 
         const layout = d3dag.grid()
             .nodeSize(NODE_SIZE)
@@ -223,13 +223,13 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
             .rank(dateRankOperator)
             .lane(d3dag.laneGreedy().topDown(true).compressed(false));
 
-        // initial dimensions, height will be overwritten
+        // initial dimensions, width will be overwritten
         const{width, height} = layout(dag); 
 
         // swap intial width and height for horizontal layout
         const svg = d3.select(svgRef.current)
             .attr("width", height + MARGIN.left + MARGIN.right) 
-            .attr("height", width + MARGIN.top + MARGIN.bottom); 
+            .attr("height", width + MARGIN.top + MARGIN.bottom);
         const g = svg.append("g")
             .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
 
@@ -268,46 +268,49 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
         });
   
         // month/year labels
-        const formatMonth = d3.timeFormat("%b");  
-        const formatYear = d3.timeFormat("%Y");  
-        let lastMonth = "";
-        let lastYear = "";
+        if (!merged) {
+            const formatMonth = d3.timeFormat("%b");  
+            const formatYear = d3.timeFormat("%Y");  
+            let lastMonth = "";
+            let lastYear = "";
 
-        const monthGroup = g.append("g").attr("class", "month-lines");
+            const monthGroup = g.append("g").attr("class", "month-lines");
 
-        for (const node of sortedNodes) {
-            const currentDate = new Date(node.data.date);
-            const currentMonth = formatMonth(currentDate);
-            const currentYear = formatYear(currentDate);
+            for (const node of sortedNodes) {
+                const currentDate = new Date(node.data.date);
+                const currentMonth = formatMonth(currentDate);
+                const currentYear = formatYear(currentDate);
 
-            if (currentMonth !== lastMonth) {
-                monthGroup.append("line")
-                    .attr("x1", node.y)
-                    .attr("x2", node.y)
-                    .attr("y1", 0)
-                    .attr("y2", totalHeight - 10)
-                    .attr("stroke", "gray")
-                    .attr("stroke-dasharray", "3,3");
+                if (currentMonth !== lastMonth) {
+                    monthGroup.append("line")
+                        .attr("x1", node.y)
+                        .attr("x2", node.y)
+                        .attr("y1", 0)
+                        .attr("y2", totalHeight - 10)
+                        .attr("stroke", "gray")
+                        .attr("stroke-dasharray", "3,3");
 
-                const isNewYear = (currentYear !== lastYear);
-                const labelText = isNewYear
-                    ? `${currentMonth} ${currentYear}`
-                    : currentMonth;
+                    const isNewYear = (currentYear !== lastYear);
+                    const labelText = isNewYear
+                        ? `${currentMonth} ${currentYear}`
+                        : currentMonth;
 
-                monthGroup.append("text")
-                    .attr("x", node.y)
-                    .attr("y", totalHeight + MARGIN.bottom -10)
-                    .attr("font-size", 12)
-                    .style("text-anchor", "middle")
-                    .style("fill", "black")
-                    .text(labelText);
+                    monthGroup.append("text")
+                        .attr("x", node.y)
+                        .attr("y", totalHeight + MARGIN.bottom -10)
+                        .attr("font-size", 12)
+                        .style("text-anchor", "middle")
+                        .style("fill", "black")
+                        .text(labelText);
 
-                lastMonth = currentMonth;
-                if (isNewYear) {
-                    lastYear = currentYear;
+                    lastMonth = currentMonth;
+                    if (isNewYear) {
+                        lastYear = currentYear;
+                    }
                 }
             }
         }
+        
         
         let brushSelection: [[number, number], [number, number]] = [[0,0], [0,0]];
 
@@ -319,7 +322,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
         
 
         function brushEnd(event: d3.D3BrushEvent<unknown>) {
-            if (event.selection === null) return; // Exit if no selection
+            if (event.selection === null) return; // exit if no selection
         
             brushSelection = event.selection as [[number, number], [number, number]];
             const [x0, y0] = brushSelection[0];
@@ -327,9 +330,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
 
             const nodesArray = Array.from(dag.nodes());
     
-            // Get nodes and filter based on selection
             const selectedNodes = nodesArray.filter((node) => {
-                const x = node.y + NODE_RADIUS; // Swapped x and y because graph is horizontal
+                const x = node.y + NODE_RADIUS; // swapped x and y because graph is horizontal
                 const y = node.x + NODE_RADIUS;
                 return x >= x0 && x <= x1 && y >= y0 && y <= y1;
             });
@@ -395,54 +397,96 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
             .style("opacity", 0)
             .style("font", TOOLTIP_FONT);
 
-        // create circle nodes
-        const circles = g.append("g")
-            .selectAll("circle")
-            .data(Array.from(dag.nodes()).filter((node) => {
-                const default_branch = defaultBranches[node.data.repo];
-                return node.data.branch_name === default_branch;
-            }
-            ) as d3dag.MutGraphNode<Commit, undefined>[])
-            .enter()
-            .append("circle")
-            .attr("cx", (d) => d.y ?? 0) // def value 0 to avoid eslint complaining
-            .attr("cy", (d) => d.x ?? 0) // swap x and y to make the graph horizontal
-            .attr("r", NODE_RADIUS)
-            .attr("fill", (d) => colorMap.get(d.data.repo));
+        // Get all nodes from the dag.
+        const allNodes = Array.from(dag.nodes());
 
-        // create triangular nodes
-        const triangles = g.append("g")
-            .selectAll("polygon")
-            .data(Array.from(dag.nodes()).filter((node) => {
-                const default_branch = defaultBranches[node.data.repo];
-                console.log(default_branch);
-                if (node.data.branch_name === default_branch) {
-                    console.log("interesting");
-                }
-                return node.data.branch_name !== default_branch;
-            }
-            ) as d3dag.MutGraphNode<Commit, undefined>[])
-            .enter()
-            .append("polygon")
-            .attr("points", `0,-${NODE_RADIUS} ${NODE_RADIUS},${NODE_RADIUS} -${NODE_RADIUS},${NODE_RADIUS}`)
-            .attr("transform", d => {
-                // Ensure that d.x and d.y are properly defined, or else default to (0,0)
-                const x = d.y ?? 0;
-                const y = d.x ?? 0;
-                return `translate(${x},${y})`;
-            })
-            .attr("fill", (d) => colorMap.get(d.data.repo));
+        if (merged) {            const mergedNodes = allNodes as unknown as d3dag.MutGraphNode<MergedNode, undefined>[];
+  
+            const mergedCircles = mergedNodes.filter(node => node.data.nodes.length === 1);
+            const circles = g.append("g")
+                .selectAll("circle")
+                .data(mergedCircles)
+                .enter()
+                .append("circle")
+                .attr("cx", d => d.y ?? 0)
+                .attr("cy", d => d.x ?? 0)
+                .attr("r", NODE_RADIUS)
+                .attr("fill", d => colorMap.get(d.data.repo));
+  
+            const mergedSquares = mergedNodes.filter(node => node.data.nodes.length > 1);
+            const squares = g.append("g")
+                .selectAll("rect")
+                .data(mergedSquares)
+                .enter()
+                .append("rect")
+                .attr("x", d => (d.y ?? 0) - NODE_RADIUS)
+                .attr("y", d => (d.x ?? 0) - NODE_RADIUS)
+                .attr("width", NODE_RADIUS * 2)
+                .attr("height", NODE_RADIUS * 2)
+                .attr("fill", d => colorMap.get(d.data.repo));
+
+            applyToolTip(circles as NodeSelection);
+            applyToolTip(squares as unknown as NodeSelection);
+
+        } else {
+            const regularCircles = allNodes.filter(node => node.data.branch_name !== defaultBranches[node.data.repo]);
+            const regularTriangles = allNodes.filter(node => node.data.branch_name === defaultBranches[node.data.repo]);
+
+            const circles = g.append("g")
+                .selectAll("circle")
+                .data(regularCircles as d3dag.MutGraphNode<Commit, undefined>[])
+                .enter()
+                .append("circle")
+                .attr("cx", d => d.y ?? 0)
+                .attr("cy", d => d.x ?? 0)
+                .attr("r", NODE_RADIUS)
+                .attr("fill", d => colorMap.get(d.data.repo));
+
+            const triangles = g.append("g")
+                .selectAll("polygon")
+                .data(regularTriangles as d3dag.MutGraphNode<Commit, undefined>[])
+                .enter()
+                .append("polygon")
+                .attr("points", `0,-${NODE_RADIUS} ${NODE_RADIUS},${NODE_RADIUS} -${NODE_RADIUS},${NODE_RADIUS}`)
+                .attr("transform", d => {
+                    const x = d.y ?? 0;
+                    const y = d.x ?? 0;
+                    return `translate(${x},${y})`;
+                })
+                .attr("fill", d => colorMap.get(d.data.repo));
+
+            // Apply tooltips.
+            applyToolTip(circles as NodeSelection);
+            applyToolTip(triangles as NodeSelection);
+        }
+
 
         function applyToolTip(selection: NodeSelection) {
             selection
                 .on("mouseover", (event, d) => {
                     tooltip.transition().duration(TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
-                    tooltip.html(
-                        `<strong>Commit</strong>: ${d.data.id}<br>
-                        <strong>Repo</strong>: ${d.data.repo}<br>
-                        <strong>Branch</strong>: ${d.data.branch_name}<br>
-                        <strong>Date</strong>: ${d.data.date.toLocaleString()}`
-                    )
+                    let content = "";
+                    if (!merged) {
+                        // full view
+                        const commitData = d.data as Commit;
+                        content = `
+                        <strong>Commit</strong>: ${commitData.id}<br>
+                        <strong>Repo</strong>: ${commitData.repo}<br>
+                        <strong>Branch</strong>: ${commitData.branch_name}<br>
+                        <strong>Date</strong>: ${commitData.date.toLocaleString()}
+                        `;
+                    } else {
+                        // merged view
+                        const mergedData = d.data as MergedNode;
+                        content = `
+                        <strong>Repo</strong>: ${mergedData.repo}<br>
+                        <strong>Branch</strong>: ${mergedData.branch_name}<br>
+                        <strong>Commits Count</strong>: ${mergedData.nodes.length}<br>
+                        <strong>Date of First Commit</strong>: ${mergedData.date}<br>
+                        <strong>Date of Last Commit</strong>: ${mergedData.end_date}
+                        `;
+                    }
+                    tooltip.html(content)
                         .style("left", (event.pageX) + "px")
                         .style("top", (event.pageY) + "px");
                 })
@@ -457,10 +501,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
                     window.open(d.data.url);
                 });
         }
-
-        applyToolTip(circles as NodeSelection);
-        applyToolTip(triangles as NodeSelection);
-            
+        
         // display legends for the colors in #dag-legends
         const legend = d3.select("#dag-legends");
         legend.selectAll("div").remove();

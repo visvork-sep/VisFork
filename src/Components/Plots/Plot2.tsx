@@ -287,9 +287,9 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
         g.append("g")
             .selectAll("circle")
             .data(Array.from(dag.nodes()).filter((node) => {
-                    const default_branch = defaultBranches[node.data.repo];
-                    return node.data.branch_name === default_branch;
-                }
+                const default_branch = defaultBranches[node.data.repo];
+                return node.data.branch_name === default_branch;
+            }
             ))
             .enter()
             .append("circle")
@@ -322,13 +322,13 @@ const CommitTimeline: React.FC<DagProps> = ({ data, width, maxHeight, defaultBra
         g.append("g")
             .selectAll("polygon")
             .data(Array.from(dag.nodes()).filter((node) => {
-                    const default_branch = defaultBranches[node.data.repo];
-                    console.log(default_branch);
-                    if (node.data.branch_name === default_branch) {
-                        console.log("interesting");
-                    }
-                    return node.data.branch_name !== default_branch;
+                const default_branch = defaultBranches[node.data.repo];
+                console.log(default_branch);
+                if (node.data.branch_name === default_branch) {
+                    console.log("interesting");
                 }
+                return node.data.branch_name !== default_branch;
+            }
             ))
             .enter()
             .append("polygon")

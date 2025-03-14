@@ -15,6 +15,10 @@ const Histogram: React.FC = () => {
     const barColor = themeGet("colors.accent.muted")({ theme });
     const barColorSelected = themeGet("colors.accent.emphasis")({ theme });
 
+    // Needed data:
+    // All commits, sorted by fork
+    // Dates of commits
+    // 
 
     // Sample date data
     const dates = useMemo(() => [
@@ -192,10 +196,19 @@ const Histogram: React.FC = () => {
                 }
             });
 
-        // Draw x-axis
+        // Define space for x-axis labels
+        const labelWidth = 30;
+        const tickCount = Math.floor(contextWidth / labelWidth);
+        const skip = Math.max(1, Math.ceil(formattedDates.length / tickCount));
+
+        // Draw x-axis labels
         chartContext.append("g")
             .attr("transform", `translate(0, ${contextHeight})`)
-            .call(d3.axisBottom(xScaleContext).tickFormat(d => d))
+            .call(
+                d3.axisBottom(xScaleContext)
+                    .tickValues(formattedDates.filter((_, i) => i % skip === 0))
+                    .tickFormat(d => d)
+            )
             .selectAll("text")
             .style("text-anchor", "end")
             .attr("dx", "-0.8em")

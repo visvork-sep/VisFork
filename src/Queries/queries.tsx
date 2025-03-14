@@ -1,4 +1,4 @@
-import { useQueries, useQuery} from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "./rawQueries";
 import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
 import { GetAvatarUrlQueryVariables}
@@ -35,11 +35,10 @@ export function useFetchForks(parameters: ForkQueryParams) {
 
     return useQuery({
         queryKey: ["forks", parameters],
-        queryFn: () => fetchForks(parameters, accessToken),
+        queryFn: () => fetchForks(parameters!, accessToken),
         // Done so query is not triggered on first render.
-        enabled: isAuthenticated
-            && !!parameters.path.owner
-            && !!parameters.path.repo
+        enabled: isAuthenticated && !!parameters
+
     });
 }
 

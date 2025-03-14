@@ -4,12 +4,18 @@ import { ForkFilter } from "@Types/ForkFilter";
 import { useFetchCommitsBatch, useFetchForks } from "../Queries/queries";
 import { ForkFilterService } from "../Filters/ForkFilterService";
 
-export function useFilteredData() {
+export function useFilteredData(filterService : ForkFilterService) {
     // Create the state for the query parameters
     const [forkQueryState, setForkQueryState] = useState<ForkQueryState>({
         owner: "",
         repo: "",
         sort: "newest"
+    });
+
+    // State for additional filtering, such as sorting and date range.
+    const [filters, setFilters] = useState<ForkFilter>({
+        sortBy: "newest",
+        dateRange: {}
     });
 
     // Constructing the API query parameters based on the state.
@@ -20,14 +26,6 @@ export function useFilteredData() {
 
     // Fetch forks data using the constructed query parameters.
     const {data, isLoading, error} = useFetchForks(forkQueryParams);
-
-    // State for additional filtering, such as sorting and date range.
-    const [filters, setFilters] = useState<ForkFilter>({
-        sortBy: "newest",
-        dateRange: {}
-    });
-
-    const filterService = new ForkFilterService();
 
     // Memoized filtering: Applies filters only when data or filters change.
     const filteredData = useMemo(() => {
@@ -47,7 +45,6 @@ export function useFilteredData() {
     const resultCommits = useFetchCommitsBatch(commitQueries);
 
     return { filteredData, isLoading, error, setForkQueryState, setFilters, resultCommits };
-
 }
 
 

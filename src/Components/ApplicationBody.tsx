@@ -22,24 +22,26 @@ function ApplicationBody() {
     const children = plotsData.map((plot) => {
         return (
             <Stack.Item key={plot}>
-                {plot === 1 && <div ref={measureRefCommitTimeline}>
-                    <Box
-                        sx={{
-                            borderWidth: 1,
-                            borderStyle: "solid",
-                            borderColor: "border.default",
-                            borderRadius: 2,
-                            p: 3,
-                        }}
-                    >
-                        <Heading variant="medium" sx={{ textAlign: "center" }}>Commit Timeline</Heading>
-                        {plot === 1 ? <CommitTimeline data={commitData}
-                            c_width={(width ?? compensationOfPadding) - compensationOfPadding} 
-                            maxHeight={maxHeightCommitTimeline}
-                            merged = {false}
-                            defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
-                    </Box>
-                </div>}
+                {plot === 1 && <Dropdown  summaryText="Commit Timeline">
+                    <div ref={measureRefCommitTimeline}>
+                        <Box
+                            sx={{
+                                borderWidth: 1,
+                                borderStyle: "solid",
+                                borderColor: "border.default",
+                                borderRadius: 2,
+                                p: 3,
+                            }}
+                        >
+                            <Heading variant="medium" sx={{ textAlign: "center" }}>Commit Timeline</Heading>
+                            {plot === 1 ? <CommitTimeline data={commitData}
+                                c_width={(width ?? compensationOfPadding) - compensationOfPadding} 
+                                maxHeight={maxHeightCommitTimeline}
+                                merged = {false}
+                                defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
+                        </Box>
+                    </div>
+                </Dropdown>}
                 {plot === 2 &&
                     <Dropdown summaryText="Fork List">
                         <ForkList forks={[

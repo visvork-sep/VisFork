@@ -119,8 +119,9 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
             if (!visited.has(commit.id)) {
                 visited.add(commit.id);
                 for (const parentId of commit.parentIds) {
-                    if (commitMap.has(parentId)) {
-                        visit(commitMap.get(parentId)!);
+                    const parentCommit = commitMap.get(parentId);
+                    if (parentCommit) { // if a parent commit exists
+                        visit(parentCommit);
                     }
                 }
                 sortedCommits.push(commit);

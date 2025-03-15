@@ -7,7 +7,8 @@ class AssertionError extends Error {
 
 function assertFn(condition: boolean, message?: string) {
     if (!condition) {
-        throw new AssertionError(message);
+        throw new AssertionError(message 
+            + " | This Error only happens on develop builds, do not try to catch this error");
     }
 }
 

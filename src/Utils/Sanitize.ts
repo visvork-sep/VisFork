@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { assert } from "@Utils/Assert";
 import { 
     RepositoryInputErrors,
     ForksCountInputErrors,
@@ -7,8 +7,15 @@ import {
     RecentlyUpdatedInputErrors 
 } from "../Types/FormErrors";
 
-function sanitizeString(str: string) {
-    const pattern = /[^a-z0-9áéíóúñü .,_-`/]/gim;
+/**
+ * Trim the input and remove forbidden characters from the input.
+ * 
+ * @param {string} str input
+ * @returns output - The sanitized string
+ * @returns conflicts - The forbidden characters found in the input
+ */
+function sanitizeString(str: string): {output: string, conflicts: RegExpMatchArray | null} {
+    const pattern = /[^a-z0-9áéíóúñü .,_-`/]/gi;
 
     const output = str.replace(pattern, "").trim();
     const conflicts = str.match(pattern);
@@ -18,20 +25,45 @@ function sanitizeString(str: string) {
     };
 }
 
+/**
+ * Validator for date strings.
+ * 
+ * rules: must be in the format "yyyy-mm-dd"
+ * 
+ * note: this function does not check for valid dates, only for the format.
+ * 
+ * @param input date string
+ * @returns true if the input is a valid date string 
+ */
 function isValidDate(input: string): boolean {
-    // eslint-disable-next-line max-len
-    const regex = /(^(y{4}|y{2})[./-](m{1,2})[./-](d{1,2})$)|(^(m{1,2})[./-](d{1,2})[./-]((y{4}|y{2})$))|(^(d{1,2})[./-](m{1,2})[./-]((y{4}|y{2})$))/gi;
+    const regex = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/;
 
     return regex.test(input);
 }
 
+/**
+ * Validator for integer strings.
+ * 
+ * rules: no leading zeroes, no decimal points, no commas, no whitespace.
+ * 
+ * @param input integer string
+ * @returns true if the input is a valid integer string
+ */
 function isValidInteger(input: string): boolean {
     const regex = /^(0|[1-9][0-9]*)$/;
 
     return regex.test(input);
 }
 
-const prepareRepository = useCallback((input: string): { owner: string, repositoryName: string } => {
+/**
+ * Prepare the repository input for passing to logic layer.
+ * 
+ * @param {String} input repository input
+ * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @throws {RepositorySyntaxError} if the input does not match the required syntax (Owner/RepositoryName)
+ * @returns owner and repository name
+ */
+function prepareRepository(input: string): { owner: string, repositoryName: string } {
     const { output, conflicts } = sanitizeString(input);
     if (conflicts) {
         throw new RepositoryInputErrors.ForbiddenCharactersError(conflicts);
@@ -50,9 +82,17 @@ const prepareRepository = useCallback((input: string): { owner: string, reposito
         owner,
         repositoryName
     };
-}, []);
+}
 
-const prepareForksCount = useCallback((input?: string): number => {
+/**
+ * Prepare the forks count input for passing to logic layer.
+ * 
+ * @param {String} input forks count input
+ * @throws {NonIntegralError} if the input is not an integer
+ * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @returns forks count
+ */
+function prepareForksCount(input?: string): number {
     if (!input) {
         throw new ForksCountInputErrors.NonIntegralError();
     }
@@ -67,23 +107,51 @@ const prepareForksCount = useCallback((input?: string): number => {
     }
 
     return Number(input);
-}, []);
+}
 
-const prepareForksOrder = useCallback((input: string): unknown => {
-    const { output } = sanitizeString(input);
+/**
+ * Prepare the forks order input for passing to logic layer.
+ * 
+ * @param {String} input forks order input
+ * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @returns forks order
+ */
+function prepareForksOrder(input: string): unknown {
+    const { output, conflicts } = sanitizeString(input);
 
-
+    if (conflicts) {
+        throw new ForksCountInputErrors.ForbiddenCharactersError(conflicts);
+    }
 
     return output;
-}, []);
+}
 
-const prepareForksSortDirection = useCallback((input: string): unknown => {
-    const { output } = sanitizeString(input);
+/**
+ * Prepare the forks sort direction input for passing to logic layer.
+ * 
+ * @param {String} input forks sort direction input
+ * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @returns forks sort direction
+ */
+function prepareForksSortDirection(input: string): unknown {
+    const { output, conflicts } = sanitizeString(input);
+
+    if (conflicts) {
+        throw new ForksCountInputErrors.ForbiddenCharactersError(conflicts);
+    }
 
     return output;
-}, []);
+}
 
-const prepareCommitsDateRangeFrom = useCallback((input: string): Date => {
+/**
+ * Prepare the commits date range from input for passing to logic layer.
+ * 
+ * @param {String} input commits date range from input
+ * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @throws {UnknownError} if the input is not a valid date (TODO: create new error type)
+ * @returns commits date range from
+ */
+function prepareCommitsDateRangeFrom(input: string): Date {
     const { output, conflicts } = sanitizeString(input);
     if (conflicts) {
         throw new CommitsDateRangeFromInputErrors.ForbiddenCharactersError(conflicts);
@@ -94,9 +162,17 @@ const prepareCommitsDateRangeFrom = useCallback((input: string): Date => {
     }
 
     return new Date(input);
-}, []);
+}
 
-const prepareCommitsDateRangeUntil = useCallback((input: string): Date => {
+/**
+ * Prepare the commits date range until input for passing to logic layer.
+ * 
+ * @param {String} input commits date range until input
+ * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @throws {UnknownError} if the input is not a valid date (TODO: create new error type)
+ * @returns commits date range until
+ */
+function prepareCommitsDateRangeUntil(input: string): Date {
     const { output, conflicts } = sanitizeString(input);
     if (conflicts) {
         throw new CommitsDateRangeUntilInputErrors.ForbiddenCharactersError(conflicts);
@@ -107,20 +183,34 @@ const prepareCommitsDateRangeUntil = useCallback((input: string): Date => {
     }
 
     return new Date(input);
-}, []);
+}
 
-const prepareForksTypeFilter = useCallback((forkTypes: string[]): unknown[] => {
+/**
+ * Prepare the forks type filter input for passing to logic layer.
+ * 
+ * @param {String[]} forkTypes forks type filter input 
+ * @precondition all elements are valid fork types defined in the application in FORK_TYPES
+ * @returns forks type filter
+ */
+function prepareForksTypeFilter(forkTypes: string[]): unknown[] {
     const outputs: string[] = [];
     forkTypes.forEach(element => {
         const { output } = sanitizeString(element);
-
+        
         outputs.push(output);
     });
 
     return outputs;
-}, []);
+}
 
-const prepareOwnerTypeFilter = useCallback((ownerTypes: string[]): unknown[] => {
+/**
+ * Prepare the owner type filter input for passing to logic layer.
+ * 
+ * @param ownerTypes owner type filter input
+ * @precondition all elements are valid owner types defined in the application in OWNER_TYPES
+ * @returns owner type filter
+ */
+function prepareOwnerTypeFilter(ownerTypes: string[]): unknown[] {
     const outputs: string[] = [];
     ownerTypes.forEach(element => {
         const { output, conflicts } = sanitizeString(element);
@@ -129,9 +219,17 @@ const prepareOwnerTypeFilter = useCallback((ownerTypes: string[]): unknown[] => 
     });
 
     return outputs;
-}, []);
+}
 
-const prepareRecentlyUpdated = useCallback((input?: string): number => {
+/**
+ * Prepare the recently updated input for passing to logic layer.
+ * 
+ * @param {String} input recently updated input
+ * @throws {NonIntegralError} if the input is not an integer
+ * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @returns recently updated
+ */
+function prepareRecentlyUpdated(input?: string): number {
     if (!input) {
         throw new RecentlyUpdatedInputErrors.NonIntegralError();
     }
@@ -146,7 +244,7 @@ const prepareRecentlyUpdated = useCallback((input?: string): number => {
     }
 
     return Number(input);
-}, []);
+}
 
 export {
     prepareRepository,

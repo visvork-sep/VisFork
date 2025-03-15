@@ -5,7 +5,6 @@ import { useMeasure } from "@uidotdev/usehooks";
 
 import ForkList from "@Components/Plots/ForkList";
 import { Dropdown } from "@Components/Dropdown";
-import { useEffect } from "react";
 
 const plotsData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -14,21 +13,24 @@ function ApplicationBody() {
     // Since the svg has padding on the left, it needs to be compensated on the right side 
     // to make sure the graph does not go out of the box.
     const compensationOfPadding = 33.6;
-    const maxHeightCommitTimeline = 1000;
-    useEffect(() => {
-        console.log(width);
-    }, [width]);
+    const heightCommitTimelineSVG = 600;
 
     const children = plotsData.map((plot) => {
         return (
             <Stack.Item key={plot}>
                 {plot === 1 && <Dropdown  summaryText="Commit Timeline">
-                    <div ref={measureRefCommitTimeline}>
+                    <div ref={measureRefCommitTimeline}
+                        style={{
+                            resize: "vertical",
+                            overflow: "hidden", // Ensure resizing works
+                            minHeight: "200px", // Set an initial height
+                        }}>
                         <Box
                             sx={{
                                 borderWidth: 1,
                                 borderStyle: "solid",
                                 borderColor: "border.default",
+                                height: "100%",
                                 borderRadius: 2,
                                 p: 3,
                             }}
@@ -36,7 +38,7 @@ function ApplicationBody() {
                             <Heading variant="medium" sx={{ textAlign: "center" }}>Commit Timeline</Heading>
                             {plot === 1 ? <CommitTimeline data={commitData}
                                 c_width={(width ?? compensationOfPadding) - compensationOfPadding} 
-                                maxHeight={maxHeightCommitTimeline}
+                                c_height={heightCommitTimelineSVG}
                                 merged = {false}
                                 defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
                         </Box>

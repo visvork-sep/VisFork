@@ -14,7 +14,7 @@ interface Commit {
 interface DagProps {
   data: Commit[];
   c_width: number;
-  maxHeight: number;
+  c_height: number;
   merged: boolean;
   defaultBranches: Record<string, string>;
 }
@@ -47,8 +47,9 @@ const TOOLTIP_MOUSEOUT_DUR = 500;
 const LEGEND_DOT_SIZE = 10;
 const LEGEND_TEXT_MARGIN = "10px";
 const EDGE_STROKE_COLOR = "#999";
+const DATE_LABEL_HEIGHT = 21;
 
-const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight, merged = false, defaultBranches }) => {
+const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, merged = false, defaultBranches }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const colorMap = new Map();
     const repoNames = new Set();
@@ -538,9 +539,10 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
         <>
             <div style={{ 
                 width: c_width,
-                maxHeight: maxHeight,
+                height: Math.min(c_height, svgRef.current?.getBoundingClientRect().height as number + DATE_LABEL_HEIGHT),
                 overflow: "auto", 
-                whiteSpace: "normal"
+                whiteSpace: "normal",
+                resize: "vertical"
             }}>
                 <svg ref={svgRef}> {}
                     {}

@@ -217,8 +217,14 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         d3.select(svgRef.current).selectAll("*").remove();
 
         const builder = d3dag.graphStratify();
-        const dag = builder(merged ? groupNodes(data) as MergedNode[] : data as Commit[]);
-
+        let dag : d3dag.MutGraph<Commit | MergedNode, undefined> | null = null; 
+        try {
+            dag = builder(merged ? groupNodes(data) as MergedNode[] : data as Commit[]); 
+        } catch (error) {
+            console.error("Failed to build Commit Timeline: ", error);
+            return;
+        }
+        
         const layout = d3dag.grid()
             .nodeSize(NODE_SIZE)
             .gap([5, 5]) 
@@ -330,7 +336,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
             const [x0, y0] = brushSelection[0];
             const [x1, y1] = brushSelection[1];
 
-            const nodesArray = Array.from(dag.nodes());
+            const nodesArray = Array.from(sortedNodes);
     
             const selectedNodes = nodesArray.filter((node) => {
                 const x = node.y + NODE_RADIUS; // swapped x and y because graph is horizontal
@@ -399,8 +405,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
             .style("opacity", 0)
             .style("font", TOOLTIP_FONT);
 
-        // Get all nodes from the dag.
-        const allNodes = Array.from(dag.nodes());
+        // get all nodes from the dag
+        const allNodes = Array.from(sortedNodes);
 
         if (merged) {            const mergedNodes = allNodes as unknown as d3dag.MutGraphNode<MergedNode, undefined>[];
   
@@ -457,7 +463,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
                 })
                 .attr("fill", d => colorMap.get(d.data.repo));
 
-            // Apply tooltips.
+            // apply tooltips
             applyToolTip(circles as NodeSelection);
             applyToolTip(triangles as NodeSelection);
         }
@@ -539,7 +545,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         <>
             <div style={{ 
                 width: c_width,
-                height: Math.min(c_height, svgRef.current?.getBoundingClientRect().height as number + DATE_LABEL_HEIGHT),
+                height: Math.min(c_height, svgRef.current?.getBoundingClientRect().height as number 
+                + DATE_LABEL_HEIGHT),
                 overflow: "auto", 
                 whiteSpace: "normal",
                 resize: "vertical"

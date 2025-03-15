@@ -41,8 +41,8 @@ function useFilterForm() {
 
     /**
      * Updates the forks sorting order.
-     * @param {string} value - The selected sorting order.
-     * @throws {Error} If the value is not one of the defined sorting options in FORKS_SORTING_ORDERS.
+     * @param {string} value - 
+     * The selected sorting order. Must be one of the defined sorting options in FORKS_SORTING_ORDERS.
      */
     const handleForksOrderChange = useCallback((value: string) => {
         assert(Object.values(FORKS_SORTING_ORDERS).map(t => t.value).includes(value), "Invalid sorting order selected");
@@ -51,8 +51,8 @@ function useFilterForm() {
 
     /**
      * Updates the sorting direction (ascending/descending) for forks.
-     * @param {string} value - The selected sorting direction.
-     * @throws {Error} If the value is not one of the defined sorting directions in SORT_DIRECTION.
+     * @param {string} value - 
+     * The selected sorting direction. Must be one of the defined sorting directions in SORT_DIRECTION.
      */
     const handleForksOrderAscDescChange = useCallback((value: string) => {
         assert(Object.values(SORT_DIRECTION).map(t => t.value).includes(value), "Invalid sorting direction selected");
@@ -77,8 +77,8 @@ function useFilterForm() {
 
     /**
      * Updates the selected fork types for filtering.
-     * @param {string[]} selected - An array of selected fork type values.
-     * @throws {Error} If any selected value is not present in the predefined FORK_TYPES.
+     * @param {string[]} selected - 
+     * An array of selected fork type values. Each value must be present in the predefined FORK_TYPES.
      */
     const handleForksTypeFilterChange = useCallback((selected: string[]) => {
         assert(selected.every(s => Object.values(FORK_TYPES).map(t => t.value).includes(s)),
@@ -88,8 +88,8 @@ function useFilterForm() {
 
     /**
      * Updates the selected owner types for filtering.
-     * @param {string[]} selected - An array of selected owner type values.
-     * @throws {Error} If any selected value is not present in the predefined OWNER_TYPES.
+     * @param {string[]} selected - 
+     * An array of selected owner type values. Each value must be present in the predefined OWNER_TYPES.
      */
     const handleOwnerTypeFilterChange = useCallback((selected: string[]) => {
         assert(selected.every(s => Object.values(OWNER_TYPES).map(t => t.value).includes(s)),

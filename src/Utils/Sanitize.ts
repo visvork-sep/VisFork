@@ -1,4 +1,3 @@
-import { assert } from "@Utils/Assert";
 import { 
     RepositoryInputErrors,
     ForksCountInputErrors,
@@ -102,11 +101,11 @@ function prepareForksCount(input?: string): number {
         throw new ForksCountInputErrors.ForbiddenCharactersError(conflicts);
     }
 
-    if (!isValidInteger(input)) {
+    if (!isValidInteger(output)) {
         throw new ForksCountInputErrors.NonIntegralError();
     }
 
-    return Number(input);
+    return Number(output);
 }
 
 /**
@@ -182,7 +181,7 @@ function prepareCommitsDateRangeUntil(input: string): Date {
         throw new CommitsDateRangeUntilInputErrors.UnknownError();
     }
 
-    return new Date(input);
+    return new Date(output);
 }
 
 /**
@@ -211,7 +210,7 @@ function prepareForksTypeFilter(forkTypes: string[]): unknown[] {
 function prepareOwnerTypeFilter(ownerTypes: string[]): unknown[] {
     const outputs: string[] = [];
     ownerTypes.forEach(element => {
-        const { output, conflicts } = sanitizeString(element);
+        const { output } = sanitizeString(element);
 
         outputs.push(output);
     });

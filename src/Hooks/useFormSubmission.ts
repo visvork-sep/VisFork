@@ -66,7 +66,7 @@ function useFormSubmission(form: FilterFormState) {
         }
 
         try {
-            forksSortDirection = prepareForksSortDirection(form.forksAscDesc)
+            forksSortDirection = prepareForksSortDirection(form.forksAscDesc);
         } catch (e) {
             alert(e);
         }

@@ -188,8 +188,7 @@ function prepareCommitsDateRangeUntil(input: string): Date {
 /**
  * Prepare the forks type filter input for passing to logic layer.
  * 
- * @param {String[]} forkTypes forks type filter input 
- * @precondition all elements are valid fork types defined in the application in FORK_TYPES
+ * @param {String[]} forkTypes - list of fork types
  * @returns forks type filter
  */
 function prepareForksTypeFilter(forkTypes: string[]): unknown[] {
@@ -206,8 +205,7 @@ function prepareForksTypeFilter(forkTypes: string[]): unknown[] {
 /**
  * Prepare the owner type filter input for passing to logic layer.
  * 
- * @param ownerTypes owner type filter input
- * @precondition all elements are valid owner types defined in the application in OWNER_TYPES
+ * @param {String[]} ownerTypes - list of owner types
  * @returns owner type filter
  */
 function prepareOwnerTypeFilter(ownerTypes: string[]): unknown[] {

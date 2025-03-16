@@ -7,10 +7,12 @@ import { ForkJSON } from "../Types/GithubTypes";
  * @param keys see {@link this#getRandomFork}
  */
 export function getRandomForks(n: number, keys: (keyof ForkJSON)[]): ForkJSON[] {
-    const result: ForkJSON[] = [];
+    let result: ForkJSON[] = [];
 
     for (let i = 0; i < n; i++) {
-        result.push(getRandomFork(keys));
+        let newFork = getRandomFork(keys);
+        newFork.id = i;
+        result.push(newFork);
     }
 
     return result;

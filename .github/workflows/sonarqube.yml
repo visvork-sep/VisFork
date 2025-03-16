@@ -23,8 +23,17 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
+      - name: Build Docker image
+        run: docker build -t visfork-ci -f Dockerfile.build .
+
+      - name: Start container
+        run: docker run --name visfork-container -d visfork-ci tail -f /dev/null 
+      
       - name: Run tests
-        run: npm run test
+        run: docker exec visfork-container npm run test
+
+      - name: Copy coverage report
+        run: docker cp visfork-container:workspace/coverage ./coverage
 
       - name: Run Analysis
         uses: SonarSource/sonarqube-scan-action@v4

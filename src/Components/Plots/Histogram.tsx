@@ -1,11 +1,12 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
 import * as d3 from "d3";
 import { useTheme, themeGet } from "@primer/react";
+import { CommitList } from "./HistogramData";
 
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
  */
-const Histogram: React.FC = () => {
+const Histogram: React.FC<CommitList> = ({ commits }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const { theme } = useTheme();
 
@@ -15,27 +16,28 @@ const Histogram: React.FC = () => {
     const barColor = themeGet("colors.accent.muted")({ theme });
     const barColorSelected = themeGet("colors.accent.emphasis")({ theme });
 
-    // Needed data:
-    // All commits, sorted by fork
-    // Dates of commits
-    // 
+    // // Sample date data
+    // const dates = useMemo(() => [
+    //     new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
+    //     new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
+    //     new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
+    //     new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
+    //     new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
+    //     new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
+    //     new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
+    //     new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
+    //     new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
+    //     new Date("2020-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
+    //     new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
+    //     new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
 
-    // Sample date data
-    const dates = useMemo(() => [
-        new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
-        new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
-        new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
-        new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
-        new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
-        new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
-        new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
-        new Date("2020-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
-        new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-        new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
+    // ], []);
 
-    ], []);
+    // Extract and sort commit dates
+    const dates = useMemo(() => {
+        const sortedCommits = [...commits].sort((a, b) => a.date.getTime() - b.date.getTime());
+        return sortedCommits.map(commit => commit.date);
+    }, [commits]);
 
     /**
      * Processes date data into a frequency map for visualization.

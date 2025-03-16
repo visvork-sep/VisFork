@@ -35,6 +35,9 @@ jobs:
       - name: Copy coverage report
         run: docker cp visfork-container:workspace/coverage ./coverage
 
+      - name: Stop container
+        run: docker stop visfork-container && docker rm visfork-container
+
       - name: Run Analysis
         uses: SonarSource/sonarqube-scan-action@v4
         env:

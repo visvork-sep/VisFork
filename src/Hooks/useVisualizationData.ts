@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import { ForkListData } from "@VisInterfaces/ForkListData";
+import { CommitTableData } from "@VisInterfaces/CommitTableData";
 
 interface VisualizationData {
     forkListData: ForkListData,
+    commitTableData: CommitTableData
     //TODO: expand with other interfaces and separate
 }
 
@@ -20,6 +22,7 @@ export function useVisualizationData(initialData: VisualizationData) {
     }, []);
 
     const forkListData = visData?.forkListData;
+    const commitTableData = visData?.commitTableData;
     //TODO: add other handlers
-    return {forkListData, setVisData, handleForkListDataChange};
+    return {forkListData,commitTableData, setVisData, handleForkListDataChange};
 }

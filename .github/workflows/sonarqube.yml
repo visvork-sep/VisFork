@@ -33,7 +33,7 @@ jobs:
         run: docker exec visfork-container npm run test
 
       - name: Copy coverage report
-        run: docker cp visfork-container:workspace/coverage ./coverage
+        run: docker cp visfork-container:workspace/coverage ./
 
       - name: Stop container
         run: docker stop visfork-container && docker rm visfork-container

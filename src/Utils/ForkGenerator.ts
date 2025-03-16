@@ -1,5 +1,11 @@
 import { ForkJSON } from "../Types/GithubTypes";
 
+/**
+ * Creates n ForkJSON objects. For further explanation see {@link this#getRandomFork}.
+ * 
+ * @param n the number of forks to be instantiated
+ * @param keys see {@link this#getRandomFork}
+ */
 export function getRandomForks(n: number, keys: (keyof ForkJSON)[]): ForkJSON[] {
     let result: ForkJSON[] = [];
 
@@ -10,6 +16,16 @@ export function getRandomForks(n: number, keys: (keyof ForkJSON)[]): ForkJSON[] 
     return result;
 }
 
+/**
+ * Creates a ForkJSON objects with at least all its required properties.
+ * Additionally, if any keys are passed it also adds a random value to those keys.
+ * 
+ * @param keys an array of strings which determine what optional properties will be assigned a value.
+ *             The only accepted values in the array are "stargazers_count", "watchers_count", "created_at", "updated_at",
+ *             but these may be extended.
+ * 
+ * @throws Error if an incorrect key is passed.
+ */
 export function getRandomFork(keys: (keyof ForkJSON)[]): ForkJSON {
     const defaultFork: ForkJSON = {
         id: 1296269,
@@ -98,5 +114,7 @@ const generateValue = (key: string): any => {
             return new Date(Date.now() - Math.random() * 1e12).toISOString();
         case "updated_at":
             return new Date(Date.now() - Math.random() * 1e12).toISOString();
+        default:
+            throw Error("key can only be one of \"stargazers_count\", \"watchers_count\", \"created_at\", \"updated_at\"");
     }
 }

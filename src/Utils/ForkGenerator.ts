@@ -7,7 +7,7 @@ import { ForkJSON } from "../Types/GithubTypes";
  * @param keys see {@link this#getRandomFork}
  */
 export function getRandomForks(n: number, keys: (keyof ForkJSON)[]): ForkJSON[] {
-    let result: ForkJSON[] = [];
+    const result: ForkJSON[] = [];
 
     for (let i = 0; i < n; i++) {
         result.push(getRandomFork(keys));
@@ -21,8 +21,8 @@ export function getRandomForks(n: number, keys: (keyof ForkJSON)[]): ForkJSON[] 
  * Additionally, if any keys are passed it also adds a random value to those keys.
  * 
  * @param keys an array of strings which determine what optional properties will be assigned a value.
- *             The only accepted values in the array are "stargazers_count", "watchers_count", "created_at", "updated_at",
- *             but these may be extended.
+ *             The only accepted values in the array are "stargazers_count", "watchers_count",
+ *             "created_at", "updated_at", but these may be extended.
  * 
  * @throws Error if an incorrect key is passed.
  */
@@ -98,13 +98,13 @@ export function getRandomFork(keys: (keyof ForkJSON)[]): ForkJSON {
     const result: ForkJSON = { ...defaultFork };
 
     keys.forEach(key => {
-        (result as any)[key] = generateValue(key);
+        Object.assign(result, { [key]: generateValue(key) });
     });
 
     return result;
 }
 
-const generateValue = (key: string): any => {
+const generateValue = (key: string): number | string => {
     switch (key) {
         case "stargazers_count":
             return Math.floor(Math.random() * 1e5);
@@ -115,6 +115,7 @@ const generateValue = (key: string): any => {
         case "updated_at":
             return new Date(Date.now() - Math.random() * 1e12).toISOString();
         default:
-            throw Error("key can only be one of \"stargazers_count\", \"watchers_count\", \"created_at\", \"updated_at\"");
+            throw Error("key can only be one of \"stargazers_count\", \"watchers_count\"," +
+                        + "\"created_at\", \"updated_at\"");
     }
-}
+};

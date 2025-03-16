@@ -26,7 +26,7 @@ jobs:
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
 
-      - name: Run tests:
+      - name: Run tests
         run: docker run visfork-ci npm run test
           
       - name: Run Analysis

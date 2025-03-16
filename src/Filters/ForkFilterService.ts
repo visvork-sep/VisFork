@@ -76,11 +76,18 @@ export class ForkFilterService {
 
         let result: boolean = false;
         if (dateRange.start != null) {
-            result = fork.created_at >= dateRange.start;
+            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start);
         }
 
         if (dateRange.end != null) {
-            result = fork.created_at <= dateRange.end;
+            result = Date.parse(fork.created_at) <= Date.parse(dateRange.end);
+        }
+
+        // If both are defined, it is not enough to check them separately, but they need
+        // to hold at the same time.
+        if (dateRange.start != null && dateRange.end != null) {
+            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start)
+                  && Date.parse(fork.created_at) <= Date.parse(dateRange.end);
         }
         
         return result;
@@ -157,14 +164,13 @@ export class ForkFilterService {
             lastUpdatedMilliseconds = Date.parse(fork.updated_at);
         }
 
-        const thresholdMilliseconds = Date.now() - this.#getDateMonthsBeforeMilliseconds(nrOfMonths);
+        const now = new Date(); // reference date object
+        const thresholdDate = new Date(now);
+        thresholdDate.setMonth(now.getMonth() - nrOfMonths);
 
-        return lastUpdatedMilliseconds >= thresholdMilliseconds;
-    }
+        console.log("last updated at: " + fork.updated_at + "\t threshold: " + thresholdDate);
+        console.log("last updated ms: " + lastUpdatedMilliseconds + "\t threshold ms: " + thresholdDate.getMilliseconds());
 
-    #getDateMonthsBeforeMilliseconds(nrOfMonths: number): number {
-        const now = new Date();
-        now.setMonth(now.getMonth() - nrOfMonths);
-        return now.getMilliseconds();
+        return lastUpdatedMilliseconds >= thresholdDate.getTime();
     }
 }

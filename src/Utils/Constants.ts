@@ -10,7 +10,8 @@ export const RECENT_ACTIVITY_MAX_MONTHS = 12;
 export const AUTH_URL: string = import.meta.env.VITE_AUTH_URL;
 /// base URL of Githhub API
 export const API_URL: string = import.meta.env.VITE_API_URL;
-
+/// base URL for the frontend
+export const FRONTEND_URL: string = import.meta.env.FRONTEND_URL;
 /// Initial value for forks count input
 export const FORKS_COUNT_INPUT_INITIAL = 5;
 

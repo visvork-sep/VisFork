@@ -75,6 +75,30 @@ app.get("/auth/github/token", async (req, res) => {
     }
 });
 
+app.post("/auth/github/logout", async (req, res) => {
+    const { accessToken } = req.body;  // Token from frontend
+
+    if (!accessToken) {
+        return res.status(400).json({ error: "No token provided" });
+    }
+
+    try {
+        // Revoke the token by making a request to GitHub
+        await axios.delete(`https://api.github.com/applications/${CLIENT_ID}/token`, {
+            headers: {
+                Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")}`,
+                Accept: "application/vnd.github+json"
+            },
+            data: { access_token: accessToken }
+        });
+
+        res.json({ message: "Token revoked successfully" });
+    } catch (error) {
+        console.error("GitHub Token Revocation Error:", error.response?.data || error);
+        res.status(500).json({ error: "Failed to revoke token" });
+    }
+});
+
 // Start the server and listen on port PORT :)
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);

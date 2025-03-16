@@ -3,6 +3,7 @@ import { SplitPageLayout } from "@primer/react";
 import AppHeader from "@Components/AppHeader";
 import DataComponents from "@Components/DataComponents";
 import GitHubCallback from "@Components/GitHubCallback";
+import GitHubLogout from "@Components/GitHubLogout";
 
 /**
  * Root Application Component
@@ -29,6 +30,8 @@ function App() {
 
                 {/* GitHub OAuth callback handler */}
                 <Route path="/github/callback" element={<GitHubCallback />} />
+                {/* GitHub OAuth logout handler */}
+                <Route path="/github/logout" element={<GitHubLogout />} />
             </Routes>
         </Router>
     );

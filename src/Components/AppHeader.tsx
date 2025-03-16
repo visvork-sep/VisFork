@@ -7,7 +7,6 @@ import { SkeletonAvatar } from "@primer/react/experimental";
 import { AUTH_URL } from "@Utils/Constants";
 import { useFetchAvatarUrl } from "../Queries/queries";
 import visForkIcon from "/visForkIcon.svg";
-
 /**
  * Redirects the user to GitHub OAuth login.
  *
@@ -18,6 +17,11 @@ import visForkIcon from "/visForkIcon.svg";
 function redirectLogin() {
     setTimeout(() => { // timeout for Safari behavior
         window.location.href = AUTH_URL + "/auth/github";
+    }, 250);
+}
+function redirectLogout() {
+    setTimeout(() => { // Timeout for smoother UI transition
+        window.location.href = "/github/logout"; // Redirect to logout page
     }, 250);
 }
 
@@ -38,10 +42,11 @@ function AppHeader() {
 
     const onDialogClose = useCallback(() => setIsOpen(false), []);
     const onDialogOpen = useCallback(() => setIsOpen(true), []);
-
+    
     const handleLogout = useCallback(() => {
         logout();
         setIsOpen(false);
+        redirectLogout();
     }, []);
 
     const loginOrAvatar = isAuthenticated ?

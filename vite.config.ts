@@ -14,7 +14,12 @@ export default defineConfig({
         environment: "jsdom",
         setupFiles: ["./src/vitest.setup.ts"],
         css: true,
+        // reporters: ["default", "vitest-sonar-reporter"],
+        // outputFile: {
+        //     "vitest-sonar-reporter": "../coverage/vitest-sonar-report.xml"
+        // },
         coverage: {
+            reporter: ["text", "lcov"],
             reportsDirectory: "../coverage"
         },
         root: "./src",

@@ -11,14 +11,15 @@ type ParsedDataItem = {
     count: number;
 };
 
-//nodeAlligh doesn't have the values defined by the library and it was needed to create a custom type
+//function which helpts define the nodeAlign values 
 type AlignType = "justify" | "left" | "right" | "center";
 
+// Interface for the SankeyChartBuild component
 interface SankeyChartBuildProps {
     data: Repository[];
 }
 
-// Function to map string to d3-sankey alignment functions
+// Function to map string to d3-sankey alignment functions to define the nodeAlign value
 const getNodeAlignFunction = (align: AlignType) => {
     switch (align) {
         case "left":
@@ -33,14 +34,17 @@ const getNodeAlignFunction = (align: AlignType) => {
     }
 };
 
+// Function to parse the data and return an array of ParsedDataItem
 export function parseData(data: Repository[]):ParsedDataItem[] {
     const parsedData: Record<string, ParsedDataItem> = {};
 
+    // Loop through the data and create a key for each unique combination of repo and commit_type
     for (let i = 0; i < data.length; i++) {
         const name = data[i].repo;
         const type = data[i].commit_type;
         const key = `${name}-${type}`;
-
+        
+        // If the key already exists, increment the count, otherwise create a new entry
         if (parsedData[key]) {
             parsedData[key].count++;
         } else {
@@ -48,6 +52,7 @@ export function parseData(data: Repository[]):ParsedDataItem[] {
         }
     }
 
+    // Return the values of the parsedData object to be used as the data for the Sankey chart
     return Object.values(parsedData);
 }
 
@@ -60,10 +65,9 @@ export function SankeyChart(
     {   // configuration options with defaults
         format = d3.format(","), // a function or format specifier for values in titles
         align = "justify", // convenience shorthand for nodeAlign
-        nodeGroup, // given d in nodes, returns an (ordinal) value for color
+        nodeGroup, // given n in nodes, returns an (ordinal) value for color
         nodeGroups = [], // an array of ordinal values representing the node groups
-        nodeLabel, // given d in (computed) nodes, text to label the associated rect
-        nodeTitle = (n) => `${n.index}`, // given d in (computed) nodes, hover text
+        nodeLabel, // given n in (computed) nodes, text to label the associated rect
         nodeAlign = getNodeAlignFunction(align), // Sankey node alignment strategy: left, right, justify, center
         nodeWidth = 15, // width of node rects
         nodePadding = 10, // vertical separation between adjacent nodes
@@ -72,9 +76,9 @@ export function SankeyChart(
         nodeStrokeWidth = 1, // width of stroke around node rects, in pixels
         nodeStrokeOpacity = 1, // opacity of stroke around node rects
         nodeStrokeLinejoin = 1, // line join for stroke around node rects
-        linkSource = (l)  => l.source, // given d in links, returns a node identifier string
-        linkTarget = (l) => l.target, // given d in links, returns a node identifier string
-        linkValue = (l) => l.value, // given d in links, returns the quantitative value
+        linkSource = (l)  => l.source, // given l in links, returns a node identifier string
+        linkTarget = (l) => l.target, // given l in links, returns a node identifier string
+        linkValue = (l) => l.value, // given l in links, returns the quantitative value
         linkPath = d3Sankey.sankeyLinkHorizontal(), // given d in (computed) links, returns the SVG path
         linkTitle = (l) => 
             `${l.source.id} => ${l.target.id}\n${format(l.value)} commits`, // given d in (computed) links
@@ -94,7 +98,6 @@ export function SankeyChart(
             nodeGroup?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => number; 
             nodeGroups: Iterable<number>;
             nodeLabel?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string; 
-            nodeTitle?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string; 
             nodeAlign?: (node: d3Sankey.SankeyNodeMinimal<any, any>, n: number) => number; 
             nodeWidth?: number;
             nodePadding?: number;
@@ -171,12 +174,12 @@ export function SankeyChart(
 		    : nodeLabel == null
 		        ? null
 		        : d3.map(nodes, nodeLabel);
-    const Tt = nodeTitle == null ? null : d3.map(nodes, nodeTitle);
     const Lt = linkTitle == null ? null : d3.map(links, linkTitle);
 
     // A unique identifier for clip paths (to avoid conflicts).
     const uid = `O-${Math.random().toString(16).slice(2)}`;
 
+    // Constructing the SVG element.
     const svg = d3
         .create("svg")
         .attr("width", width)
@@ -184,6 +187,7 @@ export function SankeyChart(
         .attr("viewBox", [0, 0, width, height])
         .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
 
+    //Configure the original node looks 
     const node = svg
         .append("g")
         .attr("stroke", nodeStroke)
@@ -193,14 +197,15 @@ export function SankeyChart(
         .selectAll("rect")
         .data(nodes)
         .join("rect")
-        .attr("x", (d) => d.x0 ?? 0)//THE 0 IS ADDED JUST TO NOT HAVE UNDEFINED. CHANGE LATER
-        .attr("y", (d) => d.y0 ?? 0)//THE 0 IS ADDED JUST TO NOT HAVE UNDEFINED. CHANGE LATER
-        .attr("height", (d) => (d.y1 ?? 0) - (d.y0 ?? 0)) //THE 0 IS ADDED JUST TO NOT HAVE UNDEFINED. CHANGE LATER
-        .attr("width", (d) => (d.x1 ?? 0) - (d.x0 ?? 0));//THE 0 IS ADDED JUST TO NOT HAVE UNDEFINED. CHANGE LATER
+        .attr("x", (d) => d.x0 ?? 0)
+        .attr("y", (d) => d.y0 ?? 0)
+        .attr("height", (d) => (d.y1 ?? 0) - (d.y0 ?? 0)) 
+        .attr("width", (d) => (d.x1 ?? 0) - (d.x0 ?? 0));
 
+    //Coloring the nodes
     if (G) node.attr("fill", ({ index: i }) => color(i !== undefined ? G[i] : undefined));
-    if (Tt) node.append("title").text(({ index: i }) => i !== undefined ? Tt[i] : null);
 
+    //Configure the original look of the links 
     const link = svg
         .append("g")
         .attr("fill", "none")
@@ -210,6 +215,7 @@ export function SankeyChart(
         .join("g")
         .style("mix-blend-mode", linkMixBlendMode);
 
+    //Coloring the links 
     if (linkColor === "source-target")
         link
             .append("linearGradient")
@@ -230,6 +236,7 @@ export function SankeyChart(
                     .attr("stop-color", ({ target: { index: i } }) => color(G !== null ? G[i] : undefined))
             );
 
+    //Creating a gradient between the source and target nodes
     link
         .append("path")
         .attr("d", linkPath)
@@ -250,6 +257,7 @@ export function SankeyChart(
                 : () => {}
         );
 
+    //Setting up the label of the nodes
     if (Tl)
         svg
             .append("g")
@@ -268,7 +276,7 @@ export function SankeyChart(
             // JUST TO NOT HAVE UNDEFINED. CHANGE LATER
             .text(({ index: i }) => i !== undefined ? Tl[i] : null);
 
-    // hover effect
+    //Setting up the hovering effect for the nodes 
     node
         .on("mouseover", function () {
             d3.select(this).attr("stroke", "black");
@@ -283,6 +291,7 @@ export function SankeyChart(
             d3.select(this).attr("stroke-linejoin", nodeStrokeLinejoin);
         });
 
+    //Setting up the hovering efect for the links 
     link
         .on("mouseover", function () {
             d3.select(this).attr("stroke", "black");
@@ -293,13 +302,14 @@ export function SankeyChart(
             d3.select(this).attr("stroke-opacity", linkStrokeOpacity);
         });
 
-
+    //Function to convert the value to a string
     function intern(val: any) {
         return val !== null && typeof val === "object"
             ? val.valueOf()
             : val;
     }
 
+    //Return the SVG element
     const svgNode = svg.node();
     if (svgNode) {
         return Object.assign(svgNode, { scales: { color } });
@@ -307,36 +317,38 @@ export function SankeyChart(
     return null;
 }
 
-export const SankeyChartBuild: FC<SankeyChartBuildProps> = 
-    ({ data }:{data: Repository[]}) => {
-        useEffect(() => {
-            if (!data) {
-                return;
+// SankeyChartBuild component
+export function SankeyChartBuild({ data }: SankeyChartBuildProps) {
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+        // Parse the data and create the Sankey chart
+        const sankeyData = parseData(data);
+        const links = sankeyData.map((d) => ({
+            source: d.name,
+            target: d.type,
+            value: d.count,
+        }));
+
+        // Create the Sankey chart
+        const chart = SankeyChart(
+            { links },
+            {
+                nodeGroup: (d) => parseInt((d.index ? d.index.toString() : "").split(/\W/)[0]),
+                nodeGroups: [],
+                nodeStrokeWidth: 1,
+                nodeStrokeOpacity: 1,
+                nodeStrokeLinejoin: 1,
+                colors: d3.schemeTableau10,
             }
-            const sankeyData = parseData(data);
-            const links = sankeyData.map((d) => ({
-                source: d.name,
-                target: d.type,
-                value: d.count,
-            }));
+        );
 
-            const chart = SankeyChart(
-                { links },
-                {
-                    nodeGroup: (d) => parseInt((d.index ? d.index.toString() : "").split(/\W/)[0]),
-                    nodeGroups: [],
-                    nodeStrokeWidth: 1,
-                    nodeStrokeOpacity: 1,
-                    nodeStrokeLinejoin: 1,
-                    colors: d3.schemeTableau10,
-                }
-            );
+        // Clear previous chart and append new one
+        d3.select("#sankey-diagram").selectAll("*").remove();
+        d3.select("#sankey-diagram").append(() => chart);
+    }, [data]);
 
-            // Clear previous chart and append new one
-            d3.select("#sankey-diagram").selectAll("*").remove();
-            d3.select("#sankey-diagram").append(() => chart);
-        }, [data]);
-
-        return <div id="sankey-diagram" style={{ width: "100%", height: "400px" }}></div>;
-    };
+    return <div id="sankey-diagram" style={{ width: "100%", height: "400px" }}></div>;
+};
 

@@ -1,5 +1,5 @@
-import { ForkFilter } from "../Types/ForkFilter";
-import { ForkInfo } from "../Types/GithubTypes";
+import { ForkFilter } from "@Types/ForkFilter";
+import { ForkInfo } from "@Types/Fork";
 
 
 // TODO: Change ForkInfo to whichever type/interface we have invented for forks.

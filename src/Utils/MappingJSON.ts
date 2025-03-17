@@ -1,4 +1,6 @@
-import { CommitJSON, CommitInfo, ForkJSON, ForkInfo } from "@Types/GithubTypes";
+import { ForkJSON, CommitJSON } from "@Types/GithubTypes";
+import { CommitInfo } from "@Types/Commit";
+import { ForkInfo } from "@Types/Fork";
 
 export function toForkInfo(fork: ForkJSON): ForkInfo {
     return {

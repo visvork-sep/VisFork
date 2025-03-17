@@ -195,6 +195,36 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
                         })
                         .on("mouseout", function () { tooltip.style("opacity", 0); });
 
+                    chartFocus.selectAll(".selection-label").remove();
+
+                    // Create a small group for the labels
+                    const labelGroup = chartFocus.append("g").attr("class", "selection-label");
+
+                    // Prepare date format and get first/last date in brushed subset
+                    const dateFormat = d3.timeFormat("%B %Y");
+                    // Each element in selectedDates is a [Date, number]
+                    const startOfSelection = selectedDates[0]?.[0];
+                    const endOfSelection = selectedDates[selectedDates.length - 1]?.[0];
+
+                    if (startOfSelection && endOfSelection) {
+                        const startLabel = dateFormat(startOfSelection);
+                        const endLabel = dateFormat(endOfSelection);
+
+                        // Left label
+                        labelGroup
+                            .append("text")
+                            .attr("x", 0)
+                            .attr("y", -5) // just above the focus chart
+                            .text(startLabel);
+
+                        // Right label
+                        labelGroup
+                            .append("text")
+                            .attr("x", focusWidth)
+                            .attr("y", -5)
+                            .attr("text-anchor", "end")
+                            .text(endLabel);
+                    }
                 }
             });
 

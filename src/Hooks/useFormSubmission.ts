@@ -1,28 +1,18 @@
 
 import { FormEvent, useCallback, useState } from "react";
 import { FilterFormState } from "../Types/FilterForm";
-import {
-    CommitsDateRangeFromInputErrors,
-    CommitsDateRangeFromInputErrorsType,
-    CommitsDateRangeUntilInputErrors,
-    CommitsDateRangeUntilInputErrorsType,
-    ForksCountInputErrors,
-    ForksCountInputErrorsType,
-    RecentlyUpdatedInputErrors,
-    RecentlyUpdatedInputErrorsType,
-    RepositoryInputErrors,
-    RepositoryInputErrorsType
-} from "../Types/FormErrors";
+import { InputError } from "../Types/FormErrors";
+
 
 function useFormSubmission(form: FilterFormState) {
-    const [repositoryInputError, setRepositoryInputError] = useState<RepositoryInputErrorsType>();
-    const [forksCountInputError, setForksCountInputError] = useState<ForksCountInputErrorsType>();
+    const [repositoryInputError, setRepositoryInputError] = useState<InputError | null>(null);
+    const [forksCountInputError, setForksCountInputError] = useState<InputError | null>(null);
     const [recentlyUpdatedInputError, setRecentlyUpdatedInputError] =
-        useState<RecentlyUpdatedInputErrorsType>();
+        useState<InputError | null>(null);
     const [commitsDateRangeFromInputError, setCommitsDateRangeFromInputError] =
-        useState<CommitsDateRangeFromInputErrorsType>();
+        useState<InputError | null>(null);
     const [commitsDateRangeUntilInputError, setCommitsDateRangeUntilInputError]
-        = useState<CommitsDateRangeUntilInputErrorsType>();
+        = useState<InputError | null>(null);
 
     const onSubmit = useCallback((event: FormEvent) => {
         // Prevents the page from refreshing on submission
@@ -31,11 +21,11 @@ function useFormSubmission(form: FilterFormState) {
         console.log(form);
         //TODO add proper verification and error handling
         //Error passing - not implemented
-        setRepositoryInputError(RepositoryInputErrors.UnknownError);
-        setForksCountInputError(ForksCountInputErrors.UnknownError);
-        setRecentlyUpdatedInputError(RecentlyUpdatedInputErrors.UnknownError);
-        setCommitsDateRangeFromInputError(CommitsDateRangeFromInputErrors.UnknownError);
-        setCommitsDateRangeUntilInputError(CommitsDateRangeUntilInputErrors.UnknownError);
+        setRepositoryInputError(null);
+        setForksCountInputError(null);
+        setRecentlyUpdatedInputError(null);
+        setCommitsDateRangeFromInputError(null);
+        setCommitsDateRangeUntilInputError(null);
         // set url variables
     }, [form]);
 

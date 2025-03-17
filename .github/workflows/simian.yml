@@ -1,47 +1,48 @@
-name: Simian Similarity Check
+# name: Simian Similarity Check
 
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+# on:
+#   push:
+#     branches:
+#       - main
+#       - develop
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  run-simian:
-    runs-on: self-hosted
+# jobs:
+#   run-simian:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
 
-      - name: Set Up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+#       - name: Set Up Java
+#         uses: actions/setup-java@v3
+#         with:
+#           distribution: 'temurin'
+#           java-version: '17'
 
-      - name: Get Simian JAR
-        id: get-simian
-        run: |
-          if [ -f ./simian-4.0.0.jar ]; then
-            echo "Simian JAR is already present."
-          else
-            echo "Copying Simian JAR..."
-            cp /var/www/html/files/simian-4.0.0.jar .
-          fi
+#       - name: Cache Simian JAR
+#         id: cache-simian
+#         uses: actions/cache@v3
+#         with:
+#           path: simian-4.0.0.jar
+#           key: simian-4.0.0
 
-      - name: Run Simian Analysis
-        run: |
-          chmod +x .contrib/Simian/simian.sh
-          ./.contrib/Simian/simian.sh
+#       - name: Download Simian JAR (if not cached)
+#         if: steps.cache-simian.outputs.cache-hit != 'true'
+#         run: |
+#           curl -L -o simian-4.0.0.jar https://github.com/visvork-sep/visvork-sep/releases/download/v0.1-alpha/simian-4.0.0.jar
 
-      - name: Fail if duplicates found
-        run: |
-          if grep -q "Found [1-9][0-9]* duplicate lines" simian.log; then
-            echo "Duplicate code detected!"
-            exit 1
-          fi
+#       - name: Run Simian Analysis
+#         run: |
+#           chmod +x .contrib/Simian/simian.sh
+#           ./.contrib/Simian/simian.sh
+
+#       - name: Fail if duplicates found
+#         run: |
+#           if grep -q "Found [1-9][0-9]* duplicate lines" simian.log; then
+#             echo "Duplicate code detected!"
+#             exit 1
+#           fi

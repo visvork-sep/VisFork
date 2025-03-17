@@ -1,8 +1,8 @@
 import { FormControl, TextInput } from "@primer/react";
-import { CommitsDateRangeUntilInputErrorsType } from "../../../Types/FormErrors";
+import { InputError } from "../../../Types/FormErrors";
 
 interface CommitsDateRangeUntilInputProps {
-    error?: CommitsDateRangeUntilInputErrorsType;
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
     value: string;
 };

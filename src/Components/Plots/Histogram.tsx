@@ -30,7 +30,7 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
         const data = dates.map(d => ({ date: d3.timeMonth(d) }));
         const freqMap = d3.rollup(data, v => v.length, d => d.date);
 
-        // Fill missing months with 0 frequency
+        // Fill missing months with 0
         const minDate = d3.min(data, d => d.date) as Date;
         const maxDate = d3.max(data, d => d.date) as Date;
         d3.timeMonths(minDate, maxDate).forEach(d => {
@@ -41,7 +41,7 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
     }, [dates]);
 
     /**
-     * Draws the bar chart using D3.
+     * Draws the bar chart.
      */
     const drawChart = useCallback(() => {
         if (!svgRef.current) return;

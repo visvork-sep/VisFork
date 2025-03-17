@@ -1,5 +1,5 @@
 import { Box, Heading, Spinner, Stack } from "@primer/react";
-import CommitTimeline from "../Components/Plots/Plot2.tsx";
+import CommitTimeline from "./Plots/CommitTimeline.tsx";
 import commitData from "./Plots/commit_data_example.json";
 import { useMeasure } from "@uidotdev/usehooks";
 

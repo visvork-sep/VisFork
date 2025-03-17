@@ -67,46 +67,91 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         return date.getTime();
     };
 
-    // custom layout
-    function adjustRepoXCoordinates(
+    function groupBy<T, K>(items: T[], keyFn: (item: T) => K): Map<K, T[]> {
+        const map = new Map<K, T[]>();
+        for (const item of items) {
+            const key = keyFn(item);
+            if (!map.has(key)) {
+                map.set(key, []);
+            }
+            map.get(key)?.push(item);
+        }
+        return map;
+    }
+          
+    // custom branches layout
+    function assignUniqueBranches(
+        nodes: d3dag.GraphNode<Commit | MergedNode, unknown>[]
+    ): void {
+        // group nodes by repo
+        const repoGroups = groupBy(nodes, (node) => node.data.repo);
+          
+        repoGroups.forEach((repoNodes) => {
+            // get distinct x assignments within the repo
+            const distinctX = Array.from(new Set(repoNodes.map((n) => n.x))).sort(
+                (a, b) => a - b
+            );
+          
+            // group nodes by branch
+            const branchGroups = groupBy(repoNodes, (node) => node.data.branch_name);
+          
+            // only reassign if we have enough unique x values.
+            if (branchGroups.size == distinctX.length) {
+                // sort branches by the earliest commit date
+                const sortedBranches = Array.from(branchGroups.entries()).sort(
+                    (a, b) => {
+                        const earliestA = Math.min(
+                            ...a[1].map((n) => new Date(n.data.date).getTime())
+                        );
+                        const earliestB = Math.min(
+                            ...b[1].map((n) => new Date(n.data.date).getTime())
+                        );
+                        return earliestA - earliestB;
+                    }
+                );
+                // assign each branch the corresponding distinct x value.
+                sortedBranches.forEach((entry, index) => {
+                    const newX = distinctX[index];
+                    entry[1].forEach((node) => {
+                        node.x = newX;
+                    });
+                });
+            }
+        });
+    }
+    
+    // custom lanes layout
+    function assignUniqueLanes(
         nodes: Iterable<d3dag.GraphNode<Commit | MergedNode, unknown>>,
         repoGap = 20
     ) {
-        // group nodes by repo 
-        const repoNodes = new Map<string, d3dag.GraphNode<Commit | MergedNode, unknown>[]>();
-        for (const node of nodes) {
-            const repo = node.data.repo;
-            if (!repoNodes.has(repo)) {
-                repoNodes.set(repo, []);
-            }
-            repoNodes.get(repo)?.push(node);
-        }
-      
-        // sort repos by date of earliest commit
-        const repoOrder = Array.from(repoNodes.entries()).sort((a, b) => {
-            const aEarliest = d3.min(a[1].map(n => new Date(n.data.date).getTime())) || 0;
-            const bEarliest = d3.min(b[1].map(n => new Date(n.data.date).getTime())) || 0;
-            return aEarliest - bEarliest;
+        // group nodes by repo.
+        const repoGroups = groupBy(Array.from(nodes), (node) => node.data.repo);
+            
+        // sort repos by the date of their earliest commit.
+        const repoOrder = Array.from(repoGroups.entries()).sort((a, b) => {
+            const earliestA =
+                d3.min(a[1].map((n) => new Date(n.data.date).getTime())) || 0;
+            const earliestB =
+                d3.min(b[1].map((n) => new Date(n.data.date).getTime())) || 0;
+            return earliestA - earliestB;
         });
-      
+            
         let cumulativeOffset = 20;
-        // lanes information is used for the shading
-        const lanes: Record<string, { minX: number, maxX: number }> = {};
-      
-        // shift repo nodes and and record the new boundaries
-        for (const [repo, nodesArr] of repoOrder) {
-            const minX = d3.min(nodesArr, n => n.x) || 0;
-            const maxX = d3.max(nodesArr, n => n.x) || 0;
+        const lanes: Record<string, { minX: number; maxX: number }> = {};
+          
+        // shift nodes for each repo
+        repoOrder.forEach(([repo, repoNodes]) => {
+            const minX = d3.min(repoNodes, (n) => n.x) || 0;
+            const maxX = d3.max(repoNodes, (n) => n.x) || 0;
             const height = maxX - minX;
-          
-            for (const node of nodesArr) {
+            repoNodes.forEach((node) => {
                 node.x = cumulativeOffset + (node.x - minX);
-            }
-          
+            });
             lanes[repo] = { minX: cumulativeOffset, maxX: cumulativeOffset + height };
             cumulativeOffset += height + repoGap;
-        }
-      
+        });
+            
         return { lanes, totalHeight: cumulativeOffset };
     }
 
@@ -158,12 +203,12 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
                 commit.branch_name !== prevCommit.branch_name ||
                 commit.repo !== prevCommit.repo
             ) {
-            // group all commits from currentGroupStart to i-1.
+            // group all commits from currentGroupStart to i-1
                 const group = sorted.slice(currentGroupStart, i);
                 const firstCommit = group[0];
                 const lastCommit = group[group.length - 1];
             
-                // see if there's any merged node with the same branch and repo.
+                // see if there's any merged node with the same branch and repo
                 let candidate: MergedNode | null = null;
                 for (const mnode of mergedNodes) {
                     if (
@@ -241,14 +286,14 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         const g = svg.append("g")
             .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
 
-
         // sort nodes by date
         const sortedNodes = Array.from(dag.nodes()).sort((a, b) => {
             return new Date(a.data.date).getTime() - new Date(b.data.date).getTime();
         });
 
         // apply custom layout 
-        const {lanes, totalHeight} = adjustRepoXCoordinates(sortedNodes, LANE_GAP);
+        assignUniqueBranches(sortedNodes); 
+        const {lanes, totalHeight} = assignUniqueLanes(sortedNodes, LANE_GAP);
         // adjust height to custom layout
         d3.select(svgRef.current).attr("height", totalHeight + MARGIN.top + MARGIN.bottom); 
 
@@ -543,17 +588,19 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
 
     return (
         <>
-            <div style={{ 
-                width: c_width,
-                height: Math.min(c_height, svgRef.current?.getBoundingClientRect().height as number 
-                + DATE_LABEL_HEIGHT),
-                overflow: "auto", 
-                whiteSpace: "normal",
-                resize: "vertical"
-            }}>
-                <svg ref={svgRef}> {}
-                    {}
-                </svg>
+            <div
+                style={{
+                    width: c_width,
+                    height: Math.min(
+                        c_height,
+                        (svgRef.current?.getBoundingClientRect().height ?? 0) + DATE_LABEL_HEIGHT
+                    ),
+                    overflow: "auto",
+                    whiteSpace: "normal",
+                    resize: "vertical",
+                }}
+            >
+                <svg ref={svgRef}></svg>
             </div>
             <div id="dag-legends">{/* Legends */}</div>
         </>

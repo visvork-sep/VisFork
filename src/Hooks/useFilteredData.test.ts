@@ -48,9 +48,9 @@ describe("useFilteredData Hook", () => {
 
         const { result } = renderHook(() => useFilteredData(new ForkFilterService()));
 
-        expect(result.current.filteredData).toEqual([]);
-        expect(result.current.isLoading).toBe(true);
-        expect(result.current.error).toBeNull();
+        expect(result.current.filteredForks).toEqual([]);
+        expect(result.current.isLoadingFork).toBe(true);
+        expect(result.current.forkError).toBeNull();
     });
 
     it("should fetch forks and filter them correctly", async () => {
@@ -59,10 +59,10 @@ describe("useFilteredData Hook", () => {
 
         const { result } = renderHook(() => useFilteredData(new ForkFilterService()));
 
-        await waitFor(() => expect(result.current.filteredData).toEqual(mockForks));
+        await waitFor(() => expect(result.current.filteredForks).toEqual(mockForks));
 
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.error).toBeNull();
+        expect(result.current.isLoadingFork).toBe(false);
+        expect(result.current.forkError).toBeNull();
     });
 
     it("should set fork query state and trigger refetch", async () => {
@@ -94,7 +94,7 @@ describe("useFilteredData Hook", () => {
         const { result } = renderHook(() => useFilteredData(new ForkFilterService()));
 
         await waitFor(() =>
-            expect(result.current.resultCommits).toEqual({ data: mockCommits, isLoading: false, error: null }));
+            expect(result.current.commitData).toEqual(mockCommits));
     });
 });
 

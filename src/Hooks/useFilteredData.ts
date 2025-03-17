@@ -12,18 +12,30 @@ export function useFilteredData(filterService : ForkFilterService) {
     const [filters, setFilters] = useState<ForkFilter | undefined>(undefined);
 
     // Fetch forks data using the constructed query parameters.
-    const {data, isLoading, error} = useFetchForks(forkQueryState);
+    const {data, isLoading: isLoadingFork, error: forkError} = useFetchForks(forkQueryState);
 
     // Memoized filtering: Applies filters only when data or filters change.
-    const filteredData = useMemo(() => {
+    const filteredForks = useMemo(() => {
         return filterService.filterForks(data, filters);
     }, [data, filters]);
 
 
     // TODO: Fix pagination
-    const resultCommits = useFetchCommitsBatch(filteredData, forkQueryState?.range);
+    const {data: commitData,
+        isLoading: isLoadingCommit,
+        error: errorCommit
+    } = useFetchCommitsBatch(filteredForks, forkQueryState?.range);
 
-    return { filteredData, isLoading, error, setForkQueryState, setFilters, resultCommits };
+    return {
+        filteredForks,
+        isLoadingFork,
+        forkError,
+        setForkQueryState,
+        setFilters,
+        commitData,
+        isLoadingCommit,
+        errorCommit
+    };
 }
 
 

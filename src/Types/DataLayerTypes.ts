@@ -1,3 +1,9 @@
+export interface DataLayerOutput {
+    forks: ForkInfo[],
+    commits: CommitInfo[],
+}
+
+
 export interface  ForkInfo {
     id: number;
     name: string;

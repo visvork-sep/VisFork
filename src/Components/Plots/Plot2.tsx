@@ -14,7 +14,7 @@ interface Commit {
 interface DagProps {
   data: Commit[];
   c_width: number;
-  maxHeight: number;
+  c_height: number;
   merged: boolean;
   defaultBranches: Record<string, string>;
 }
@@ -47,8 +47,9 @@ const TOOLTIP_MOUSEOUT_DUR = 500;
 const LEGEND_DOT_SIZE = 10;
 const LEGEND_TEXT_MARGIN = "10px";
 const EDGE_STROKE_COLOR = "#999";
+const DATE_LABEL_HEIGHT = 21;
 
-const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight, merged = false, defaultBranches }) => {
+const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, merged = false, defaultBranches }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const colorMap = new Map();
     const repoNames = new Set();
@@ -216,8 +217,14 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
         d3.select(svgRef.current).selectAll("*").remove();
 
         const builder = d3dag.graphStratify();
-        const dag = builder(merged ? groupNodes(data) as MergedNode[] : data as Commit[]);
-
+        let dag : d3dag.MutGraph<Commit | MergedNode, undefined> | null = null; 
+        try {
+            dag = builder(merged ? groupNodes(data) as MergedNode[] : data as Commit[]); 
+        } catch (error) {
+            console.error("Failed to build Commit Timeline: ", error);
+            return;
+        }
+        
         const layout = d3dag.grid()
             .nodeSize(NODE_SIZE)
             .gap([5, 5]) 
@@ -329,7 +336,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
             const [x0, y0] = brushSelection[0];
             const [x1, y1] = brushSelection[1];
 
-            const nodesArray = Array.from(dag.nodes());
+            const nodesArray = Array.from(sortedNodes);
     
             const selectedNodes = nodesArray.filter((node) => {
                 const x = node.y + NODE_RADIUS; // swapped x and y because graph is horizontal
@@ -398,8 +405,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
             .style("opacity", 0)
             .style("font", TOOLTIP_FONT);
 
-        // Get all nodes from the dag.
-        const allNodes = Array.from(dag.nodes());
+        // get all nodes from the dag
+        const allNodes = Array.from(sortedNodes);
 
         if (merged) {            const mergedNodes = allNodes as unknown as d3dag.MutGraphNode<MergedNode, undefined>[];
   
@@ -456,7 +463,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
                 })
                 .attr("fill", d => colorMap.get(d.data.repo));
 
-            // Apply tooltips.
+            // apply tooltips
             applyToolTip(circles as NodeSelection);
             applyToolTip(triangles as NodeSelection);
         }
@@ -538,9 +545,11 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, maxHeight,
         <>
             <div style={{ 
                 width: c_width,
-                maxHeight: maxHeight,
+                height: Math.min(c_height, svgRef.current?.getBoundingClientRect().height as number 
+                + DATE_LABEL_HEIGHT),
                 overflow: "auto", 
-                whiteSpace: "normal"
+                whiteSpace: "normal",
+                resize: "vertical"
             }}>
                 <svg ref={svgRef}> {}
                     {}

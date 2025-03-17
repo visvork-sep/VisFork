@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3Sankey from "d3-sankey";
 import * as d3 from "d3";
-import { Repository } from "./repo";
-import {useEffect} from "react";
+import { useEffect } from "react";
 import { FC } from "react";
+import { Repository } from "./repo";
 
 type ParsedDataItem = {
     name: string;

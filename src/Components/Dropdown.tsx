@@ -1,5 +1,6 @@
 import { Details } from "@primer/react";
 import { PropsWithChildren } from "react";
+import styles from "./Dropdown.module.scss";
 
 interface DropdownProps {
     summaryText: string;
@@ -7,15 +8,7 @@ interface DropdownProps {
 
 function Dropdown({ children, summaryText }: PropsWithChildren<DropdownProps>) {
     return (
-        <Details sx={{
-            "> summary::-webkit-details-marker": {
-                display: "revert"
-            },
-            "> summary": {
-                backgroundColor: "neutral.muted",
-                padding: "5px"
-            }
-        }}>
+        <Details className={styles.details}>
             <Details.Summary>{summaryText}</Details.Summary>
             {children}
         </Details>

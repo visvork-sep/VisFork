@@ -11,7 +11,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       # Step 1
@@ -73,12 +73,16 @@ jobs:
       # Step 6: Build Docker image
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
+      
+      # Run 7 inside a docker container for consistency
+      - name: Run ESLint
+        run: docker run --rm visfork-ci npm run lint
 
-      # Step 5
+      # Step 8
       - name: Run tests
-        run: docker run --rm visfork-ci npm run test-slim # uses fast testing (see package.json -> scripts)
+        run: docker run --rm visfork-ci npm run test 
 
-      # Step 6
+      # Step 9
       - name: Build
         run: docker run --rm visfork-ci npm run build
 

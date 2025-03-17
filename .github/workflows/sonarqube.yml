@@ -1,0 +1,45 @@
+# Source: SonarQube Community Documentation
+# Accessible when logged in and creating new local project
+name: SonarQube Analysis
+
+on:
+    push:
+      branches:
+        - develop
+
+jobs:
+  sonarqube:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Build Docker image
+        run: docker build -t visfork-ci -f Dockerfile.build .
+
+      - name: Start container
+        run: docker run --name visfork-container -d visfork-ci tail -f /dev/null 
+      
+      - name: Run tests
+        run: docker exec visfork-container npm run test
+
+      - name: Copy coverage report
+        run: docker cp visfork-container:workspace/coverage ./
+
+      - name: Stop container
+        run: docker stop visfork-container && docker rm visfork-container
+
+      - name: Run Analysis
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      - uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

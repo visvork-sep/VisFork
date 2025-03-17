@@ -6,7 +6,7 @@ import { CommitList } from "./HistogramData";
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
  */
-const Histogram: React.FC<CommitList> = ({ commits }) => {
+function Histogram({ commits }: CommitList) {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const { theme } = useTheme();
 

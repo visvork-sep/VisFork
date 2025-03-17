@@ -72,7 +72,7 @@ jobs:
 
       # Step 6: Build Docker image
       - name: Build Docker image
-        run: docker build --no-cache -t visfork-ci -f Dockerfile.build .
+        run: docker build -t visfork-ci -f Dockerfile.build .
       
       # Run 7 inside a docker container for consistency
       - name: Run ESLint

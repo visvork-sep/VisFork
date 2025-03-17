@@ -3,8 +3,7 @@ import { describe, it, expect, vi, Mock } from "vitest";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { useFetchForks, useFetchCommitsBatch } from "@Queries/queries";
 import { ForkFilterService } from "@Filters/ForkFilterService.ts";
-import { ForkInfo } from "@Types/Fork";
-import { CommitInfo } from "@Types/Commit";
+import { ForkInfo, CommitInfo } from "@Types/DataLayerTypes";
 
 // Mock useFetchForks and useFetchCommitsBatch
 vi.mock("@Queries/queries", () => ({

@@ -2,8 +2,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "@Queries/rawQueries";
 import { CommitQueryParams, ForkQueryParams, CommitJSON } from "@Types/GithubTypes";
-import { CommitInfo } from "@Types/Commit";
-import { ForkInfo, ForkQueryState } from "@Types/Fork";
+import { ForkInfo, ForkQueryState, CommitInfo } from "@Types/DataLayerTypes";
 import { GetAvatarUrlQueryVariables}
     from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";

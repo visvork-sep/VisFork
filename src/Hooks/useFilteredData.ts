@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ForkQueryState } from "@Types/Fork";
+import { ForkQueryState } from "@Types/DataLayerTypes";
 import { ForkFilter } from "@Types/ForkFilter";
 import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
 import { ForkFilterService } from "@Filters/ForkFilterService";

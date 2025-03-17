@@ -5,12 +5,6 @@ name: SonarQube Analysis
 on:
     push:
       branches:
-        - main
-        - develop
-        - sonarqube
-    pull_request:
-      branches:
-        - main
         - develop
 
 jobs:

@@ -77,7 +77,7 @@ function CommitTable({ commitData }: CommitTableData) {
         },
         {
             header: "Hash",
-            field: "sha",
+            field: "id",
             rowHeader: true,
             width: "auto",
             renderCell: (row: CommitTableDetails) => (
@@ -90,7 +90,7 @@ function CommitTable({ commitData }: CommitTableData) {
                     }}
                 >
                     <Link
-                        href={`https://github.com/${row.repo}/commit/${row.sha}`}
+                        href={`https://github.com/${row.repo}/commit/${row.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         sx={{
@@ -99,7 +99,7 @@ function CommitTable({ commitData }: CommitTableData) {
                         }}
                     >
                         {/* Short version of the commit hash */}
-                        {row.sha.substring(0, 7)}
+                        {row.id.substring(0, 7)}
                     </Link>
                 </Box>
             ),

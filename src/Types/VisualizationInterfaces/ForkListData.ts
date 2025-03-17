@@ -2,7 +2,7 @@
  * Interface of the data format used by the fork list for a single row.
  */
 interface ForkListDetails {
-    id:number,
+    id: number,
     forkName: string,
     description: string | null 
 }

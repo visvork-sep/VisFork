@@ -38,7 +38,18 @@
       ],
       "@Utils/*": [
         "./src/Utils/*"
-      ]
+      ],
+      "@Types/*": [
+        "./src/Types/*"
+      ],
+      "@Queries/*": [
+        "./src/Queries/*"
+      ],
+      "@Filters/*": [
+        "./src/Filters/*"
+      ],
+
+
     }
   },
   "include": [

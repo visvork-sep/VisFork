@@ -16,23 +16,6 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
     const barColor = themeGet("colors.accent.muted")({ theme });
     const barColorSelected = themeGet("colors.accent.emphasis")({ theme });
 
-    // // Sample date data
-    // const dates = useMemo(() => [
-    //     new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
-    //     new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
-    //     new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-    //     new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
-    //     new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
-    //     new Date("2021-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
-    //     new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-    //     new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
-    //     new Date("2021-01-01"), new Date("2021-02-01"), new Date("2021-03-01"),
-    //     new Date("2020-04-01"), new Date("2021-05-01"), new Date("2021-06-01"),
-    //     new Date("2021-07-01"), new Date("2021-08-01"), new Date("2021-09-01"),
-    //     new Date("2021-10-01"), new Date("2021-11-01"), new Date("2021-12-01"),
-
-    // ], []);
-
     // Extract and sort commit dates
     const dates = useMemo(() => {
         const sortedCommits = [...commits].sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -43,6 +26,7 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
      * Processes date data into a frequency map for visualization.
      */
     const frequency = useMemo(() => {
+        // Group commits by month
         const data = dates.map(d => ({ date: d3.timeMonth(d) }));
         const freqMap = d3.rollup(data, v => v.length, d => d.date);
 
@@ -78,15 +62,19 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
 
         // Define scales for context chart
         const formattedDates = Array.from(frequency.keys()).map(d => d3.timeFormat("%b %Y")(d));
-        const xScaleContext = d3.scaleBand().domain(formattedDates).range([0, contextWidth
-
-        ]).padding(0.1);
+        const xScaleContext = d3.scaleBand()
+            .domain(formattedDates)
+            .range([0, contextWidth])
+            .padding(0.1);
         const yScaleContext = d3.scaleLinear()
             .domain([0, d3.max(Array.from(frequency.values())) || 1])
             .range([contextHeight, 0]);
 
         // Define scales for focus chart
-        let xScaleFocus = d3.scaleBand().domain(formattedDates).range([0, focusWidth]).padding(0.1);
+        let xScaleFocus = d3.scaleBand()
+            .domain(formattedDates)
+            .range([0, focusWidth])
+            .padding(0.1);
         const yScaleFocus = d3.scaleLinear()
             .domain([0, d3.max(Array.from(frequency.values())) || 1])
             .range([focusHeight, 0]);
@@ -197,12 +185,11 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
 
                     chartFocus.selectAll(".selection-label").remove();
 
-                    // Create a small group for the labels
+                    // Create group for labels
                     const labelGroup = chartFocus.append("g").attr("class", "selection-label");
 
-                    // Prepare date format and get first/last date in brushed subset
+                    // Get start and end date
                     const dateFormat = d3.timeFormat("%B %Y");
-                    // Each element in selectedDates is a [Date, number]
                     const startOfSelection = selectedDates[0]?.[0];
                     const endOfSelection = selectedDates[selectedDates.length - 1]?.[0];
 
@@ -214,7 +201,7 @@ const Histogram: React.FC<CommitList> = ({ commits }) => {
                         labelGroup
                             .append("text")
                             .attr("x", 0)
-                            .attr("y", -5) // just above the focus chart
+                            .attr("y", -5)
                             .text(startLabel);
 
                         // Right label

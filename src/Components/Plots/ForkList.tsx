@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { ForkListData } from "@VisInterfaces/ForkListData";
 
-function ForkList({ forks }: ForkListData) {
+function ForkList({ forkData }: ForkListData) {
     // States to control page size and current page index
     const [pageSize, setPageSize] = useState(10);
     const [pageIndex, setPageIndex] = useState(0);
@@ -12,7 +12,7 @@ function ForkList({ forks }: ForkListData) {
     // Calculate the items to display on the current page
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    const forksToShow = forks.slice(start, end);
+    const forksToShow = forkData.slice(start, end);
 
     return (
         <Table.Container>
@@ -74,7 +74,7 @@ function ForkList({ forks }: ForkListData) {
                 key={pageSize}
                 aria-label="Pagination for Forks"
                 pageSize={pageSize}
-                totalCount={forks.length}
+                totalCount={forkData.length}
                 onChange={({ pageIndex }) => {
                     setPageIndex(pageIndex);
                 }}

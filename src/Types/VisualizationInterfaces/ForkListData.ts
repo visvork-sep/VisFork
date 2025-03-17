@@ -11,5 +11,5 @@ interface ForkListDetails {
  * Interface of the data format used by the fork list.
  */
 export interface ForkListData {
-    forks: ForkListDetails[]
+    forkData: ForkListDetails[]
 }

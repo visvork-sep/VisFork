@@ -4,10 +4,8 @@ export type CommitQueryParams = paths["/repos/{owner}/{repo}/commits"]["get"]["p
 export type ForkQueryParams = paths["/repos/{owner}/{repo}/forks"]["get"]["parameters"];
 
 export type ForkJSON = components["schemas"]["minimal-repository"];
-export type CommitJSON = components["schemas"]["commit"];
-
-export interface ForkQueryState {
-    owner: string;
-    repo: string;
-    sort?: "newest" | "oldest" | "stargazers" | "watchers";
+export type CommitJSON = components["schemas"]["commit"] & {
+    repo: string,
+    owner: string,
 }
+

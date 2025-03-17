@@ -71,6 +71,7 @@ class RepositoryNameError extends InputError {
     }
 }
 
+
 // Error for when the recent updates filter is out of the allowed range
 class OutOfRecentlyUpdatedRangeError extends InputError {
     constructor() {
@@ -136,7 +137,9 @@ const RecentlyUpdatedInputErrors = {
     ForbiddenCharactersError
 } as const;
 
-// Exporting the error objects and types
+
+
+
 export {
     UnknownError,
     LaterFromDateError,
@@ -154,6 +157,5 @@ export {
     RecentlyUpdatedInputErrors,
     CommitsDateRangeFromInputErrors,
     CommitsDateRangeUntilInputErrors,
+    InputError
 };
-
-export { InputError };

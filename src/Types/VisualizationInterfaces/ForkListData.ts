@@ -3,7 +3,7 @@
  */
 interface ForkListDetails {
     id: number,
-    forkName: string,
+    name: string,
     description: string | null 
 }
 

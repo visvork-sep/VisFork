@@ -57,7 +57,7 @@ function ForkList({ forkData }: ForkListData) {
                 columns={[
                     {
                         header: "Name",
-                        field: "forkName",
+                        field: "name",
                         rowHeader: true,
                     },
                     {

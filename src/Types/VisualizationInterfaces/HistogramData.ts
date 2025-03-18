@@ -2,7 +2,7 @@
  * Interface of the data format used by the histogram per commit.
  */
 interface HistogramDetails {
-    fork: string,
+    repo: string,
     date: Date
 }
 

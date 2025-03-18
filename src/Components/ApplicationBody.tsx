@@ -5,53 +5,53 @@ import { Dropdown } from "@Components/Dropdown";
 
 import { useVisualizationData } from "@Hooks/useVisualizationData";
 //TODO: Replace with actual data when proper hooks is implemented
-const dummyDataForHook = {
-    forkListData: {
-        forks: [
-            {
-                id: 0,
-                forkName: "name",
-                description: "description"
-            },
-            {
-                id: 1,
-                forkName: "name2",
-                description: "description 2"
-            }
-        ]
-    },
-    commitTableData: {
-        commitData: [
-            {
-                "repo": "CarterLi/iina",
-                "sha": "a7e5cb961b8f4b209d3532e8653ef73f0d88415c",
-                "id": "a7e5cb961b8f4b209d3532e8653ef73f0d88415c",
-                "author": "Carter Li",
-                "login": "CarterLi",
-                "date": "2023-03-03T20:15:31Z",
-                "message": "HDR: useDisplayBacklight if ReferencePeakHDRLuminance is not found"
-            },
-            {
-                "repo": "CarterLi/iina",
-                "sha": "423c208a495f745c3128d4960f144b235d88c129",
-                "id": "423c208a495f745c3128d4960f144b235d88c129",
-                "author": "low-batt",
-                "login": "low-batt",
-                "date": "2023-03-02T20:15:31Z",
-                "message": "Update README to reflect use of FFmpeg 6.0"
-            }
-        ]
+//=================================================================================================
+const dummyForks = [
+    {
+        id: 1,
+        name: "Fork 1",
+        description: "Description 1"
     }
-};
-// const commitTableDummyData = [];
+];
+const dummyCommits = [
+    {
+        repo: "Repo 1",
+        sha: "123",
+        message: "Message 1",
+        author: "Author 1",
+        login: "Login 1",
+        date: new Date(),
+        branch: "Branch 1",
+        url: "URL 1",
+        parentIds: [],
+        type: "adaptive" as "adaptive" | "corrective" | "perfective" | "uknown"
+    }
+];
+//=================================================================================================
+
+// TODO: add props passed down from the parent component containing Commit and Fork data
 function ApplicationBody() {
-    const { forkListData, commitTableData, setVisData, handleForkListDataChange }
-        = useVisualizationData(dummyDataForHook);
+
+    // TODO: Add props as initial data when provided
+    const { visData, handleHistogramSelection, handleTimelineSelection } =
+        useVisualizationData(dummyForks, dummyCommits);
+
+    const {
+        forkListData,
+        histogramData,
+        timelineData,
+        commitTableData,
+        wordCloudData,
+        sankeyData,
+        collabGraphData,
+    } = visData;
+
+
+    //TODO: Add other visualizations and pass respective props
     return (
         <Stack>
             <Stack.Item >
                 <Dropdown summaryText="Fork List">
-                    {/* Might not be good practice but not sure */}
                     <ForkList {...forkListData} />
                 </Dropdown>
             </Stack.Item>

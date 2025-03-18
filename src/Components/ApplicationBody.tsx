@@ -19,7 +19,7 @@ function ApplicationBody() {
         return (
             <Stack.Item key={plot}>
                 {plot === 1 && <Dropdown  summaryText="Commit Timeline">
-                    <div ref={measureRefCommitTimeline}
+                    <Box ref={measureRefCommitTimeline}
                         style={{
                             resize: "vertical",
                             overflow: "hidden", // Ensure resizing works
@@ -32,7 +32,7 @@ function ApplicationBody() {
                             c_height={heightCommitTimelineSVG}
                             merged = {false}
                             defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
-                    </div>
+                    </Box>
                 </Dropdown>}
                 {plot === 2 &&
                     <Dropdown summaryText="Fork List">

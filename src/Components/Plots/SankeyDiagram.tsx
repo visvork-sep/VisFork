@@ -2,7 +2,6 @@
 import * as d3Sankey from "d3-sankey";
 import * as d3 from "d3";
 import { useEffect } from "react";
-import { FC } from "react";
 import { Repository } from "./repo";
 
 type ParsedDataItem = {
@@ -35,7 +34,7 @@ const getNodeAlignFunction = (align: AlignType) => {
 };
 
 // Function to parse the data and return an array of ParsedDataItem
-export function parseData(data: Repository[]):ParsedDataItem[] {
+export function parseData(data: Repository[]): ParsedDataItem[] {
     const parsedData: Record<string, ParsedDataItem> = {};
 
     // Loop through the data and create a key for each unique combination of repo and commit_type

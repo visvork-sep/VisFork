@@ -12,4 +12,4 @@ export type Repository = {
     message: string;
     commit_type: string;
     mergedNodes: string[];
-};
+}

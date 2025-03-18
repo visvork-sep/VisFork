@@ -47,7 +47,7 @@ function CollaborationGraph() {
 
     // Get all unique commit dates
     const allDates = Array.from(
-        new Set(commitData.map((entry) => entry.date.split("T")[0]))
+        new Set(commitData.map((entry: CommitInfo) => entry.date.split("T")[0]))
     ).sort();
 
     // Autoplay effect
@@ -78,7 +78,7 @@ function CollaborationGraph() {
         if (!svgRef.current) return;
 
         // Filters commit data until the current date selected in the slider
-        const visibleCommits = commitData.filter((commit) => {
+        const visibleCommits = commitData.filter((commit: CommitInfo) => {
             const commitDate = commit.date.split("T")[0];
             return commitDate <= allDates[currentDateIndex];
         });

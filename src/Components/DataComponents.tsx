@@ -1,23 +1,22 @@
 import { SplitPageLayout } from "@primer/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Configuration from "@Components/Configuration/Configuration";
+import ConfigurationPane from "@Components/ConfigurationPane/ConfigurationPane";
 import ApplicationBody from "@Components/ApplicationBody";
+import { useFilteredData } from "@Hooks/useFilteredData";
+import { ForkFilterService } from "@Filters/ForkFilterService";
 
-const queryClient = new QueryClient();
+const forkFilterService: ForkFilterService = new ForkFilterService();
 
 function DataComponents() {
-
-  
-
+    const { onFiltersChange }= useFilteredData(forkFilterService);
     return (
-        <QueryClientProvider client={queryClient}>
+        <>
             <SplitPageLayout.Pane resizable aria-label="Configuration Pane">
-                <Configuration/>
+                <ConfigurationPane filterChangeHandler={onFiltersChange}/>
             </SplitPageLayout.Pane >
             <SplitPageLayout.Content aria-label="Content">
-                <ApplicationBody/>
+                <ApplicationBody />
             </SplitPageLayout.Content>
-        </QueryClientProvider>
+        </>
     );
 }
 

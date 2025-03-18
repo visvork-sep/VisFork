@@ -1,4 +1,4 @@
-export type Repository = {
+export interface Repo {
     repo: string;
     sha: string;
     id: string;

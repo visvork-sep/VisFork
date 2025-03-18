@@ -5,14 +5,13 @@ export interface ForkFilter {
     sortBy: SortingCriterionExtra;
     activeForksOnly?: boolean;
     forkType?: ForkType;
-    // sortByLastCommit?: boolean; -> moved to SortingCriterionExtra "latestCommit"
     ownerType?: OwnerType;
     updatedInLastMonths?: number;
 }
 
 export interface DateRange {
-    start?: string;
-    end?: string
+    start?: Date;
+    end?: Date
 };
 
 /** Explanation: these criteria are provided by the GitHub API.

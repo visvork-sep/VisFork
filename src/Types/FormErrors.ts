@@ -92,6 +92,12 @@ class DeveloperFaultError extends InputError {
     }
 }
 
+class InvalidDateError extends InputError {
+    constructor() {
+        super("Invalid date");
+    }
+}
+
 /**
  * Errors related to the "From" date field in commit date range filters.
  */
@@ -99,7 +105,8 @@ const CommitsDateRangeFromInputErrors = {
     LaterFromDateError,
     UnknownError,
     ForbiddenCharactersError,
-    DeveloperFaultError
+    DeveloperFaultError,
+    InvalidDateError
 } as const;
 
 /**
@@ -110,7 +117,8 @@ const CommitsDateRangeUntilInputErrors = {
     UnknownError,
     FutureUntilDateError,
     ForbiddenCharactersError,
-    DeveloperFaultError
+    DeveloperFaultError,
+    InvalidDateError
 } as const;
 
 /**

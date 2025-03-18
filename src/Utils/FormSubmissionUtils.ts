@@ -62,7 +62,7 @@ function filterFactory(form: preparedFormComplete): ForkFilter {
         ownerType: undefined,
         activeForksOnly: undefined,
         forkType: undefined,
-        updatedInLastMonths: form.recentlyUpdated
+        updatedInLastMonths: form.recentlyUpdated ?? undefined
     };
 
     return filter;

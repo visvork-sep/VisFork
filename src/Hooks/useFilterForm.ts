@@ -21,8 +21,12 @@ const initialForm: FilterFormState = {
     forksAscDesc: SORT_DIRECTION.ASCENDING.value, // Default sorting direction (ascending)
     forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value), // Default fork type filter (all types selected)
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value), // Default owner type filter (all types selected)
-    commitsDateRangeFrom: "", // Start date for commits filter
-    commitsDateRangeUntil: "", // End date for commits filter
+    commitsDateRangeFrom: (() => {
+        const date = new Date();
+        date.setFullYear(date.getFullYear() - 2);
+        return date.toISOString().split("T")[0];
+    })(), // Start date for commits filter
+    commitsDateRangeUntil: new Date().toISOString().split("T")[0], // End date for commits filter
     recentlyUpdated: "" // Recently updated filter input
 };
 

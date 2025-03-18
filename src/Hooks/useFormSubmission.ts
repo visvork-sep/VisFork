@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useState } from "react";
 import { FilterFormState, preparedForm, preparedFormComplete } from "../Types/FilterForm";
-import { InputError } from "../Types/FormErrors";
+import { CommitsDateRangeFromInputErrors, InputError } from "../Types/FormErrors";
 import { 
     prepareRepository,
     prepareForksCount, 
@@ -38,10 +38,9 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
      * 
      * If any error is caught, that field will be set to null.
      * 
-     * @param {FilterFormState} form - The form state to prepare.
      * @returns {preparedForm} The prepared form state.
      */
-    const prepareForm = useCallback((form: FilterFormState): preparedForm =>{
+    const prepareForm = (): preparedForm =>{
         let owner: string | null = null;
         let repositoryName: string | null = null;
         let forksCount: number | null = null;
@@ -51,68 +50,78 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         let commitsDateRangeUntil: Date | null = null;
         let forksTypeFilter: ForkType[] | null = null;
         let ownerTypeFilter: OwnerType[] | null = null;
-        let recentlyUpdated: number | null = null;
+        let recentlyUpdated: number | null = null; // non required
 
         try {
             const output = prepareRepository(form.repository);
             owner = output.owner;
             repositoryName = output.repositoryName;
-            setInputError(null, setRepositoryInputError);
+            setRepositoryInputError(null);
         } catch (e) {
             setInputError(e, setRepositoryInputError);
         };
 
         try {
             forksCount = prepareForksCount(form.forksCount);
-            setInputError(null, setForksCountInputError);
+            setForksCountInputError(null);
         } catch (e) {
             setInputError(e, setForksCountInputError);
         }
 
         try {
             forksOrder = prepareForksOrder(form.forksOrder);
-            setInputError(null, setForksCountInputError);
+            setForksOrderInputError(null);
         } catch (e) {
             setInputError(e, setForksOrderInputError);
         }
 
         try {
             forksSortDirection = prepareForksSortDirection(form.forksAscDesc);
+            setForksAscDescInputError(null);
         } catch (e) {
             setInputError(e, setForksAscDescInputError);
         }
 
         try {
             commitsDateRangeFrom = prepareCommitsDateRangeFrom(form.commitsDateRangeFrom);
-            setInputError(null, setCommitsDateRangeFromInputError);
+            setCommitsDateRangeFromInputError(null);
         } catch (e) {
             setInputError(e, setCommitsDateRangeFromInputError);
         }
 
         try {
             commitsDateRangeUntil = prepareCommitsDateRangeUntil(form.commitsDateRangeUntil);
-            setInputError(null, setCommitsDateRangeUntilInputError);
+            setCommitsDateRangeUntilInputError(null);
         } catch (e) {
             setInputError(e, setCommitsDateRangeUntilInputError);
         }
 
         try {
             forksTypeFilter = prepareForksTypeFilter(form.forksTypeFilter);
+            setForksTypeFilterInputError(null);
         } catch (e) {
             setInputError(e, setForksTypeFilterInputError);
         }
 
         try {
             ownerTypeFilter = prepareOwnerTypeFilter(form.ownerTypeFilter);
+            setOwnerTypeFilterInputError(null);
         } catch (e) {
             setInputError(e, setOwnerTypeFilterInputError);
         }
 
         try {
             recentlyUpdated = prepareRecentlyUpdated(form.recentlyUpdated);
-            setInputError(null, setRecentlyUpdatedInputError);
+            setRecentlyUpdatedInputError(null);
         } catch (e) {
             setInputError(e, setRecentlyUpdatedInputError);
+        }
+
+        if (commitsDateRangeFrom && commitsDateRangeUntil && commitsDateRangeFrom > commitsDateRangeUntil) {
+            setCommitsDateRangeFromInputError(new CommitsDateRangeFromInputErrors.LaterFromDateError());
+            setCommitsDateRangeUntilInputError(new CommitsDateRangeFromInputErrors.LaterFromDateError());
+            commitsDateRangeFrom = null;
+            commitsDateRangeUntil = null;
         }
 
         return {
@@ -127,15 +136,15 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
             ownerTypeFilter,
             recentlyUpdated
         };
-    }, []);
+    };
 
-    const onSubmit = useCallback((event: FormEvent) => {
+    const onSubmit = (event: FormEvent) => {
         // Prevents the page from refreshing on submission
         event.preventDefault();
         
-        const preparedForm = prepareForm(form);
+        const preparedForm = prepareForm();
         
-        // If any of the fields are null, the form is not ready for submission
+        // If any of the required fields are null, the form is not ready for submission
         if (
             !preparedForm.owner
             || !preparedForm.repositoryName
@@ -146,14 +155,13 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
             || !preparedForm.commitsDateRangeUntil
             || !preparedForm.forksTypeFilter
             || !preparedForm.ownerTypeFilter
-            || !preparedForm.recentlyUpdated
         ) {
             return;
         }
         
         // Type assertion because we know that the form is complete
         onFiltersChange(filterFactory(preparedForm as preparedFormComplete));
-    }, []);
+    };
 
     return {
         onSubmit,

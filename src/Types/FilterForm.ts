@@ -74,7 +74,7 @@ interface preparedFormComplete {
     commitsDateRangeUntil: Date;
     forksTypeFilter: ForkType[];
     ownerTypeFilter: OwnerType[];
-    recentlyUpdated: number;
+    recentlyUpdated: number | null; // non required
 }
 
 /**

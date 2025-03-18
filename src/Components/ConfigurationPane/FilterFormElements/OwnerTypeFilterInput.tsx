@@ -17,13 +17,12 @@ function OwnerTypeFilterInput({ onChangeHandler, checked, error }: OwnerTypeFilt
     ));
 
     return (
-        <FormControl>
-            <CheckboxGroup onChange={onChangeHandler}>
-                <CheckboxGroup.Label>Included owners</CheckboxGroup.Label>
-                {checkBoxes}
-            </CheckboxGroup>
-            {error && <FormControl.Validation variant="error">Error message</FormControl.Validation>}
-        </FormControl>
+        <CheckboxGroup onChange={onChangeHandler}>
+            <CheckboxGroup.Label>Included owners</CheckboxGroup.Label>
+            {checkBoxes}
+            {error && <CheckboxGroup.Validation variant="error">Error message</CheckboxGroup.Validation>}
+        </CheckboxGroup>
+
     );
 }
 

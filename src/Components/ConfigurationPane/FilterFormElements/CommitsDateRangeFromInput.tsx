@@ -9,6 +9,7 @@ interface CommitsDateRangeFromInputProps {
 };
 
 function CommitsDateRangeFromInput({ error, onChangeHandler, value }: CommitsDateRangeFromInputProps) {
+    console.log(value);
     return (
         <FormControl>
             <FormControl.Label>Commits from</FormControl.Label>

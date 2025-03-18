@@ -17,14 +17,13 @@ function ForksTypeFilterInput({ onChangeHandler, checked, error }: ForksTypeFilt
     ));
 
     return (
-        <FormControl>
-            <CheckboxGroup onChange={onChangeHandler} >
-                <CheckboxGroup.Label>Included forks</CheckboxGroup.Label>
-                <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
-                {checkBoxes}
-            </CheckboxGroup>
-            {error && <FormControl.Validation variant="error">{error.message}</FormControl.Validation>}
-        </FormControl>
+        <CheckboxGroup onChange={onChangeHandler} >
+            <CheckboxGroup.Label>Included forks</CheckboxGroup.Label>
+            <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
+            {checkBoxes}
+            {error && <CheckboxGroup.Validation variant="error">{error.message}</CheckboxGroup.Validation>}
+        </CheckboxGroup>
+            
     );
 }
 

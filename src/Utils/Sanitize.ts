@@ -24,7 +24,7 @@ import {
  * @returns conflicts - The forbidden characters found in the input
  */
 function sanitizeString(str: string): {output: string, conflicts: RegExpMatchArray | null} {
-    const pattern = /[^a-z0-9áéíóúñü .,_-`/]/gi;
+    const pattern = /[^a-z0-9áéíóúñü /-]/gi;
 
     const output = str.replace(pattern, "").trim();
     const conflicts = str.match(pattern);
@@ -179,7 +179,7 @@ function prepareCommitsDateRangeFrom(input: string): Date {
     }
 
     if (!isValidDate(output)) {
-        throw new CommitsDateRangeFromInputErrors.UnknownError();
+        throw new CommitsDateRangeFromInputErrors.InvalidDateError();
     }
 
     return new Date(output);
@@ -194,13 +194,14 @@ function prepareCommitsDateRangeFrom(input: string): Date {
  * @returns commits date range until
  */
 function prepareCommitsDateRangeUntil(input: string): Date {
+    console.log(input);
     const { output, conflicts } = sanitizeString(input);
     if (conflicts) {
         throw new CommitsDateRangeUntilInputErrors.ForbiddenCharactersError(conflicts);
     }
 
     if (!isValidDate) {
-        throw new CommitsDateRangeUntilInputErrors.UnknownError();
+        throw new CommitsDateRangeUntilInputErrors.InvalidDateError();
     }
 
     return new Date(output);
@@ -249,9 +250,9 @@ function prepareOwnerTypeFilter(ownerTypes: OwnerType[]): OwnerType[] {
  * @throws {OutOfRecentlyUpdatedRangeError} if the input is out of the allowed range
  * @returns recently updated
  */
-function prepareRecentlyUpdated(input?: string): number {
+function prepareRecentlyUpdated(input?: string): number | null {
     if (!input) {
-        throw new RecentlyUpdatedInputErrors.NonIntegralError();
+        return null;
     }
 
     const { output, conflicts } = sanitizeString(input);

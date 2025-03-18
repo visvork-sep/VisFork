@@ -1,6 +1,15 @@
 import { useState, useCallback } from "react";
 import { FilterFormState } from "../Types/FilterForm";
-import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION, ForksSortingOrder, SortDirection, ForkType, OwnerType }
+import { FORK_TYPES, 
+    FORKS_COUNT_INPUT_INITIAL, 
+    FORKS_SORTING_ORDERS, 
+    OWNER_TYPES, 
+    SORT_DIRECTION, 
+    ForksSortingOrder, 
+    SortDirection, 
+    ForkType, 
+    OwnerType 
+}
     from "@Utils/Constants";
 import { assert } from "@Utils/Assert";
 

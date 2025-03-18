@@ -1,38 +1,25 @@
 import { FormControl, TextInput } from "@primer/react";
 import { MIN_QUERIABLE_FORKS, MAX_QUERIABLE_FORKS } from "@Utils/Constants";
-
-type ForksCountInputValidation = "lessThanMinForksError" | "greaterThanMaxForksError" | "unknownError";
+import { InputError } from "../../../Types/FormErrors";
 
 interface ForksCountInputProps {
-    validation?: ForksCountInputValidation;
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
+    value: string;
 };
 
-function ForksCountInput({ validation, onChangeHandler }: ForksCountInputProps) {
-    let validationText: string | undefined;
-
-    switch (validation) {
-        case "lessThanMinForksError":
-            validationText = "Number of forks must be greater than" + { MIN_FORKS: MIN_QUERIABLE_FORKS };
-            break;
-        case "greaterThanMaxForksError":
-            validationText = "Number of forks must be less than" + { MAX_FORKS: MAX_QUERIABLE_FORKS };
-            break;
-        case "unknownError":
-            validationText = "Unknown error in field";
-    }
-
+function ForksCountInput({ error, onChangeHandler, value }: ForksCountInputProps) {
     return (
-        <FormControl id="forksCount">
+        <FormControl id="forksCount" required>
             <FormControl.Label>Forks</FormControl.Label>
             <FormControl.Caption>
                 The number of forks to analyze
             </FormControl.Caption>
-            <TextInput type="number" placeholder="5" min={MIN_QUERIABLE_FORKS} max={MAX_QUERIABLE_FORKS}
-                onChange={e => onChangeHandler(e.target.value)} />
-            {validationText &&
+            <TextInput type="number" min={MIN_QUERIABLE_FORKS} max={MAX_QUERIABLE_FORKS}
+                onChange={e => onChangeHandler(e.target.value)} value={value} />
+            {error &&
                 <FormControl.Validation variant="error">
-                    {validationText}
+                    {error.message}
                 </FormControl.Validation>
             }
         </FormControl>
@@ -42,4 +29,4 @@ function ForksCountInput({ validation, onChangeHandler }: ForksCountInputProps) 
 export {
     ForksCountInput
 };
-export type { ForksCountInputValidation, ForksCountInputProps };
+export type { ForksCountInputProps };

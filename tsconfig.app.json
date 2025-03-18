@@ -27,6 +27,9 @@
       "@generated/*": [
         "./__generated__/*"
       ],
+      "@Providers/*": [
+        "./src/Providers/*"
+      ],
       "@Components/*": [
         "./src/Components/*"
       ],
@@ -35,7 +38,18 @@
       ],
       "@Utils/*": [
         "./src/Utils/*"
-      ]
+      ],
+      "@Types/*": [
+        "./src/Types/*"
+      ],
+      "@Queries/*": [
+        "./src/Queries/*"
+      ],
+      "@Filters/*": [
+        "./src/Filters/*"
+      ],
+
+
     }
   },
   "include": [

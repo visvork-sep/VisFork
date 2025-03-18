@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import cloud from "d3-cloud";
 import commitData from "./commit_data_example.json";
-// import { stemmer } from "stemmer";
+import { stemmer } from "stemmer";
 import { lemmatizer } from "lemmatizer";
 import { removeStopwords } from "stopword";
 
@@ -20,7 +20,7 @@ const tokenize = (text: string) => {
 };
 
 // Define the processing functions
-// const stemmingFunction = (token: string) => stemmer(token);
+const stemmingFunction = (token: string) => stemmer(token);
 const lemmatizationFunction = (token: string) => lemmatizer(token);
 
 
@@ -34,7 +34,7 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
         console.log("Tokens:", tokens);
 
         const filteredTokens = removeStopwords(tokens).filter(token => isNaN(Number(token)));
-        console.log("Filtered Tokens:", filteredTokens);
+        // console.log("Filtered Tokens:", filteredTokens);
 
         filteredTokens.forEach((token: string) => {
             let processedWord
@@ -77,19 +77,19 @@ const processCommitMessages = (data: any, processToken: (token: string) => strin
 }
 
 // Test with a specific commit message
-// const testCommitData = [
-//     {
-//         message: "Downgrade to ffmpeg 4 for Intel build\n\nfix: iina-plus/iina#25 iina-plus/iina#52"
-//     }
-//     // {
-//     //     message: "fix, failure, constructor constructor constructor constructor constructdfs"
-//     // }
-// ];
+const testCommitData = [
+    {
+        message: "Downgrade to ffmpeg 4 for Intel build\n\nfix: iina-plus/iina#25 iina-plus/iina#52"
+    }
+    // {
+    //     message: "fix, failure, constructor constructor constructor constructor constructdfs"
+    // }
+];
 
 // Choose the processing function (either stemming or lemmatization)
 const start = 0;
-const finish = 50;
-const processingFunction = lemmatizationFunction;
+const finish = 10;
+const processingFunction = stemmer;
 const words = processCommitMessages(commitData, processingFunction, start, finish);
 
 const WordCloud: React.FC = () => {

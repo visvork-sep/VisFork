@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import { useEffect } from "react";
 import { Repository } from "./repo";
 
-type ParsedDataItem = {
+interface ParsedDataItem  {
     name: string;
     type: string;
     count: number;
@@ -38,11 +38,12 @@ export function parseData(data: Repository[]): ParsedDataItem[] {
     const parsedData: Record<string, ParsedDataItem> = {};
 
     // Loop through the data and create a key for each unique combination of repo and commit_type
-    for (let i = 0; i < data.length; i++) {
-        const name = data[i].repo;
-        const type = data[i].commit_type;
+
+    for (const dataPoint of data) {
+        const name = dataPoint.repo;
+        const type = dataPoint.commit_type;
         const key = `${name}-${type}`;
-        
+
         // If the key already exists, increment the count, otherwise create a new entry
         if (parsedData[key]) {
             parsedData[key].count++;
@@ -253,6 +254,7 @@ export function SankeyChart(
         .call(
             Lt
                 ? (path) => path.append("title").text(({ index: i }) => i !== undefined ? Lt[i] : null)
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
                 : () => {}
         );
 

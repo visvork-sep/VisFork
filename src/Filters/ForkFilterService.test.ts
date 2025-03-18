@@ -73,6 +73,12 @@ describe("Errors", () => {
                 filter.dateRange.end = undefined;
                 expect(() => ffs.apply(fork, filter)).toThrow(TypeError);
             });
+
+            it("should throw an error when BOTH dateRange.start and dateRange.end are not of type Date", () => {
+                filter.dateRange.start = "9999-01-01T19:01:12Z";
+                filter.dateRange.end = "1970-01-01T19:01:12Z";
+                expect(() => ffs.apply(fork, filter)).toThrow(TypeError);
+            });
         });
     });
 });
@@ -83,13 +89,13 @@ describe("Regular functionality", () => {
         fork.created_at = "2011-01-26T19:01:12Z";
         filter = structuredClone(example_filter);
         // the base is that we include all forks based on date:
-        filter.dateRange.start = "1970-01-01T19:01:12Z";
+        filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
     });
 
     describe("Date range", () => {
         it("should return null - only start date", () => {
             // a date most likely way after the creation of any fork
-            filter.dateRange.start = "9999-01-01T19:01:12Z";
+            filter.dateRange.start = new Date("9999-01-01T19:01:12Z");
             filter.dateRange.end = undefined;
             expect(ffs.apply(fork, filter)).toBe(null);
         });
@@ -97,7 +103,7 @@ describe("Regular functionality", () => {
         it("should return the same fork - only start date", () => {
             // a date definitely way before the creation of any fork
             // warning: don't set it to be lower than 1970.01.01
-            filter.dateRange.start = "1970-01-01T19:01:12Z";
+            filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
             filter.dateRange.end = undefined;
             expect(ffs.apply(fork, filter)).toBe(fork);
         });
@@ -106,26 +112,26 @@ describe("Regular functionality", () => {
             // a date most likely way before the creation of any fork
             // warning: don't set it to be lower than 1970.01.01
             filter.dateRange.start = undefined;
-            filter.dateRange.end = "1970-01-01T19:01:12Z";
+            filter.dateRange.end = new Date("1970-01-01T19:01:12Z");
             expect(ffs.apply(fork, filter)).toBe(null);
         });
 
         it("should return the same fork - only end date", () => {
             // a date most likely way after the creation of any fork
             filter.dateRange.start = undefined;
-            filter.dateRange.end = "9999-01-01T19:01:12Z";
+            filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
             expect(ffs.apply(fork, filter)).toBe(fork);
         });
     
         it("should return null - both dates", () => {
-            filter.dateRange.start = "9777-01-01T19:01:12Z";
-            filter.dateRange.end = "9999-01-01T19:01:12Z";
+            filter.dateRange.start = new Date("9777-01-01T19:01:12Z");
+            filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
             expect(ffs.apply(fork, filter)).toBe(null);
         });
 
         it("should return the same fork - both dates", () => {
-            filter.dateRange.start = "1970-01-01T19:01:12Z";
-            filter.dateRange.end = "9999-01-01T19:01:12Z";
+            filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
+            filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
             expect(ffs.apply(fork, filter)).toBe(fork);
         });
     });

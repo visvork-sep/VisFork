@@ -1,4 +1,8 @@
-import { Stack } from "@primer/react";
+import { Box, Heading, Stack } from "@primer/react";
+import CommitTimeline from "./Plots/CommitTimeline.tsx";
+import commitData from "./Plots/commit_data_example.json";
+import { useMeasure } from "@uidotdev/usehooks";
+
 import ForkList from "@Components/Plots/ForkList";
 import CommitTable from "./Plots/CommitTable";
 import { Dropdown } from "@Components/Dropdown";
@@ -48,19 +52,33 @@ function ApplicationBody() {
 
     // const { handleHistogramSelection, handleTimelineSelection } = handlers;
 
+    const [measureRefCommitTimeline, { width }] = useMeasure();
+    const heightCommitTimelineSVG = 600;
+
+
     //TODO: Add other visualizations and pass respective props
     return (
         <Stack>
-            <Stack.Item >
-                <Dropdown summaryText="Fork List">
-                    <ForkList {...forkListData} />
-                </Dropdown>
-            </Stack.Item>
-            <Stack.Item >
-                <Dropdown summaryText="Fork List">
-                    <CommitTable {...commitTableData} />
-                </Dropdown>
-            </Stack.Item>
+            <Dropdown summaryText="Commit Timeline">
+                <Box ref={measureRefCommitTimeline}
+                    style={{
+                        resize: "vertical",
+                        overflow: "hidden", // Ensure resizing works
+                        minHeight: "200px", // Set an initial height
+                    }}>
+
+                    <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
+                    <CommitTimeline data={commitData}
+                        c_width={width ?? 0}
+                        c_height={heightCommitTimelineSVG}
+                        merged={false}
+                        defaultBranches={{/* Default branches go here */ }} />
+                </Box>
+            </Dropdown>
+
+            <Dropdown summaryText="Fork List">
+                <ForkList {...forkListData} />
+            </Dropdown>
         </Stack>
     );
 }

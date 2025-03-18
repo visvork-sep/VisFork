@@ -41,7 +41,18 @@
       ],
       "@VisInterfaces/*": [
         "./src/Types/VisualizationInterfaces/*"
-      ]
+      ],
+      "@Types/*": [
+        "./src/Types/*"
+      ],
+      "@Queries/*": [
+        "./src/Queries/*"
+      ],
+      "@Filters/*": [
+        "./src/Filters/*"
+      ],
+
+
     }
   },
   "include": [

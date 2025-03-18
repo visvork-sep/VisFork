@@ -1,4 +1,4 @@
-import { Box, Heading, Spinner, Stack } from "@primer/react";
+import { Box, Heading, Stack } from "@primer/react";
 import CommitTimeline from "./Plots/CommitTimeline.tsx";
 import commitData from "./Plots/commit_data_example.json";
 import { useMeasure } from "@uidotdev/usehooks";
@@ -10,9 +10,6 @@ const plotsData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 function ApplicationBody() {
     const [measureRefCommitTimeline, { width }] = useMeasure();
-    // Since the svg has padding on the left, it needs to be compensated on the right side 
-    // to make sure the graph does not go out of the box.
-    const compensationOfPadding = 33.6;
     const heightCommitTimelineSVG = 600;
 
     const children = plotsData.map((plot) => {
@@ -27,11 +24,11 @@ function ApplicationBody() {
                         }}>
 
                         <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
-                        {plot === 1 ? <CommitTimeline data={commitData}
-                            c_width={(width ?? compensationOfPadding) - compensationOfPadding} 
+                        <CommitTimeline data={commitData}
+                            c_width={width ?? 0} 
                             c_height={heightCommitTimelineSVG}
                             merged = {false}
-                            defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
+                            defaultBranches={{/* Default branches go here */}}/>
                     </Box>
                 </Dropdown>}
                 {plot === 2 &&

@@ -33,7 +33,7 @@ const dummyCommits = [
 function ApplicationBody() {
 
     // TODO: Add props as initial data when provided
-    const { visData, handleHistogramSelection, handleTimelineSelection } =
+    const { visData, handlers } =
         useVisualizationData(dummyForks, dummyCommits);
 
     const {
@@ -46,6 +46,7 @@ function ApplicationBody() {
         collabGraphData,
     } = visData;
 
+    // const { handleHistogramSelection, handleTimelineSelection } = handlers;
 
     //TODO: Add other visualizations and pass respective props
     return (

@@ -64,6 +64,7 @@ export class ForkFilterService {
      * 
      * @throws TypeError, if the date property of {@param fork} is null or undefined.
      * @throws TypeError, if both the start and end properties of {@param dateRange} are null or undefined.
+     * @throws TypeError, if both the start and end properties of {@param dateRange} are not of type Date.
      */
     #isForkInDateRange(fork: ForkJSON, dateRange: DateRange): boolean {
         if (fork.created_at == null) {
@@ -74,20 +75,24 @@ export class ForkFilterService {
             throw TypeError("dateRange is improperly defined (no start and end property)");
         }
 
-        let result: boolean = false;
-        if (dateRange.start != null) {
-            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start);
+        if (!(dateRange.start instanceof Date) && !(dateRange.end instanceof Date)) {
+            throw TypeError("dateRange is improperly defined (start and end is not of type Date)");
         }
 
-        if (dateRange.end != null) {
-            result = Date.parse(fork.created_at) <= Date.parse(dateRange.end);
+        let result: boolean = false;
+        if (dateRange.start instanceof Date) {
+            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start.toISOString());
+        }
+
+        if (dateRange.end instanceof Date) {
+            result = Date.parse(fork.created_at) <= Date.parse(dateRange.end.toISOString());
         }
 
         // If both are defined, it is not enough to check them separately, but they need
         // to hold at the same time.
-        if (dateRange.start != null && dateRange.end != null) {
-            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start)
-                  && Date.parse(fork.created_at) <= Date.parse(dateRange.end);
+        if (dateRange.start instanceof Date && dateRange.end instanceof Date) {
+            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start.toString())
+                  && Date.parse(fork.created_at) <= Date.parse(dateRange.end.toString());
         }
         
         return result;

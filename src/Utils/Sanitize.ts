@@ -283,3 +283,148 @@ export {
     prepareOwnerTypeFilter,
     prepareRecentlyUpdated
 };
+
+/**
+ * query q {
+    linux: repository(name: "linux", owner: "torvalds") {
+        refs(first: 5, refPrefix: "refs/heads/") {
+            edges {
+                node {
+                    target {
+                        ... on Commit {
+                            history(first: 100) {
+                                nodes {
+                                    commitUrl
+                                    id
+                                    parents(first: 2) {
+                                        nodes {
+                                            id
+
+                                        }
+                                
+                                    }
+                                    committedDate
+                                }
+                            }
+                        }
+                    }
+                    name
+                }
+            }
+        }
+    }
+    face: repository(name: "react", owner: "facebook") {
+        refs(first: 5, refPrefix: "refs/heads/") {
+            edges {
+                node {
+                    target {
+                        ... on Commit {
+                            history(first: 100) {
+                                nodes {
+                                    commitUrl
+                                    id
+                                    parents(first: 2) {
+                                        nodes {
+                                            id
+
+                                        }
+                                
+                                    }
+                                    committedDate
+                                }
+                            }
+                        }
+                    }
+                    name
+                }
+            }
+        }
+    }
+    glance :repository(name: "glance", owner: "glanceapp") {
+        refs(first: 5, refPrefix: "refs/heads/") {
+            edges {
+                node {
+                    target {
+                        ... on Commit {
+                            history(first: 100) {
+                                nodes {
+                                    commitUrl
+                                    id
+                                    parents(first: 2) {
+                                        nodes {
+                                            id
+
+                                        }
+                                
+                                    }
+                                    committedDate
+                                }
+                            }
+                        }
+                    }
+                    name
+                }
+            }
+        }
+    }
+    dice: repository(name: "dice", owner: "dicedb") {
+        refs(first: 5, refPrefix: "refs/heads/") {
+            edges {
+                node {
+                    target {
+                        ... on Commit {
+                            history(first: 100) {
+                                nodes {
+                                    commitUrl
+                                    id
+                                    parents(first: 2) {
+                                        nodes {
+                                            id
+
+                                        }
+                                
+                                    }
+                                    committedDate
+                                }
+                            }
+                        }
+                    }
+                    name
+                }
+            }
+        }
+    }
+    repository(name: "changed-files", owner: "tj-actions") {
+        refs(first: 5, refPrefix: "refs/heads/") {
+            edges {
+                node {
+                    target {
+                        ... on Commit {
+                            history(first: 100) {
+                                nodes {
+                                    commitUrl
+                                    id
+                                    parents(first: 2) {
+                                        nodes {
+                                            id
+                                            
+                                        }
+                                
+                                    }
+                                    committedDate
+                                }
+                            }
+                        }
+                    }
+                    name
+                }
+            }
+        }
+    }
+    rateLimit {
+        cost
+        remaining
+    }
+}
+
+ */

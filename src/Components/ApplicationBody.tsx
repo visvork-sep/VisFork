@@ -1,25 +1,17 @@
 import { Stack } from "@primer/react";
-
-import { Blankslate } from "@primer/react/experimental";
-import { SankeyChartBuild } from "./Plots/SankeyDiagram";// Ensure this path is correct
-import commitData from "./Plots/commit_data_example.json";// Ensure this path is correct
-const plotsData = [1];
+import Histogram from "./Plots/Histogram";
 
 function ApplicationBody() {
-    const children = plotsData.map((plot) => {
-        return (
-            <Stack.Item key={plot}>
-                <Blankslate border>
-                    <Blankslate.Heading>Sankey Diagram</Blankslate.Heading>
-                    <Blankslate.Visual>
-                        <SankeyChartBuild data={commitData} />
-                    </Blankslate.Visual>
-                </Blankslate>
-            </Stack.Item>
-        );
-    });
-  
-    return children;
+    const sampleCommitData = {
+        commits: [
+            { fork: "my-fork", date: new Date("2021-01-01") }
+        ],
+    };
+    return (
+        <Stack>
+            <Histogram commits={sampleCommitData.commits} />
+        </Stack>
+    );
 }
 
 export default ApplicationBody;

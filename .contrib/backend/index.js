@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+<<<<<<< HEAD
 const dotenv = require("dotenv");
 const axios = require("axios");
 const session = require("express-session");
@@ -14,21 +15,46 @@ const BACKEND_URL = process.env.BACKEND_URL;
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
+=======
+const axios = require("axios");
+require("dotenv").config(); // Load environment variables from .env file
+
+// Load frontend and backend URLs from environment variables
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
+// Load GitHub OAuth credentials from environment variables
+const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+const PORT = process.env.PORT;
+if (!FRONTEND_URL || !CLIENT_ID || !CLIENT_SECRET) {
+    console.error("Missing required environment variables: FRONTEND_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET");
+    process.exit(1);
+}
+>>>>>>> develop
 
 // Initialize Express application
 const app = express();
 
+<<<<<<< HEAD
 // Enable Cross-Origin Resource Sharing (CORS) for frontend requests
 app.use(cors({
     origin: FRONTEND_URL, //Allows requests from the frontend
     methods: ["GET", "POST"], //allows GET adn POST requests
     credentials: true, // Allow sending cookies with requests
+=======
+// Enable Cross-Origin Resource Sharing (CORS) to allow requests from the frontend
+app.use(cors({
+    origin: FRONTEND_URL,// Allow requests from the frontend URL
+    methods: ["GET", "POST"], // Allow only GET and POST methods
+    credentials: true, // Enable sending cookies with requests
+>>>>>>> develop
     allowedHeaders: ["Content-Type", "Authorization"] // Allow these headers in requests
 }));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+<<<<<<< HEAD
 // Set up session handling (store user authentication state)
 app.use(session({
     secret: process.env.SESSION_SECRET || "supersecretkey", // Secret key for session encryption
@@ -59,6 +85,32 @@ app.get("/auth/github/callback", async (req, res) => {
 
     try {
         // Exchange the code for an access token
+=======
+/**
+ * Step 1: Redirect users to GitHub login
+ * Endpoint: GET /auth/github
+ * Redirects users to GitHub OAuth login page.
+ */
+app.get("/auth/github", (req, res) => {
+    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${FRONTEND_URL}/github/callback&scope=read:user`;
+    res.redirect(redirectUri);
+});
+
+/**
+ * Step 2: Exchange code for access tok en (called by frontend)
+ * Endpoint: GET /auth/github/token
+ * Accepts the authorization code from the frontend, exchanges it for an access token,
+ * and returns the token to the frontend for further authentication.
+ */
+app.get("/auth/github/token", async (req, res) => {
+    const { code } = req.query;
+    if (!code) {
+        return res.status(400).json({ error: "No code provided" });
+    }
+
+    try {
+        // Exchange the authorization code for an access token
+>>>>>>> develop
         const tokenResponse = await axios.post("https://github.com/login/oauth/access_token",
             {
                 client_id: CLIENT_ID,
@@ -68,6 +120,7 @@ app.get("/auth/github/callback", async (req, res) => {
             { headers: { Accept: "application/json" } }
         );
 
+<<<<<<< HEAD
         //console.log("🔍 GitHub Token Response Data:", tokenResponse.data); 
 
         // Check if we actually received an access token
@@ -95,10 +148,22 @@ app.get("/auth/github/callback", async (req, res) => {
         res.redirect(FRONTEND_URL);
     } catch (error) {
         console.error("❌ GitHub OAuth Error:", error.response?.data || error);
+=======
+        const accessToken = tokenResponse.data.access_token;
+
+        if (!accessToken) {
+            return res.status(500).json({ error: "Failed to get access token from GitHub" });
+        }
+
+        res.json({ accessToken }); // Return access token to frontend
+    } catch (error) {
+        console.error("GitHub OAuth Error:", error.response?.data || error);
+>>>>>>> develop
         res.status(500).json({ error: "Failed to authenticate with GitHub" });
     }
 });
 
+<<<<<<< HEAD
 // Step 3: API to get logged-in user data (without exposing the token)
 app.get("/auth/user", (req, res) => {
     // User not logged in
@@ -120,3 +185,9 @@ app.post("/auth/logout", (req, res) => {
 app.listen(5000, () => {
     console.log("Server running on http://localhost:5000");
 });
+=======
+// Start the server and listen on port PORT :)
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
+>>>>>>> develop

@@ -1,4 +1,4 @@
-import { Details } from "@primer/react";
+import { Box, Details } from "@primer/react";
 import { PropsWithChildren } from "react";
 import styles from "./Dropdown.module.scss";
 
@@ -10,7 +10,18 @@ function Dropdown({ children, summaryText }: PropsWithChildren<DropdownProps>) {
     return (
         <Details className={styles.details}>
             <Details.Summary>{summaryText}</Details.Summary>
-            {children}
+            <Box
+                sx={{
+                    borderWidth: 1,
+                    borderStyle: "solid",
+                    borderColor: "border.default",
+                    height: "100%",
+                    borderRadius: 2,
+                    p: 3,
+                }}
+            >
+                {children}
+            </Box>
         </Details>
     );
 }

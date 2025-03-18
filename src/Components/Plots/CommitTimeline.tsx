@@ -49,7 +49,7 @@ const LEGEND_TEXT_MARGIN = "10px";
 const EDGE_STROKE_COLOR = "#999";
 const DATE_LABEL_HEIGHT = 21;
 
-const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, merged = false, defaultBranches }) => {
+function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defaultBranches }: DagProps) {
     const svgRef = useRef<SVGSVGElement>(null);
     const colorMap = new Map();
     const repoNames = new Set();

@@ -25,23 +25,13 @@ function ApplicationBody() {
                             overflow: "hidden", // Ensure resizing works
                             minHeight: "200px", // Set an initial height
                         }}>
-                        <Box
-                            sx={{
-                                borderWidth: 1,
-                                borderStyle: "solid",
-                                borderColor: "border.default",
-                                height: "100%",
-                                borderRadius: 2,
-                                p: 3,
-                            }}
-                        >
-                            <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
-                            {plot === 1 ? <CommitTimeline data={commitData}
-                                c_width={(width ?? compensationOfPadding) - compensationOfPadding} 
-                                c_height={heightCommitTimelineSVG}
-                                merged = {false}
-                                defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
-                        </Box>
+
+                        <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
+                        {plot === 1 ? <CommitTimeline data={commitData}
+                            c_width={(width ?? compensationOfPadding) - compensationOfPadding} 
+                            c_height={heightCommitTimelineSVG}
+                            merged = {false}
+                            defaultBranches={{/* Default branches go here */}}/> : <Spinner/>}
                     </div>
                 </Dropdown>}
                 {plot === 2 &&

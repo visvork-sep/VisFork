@@ -6,7 +6,7 @@ export interface CommitTableDetails {
     repo: string, // repo name
     author: string, // author name
     login: string, // username
-    date: Date,
+    date: string,
     message: string
 }
 

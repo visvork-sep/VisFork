@@ -76,7 +76,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
                 repo: commit.repo, // repo name 
                 author: commit.author, // author name
                 login: commit.login, // username
-                date: commit.date,
+                date: commit.date.toISOString(),
                 message: commit.message
             };
         })
@@ -177,7 +177,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
                     repo: commit.repo, // repo name
                     author: commit.author, // author name
                     login: commit.login, // username
-                    date: commit.date,
+                    date: commit.date.toISOString(),
                     message: commit.message
                 };
             })

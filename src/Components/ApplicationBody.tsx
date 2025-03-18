@@ -37,17 +37,12 @@ const dummyCommits = [
 function ApplicationBody() {
 
     // TODO: Add props as initial data when provided
-    const { visData, handlers } =
+    const { visData } =
         useVisualizationData(dummyForks, dummyCommits);
 
+    // TODO: Extract props from visData when more visualizations need them
     const {
-        forkListData,
-        histogramData,
-        timelineData,
-        commitTableData,
-        wordCloudData,
-        sankeyData,
-        collabGraphData,
+        forkListData, commitTableData
     } = visData;
 
     // const { handleHistogramSelection, handleTimelineSelection } = handlers;
@@ -78,6 +73,9 @@ function ApplicationBody() {
 
             <Dropdown summaryText="Fork List">
                 <ForkList {...forkListData} />
+            </Dropdown>
+            <Dropdown summaryText="Commit Table">
+                <CommitTable {...commitTableData} />
             </Dropdown>
         </Stack>
     );

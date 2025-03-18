@@ -1,14 +1,14 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { ForkJSON } from "../Types/GithubTypes";
+import { Fork } from "../Types/GithubTypes";
 import { getRandomForks } from "@Utils/ForkGenerator";
 import { ForkSortService } from "./ForkSortService";
 import { SortingCriterionExtra } from "../Types/ForkFilter";
 
 const fss: ForkSortService = new ForkSortService();
 
-const defaultForks: ForkJSON[] = getRandomForks(3, ["stargazers_count", "watchers_count", "created_at", "updated_at"]);
+const defaultForks: Fork[] = getRandomForks(3, ["stargazers_count", "watchers_count", "created_at", "updated_at"]);
 
-let forks: ForkJSON[] = [];
+let forks: Fork[] = [];
 let sortingCriteria: SortingCriterionExtra;
 
 describe("ForkSortService errors", () => {

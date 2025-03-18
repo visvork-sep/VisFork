@@ -1,7 +1,7 @@
-import { ForkJSON } from "../Types/GithubTypes";
+import { Fork } from "../Types/GithubTypes";
 
-export function getRandomForks(n: number, keys: (keyof ForkJSON)[]): ForkJSON[] {
-    let result: ForkJSON[] = [];
+export function getRandomForks(n: number, keys: (keyof Fork)[]): Fork[] {
+    let result: Fork[] = [];
 
     for (let i = 0; i < n; i++) {
         result.push(getRandomFork(keys));
@@ -10,8 +10,8 @@ export function getRandomForks(n: number, keys: (keyof ForkJSON)[]): ForkJSON[] 
     return result;
 }
 
-export function getRandomFork(keys: (keyof ForkJSON)[]): ForkJSON {
-    const defaultFork: ForkJSON = {
+export function getRandomFork(keys: (keyof Fork)[]): Fork {
+    const defaultFork: Fork = {
         id: 1296269,
         node_id: "MDEwOlJlcG9zaXRvcnkxMjk2MjY5",
         name: "Hello-World",
@@ -79,7 +79,7 @@ export function getRandomFork(keys: (keyof ForkJSON)[]): ForkJSON {
         hooks_url: "http://api.github.com/repos/octocat/Hello-World/hooks",
     };
 
-    const result: ForkJSON = { ...defaultFork };
+    const result: Fork = { ...defaultFork };
 
     keys.forEach(key => {
         (result as any)[key] = generateValue(key);

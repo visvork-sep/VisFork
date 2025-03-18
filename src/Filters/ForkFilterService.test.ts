@@ -1,12 +1,12 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { ForkFilterService } from "./ForkFilterService";
-import { ForkJSON } from "../Types/GithubTypes";
+import { Fork } from "../Types/GithubTypes";
 import { DateRange, ForkFilter } from "../Types/ForkFilter";
 import { getRandomFork } from "@Utils/ForkGenerator";
 
 const ffs: ForkFilterService = new ForkFilterService();
 
-const example_fork: ForkJSON = getRandomFork(["stargazers_count", "watchers_count", "created_at", "updated_at"]);
+const example_fork: Fork = getRandomFork(["stargazers_count", "watchers_count", "created_at", "updated_at"]);
 
 const example_filter: ForkFilter = {
     dateRange: {start: undefined, end: undefined },

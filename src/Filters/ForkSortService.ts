@@ -1,5 +1,5 @@
 import { SortingCriterionExtra } from "../Types/ForkFilter";
-import { ForkJSON } from "../Types/GithubTypes";
+import { Fork } from "../Types/GithubTypes";
 
 export class ForkSortService {
     /**
@@ -13,7 +13,7 @@ export class ForkSortService {
      * @throws Error if the sorting criterion is not one of "stargazers", "watchers", "oldest",
      *         "newest", "latestCommit", "authorPopularity".
      */
-    sortForks(forks: ForkJSON[], by: SortingCriterionExtra): ForkJSON[] {
+    sortForks(forks: Fork[], by: SortingCriterionExtra): Fork[] {
         // JavaScript's .sort() sorts in-place, so a shallow-copy is created
         // to return a new, sorted array instead of just modifying the old one
         // (better for testing)
@@ -56,7 +56,7 @@ export class ForkSortService {
      * 
      * @throws TypeError if the stargazers_count of either f1 or f2 is null or undefined.
      */
-    #compareNumberOfStargazers(f1: ForkJSON, f2: ForkJSON): number {
+    #compareNumberOfStargazers(f1: Fork, f2: Fork): number {
         if (f1.stargazers_count == null || f2.stargazers_count == null) {
             throw TypeError("Unable to read stargazers_count property of forks");
         }
@@ -73,7 +73,7 @@ export class ForkSortService {
      * 
      * @throws TypeError if the watchers_count property of either f1 or f2 is null or undefined.
      */
-    #compareNumberOfWatchers(f1: ForkJSON, f2: ForkJSON): number {
+    #compareNumberOfWatchers(f1: Fork, f2: Fork): number {
         if (f1.watchers_count == null || f2.watchers_count == null) {
             throw TypeError("Unable to read watchers_count property of forks");
         }
@@ -90,7 +90,7 @@ export class ForkSortService {
      * 
      * @throws TypeError if the created_at property of either f1 or f2 is null or undefined.
      */
-    #compareAge(f1: ForkJSON, f2: ForkJSON): number {
+    #compareAge(f1: Fork, f2: Fork): number {
         if (f1.created_at == null || f2.created_at == null) {
             throw TypeError("Unable to read created_at property of forks");
         }
@@ -110,7 +110,7 @@ export class ForkSortService {
      * 
      * @throws TypeError if the updated_at property of either f1 or f2 is null or undefined.
      */
-    #compareLatestCommits(f1: ForkJSON, f2: ForkJSON): number {
+    #compareLatestCommits(f1: Fork, f2: Fork): number {
         if (f1.updated_at == null || f2.updated_at == null) {
             throw TypeError("Unable to read updated_at property of forks");
         }
@@ -131,7 +131,7 @@ export class ForkSortService {
      * 
      * @throws Error always.
      */
-    #compareAuthorPopularity(f1: ForkJSON, f2: ForkJSON): number {
+    #compareAuthorPopularity(f1: Fork, f2: Fork): number {
         throw Error("Not supported.");
     }
 }

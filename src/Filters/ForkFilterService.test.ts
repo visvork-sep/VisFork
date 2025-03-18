@@ -9,8 +9,7 @@ const ffs: ForkFilterService = new ForkFilterService();
 const example_fork: Fork = getRandomFork(["stargazers_count", "watchers_count", "created_at", "updated_at"]);
 
 const example_filter: ForkFilter = {
-    dateRange: {start: undefined, end: undefined },
-    sortBy: "oldest"
+    dateRange: {start: undefined, end: undefined }
 }
 
 let fork: any = null;

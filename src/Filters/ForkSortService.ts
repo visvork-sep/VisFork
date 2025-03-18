@@ -1,4 +1,4 @@
-import { SortingCriterionExtra } from "../Types/ForkFilter";
+import { SortingCriterionExtra } from "../Types/ForkSorter";
 import { Fork } from "../Types/GithubTypes";
 
 export class ForkSortService {

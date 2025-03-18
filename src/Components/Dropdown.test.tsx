@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
 import { Dropdown } from "./Dropdown";
 import { describe, expect, it } from "vitest";
 import { act } from "react";
+import { fireEvent, render, screen } from "@Utils/test-utils";
 
 describe("Summary text", () => {
     it("should display the summary text provided", () => {

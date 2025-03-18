@@ -16,6 +16,12 @@ class UnknownError extends InputError {
     }
 }
 
+class ForbiddenCharactersError extends InputError {
+    constructor(forbidden: string[]) {
+        super("Forbidden characters: " + forbidden.toLocaleString);
+    }
+}
+
 // Error for invalid date range where 'from' date is later than 'until' date
 class LaterFromDateError extends InputError {
     constructor() {
@@ -65,6 +71,7 @@ class RepositoryNameError extends InputError {
     }
 }
 
+
 // Error for when the recent updates filter is out of the allowed range
 class OutOfRecentlyUpdatedRangeError extends InputError {
     constructor() {
@@ -73,12 +80,33 @@ class OutOfRecentlyUpdatedRangeError extends InputError {
     }
 }
 
+class NonIntegralError extends InputError {
+    constructor() {
+        super("Value must be integral");
+    }
+}
+
+class DeveloperFaultError extends InputError {
+    constructor(explanation: string) {
+        super("Developer fault: " + explanation);
+    }
+}
+
+class InvalidDateError extends InputError {
+    constructor() {
+        super("Invalid date");
+    }
+}
+
 /**
  * Errors related to the "From" date field in commit date range filters.
  */
 const CommitsDateRangeFromInputErrors = {
     LaterFromDateError,
-    UnknownError
+    UnknownError,
+    ForbiddenCharactersError,
+    DeveloperFaultError,
+    InvalidDateError
 } as const;
 
 /**
@@ -87,7 +115,10 @@ const CommitsDateRangeFromInputErrors = {
 const CommitsDateRangeUntilInputErrors = {
     LaterFromDateError,
     UnknownError,
-    FutureUntilDateError
+    FutureUntilDateError,
+    ForbiddenCharactersError,
+    DeveloperFaultError,
+    InvalidDateError
 } as const;
 
 /**
@@ -96,7 +127,10 @@ const CommitsDateRangeUntilInputErrors = {
 const ForksCountInputErrors = {
     LessThanMinForksError,
     GreaterThanMaxForksError,
-    UnknownError
+    UnknownError,
+    NonIntegralError,
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
 
 /**
@@ -106,7 +140,9 @@ const RepositoryInputErrors = {
     RepositorySyntaxError,
     RepositoryOwnerError,
     RepositoryNameError,
-    UnknownError
+    UnknownError,
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
 
 /**
@@ -114,8 +150,13 @@ const RepositoryInputErrors = {
  */
 const RecentlyUpdatedInputErrors = {
     OutOfRecentlyUpdatedRangeError,
-    UnknownError
+    UnknownError,
+    NonIntegralError,
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
+
+
 
 
 export {
@@ -128,11 +169,13 @@ export {
     RepositoryOwnerError,
     RepositoryNameError,
     OutOfRecentlyUpdatedRangeError,
+    NonIntegralError,
+    ForbiddenCharactersError,
+    DeveloperFaultError,
     RepositoryInputErrors,
     ForksCountInputErrors,
     RecentlyUpdatedInputErrors,
     CommitsDateRangeFromInputErrors,
-    CommitsDateRangeUntilInputErrors
+    CommitsDateRangeUntilInputErrors,
+    InputError
 };
-
-export type { InputError };

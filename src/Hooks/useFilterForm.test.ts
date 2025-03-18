@@ -46,14 +46,21 @@ describe("useFilterForm - Initial values", () => {
         );
     });
 
-    it("should set the initial value of commitsDateRangeFrom to an empty string", () => {
+    it("should set the initial value of commitsDateRangeFrom to The current date 2 years ago", () => {
         const { result } = renderHook(useFilterForm);
-        expect(result.current.form.commitsDateRangeFrom).toEqual("");
+        const date = new Date();
+        date.setFullYear(date.getFullYear() - 2);
+        const expected = date.toISOString().split("T")[0];
+
+        expect(result.current.form.commitsDateRangeFrom).toEqual(expected);
     });
 
-    it("should set the initial value of commitsDateRangeUntil to an empty string", () => {
+    it("should set the initial value of commitsDateRangeUntil to the current date", () => {
         const { result } = renderHook(useFilterForm);
-        expect(result.current.form.commitsDateRangeUntil).toEqual("");
+        const date = new Date();
+        const expected = date.toISOString().split("T")[0];
+
+        expect(result.current.form.commitsDateRangeUntil).toEqual(expected);
     });
 });
 

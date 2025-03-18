@@ -86,13 +86,20 @@ class NonIntegralError extends InputError {
     }
 }
 
+class DeveloperFaultError extends InputError {
+    constructor(explanation: string) {
+        super("Developer fault: " + explanation);
+    }
+}
+
 /**
  * Errors related to the "From" date field in commit date range filters.
  */
 const CommitsDateRangeFromInputErrors = {
     LaterFromDateError,
     UnknownError,
-    ForbiddenCharactersError
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
 
 /**
@@ -102,7 +109,8 @@ const CommitsDateRangeUntilInputErrors = {
     LaterFromDateError,
     UnknownError,
     FutureUntilDateError,
-    ForbiddenCharactersError
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
 
 /**
@@ -113,7 +121,8 @@ const ForksCountInputErrors = {
     GreaterThanMaxForksError,
     UnknownError,
     NonIntegralError,
-    ForbiddenCharactersError
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
 
 /**
@@ -124,7 +133,8 @@ const RepositoryInputErrors = {
     RepositoryOwnerError,
     RepositoryNameError,
     UnknownError,
-    ForbiddenCharactersError
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
 
 /**
@@ -134,7 +144,8 @@ const RecentlyUpdatedInputErrors = {
     OutOfRecentlyUpdatedRangeError,
     UnknownError,
     NonIntegralError,
-    ForbiddenCharactersError
+    ForbiddenCharactersError,
+    DeveloperFaultError
 } as const;
 
 
@@ -152,6 +163,7 @@ export {
     OutOfRecentlyUpdatedRangeError,
     NonIntegralError,
     ForbiddenCharactersError,
+    DeveloperFaultError,
     RepositoryInputErrors,
     ForksCountInputErrors,
     RecentlyUpdatedInputErrors,

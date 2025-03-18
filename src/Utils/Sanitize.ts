@@ -5,6 +5,16 @@ import {
     CommitsDateRangeUntilInputErrors,
     RecentlyUpdatedInputErrors 
 } from "../Types/FormErrors";
+import {
+    ForksSortingOrder, 
+    ForkType, 
+    MAX_QUERIABLE_FORKS, 
+    MIN_QUERIABLE_FORKS, 
+    OwnerType, 
+    RECENT_ACTIVITY_MAX_MONTHS, 
+    RECENT_ACTIVITY_MIN_MONTHS, 
+    SortDirection
+} from "./Constants";
 
 /**
  * Trim the input and remove forbidden characters from the input.
@@ -89,6 +99,8 @@ function prepareRepository(input: string): { owner: string, repositoryName: stri
  * @param {String} input forks count input
  * @throws {NonIntegralError} if the input is not an integer
  * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @throws {LessThanMinForksError} if the input is less than the minimum allowed forks
+ * @throws {GreaterThanMaxForksError} if the input is greater than the maximum allowed forks
  * @returns forks count
  */
 function prepareForksCount(input?: string): number {
@@ -105,6 +117,16 @@ function prepareForksCount(input?: string): number {
         throw new ForksCountInputErrors.NonIntegralError();
     }
 
+    const num = Number(output);
+
+    if (num < MIN_QUERIABLE_FORKS) {
+        throw new ForksCountInputErrors.LessThanMinForksError();
+    }
+
+    if (num > MAX_QUERIABLE_FORKS) {
+        throw new ForksCountInputErrors.GreaterThanMaxForksError();
+    }
+
     return Number(output);
 }
 
@@ -115,14 +137,14 @@ function prepareForksCount(input?: string): number {
  * @throws {ForbiddenCharactersError} if the input contains forbidden characters
  * @returns forks order
  */
-function prepareForksOrder(input: string): unknown {
-    const { output, conflicts } = sanitizeString(input);
+function prepareForksOrder(input: ForksSortingOrder): ForksSortingOrder{
+    const { conflicts } = sanitizeString(input);
 
     if (conflicts) {
-        throw new ForksCountInputErrors.ForbiddenCharactersError(conflicts);
+        throw new ForksCountInputErrors.DeveloperFaultError("Invalid sort order selected");
     }
 
-    return output;
+    return input;
 }
 
 /**
@@ -132,14 +154,14 @@ function prepareForksOrder(input: string): unknown {
  * @throws {ForbiddenCharactersError} if the input contains forbidden characters
  * @returns forks sort direction
  */
-function prepareForksSortDirection(input: string): unknown {
-    const { output, conflicts } = sanitizeString(input);
+function prepareForksSortDirection(input: SortDirection): SortDirection {
+    const { conflicts } = sanitizeString(input);
 
     if (conflicts) {
-        throw new ForksCountInputErrors.ForbiddenCharactersError(conflicts);
+        throw new ForksCountInputErrors.DeveloperFaultError("Invalid sort direction selected");
     }
 
-    return output;
+    return input;
 }
 
 /**
@@ -160,7 +182,7 @@ function prepareCommitsDateRangeFrom(input: string): Date {
         throw new CommitsDateRangeFromInputErrors.UnknownError();
     }
 
-    return new Date(input);
+    return new Date(output);
 }
 
 /**
@@ -190,15 +212,15 @@ function prepareCommitsDateRangeUntil(input: string): Date {
  * @param {String[]} forkTypes - list of fork types
  * @returns forks type filter
  */
-function prepareForksTypeFilter(forkTypes: string[]): unknown[] {
-    const outputs: string[] = [];
+function prepareForksTypeFilter(forkTypes: ForkType[]): ForkType[] {
     forkTypes.forEach(element => {
-        const { output } = sanitizeString(element);
-        
-        outputs.push(output);
+        const { conflicts } = sanitizeString(element);
+        if (conflicts) {
+            throw new ForksCountInputErrors.DeveloperFaultError("Invalid fork type selected");
+        }
     });
 
-    return outputs;
+    return forkTypes;
 }
 
 /**
@@ -207,15 +229,15 @@ function prepareForksTypeFilter(forkTypes: string[]): unknown[] {
  * @param {String[]} ownerTypes - list of owner types
  * @returns owner type filter
  */
-function prepareOwnerTypeFilter(ownerTypes: string[]): unknown[] {
-    const outputs: string[] = [];
+function prepareOwnerTypeFilter(ownerTypes: OwnerType[]): OwnerType[] {
     ownerTypes.forEach(element => {
-        const { output } = sanitizeString(element);
-
-        outputs.push(output);
+        const { conflicts } = sanitizeString(element);
+        if (conflicts) {
+            throw new ForksCountInputErrors.DeveloperFaultError("Invalid owner type selected");
+        }
     });
 
-    return outputs;
+    return ownerTypes;
 }
 
 /**
@@ -224,6 +246,7 @@ function prepareOwnerTypeFilter(ownerTypes: string[]): unknown[] {
  * @param {String} input recently updated input
  * @throws {NonIntegralError} if the input is not an integer
  * @throws {ForbiddenCharactersError} if the input contains forbidden characters
+ * @throws {OutOfRecentlyUpdatedRangeError} if the input is out of the allowed range
  * @returns recently updated
  */
 function prepareRecentlyUpdated(input?: string): number {
@@ -239,8 +262,14 @@ function prepareRecentlyUpdated(input?: string): number {
     if (!isValidInteger(output)) {
         throw new RecentlyUpdatedInputErrors.NonIntegralError();
     }
+    
+    const num = Number(output);
 
-    return Number(input);
+    if (num < RECENT_ACTIVITY_MIN_MONTHS || num > RECENT_ACTIVITY_MAX_MONTHS) {
+        throw new RecentlyUpdatedInputErrors.OutOfRecentlyUpdatedRangeError();
+    }
+
+    return num;
 }
 
 export {

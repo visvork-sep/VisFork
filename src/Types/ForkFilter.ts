@@ -25,3 +25,5 @@ export type SortingCriterionExtra = SortingCriterionGithub | "latestCommit" | "a
 export type ForkType = "adaptive" | "corrective" | "perfective";
 
 export type OwnerType = "user" | "organization";
+
+

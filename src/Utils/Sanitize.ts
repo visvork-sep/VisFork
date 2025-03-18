@@ -194,7 +194,6 @@ function prepareCommitsDateRangeFrom(input: string): Date {
  * @returns commits date range until
  */
 function prepareCommitsDateRangeUntil(input: string): Date {
-    console.log(input);
     const { output, conflicts } = sanitizeString(input);
     if (conflicts) {
         throw new CommitsDateRangeUntilInputErrors.ForbiddenCharactersError(conflicts);

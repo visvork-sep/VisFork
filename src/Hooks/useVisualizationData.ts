@@ -123,7 +123,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
                 collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
             }));
         },
-        []
+        [commitData]
     );
 
     const handleTimelineSelection = useCallback(
@@ -138,7 +138,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
                 wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
             }));
         },
-        []
+        [commitData]
     );
 
     return {

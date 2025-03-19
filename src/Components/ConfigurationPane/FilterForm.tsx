@@ -6,8 +6,6 @@ import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElement
 import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
 import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { ForksQueryOrderAscDescInput }
-    from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilterInput";
 import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnerTypeFilterInput";
 import { CommitsDateRangeUntilInput }

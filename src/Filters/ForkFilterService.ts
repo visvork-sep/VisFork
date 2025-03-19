@@ -13,24 +13,12 @@ export class ForkFilterService {
      * @returns an array of {@link Fork}s that do not contain forks that do not pass the filter,
      * and all forks that do are in the returned array.
      */
-    applyAll(forks: Fork[], filter: ForkFilter): Fork[] {
+    apply(forks: Fork[], filter: ForkFilter): Fork[] {
          const resultForks: Fork[] = forks.filter(fork => {
             this.#isValidForkByFilter(fork, filter);
          });
 
         return resultForks;
-    }
-
-    /**
-     * Function to apply a filter to a single {@link Fork} object.
-     *
-     * @param fork the {@link Fork} object to be filtered.
-     * @param filter the {@link ForkFilter} to be applied.
-     *
-     * @returns the {@param fork} if it is valid according to the filter, {@code null} otherwise.
-     */
-    apply(fork: Fork, filter: ForkFilter): Fork | null {
-        return this.#isValidForkByFilter(fork, filter) ? fork : null;
     }
 
     /**
@@ -103,7 +91,7 @@ export class ForkFilterService {
      * whether {@param fork} is active or not.
      * 
      * @returns True if {@code activeForksOnly === null || activeForksOnly === undefined || !activeForksOnly
-     * || fork.archived || fork.disabled}, false otherwise.
+     *           || {@link this.#isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS)}}, false otherwise.
      */
     #isForkActive(fork: Fork, activeForksOnly?: boolean): boolean {
         let result: boolean = false;
@@ -172,9 +160,6 @@ export class ForkFilterService {
         const now = new Date(); // reference date object
         const thresholdDate = new Date(now);
         thresholdDate.setMonth(now.getMonth() - nrOfMonths);
-
-        console.log("last updated at: " + fork.updated_at + "\t threshold: " + thresholdDate);
-        console.log("last updated ms: " + lastUpdatedMilliseconds + "\t threshold ms: " + thresholdDate.getMilliseconds());
 
         return lastUpdatedMilliseconds >= thresholdDate.getTime();
     }

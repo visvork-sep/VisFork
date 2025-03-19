@@ -13,6 +13,46 @@ const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
+export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
+    defaultBranches: Record<string, string>, // format: { repo: branch }
+    mainRepo: string
+): CommitInfo[] {
+    for (const rawCommit of rawCommits) {
+        const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
+        locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
+        commitLocationMap.set(rawCommit.sha, locationArray);
+        commitMap.set(rawCommit.sha, rawCommit);
+    }
+    const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
+        return locations.length >= 2;
+    });
+    for (const duplicateCommit of duplicateCommits) {
+        const mainRepoCommits = duplicateCommit[1].filter(({ repo }) => repo === mainRepo);
+        if (mainRepoCommits.some(({ branch }) => branch === defaultBranches[mainRepo])) {
+            commitLocationMap.set(duplicateCommit[0], [{repo: mainRepo, branch: defaultBranches[mainRepo]}]);
+        } else if (mainRepoCommits.length >= 1) {
+            commitLocationMap.set(duplicateCommit[0], [getMinimumCommitLocation(mainRepoCommits)]);
+        } else {
+            commitLocationMap.set(duplicateCommit[0], [getMinimumCommitLocation(duplicateCommit[1])]);
+        }
+    }
+    const processedCommits: CommitInfo[] = [];
+    for (const commit of commitLocationMap) {
+        if (commit[1].length !== 1) {
+            console.error("Mistake in data structure encountered!");
+        }
+        const commitInfo = commitMap.get(commit[0]);
+        if (commitInfo !== undefined) {
+            commitInfo.branch_name = commit[1][0].branch;
+            commitInfo.repo = commit[1][0].repo;
+            processedCommits.push(commitInfo);
+        } else {
+            console.error("Critical mistake in data structure encountered!");
+        }
+    }
+    return processedCommits;
+}
+
 /**
  * Deletes commits that have the same hashes, leaving a single unique commit. 
  * This can only happen if the commit is present on multiple branches.
@@ -31,7 +71,6 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
     rawCommits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // might be optional
-    console.log(rawCommits);
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
         locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
@@ -110,6 +149,17 @@ function makeUniqueHierarchical(commit: CommitInfo) {
             // choose random branch and delete everywhere else
         }
     }
+}
+
+// Let's go gambling!
+// Returns alphabetical minimum of commit location, first sorted on repo and then branch
+function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
+    return locations.reduce((min, curr) =>
+        curr.repo.localeCompare(min.repo) < 0 ||
+        (curr.repo === min.repo && curr.branch.localeCompare(min.branch) < 0)
+            ? curr
+            : min
+    );
 }
 
 /**

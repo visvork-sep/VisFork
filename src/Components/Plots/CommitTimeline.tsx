@@ -19,14 +19,14 @@ interface DagProps {
   defaultBranches: Record<string, string>;
 }
 
-interface MergedNode extends Commit {
+interface GroupedNode extends Commit {
     nodes: string[]
     end_date: string; 
 }
 
 type NodeSelection = d3.Selection<
   SVGCircleElement | SVGPolygonElement,
-  d3dag.MutGraphNode<Commit | MergedNode, undefined>,
+  d3dag.MutGraphNode<Commit | GroupedNode, undefined>,
   SVGGElement,
   unknown
 >;
@@ -44,7 +44,9 @@ const TOOLTIP_BORDER_RADIUS = "4px";
 const TOOLTIP_FONT = "var(--text-body-shorthand-medium)";
 const TOOLTIP_MOUSEOVER_DUR = 200;
 const TOOLTIP_MOUSEOUT_DUR = 500;
-const LEGEND_DOT_SIZE = 10;
+const LEGEND_SIZE = 12;
+const LEGEND_SYMBOL_SIZE = 60;
+const LEGENDS_SPACING = "100px"; 
 const LEGEND_TEXT_MARGIN = "10px";
 const EDGE_STROKE_COLOR = "#999";
 const DATE_LABEL_HEIGHT = 21;
@@ -60,7 +62,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         colorMap.set(repo, d3.interpolateRainbow(i / repoNames.size));
     }
 
-    const dateRankOperator: d3dag.Rank<Commit | MergedNode, unknown> = (
+    const dateRankOperator: d3dag.Rank<Commit | GroupedNode, unknown> = (
         node: d3dag.GraphNode<Commit, unknown>
     ): number => {
         const date = new Date(node.data.date);
@@ -81,7 +83,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
           
     // custom branches layout
     function assignUniqueBranches(
-        nodes: d3dag.GraphNode<Commit | MergedNode, unknown>[]
+        nodes: d3dag.GraphNode<Commit | GroupedNode, unknown>[]
     ): void {
         // group nodes by repo
         const repoGroups = groupBy(nodes, (node) => node.data.repo);
@@ -122,7 +124,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
     
     // custom lanes layout
     function assignUniqueLanes(
-        nodes: Iterable<d3dag.GraphNode<Commit | MergedNode, unknown>>,
+        nodes: Iterable<d3dag.GraphNode<Commit | GroupedNode, unknown>>,
         repoGap = 20
     ) {
         // group nodes by repo.
@@ -187,72 +189,119 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         return sortedCommits;
     }
 
-    function groupNodes(data: Commit[]): MergedNode[] {
-        const sorted = topologicalSort(data); 
+    function groupNodes(data: Commit[]): GroupedNode[] {
+        const sortedCommits = topologicalSort(data); 
         
-        const mergedNodes: MergedNode[] = [];
-        let currentGroupStart = 0;
-        
-        for (let i = 1; i <= sorted.length; i++) {
-            const prevCommit = sorted[i - 1];
-            const commit = sorted[i];
-          
-            // when reaching the end or when branch/repo changes, process the current group
-            if (
-                i === sorted.length ||
-                commit.branch_name !== prevCommit.branch_name ||
-                commit.repo !== prevCommit.repo
-            ) {
-            // group all commits from currentGroupStart to i-1
-                const group = sorted.slice(currentGroupStart, i);
-                const firstCommit = group[0];
-                const lastCommit = group[group.length - 1];
-            
-                // see if there's any merged node with the same branch and repo
-                let candidate: MergedNode | null = null;
-                for (const mnode of mergedNodes) {
-                    if (
-                        mnode.branch_name === firstCommit.branch_name &&
-                        mnode.repo === firstCommit.repo
-                    ) {
-                        candidate = mnode;
-                        break;
-                    }
-                }
-            
-                if (candidate) {
-                    candidate.nodes.push(...group.map(c => c.id));
-                    candidate.end_date = lastCommit.date;
+        const groupedNodes: GroupedNode[] = [];
+        const commitLookup = new Map<string, Commit>();
 
-                } else {
-                    const newParentIds: string[] = [];
-                    for (const parentId of firstCommit.parentIds) {
-                        for (const mnode of mergedNodes) {
-                            if (mnode.nodes.includes(parentId) && !newParentIds.includes(mnode.id)) {
-                                newParentIds.push(mnode.id);
-                            }
-                        }
-                    }
-            
-                    const newMerged: MergedNode = {
-                        id: `${firstCommit.repo} - ${firstCommit.branch_name}`, 
-                        parentIds: newParentIds,
-                        repo: firstCommit.repo,
-                        branch_name: firstCommit.branch_name,
-                        date: firstCommit.date,
-                        url: firstCommit.url,
-                        nodes: group.map(c => c.id),
-                        end_date: lastCommit.date,
-                    };
-            
-                    mergedNodes.push(newMerged);
+        const forkParentIds = new Set<string>();
+        const mergeNodes = new Set<string>(); 
+
+        // find from which commits a fork spawns and which are merge nodes
+        sortedCommits.forEach(commit => {
+            commitLookup.set(commit.id, commit);
+            // nodes from which a fork pulls have a child within a different repo
+            commit.parentIds.forEach(parentId => {
+                const parentCommit = commitLookup.get(parentId);
+                if (parentCommit && parentCommit.repo !== commit.repo) {
+                    forkParentIds.add(parentId);
                 }
-            
-                currentGroupStart = i;
+            }); 
+            if (
+                // merge nodes have at least two parents, one from different repo
+                commit.parentIds.length >= 2 &&
+                commit.parentIds.some(parentId => {
+                    const parentCommit = commitLookup.get(parentId);
+                    return parentCommit !== undefined && parentCommit.repo !== commit.repo;
+                })
+            ) {
+                mergeNodes.add(commit.id);
+            }
+        }); 
+
+        const repoGroups = groupBy(Array.from(sortedCommits), (commit) => commit.repo);    
+        let counter = 0; // used for setting IDs
+
+        function findParent(node: GroupedNode) {
+            const firstCommit = commitLookup.get(node.nodes[0]);  
+            if (firstCommit) {
+                firstCommit.parentIds.forEach(parentId => {
+                    const parentGroupId = commitIdToGroupId.get(parentId);
+                    if (parentGroupId) {
+                        node.parentIds.push(parentGroupId);
+                    }
+                });
             }
         }
+
+        function createGroup(nodes: Commit[], i: number, lastBreak: number) {
+            if (lastBreak < i) {
+                const mergedGroup: GroupedNode = {
+                    id: `${counter}`, 
+                    parentIds: [],
+                    repo: nodes[lastBreak].repo,
+                    branch_name: "default",
+                    date: nodes[lastBreak].date,
+                    url: "",
+                    nodes: nodes.slice(lastBreak, i).map(node => node.id) || [],
+                    end_date: nodes[i-1].date,
+                }; 
+                groupedNodes.push(mergedGroup);
+            }
+            
+            const type = mergeNodes.has(nodes[i].id) ? "merge" : "forkParent";
+            const specialNode: GroupedNode = {
+                id: `Special ${counter}`, 
+                parentIds: [],
+                repo: nodes[i].repo,
+                branch_name: type,
+                date: nodes[i].date,
+                url: nodes[i].url,
+                nodes: [nodes[i].id],
+                end_date: nodes[i].date,
+            };
+            groupedNodes.push(specialNode);  
+            counter++;
+        }
+
+        repoGroups.forEach((nodes, repo) => {
+            let lastBreak = 0;
+            for(let i=0; i<nodes.length; i++) {
+                if (mergeNodes.has(nodes[i].id) || forkParentIds.has(nodes[i].id)) {
+                    createGroup(nodes, i, lastBreak); 
+                    lastBreak = i+1;
+                }
+            }
+            if (lastBreak < nodes.length) {
+                const finalGroupNodeIds = nodes.slice(lastBreak).map(node => node.id);
+                const finalGroup: GroupedNode = {
+                    id: `${counter}`,
+                    parentIds: [],
+                    repo: repo,
+                    branch_name: "default",
+                    date: nodes[lastBreak].date,
+                    url: "",
+                    nodes: finalGroupNodeIds,
+                    end_date: nodes[nodes.length-1].date,
+                };
+                counter++;
+                groupedNodes.push(finalGroup);
+            }
+        });
         
-        return mergedNodes;
+        // used to find parents
+        const commitIdToGroupId = new Map<string, string>();
+        groupedNodes.forEach(group => {
+            group.nodes.forEach(commitId => commitIdToGroupId.set(commitId, group.id));
+        });
+
+        // assign parents to groups
+        for (const mnode of groupedNodes) {
+            findParent(mnode); 
+        }
+
+        return groupedNodes;
     }
 
     useEffect(() => {
@@ -260,11 +309,13 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
 
         // clear previous visualization
         d3.select(svgRef.current).selectAll("*").remove();
+        d3.select("#dag-legends").selectAll("*").remove();
+
 
         const builder = d3dag.graphStratify();
-        let dag : d3dag.MutGraph<Commit | MergedNode, undefined> | null = null; 
+        let dag : d3dag.MutGraph<Commit | GroupedNode, undefined> | null = null; 
         try {
-            dag = builder(merged ? groupNodes(data) as MergedNode[] : data as Commit[]); 
+            dag = builder(merged ? groupNodes(data) as GroupedNode[] : data as Commit[]); 
         } catch (error) {
             console.error("Failed to build Commit Timeline: ", error);
             return;
@@ -292,12 +343,14 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         });
 
         // apply custom layout 
-        assignUniqueBranches(sortedNodes); 
+        if (!merged) {
+            assignUniqueBranches(sortedNodes);
+        }
         const {lanes, totalHeight} = assignUniqueLanes(sortedNodes, LANE_GAP);
         // adjust height to custom layout
         d3.select(svgRef.current).attr("height", totalHeight + MARGIN.top + MARGIN.bottom); 
 
-        // lane shading and author labels
+        //lane shading and author labels
         const backgrounds = g.append("g").attr("class", "repo-backgrounds");
         Object.entries(lanes).forEach(([repo, { minX, maxX }], i) => {
             const laneColor = i % 2 === 0 ? "#eef" : "#fff";
@@ -373,7 +426,6 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
             }
         };
         
-
         function brushEnd(event: d3.D3BrushEvent<unknown>) {
             if (event.selection === null) return; // exit if no selection
         
@@ -381,14 +433,15 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
             const [x0, y0] = brushSelection[0];
             const [x1, y1] = brushSelection[1];
 
-            const nodesArray = Array.from(sortedNodes);
-    
-            const selectedNodes = nodesArray.filter((node) => {
+            const selectedNodes = sortedNodes.filter((node) => {
                 const x = node.y + NODE_RADIUS; // swapped x and y because graph is horizontal
                 const y = node.x + NODE_RADIUS;
                 return x >= x0 && x <= x1 && y >= y0 && y <= y1;
-            });
+            })
+                .flatMap(node =>
+                    merged ? (node as d3dag.MutGraphNode<GroupedNode, unknown>).data.nodes : [node.data.id]);
 
+            // FOR DATA LAYER TEAM: use selectedNodes to get array of selected commits' hashes 
             console.log("Selected Nodes:", selectedNodes);
         }
         
@@ -399,8 +452,8 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
 
         g.call(brush);
 
-        function drawEdgeCurve(d: d3dag.MutGraphLink<Commit | MergedNode, undefined>) {
-            // Drawing the edges. Makes curves at branches and merges.
+        function drawEdgeCurve(d: d3dag.MutGraphLink<Commit | GroupedNode, undefined>) {
+            // makes curves at branches and merges
             if (d.source.x < d.target.x) {
                 return `
                     M${d.source.y},${d.source.x}
@@ -450,12 +503,9 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
             .style("opacity", 0)
             .style("font", TOOLTIP_FONT);
 
-        // get all nodes from the dag
-        const allNodes = Array.from(sortedNodes);
-
-        if (merged) {            const mergedNodes = allNodes as unknown as d3dag.MutGraphNode<MergedNode, undefined>[];
-  
-            const mergedCircles = mergedNodes.filter(node => node.data.nodes.length === 1);
+        if (merged) {            
+            const mergedNodes = sortedNodes as unknown as d3dag.MutGraphNode<GroupedNode, undefined>[];  
+            const mergedCircles = mergedNodes.filter(node => node.data.branch_name === "forkParent");
             const circles = g.append("g")
                 .selectAll("circle")
                 .data(mergedCircles)
@@ -466,7 +516,7 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
                 .attr("r", NODE_RADIUS)
                 .attr("fill", d => colorMap.get(d.data.repo));
   
-            const mergedSquares = mergedNodes.filter(node => node.data.nodes.length > 1);
+            const mergedSquares = mergedNodes.filter(node => node.data.branch_name === "default");
             const squares = g.append("g")
                 .selectAll("rect")
                 .data(mergedSquares)
@@ -478,12 +528,29 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
                 .attr("height", NODE_RADIUS * 2)
                 .attr("fill", d => colorMap.get(d.data.repo));
 
+            const mergedTriangles = mergedNodes.filter(node => node.data.branch_name === "merge");
+            const triangles = g.append("g")
+                .selectAll("polygon")
+                .data(mergedTriangles)
+                .enter()
+                .append("polygon")
+                .attr("points", `0,-${NODE_RADIUS} ${NODE_RADIUS},${NODE_RADIUS} -${NODE_RADIUS},${NODE_RADIUS}`)
+                .attr("transform", d => {
+                    const x = d.y ?? 0;
+                    const y = d.x ?? 0;
+                    return `translate(${x},${y})`;
+                })
+                .attr("fill", d => colorMap.get(d.data.repo));
+
             applyToolTip(circles as NodeSelection);
+            applyToolTip(triangles as NodeSelection);
             applyToolTip(squares as unknown as NodeSelection);
 
         } else {
-            const regularCircles = allNodes.filter(node => node.data.branch_name !== defaultBranches[node.data.repo]);
-            const regularTriangles = allNodes.filter(node => node.data.branch_name === defaultBranches[node.data.repo]);
+            const regularCircles = sortedNodes.filter(node => 
+                node.data.branch_name !== defaultBranches[node.data.repo]);
+            const regularTriangles = sortedNodes.filter(node => 
+                node.data.branch_name === defaultBranches[node.data.repo]);
 
             const circles = g.append("g")
                 .selectAll("circle")
@@ -526,17 +593,20 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
                         <strong>Commit</strong>: ${commitData.id}<br>
                         <strong>Repo</strong>: ${commitData.repo}<br>
                         <strong>Branch</strong>: ${commitData.branch_name}<br>
-                        <strong>Date</strong>: ${commitData.date.toLocaleString()}
-                        `;
+                        <strong>Date</strong>: ${commitData.date}`;
                     } else {
-                        // merged view
-                        const mergedData = d.data as MergedNode;
+                        // merged view (linter issues for indenting)
+                        const mergedData = d.data as GroupedNode;
                         content = `
+                        <strong>Type of Commit</strong>: ${mergedData.branch_name}<br>
                         <strong>Repo</strong>: ${mergedData.repo}<br>
-                        <strong>Branch</strong>: ${mergedData.branch_name}<br>
-                        <strong>Commits Count</strong>: ${mergedData.nodes.length}<br>
-                        <strong>Date of First Commit</strong>: ${mergedData.date}<br>
-                        <strong>Date of Last Commit</strong>: ${mergedData.end_date}
+                         ${
+    mergedData.nodes.length > 1
+        ? `<strong>Number of Commits</strong>: ${mergedData.nodes.length}<br>
+                                <strong>Date of First Commit</strong>: ${mergedData.date}<br>
+                                <strong>Date of Last Commit</strong>: ${mergedData.end_date}`
+        : `<strong>Date</strong>: ${mergedData.date}`
+}
                         `;
                     }
                     tooltip.html(content)
@@ -556,27 +626,72 @@ const CommitTimeline: React.FC<DagProps> = ({ data, c_width: c_width, c_height, 
         }
         
         // display legends for the colors in #dag-legends
-        const legend = d3.select("#dag-legends");
-        legend.selectAll("div").remove();
-        colorMap.forEach((value, key) => {
-            const div = legend
+        const legend = d3
+            .select("#dag-legends")
+            .style("display", "flex")
+            .style("align-items", "flex-start");
+
+        const colorLegend = legend.append("div").attr("id", "color-legend");
+
+        colorMap.forEach((colorValue, repoName) => {
+            const div = colorLegend
                 .append("div")
-                .style("align-items", "center");
-            // append a circle to this div
+                .style("display", "flex")
+                .style("align-items", "center")
+                .style("margin-right", "8px"); // small spacing between color items
+            
             div
                 .append("svg")
                 .style("overflow", "visible")
-                .attr("width", LEGEND_DOT_SIZE)
-                .attr("height", LEGEND_DOT_SIZE)
+                .attr("width", LEGEND_SIZE)
+                .attr("height", LEGEND_SIZE)
                 .append("circle")
-                .attr("cx", LEGEND_DOT_SIZE / 2)
-                .attr("cy", LEGEND_DOT_SIZE / 2)
-                .attr("r",  LEGEND_DOT_SIZE / 2)
-                .attr("fill", value);
-            // append a text to this div
-            div.append("text")
-                .text(key)
-                .style("display", "inline-block")
+                .attr("cx", LEGEND_SIZE / 2)
+                .attr("cy", LEGEND_SIZE / 2)
+                .attr("r", LEGEND_SIZE / 2)
+                .attr("fill", colorValue);
+            
+            div
+                .append("text")
+                .text(repoName)
+                .style("margin-left", LEGEND_TEXT_MARGIN);
+        });
+
+        const shapeLegend = legend
+            .append("div")
+            .attr("id", "shape-legend")
+            .style("margin-left", LEGENDS_SPACING); // spacing to the right of color legend
+
+        // node shape meaning changes depending on type of view 
+        const shapeLegendData = [
+            { label: `${merged? "Fork parent" : "Non-default branch"}`, shape: d3.symbolCircle },
+            merged ? { label: "Default commits", shape: d3.symbolSquare } : null,
+            { label: `${merged? "Merge commit" : "Default branch"}`, shape: d3.symbolTriangle },
+        ].filter((d): d is { label: string; shape: d3.SymbolType } => d !== null);
+
+        shapeLegendData.forEach(({ label, shape }) => {
+            const item = shapeLegend
+                .append("div")
+                .style("display", "flex")
+                .style("align-items", "center")
+                .style("margin-right", "8px")
+                .style("margin-bottom", "4px");
+
+            item
+                .append("svg")
+                .attr("width", LEGEND_SIZE)
+                .attr("height", LEGEND_SIZE)
+                .append("path")
+                .attr("transform", `translate(${LEGEND_SIZE / 2}, ${LEGEND_SIZE / 2})`)
+                .attr(
+                    "d",
+                    d3.symbol().type(shape).size(LEGEND_SYMBOL_SIZE) 
+                )
+                .attr("fill", "#555");
+
+            item
+                .append("text")
+                .text(label)
                 .style("margin-left", LEGEND_TEXT_MARGIN);
         });
         

@@ -1,4 +1,4 @@
-import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
+import { CommitQueryParams, ForkQueryParams } from "../Types/DataLayerTypes";
 import { GetForksQueryVariables, RepositoryOrder, OrderDirection, RepositoryOrderField } from "@generated/graphql";
 import { ForksSortingOrder } from "./Constants";
 

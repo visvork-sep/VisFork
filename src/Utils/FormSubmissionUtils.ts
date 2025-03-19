@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
-import { InputError, UnknownError } from "../Types/FormErrors";
-import { preparedFormComplete } from "@Types/FilterForm";
+import { InputError, UnknownError } from "../Types/UIFormErrors";
+import { preparedFormComplete } from "@Types/UIFormTypes";
 import { ForkQueryState, ForkFilter } from "@Types/LogicLayerTypes";
 
 function setInputError(e: unknown, setter: Dispatch<SetStateAction<InputError | null>>) {

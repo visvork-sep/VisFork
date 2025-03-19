@@ -1,4 +1,4 @@
-import { DateRange } from "./ForkFilter";
+import { DateRange } from "./LogicLayerTypes";
 
 /**  */
 export interface CommitFilter {

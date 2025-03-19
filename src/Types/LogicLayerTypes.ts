@@ -11,8 +11,8 @@ export interface  ForkInfo {
     name: string;
     owner: { login: string };
     description: string | null;
-    created_at: string | null | undefined;
-    last_pushed: string | null | undefined;
+    created_at: Date | null;
+    last_pushed: Date | null;
 }
 
 export interface DateRange {

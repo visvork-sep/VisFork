@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { FilterFormState } from "../Types/FilterForm";
+import { FilterFormState } from "../Types/UIFormTypes";
 import { FORK_TYPES, 
     FORKS_COUNT_INPUT_INITIAL, 
     FORKS_SORTING_ORDERS, 

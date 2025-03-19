@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
-import { FilterFormState, preparedForm, preparedFormComplete } from "../Types/FilterForm";
-import { CommitsDateRangeFromInputErrors, InputError } from "../Types/FormErrors";
+import { FilterFormState, preparedForm, preparedFormComplete } from "../Types/UIFormTypes";
+import { CommitsDateRangeFromInputErrors, InputError } from "../Types/UIFormErrors";
 import { 
     prepareRepository,
     prepareForksCount, 

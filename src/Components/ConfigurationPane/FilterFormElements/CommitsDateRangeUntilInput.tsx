@@ -1,5 +1,5 @@
 import { FormControl, TextInput } from "@primer/react";
-import { InputError } from "../../../Types/FormErrors";
+import { InputError } from "../../../Types/UIFormErrors";
 
 interface CommitsDateRangeUntilInputProps {
     error: InputError | null;

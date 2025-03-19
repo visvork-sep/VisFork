@@ -1,12 +1,12 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "@Queries/rawQueries";
-import { CommitQueryParams, ForkQueryParams, CommitJSON } from "@Types/GithubTypes";
+import { CommitQueryParams, ForkQueryParams, CommitJSON } from "@Types/DataLayerTypes";
 import { ForkInfo, ForkQueryState, CommitInfo } from "@Types/LogicLayerTypes";
 import { GetAvatarUrlQueryVariables}
     from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";
-import { toCommitInfo, toForkInfo } from "@Utils/MappingJSON";
+import { toCommitInfo, toForkInfo } from "@Utils/DataToLogic";
 
 /**
  *  Gets to avatar url

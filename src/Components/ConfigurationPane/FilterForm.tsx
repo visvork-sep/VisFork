@@ -26,7 +26,6 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         handleRepositoryChange,
         handleForksCountChange,
         handleForksOrderChange,
-        handleForksOrderAscDescChange,
         handleCommitsDateRangeFromChange,
         handleCommitsDateRangeUntilChange,
         handleForksTypeFilterChange,
@@ -44,7 +43,6 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         forksTypeFilterInputError,
         ownerTypeFilterInputError,
         forksOrderInputError,
-        forksAscDescInputError
     } = useFormSubmission(form, filterChangeHandler);
 
     return <Box as="form" onSubmit={onSubmit}>
@@ -67,15 +65,15 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
                         <ForksQueryOrderInput 
                             onChangeHandler={handleForksOrderChange} 
                             selected={form.forksOrder} 
-                            error={forksAscDescInputError}/>
+                            error={forksOrderInputError}/>
                     </Stack.Item>
 
-                    <Stack.Item>
+                    {/* <Stack.Item>
                         <ForksQueryOrderAscDescInput
                             onChangeHandler={handleForksOrderAscDescChange} 
                             selected={form.forksAscDesc} 
                             error={forksOrderInputError}/>
-                    </Stack.Item>
+                    </Stack.Item> */}
 
                     <Stack.Item>
                         <CommitsDateRangeFromInput error={commitsDateRangeFromInputError}

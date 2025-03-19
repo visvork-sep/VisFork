@@ -1,6 +1,6 @@
-import { SortingCriterionGithub } from "../Types/ForkFilter";
 import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
 import { GetForksQueryVariables, RepositoryOrder, OrderDirection, RepositoryOrderField } from "@generated/graphql";
+import { ForksSortingOrder } from "./Constants";
 
 /**
  * Helper function to create a CommitQueryParams object with defaults.
@@ -15,8 +15,8 @@ import { GetForksQueryVariables, RepositoryOrder, OrderDirection, RepositoryOrde
 export function createCommitQueryParams(
     owner: string,
     repo: string,
-    since?: string,
-    until?: string,
+    since: string,
+    until: string,
     perPage = 30
 ): CommitQueryParams {
     return {
@@ -42,7 +42,7 @@ export function createCommitQueryParams(
 export function createForkQueryParams(
     owner: string,
     repo: string,
-    sort: SortingCriterionGithub = "stargazers",
+    sort: ForksSortingOrder,
     perPage = 30,
     page = 1
 ): ForkQueryParams {

@@ -18,8 +18,8 @@ const mockForks: ForkInfo[] = [
         name: "repo-1",
         owner: { login: "user1" },
         description: "Test repo",
-        created_at: "2023-01-01T00:00:00Z",
-        last_pushed: "2023-02-01T00:00:00Z",
+        created_at: new Date(),
+        last_pushed: new Date(),
     },
 ];
 

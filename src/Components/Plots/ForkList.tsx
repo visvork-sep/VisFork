@@ -2,20 +2,9 @@ import { Box, Text, Select } from "@primer/react";
 import { DataTable, Table } from "@primer/react/experimental";
 import { useState } from "react";
 
-// Interface of a fork
-interface Fork {
-    id: number,
-    full_name: string, // Name in the Owner/Repository format
-    description: string | null,
-}
+import { ForkListData } from "@VisInterfaces/ForkListData";
 
-// Interface of the props object
-interface ForkListProps {
-    forks: Fork[]
-}
-
-function ForkList({ forks }: ForkListProps) {
-
+function ForkList({ forkData }: ForkListData) {
     // States to control page size and current page index
     const [pageSize, setPageSize] = useState(10);
     const [pageIndex, setPageIndex] = useState(0);
@@ -23,7 +12,7 @@ function ForkList({ forks }: ForkListProps) {
     // Calculate the items to display on the current page
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    const forksToShow = forks.slice(start, end);
+    const forksToShow = forkData.slice(start, end);
 
     return (
         <Table.Container>
@@ -68,7 +57,7 @@ function ForkList({ forks }: ForkListProps) {
                 columns={[
                     {
                         header: "Name",
-                        field: "full_name",
+                        field: "name",
                         rowHeader: true,
                     },
                     {
@@ -85,7 +74,7 @@ function ForkList({ forks }: ForkListProps) {
                 key={pageSize}
                 aria-label="Pagination for Forks"
                 pageSize={pageSize}
-                totalCount={forks.length}
+                totalCount={forkData.length}
                 onChange={({ pageIndex }) => {
                     setPageIndex(pageIndex);
                 }}

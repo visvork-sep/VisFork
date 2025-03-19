@@ -1,3 +1,5 @@
+import { ForksSortingOrder, ForkType, OwnerType, SortDirection } from "@Utils/Constants";
+
 /**
  * Represents the state of the filter form used to configure 
  * the visualization of GitHub repository data.
@@ -16,13 +18,15 @@ interface FilterFormState {
 
     /**
      * The selected sorting criteria for forks (e.g., by stargazers, creation date, etc.).
+    * Must be one of the defined sorting criteria in FORKS_SORTING_ORDERS.
      */
-    forksOrder: string;
+    forksOrder: ForksSortingOrder;
 
     /**
      * The sorting direction for forks (ascending or descending).
+     * Must be one of the defined sorting directions in SORT_DIRECTION.
      */
-    forksAscDesc: string;
+    forksAscDesc: SortDirection;
 
     /**
      * The starting date for filtering commits.
@@ -39,14 +43,16 @@ interface FilterFormState {
     /**
      * The selected fork types to be included in the visualization.
      * This is an array of strings representing available fork categories.
+     * Must be one of the defined fork types in FORK_TYPES.
      */
-    forksTypeFilter: string[];
+    forksTypeFilter: ForkType[];
 
     /**
      * The selected owner types to filter repositories by.
      * This is an array of strings representing different repository ownership categories.
+     * Must be one of the defined owner types in OWNER_TYPES.
      */
-    ownerTypeFilter: string[];
+    ownerTypeFilter: OwnerType[];
 
     /**
      * Specifies the recency of updates to filter repositories by.
@@ -55,4 +61,40 @@ interface FilterFormState {
     recentlyUpdated: string;
 }
 
-export type { FilterFormState };
+/**
+ * Represents the prepared form state for submission.
+ */
+interface preparedFormComplete {
+    owner: OwnerType;
+    repositoryName: string;
+    forksCount: number;
+    forksOrder: ForksSortingOrder;
+    forksSortDirection: SortDirection;
+    commitsDateRangeFrom: Date;
+    commitsDateRangeUntil: Date;
+    forksTypeFilter: ForkType[];
+    ownerTypeFilter: OwnerType[];
+    recentlyUpdated: number | null; // non required
+}
+
+/**
+ * Represents the prepared form state for submission.
+ * 
+ * Null values indicate that the field is not ready for submission.
+ */
+interface preparedForm {
+    owner: string | null;
+    repositoryName: string | null;
+    forksCount: number | null;
+    forksOrder: ForksSortingOrder | null;
+    forksSortDirection: SortDirection | null;
+    commitsDateRangeFrom: Date | null;
+    commitsDateRangeUntil: Date | null;
+    forksTypeFilter: ForkType[] | null;
+    ownerTypeFilter: OwnerType[] | null;
+    recentlyUpdated: number | null;
+}
+
+
+
+export type { FilterFormState, preparedFormComplete, preparedForm };

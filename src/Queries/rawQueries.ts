@@ -3,7 +3,7 @@ import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, Get
 import { paths } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-import { CommitQueryParams, ForkQueryParams } from "../Types/GithubTypes";
+import { CommitQueryParams, ForkQueryParams, RepoQueryParams } from "../Types/GithubTypes";
 import { API_URL } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;
@@ -33,6 +33,15 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
  */
 export async function fetchForks(parameters: ForkQueryParams, accessToken: string) {
     return fetchClient.GET("/repos/{owner}/{repo}/forks", { params: parameters,
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        }
+    });
+}/**
+ * Fetch forks using REST API.
+ */
+export async function fetchRepo(parameters: RepoQueryParams, accessToken: string) {
+    return fetchClient.GET("/repos/{owner}/{repo}", { params: parameters,
         headers: {
             Authorization: `Bearer ${accessToken}`,
         }

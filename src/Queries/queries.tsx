@@ -1,7 +1,7 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "@Queries/rawQueries";
-import { CommitQueryParams, ForkQueryParams, CommitJSON } from "@Types/GithubTypes";
+import { fetchForks, fetchCommits, fetchAvatarUrlGql, fetchRepo } from "@Queries/rawQueries";
+import { CommitQueryParams, ForkQueryParams, CommitJSON, RepoQueryParams, ForkJSON } from "@Types/GithubTypes";
 import { ForkInfo, ForkQueryState, CommitInfo } from "@Types/DataLayerTypes";
 import { GetAvatarUrlQueryVariables}
     from "@generated/graphql";
@@ -26,7 +26,7 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
 }
 
 /**
- * Fetches fork data using a the underlying Json function.
+ * Fetches fork data using a the underlying Json function as well as the original repo data.
  * Converts the ForkQueryState to the necessary query parameters.
  *
  * @param parameters - ForkQuery state, high level representation of the settings for querrying.
@@ -35,6 +35,7 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
  */
 export function useFetchForks(parameters?: ForkQueryState) {
 
+    // Parameters to query the forks
     const forkQueryParams: ForkQueryParams | undefined = parameters
         ? {
             path: { owner: parameters.owner, repo: parameters.repo },
@@ -42,15 +43,34 @@ export function useFetchForks(parameters?: ForkQueryState) {
         }
         : undefined;
 
+    // Query parameters for the original repository
+    const repoQueryParams : RepoQueryParams | undefined = parameters
+        ? {
+            path: { owner: parameters.owner, repo: parameters.repo},
+        }
+        : undefined;
+
     // Fetch the full forks data
+    // Here we query for the original repository as well since we want its data
     const { data, isLoading, error } = useFetchForksJSON(forkQueryParams);
+    const { data: originalRepoData, isLoading: repoLoading, error: repoError } = useFetchRepoJSON(repoQueryParams);
+
+    // Merge the data
+    const mergedData = [
+        //The original repo data only gets inluded if it is valid
+        ...(originalRepoData?.data ? [originalRepoData.data as ForkJSON] : []),
+        ...(data?.data ?? [])] as ForkJSON[];
+
+    // Combine the loading states and errors
+    const isLoadingMerged = isLoading || repoLoading;
+    const errorMerged = error || repoError;
 
     // Transform it to only return relevant fields
     const simplifiedData: ForkInfo[] = useMemo(() => {
-        return data?.data?.map(fork => toForkInfo(fork)) ?? [];
-    }, [data?.data]);
+        return mergedData.map(fork => toForkInfo(fork)) ?? [];
+    }, [mergedData]);
 
-    return { data: simplifiedData, isLoading, error };
+    return { data: simplifiedData, isLoading: isLoadingMerged, error: errorMerged };
 }
 
 /**
@@ -77,6 +97,29 @@ export function useFetchCommitsBatch(forks: ForkInfo[], range?: DateRange) {
 
 
     return {data: simplifiedData, isLoading, error };
+}
+
+/**
+ * Fetches repo data using a RestAPI query.
+ * Uses `react-query` to manage caching, loading states, and refetching.
+ *
+ * @param parameters - Query variables required for fetching repository.
+ * If required params are empty query will be disabled.
+ * @returns The result object from `useQuery`, containing data, loading, and error states.
+ */
+function useFetchRepoJSON(parameters?: RepoQueryParams) {
+    const { isAuthenticated, getAccessToken } = useAuth();
+    const accessToken = getAccessToken() ?? "";
+
+    return useQuery({
+        queryKey: ["forks", parameters],
+        // This is okay because enabled already checks if the parameters exist
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        queryFn: () => fetchRepo(parameters!, accessToken),
+        // Done so query is not triggered on first render.
+        enabled: isAuthenticated && !!parameters
+
+    });
 }
 
 /**

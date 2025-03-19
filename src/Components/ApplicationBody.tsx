@@ -8,6 +8,9 @@ import CommitTable from "./Plots/CommitTable";
 import { Dropdown } from "@Components/Dropdown";
 
 import { useVisualizationData } from "@Hooks/useVisualizationData";
+import Histogram from "./Plots/Histogram.tsx";
+import { SankeyChart, SankeyChartBuild } from "./Plots/SankeyDiagram.tsx";
+import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
 //TODO: Replace with actual data when proper hooks is implemented
 //=================================================================================================
 const dummyForks = [
@@ -37,15 +40,14 @@ const dummyCommits = [
 function ApplicationBody() {
 
     // TODO: Add props as initial data when provided
-    const { visData } =
+    const { visData, handlers } =
         useVisualizationData(dummyForks, dummyCommits);
 
     // TODO: Extract props from visData when more visualizations need them
     const {
-        forkListData, commitTableData
-    } = visData;
+        forkListData, commitTableData, histogramData, sankeyData, collabGraphData } = visData;
 
-    // const { handleHistogramSelection, handleTimelineSelection } = handlers;
+    const { handleHistogramSelection } = handlers;
 
     const [measureRefCommitTimeline, { width }] = useMeasure();
     const heightCommitTimelineSVG = 600;
@@ -70,13 +72,21 @@ function ApplicationBody() {
                         defaultBranches={{/* Default branches go here */ }} />
                 </Box>
             </Dropdown>
-
-            <Dropdown summaryText="Fork List">
+            <Dropdown summaryText="Histogram">
+                <Histogram {...histogramData} />
+            </Dropdown>
+            {/* <Dropdown summaryText="Fork List">
                 <ForkList {...forkListData} />
             </Dropdown>
             <Dropdown summaryText="Commit Table">
                 <CommitTable {...commitTableData} />
             </Dropdown>
+            <Dropdown summaryText="Sankey Diagram">
+                <SankeyChartBuild {...commitTableData} />
+            </Dropdown>
+            <Dropdown summaryText="Collaboration Graph">
+                <CollaborationGraph {...commitTableData} />
+            </Dropdown> */}
         </Stack>
     );
 }

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
 import * as d3 from "d3";
 import { useTheme, themeGet } from "@primer/react";
-import { CommitList } from "./HistogramData";
+import { HistogramData } from "@VisInterfaces/HistogramData";
 
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
  */
-function Histogram({ commits }: CommitList) {
+function Histogram({ commitData }: HistogramData) {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const { theme } = useTheme();
 
@@ -18,9 +18,9 @@ function Histogram({ commits }: CommitList) {
 
     // Extract and sort commit dates
     const dates = useMemo(() => {
-        const sortedCommits = [...commits].sort((a, b) => a.date.getTime() - b.date.getTime());
+        const sortedCommits = [...commitData].sort((a, b) => a.date.getTime() - b.date.getTime());
         return sortedCommits.map(commit => commit.date);
-    }, [commits]);
+    }, [commitData]);
 
     /**
      * Processes date data into a frequency map for visualization.

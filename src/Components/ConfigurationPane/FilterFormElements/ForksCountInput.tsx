@@ -1,11 +1,11 @@
 import { FormControl, TextInput } from "@primer/react";
 import { MIN_QUERIABLE_FORKS, MAX_QUERIABLE_FORKS } from "@Utils/Constants";
-import { ForksCountInputErrorsType } from "../../../Types/FormErrors";
+import { InputError } from "../../../Types/FormErrors";
 
 interface ForksCountInputProps {
-    error?: ForksCountInputErrorsType;
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
-    value?: number;
+    value: string;
 };
 
 function ForksCountInput({ error, onChangeHandler, value }: ForksCountInputProps) {
@@ -16,7 +16,7 @@ function ForksCountInput({ error, onChangeHandler, value }: ForksCountInputProps
                 The number of forks to analyze
             </FormControl.Caption>
             <TextInput type="number" min={MIN_QUERIABLE_FORKS} max={MAX_QUERIABLE_FORKS}
-                onChange={e => onChangeHandler(e.target.value)} value={value ?? ""} />
+                onChange={e => onChangeHandler(e.target.value)} value={value} />
             {error &&
                 <FormControl.Validation variant="error">
                     {error.message}

@@ -314,7 +314,7 @@ export function SankeyChart(
 }
 
 // SankeyChartBuild component
-export function SankeyChartBuild(data: SankeyData) {
+export function SankeyDiagram(data: SankeyData) {
     useEffect(() => {
         if (!data) {
             return;

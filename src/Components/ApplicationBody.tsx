@@ -1,16 +1,17 @@
 import { Box, Heading, Stack } from "@primer/react";
-import CommitTimeline from "./Plots/CommitTimeline.tsx";
 import commitData from "./Plots/commit_data_example.json";
 import { useMeasure } from "@uidotdev/usehooks";
 
+import Histogram from "./Plots/Histogram.tsx";
 import ForkList from "@Components/Plots/ForkList";
+import CommitTimeline from "./Plots/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable";
+import { SankeyDiagram } from "./Plots/SankeyDiagram.tsx";
+import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
+
 import { Dropdown } from "@Components/Dropdown";
 
 import { useVisualizationData } from "@Hooks/useVisualizationData";
-import Histogram from "./Plots/Histogram.tsx";
-import { SankeyChart, SankeyChartBuild } from "./Plots/SankeyDiagram.tsx";
-import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
 //TODO: Replace with actual data when proper hooks is implemented
 //=================================================================================================
 const dummyForks = [
@@ -82,11 +83,11 @@ function ApplicationBody() {
                 <CommitTable {...commitTableData} />
             </Dropdown>
             <Dropdown summaryText="Sankey Diagram">
-                <SankeyChartBuild {...sankeyData} />
+                <SankeyDiagram {...sankeyData} />
             </Dropdown>
-            {/* <Dropdown summaryText="Collaboration Graph">
+            <Dropdown summaryText="Collaboration Graph">
                 <CollaborationGraph {...collabGraphData} />
-            </Dropdown> */}
+            </Dropdown>
         </Stack>
     );
 }

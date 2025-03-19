@@ -1,23 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import commitData from "./commit_data_example.json";
-
-// Commit info type
-interface CommitInfo {
-    repo: string;
-    sha: string;
-    id: string;
-    parentIds: string[];
-    branch_name: string;
-    branch_id: string;
-    node_id: string;
-    author: string;
-    date: string;
-    url: string;
-    message: string;
-    commit_type: string;
-    mergedNodes: unknown[];
-}
+import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 
 // Graph node type: author or repo
 interface Node extends d3.SimulationNodeDatum {
@@ -35,7 +18,7 @@ interface Link extends d3.SimulationLinkDatum<Node> {
     target: string | Node;
 }
 
-function CollaborationGraph() {
+function CollaborationGraph({ commitData }: CollabGraphData) {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const width = 800;
     const height = 600;
@@ -47,7 +30,7 @@ function CollaborationGraph() {
 
     // Get all unique commit dates
     const allDates = Array.from(
-        new Set(commitData.map((entry: CommitInfo) => entry.date.split("T")[0]))
+        new Set(commitData.map((entry) => entry.date.split("T")[0]))
     ).sort();
 
     // Autoplay effect
@@ -78,7 +61,7 @@ function CollaborationGraph() {
         if (!svgRef.current) return;
 
         // Filters commit data until the current date selected in the slider
-        const visibleCommits = commitData.filter((commit: CommitInfo) => {
+        const visibleCommits = commitData.filter((commit) => {
             const commitDate = commit.date.split("T")[0];
             return commitDate <= allDates[currentDateIndex];
         });
@@ -92,7 +75,7 @@ function CollaborationGraph() {
         const repoCommitCounts: Record<string, number> = {};
 
         // Make sure each set of authors and repos is unique
-        visibleCommits.forEach((entry: CommitInfo) => {
+        visibleCommits.forEach((entry) => {
             authors.add(entry.author);
             repos.add(entry.repo);
             links.push({

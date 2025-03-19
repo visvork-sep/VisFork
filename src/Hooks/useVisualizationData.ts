@@ -74,6 +74,7 @@ const mapCommitDataToCollabGraph = (commitData: CommitData[]): CollabGraphData =
     commitData: commitData.map((commit) => ({
         author: commit.author,
         repo: commit.repo,
+        date: commit.date.toISOString()
     })),
 });
 

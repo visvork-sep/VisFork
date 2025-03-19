@@ -31,12 +31,13 @@ export interface CommitInfo {
     parentIds: string[];
     node_id: string;
     author: string;
+    login: string | undefined;
     date: string;
     url: string;
     message: string;
     mergedNodes: unknown[];
     repo: string;
     commit_type?: string;
-    branch_name?: string;
+    branch?: string;
     branch_id?: string;
 }

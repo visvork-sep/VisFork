@@ -24,8 +24,9 @@ export function toCommitInfo(commit: CommitJSON): CommitInfo {
         message: commit.commit?.message ?? "",
         mergedNodes: [], // No clear mapping, leaving as empty array
         repo: commit.repo,
+        login: commit.author?.login,
         commit_type: undefined,
-        branch_name: undefined,
+        branch: undefined,
         branch_id: undefined
     };
 }

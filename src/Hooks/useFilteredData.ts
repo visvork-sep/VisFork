@@ -31,7 +31,7 @@ export function useFilteredData(filterService : ForkFilterService) {
         isLoading: isLoadingCommit,
         error: errorCommit
     } = useFetchCommitsBatch(filteredForks, forkQueryState?.range);
-
+    console.log("commits", commitData);
     return {
         filteredForks,
         isLoadingFork,

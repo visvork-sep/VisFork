@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ForkListData } from "@VisInterfaces/ForkListData";
 import { CommitTableData } from "@VisInterfaces/CommitTableData";
 import { HistogramData } from "@VisInterfaces/HistogramData";
@@ -12,7 +12,7 @@ import { VisualizationData } from "@VisInterfaces/VisualizationData";
 interface ForkData {
     id: number;
     name: string;
-    description: string;
+    description: string | null;
 }
 
 // TEMPORARY
@@ -78,11 +78,26 @@ const mapCommitDataToCollabGraph = (commitData: CommitData[]): CollabGraphData =
 });
 
 export function useVisualizationData(forkData: ForkData[], commitData: CommitData[]) {
+    console.log("rerendered");
     // Memoize the initial visualization data
-    const initialVisData = useMemo(() => {
-        const forkListData: ForkListData = { forkData };
+    const initialVisData =  {
+        forkListData : {forkData},
+        histogramData: mapCommitDataToHistogram(commitData),
+        timelineData: mapCommitDataToTimeline(commitData),
+        commitTableData: mapCommitDataToCommitTable(commitData),
+        wordCloudData: mapCommitDataToWordCloud(commitData),
+        sankeyData: mapCommitDataToSankey(commitData),
+        collabGraphData: mapCommitDataToCollabGraph(commitData),
+    };
 
-        return {
+
+    const [visData, setVisData] = useState<VisualizationData>(initialVisData);
+
+    useEffect(() => {
+        const forkListData: ForkListData = { forkData };
+        console.log("fork data in vis hook:", forkListData);
+        console.log("commit data in vis hook:", commitData);
+        const tempVisData =  {
             forkListData,
             histogramData: mapCommitDataToHistogram(commitData),
             timelineData: mapCommitDataToTimeline(commitData),
@@ -91,9 +106,8 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
             sankeyData: mapCommitDataToSankey(commitData),
             collabGraphData: mapCommitDataToCollabGraph(commitData),
         };
+        setVisData(tempVisData);
     }, [forkData, commitData]);
-
-    const [visData, setVisData] = useState<VisualizationData>(initialVisData);
 
     // Handlers
     const handleHistogramSelection = useCallback(
@@ -109,7 +123,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
                 collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
             }));
         },
-        [commitData]
+        []
     );
 
     const handleTimelineSelection = useCallback(
@@ -124,7 +138,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
                 wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
             }));
         },
-        [commitData]
+        []
     );
 
     return {

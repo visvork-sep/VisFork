@@ -7,14 +7,24 @@ import { ForkFilterService } from "@Filters/ForkFilterService";
 const forkFilterService: ForkFilterService = new ForkFilterService();
 
 function DataComponents() {
-    const { onFiltersChange }= useFilteredData(forkFilterService);
+    const {filteredForks, commitData, onFiltersChange, setForkQueryState }= useFilteredData(forkFilterService);
+    const updateQuery = () => {
+        setForkQueryState((state) => ({
+            ...state,
+            owner: "torvalds",
+            repo: "linux",
+            range: { },
+        }));
+    };
+
     return (
         <>
+            <button onClick={updateQuery}>Set Query</button>
             <SplitPageLayout.Pane resizable aria-label="Configuration Pane">
                 <ConfigurationPane filterChangeHandler={onFiltersChange}/>
             </SplitPageLayout.Pane >
             <SplitPageLayout.Content aria-label="Content">
-                <ApplicationBody />
+                <ApplicationBody forks={filteredForks} commits={commitData} />
             </SplitPageLayout.Content>
         </>
     );

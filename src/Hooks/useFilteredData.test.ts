@@ -36,7 +36,7 @@ const mockCommits: CommitInfo[] = [
         mergedNodes: [],
         repo: "repo-1",
         commit_type: "feature",
-        branch_name: "main",
+        branch: "main",
         branch_id: "branch1",
     },
 ];

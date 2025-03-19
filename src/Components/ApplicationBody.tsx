@@ -8,6 +8,7 @@ import CommitTable from "./Plots/CommitTable";
 import { Dropdown } from "@Components/Dropdown";
 
 import { useVisualizationData } from "@Hooks/useVisualizationData";
+import { ForkInfo, CommitInfo } from "@Types/DataLayerTypes.ts";
 //TODO: Replace with actual data when proper hooks is implemented
 //=================================================================================================
 const dummyForks = [
@@ -32,19 +33,25 @@ const dummyCommits = [
     }
 ];
 //=================================================================================================
-
+interface AppBodyProps {
+    forks: ForkInfo[]
+    commits: CommitInfo[]
+}
 // TODO: add props passed down from the parent component containing Commit and Fork data
-function ApplicationBody() {
+function ApplicationBody({forks, commits}: AppBodyProps) {
 
+    const proccessed = commits.map((commit) => {
+        return {...commit, type: "adaptive" as "adaptive" | "corrective" | "perfective" | "uknown", date: new Date(commit.date), branch: "no", login: "no"};
+    });
     // TODO: Add props as initial data when provided
     const { visData } =
-        useVisualizationData(dummyForks, dummyCommits);
+        useVisualizationData(forks, proccessed);
 
     // TODO: Extract props from visData when more visualizations need them
     const {
         forkListData, commitTableData
     } = visData;
-
+    console.log(forkListData, commitTableData);
     // const { handleHistogramSelection, handleTimelineSelection } = handlers;
 
     const [measureRefCommitTimeline, { width }] = useMeasure();

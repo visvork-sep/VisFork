@@ -215,6 +215,8 @@ describe("Regular functionality", () => {
 
         it("should return the same fork - fork last update was within last n months", () => {
             filter.updatedInLastMonths = 240; // 20 years
+            // fix updated_at date for consistent testing
+            fork.updated_at = "2022-09-09T08:11:06.866Z";
             expect(ffs.apply(fork, filter)).toBe(fork);
         });
     });

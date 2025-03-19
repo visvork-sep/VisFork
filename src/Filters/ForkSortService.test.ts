@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach } from "vitest";
 import { Fork } from "../Types/GithubTypes";
 import { getRandomForks } from "@Utils/ForkGenerator";
 import { ForkSortService } from "./ForkSortService";
-import { SortingCriterionExtra } from "../Types/ForkFilter";
+import { SortingCriterionExtra } from "../Types/ForkSorter";
 
 const fss: ForkSortService = new ForkSortService();
 

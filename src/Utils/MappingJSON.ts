@@ -18,13 +18,13 @@ export function toCommitInfo(commit: CommitJSON): CommitInfo {
         id: commit.node_id, // Assuming `node_id` is unique and works as an ID
         parentIds: commit.parents?.map(parent => parent.sha) ?? [],
         node_id: commit.node_id,
-        author: commit.commit?.author?.name ?? "Unknown",
+        author: commit.author?.login ?? "Unknown",
         date: commit.commit?.author?.date ?? "Unknown",
         url: commit.html_url,
         message: commit.commit?.message ?? "",
         mergedNodes: [], // No clear mapping, leaving as empty array
         repo: commit.repo,
-        login: commit.author?.login,
+        login: commit.author?.login ?? "Unknown",
         commit_type: undefined,
         branch: undefined,
         branch_id: undefined

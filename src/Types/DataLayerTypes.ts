@@ -31,7 +31,7 @@ export interface CommitInfo {
     parentIds: string[];
     node_id: string;
     author: string;
-    login: string | undefined;
+    login: string;
     date: string;
     url: string;
     message: string;

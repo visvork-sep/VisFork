@@ -41,7 +41,7 @@ interface AppBodyProps {
 // TODO: add props passed down from the parent component containing Commit and Fork data
 function ApplicationBody({forks, commits}: AppBodyProps) {
     const proccessed = useMemo(() => commits.map((commit) => {
-        return {...commit, type: "adaptive" as "adaptive" | "corrective" | "perfective" | "uknown", date: new Date(commit.date), branch: "no", login: "no"};
+        return {...commit, type: "adaptive" as "adaptive" | "corrective" | "perfective" | "uknown", date: new Date(commit.date), branch: "no"};
     }), [commits]);
     // TODO: Add props as initial data when provided
     const { visData } =

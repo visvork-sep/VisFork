@@ -17,13 +17,13 @@ export const FORKS_COUNT_INPUT_INITIAL = "5";
 /// FORKS_SORTING_ORDERS ways to sort orders for the user to select
 export const FORKS_SORTING_ORDERS = {
     STARGAZERS: { label: "Stargazers", value: "stargazers" },
-    DATE: { label: "Date of creation", value: "date" },
+    NEWEST: { label: "Newest", value: "newest" },
     WATCHERS: { label: "Watchers", value: "watchers" },
-    LAST_COMMIT: { label: "Last commit", value: "lastCommit" },
-    AUTHOR_STARS: { label: "Author stars", value: "authorStars" }
+    OLDEST: { label: "Oldest", value: "oldest" },
 } as const;
 
 export type ForksSortingOrder = typeof FORKS_SORTING_ORDERS[keyof typeof FORKS_SORTING_ORDERS]["value"];
+
 
 /// Ascending and descending
 export const SORT_DIRECTION = {
@@ -40,12 +40,13 @@ export const FORK_TYPES = {
     CORRECTIVE: { label: "Corrective", value: "corrective" }
 } as const;
 
+
 export type ForkType = typeof FORK_TYPES[keyof typeof FORK_TYPES]["value"];
 
 /// Types of repository owners
 export const OWNER_TYPES = {
-    USER: { label: "User", value: "user" },
-    ORGANIZATION: { label: "Organization", value: "org" }
+    USER: { label: "User", value: "User" },
+    ORGANIZATION: { label: "Organization", value: "Organization" }
 } as const;
 
 export type OwnerType = typeof OWNER_TYPES[keyof typeof OWNER_TYPES]["value"];

@@ -1,3 +1,5 @@
+import { ForksSortingOrder, ForkType, OwnerType, SortDirection } from "@Utils/Constants";
+
 export interface DataLayerOutput {
     forks: ForkInfo[],
     commits: CommitInfo[],
@@ -14,15 +16,17 @@ export interface  ForkInfo {
 }
 
 export interface DateRange {
-    start?: string;
-    end?: string
+    start: Date;
+    end: Date
 };
 
 export interface ForkQueryState {
     owner: string;
     repo: string;
-    range: DateRange
-    sort?: "newest" | "oldest" | "stargazers" | "watchers";
+    forksCount: number;
+    range: DateRange;
+    sort: ForksSortingOrder;
+    direction: SortDirection;
 }
 
 export interface CommitInfo {
@@ -40,3 +44,18 @@ export interface CommitInfo {
     branch_name?: string;
     branch_id?: string;
 }
+
+// Define the filter state structure
+/** See URD Section 3.1.3. "Filtering and Sorting Options". */
+export interface ForkFilter {
+    dateRange: DateRange;
+    activeForksOnly?: boolean;
+    forkTypes: ForkType[];
+    // sortByLastCommit?: boolean; -> moved to SortingCriterionExtra "latestCommit"
+    ownerTypes: OwnerType[];
+    updatedInLastMonths?: number;
+}
+
+
+
+

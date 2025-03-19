@@ -1,8 +1,7 @@
-import { SortDirection, ForksSortingOrder, OwnerType } from "@Utils/Constants";
-import { SortingCriterionExtra, ForkFilter } from "../Types/ForkFilter";
 import { Dispatch, SetStateAction } from "react";
 import { InputError, UnknownError } from "../Types/FormErrors";
 import { preparedFormComplete } from "@Types/FilterForm";
+import { ForkQueryState, ForkFilter } from "@Types/LogicLayerTypes";
 
 function setInputError(e: unknown, setter: Dispatch<SetStateAction<InputError | null>>) {
     if (e instanceof InputError) {
@@ -12,66 +11,39 @@ function setInputError(e: unknown, setter: Dispatch<SetStateAction<InputError | 
     }
 }
 
-/**
- * Waiting for extension on the filter
- * 
- * @param input SortDirection as defined in constants.
- * @returns mapped value for logic layer
- */
-function mapForksSortDirection(input: SortDirection): unknown {
-    switch (input) {
-        case "asc":
-            return "ascending";
-        case "desc":
-            return "descending";
-    }
-}
-
-function mapForksSortCriterion(input: ForksSortingOrder): SortingCriterionExtra {
-    switch (input) {
-        case "authorStars":
-            return "authorPopularity";
-        case "date":
-            return "newest";
-        case "lastCommit":
-            return "latestCommit";
-        case "stargazers":
-            return "stargazers";
-        case "watchers":
-            return "watchers";
-    }
-}
-
-/**
- * Waiting for extension on the filter
- * 
- * @param input OwnerType as defined in constants.
- * @returns mapped value for logic layer
- */
-function mapForksOwnerType(input: OwnerType[]): unknown {
-    return input;
-}
-
 function filterFactory(form: preparedFormComplete): ForkFilter {
     const filter: ForkFilter = {
         dateRange: {
-            start: form.commitsDateRangeFrom.toISOString(),
-            end: form.commitsDateRangeUntil.toISOString()
+            start: form.commitsDateRangeFrom,
+            end: form.commitsDateRangeUntil
         },
-        sortBy: mapForksSortCriterion(form.forksOrder),
-        ownerType: undefined,
-        activeForksOnly: undefined,
-        forkType: undefined,
+        ownerTypes: form.ownerTypeFilter,
+        activeForksOnly: false,
+        forkTypes: form.forksTypeFilter,
         updatedInLastMonths: form.recentlyUpdated ?? undefined
     };
 
     return filter;
 }
 
+function forkQueryStateFactory(form: preparedFormComplete): ForkQueryState {
+    const forkQueryState: ForkQueryState = {
+        owner: form.owner,
+        repo: form.repositoryName,
+        forksCount: form.forksCount,
+        range: {
+            start: form.commitsDateRangeFrom,
+            end: form.commitsDateRangeUntil
+        },
+        sort: form.forksOrder,
+        direction: form.forksSortDirection
+    };
+
+    return forkQueryState;
+}
+
 export {
     setInputError,
-    mapForksSortDirection,
-    mapForksSortCriterion,
-    mapForksOwnerType,
-    filterFactory
+    filterFactory,
+    forkQueryStateFactory
 };

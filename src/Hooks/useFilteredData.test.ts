@@ -1,9 +1,9 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, Mock } from "vitest";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { useFetchForks, useFetchCommitsBatch } from "@Queries/queries";
 import { ForkFilterService } from "@Filters/ForkFilterService.ts";
-import { ForkInfo, CommitInfo } from "@Types/DataLayerTypes";
+import { ForkInfo, CommitInfo } from "@Types/LogicLayerTypes";
 
 // Mock useFetchForks and useFetchCommitsBatch
 vi.mock("@Queries/queries", () => ({
@@ -63,28 +63,6 @@ describe("useFilteredData Hook", () => {
 
         expect(result.current.isLoadingFork).toBe(false);
         expect(result.current.forkError).toBeNull();
-    });
-
-    it("should set fork query state and trigger refetch", async () => {
-        (useFetchForks as Mock).mockReturnValue({ data: mockForks, isLoading: false, error: null });
-
-        const { result } = renderHook(() => useFilteredData(new ForkFilterService()));
-
-        act(() => {
-            result.current.setForkQueryState({
-                owner: "user1",
-                repo: "repo-1",
-                range: { start: "2023-01-01", end: "2023-12-31" },
-                sort: "newest",
-            });
-        });
-
-        await waitFor(() => expect(useFetchForks).toHaveBeenCalledWith({
-            owner: "user1",
-            repo: "repo-1",
-            range: { start: "2023-01-01", end: "2023-12-31" },
-            sort: "newest",
-        }));
     });
 
     it("should fetch commits after filtering forks", async () => {

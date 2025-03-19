@@ -58,11 +58,12 @@ function useFilterForm() {
      * The selected sorting order. Must be one of the defined sorting options in FORKS_SORTING_ORDERS.
      */
     const handleForksOrderChange = useCallback((value: string) => {
-        assert(value === FORKS_SORTING_ORDERS.LAST_COMMIT.value ||
-            value === FORKS_SORTING_ORDERS.AUTHOR_STARS.value ||
+        assert(
             value === FORKS_SORTING_ORDERS.WATCHERS.value ||
             value === FORKS_SORTING_ORDERS.STARGAZERS.value ||
-            value === FORKS_SORTING_ORDERS.DATE.value, "Developer error: Invalid sorting order selected");
+            value === FORKS_SORTING_ORDERS.NEWEST.value ||
+            value === FORKS_SORTING_ORDERS.OLDEST.value, 
+            "Developer error: Invalid sorting order selected");
        
         setForm((prev) => ({ ...prev, forksOrder: value as ForksSortingOrder }));
     }, []);

@@ -8,11 +8,12 @@
     "url": "https://github.com/fasonju/visfork-plugin.git"
   },
   "scripts": {
-    "generate": "graphql-codegen && openapi-typescript ./openapi-schema.yaml -o ./__generated__/rest-schema.d.ts",
+    "generate": "graphql-codegen && openapi-typescript ./openapi-schema.yaml -o ./__generated__/rest-schema.d.ts && openapi-typescript ./.contrib/backend/openapi-schema-auth.yml -o ./__generated__/auth-schema.d.ts",
     "dev": "vite --host 127.0.0.1 --port 3000",
     "build": "npm run generate && tsc -b && vite build",
     "fix-lint": "eslint . --quiet --fix",
     "lint": " eslint . --max-warnings 0",
+    "start": "npm install && npm run dev",
     "test": "vitest --coverage --run",
     "test-watch": "vitest --watch",
     "test-ui": "vitest --ui"
@@ -26,6 +27,8 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/d3": "^7.4.3",
+    "@types/d3-sankey": "^0.12.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
@@ -49,13 +52,18 @@
   },
   "dependencies": {
     "@primer/octicons-react": "^19.15.0",
-    "@primer/react": "^37.13.0",
+    "@primer/react": "^37.14.0",
     "@tanstack/react-query": "^5.66.0",
+    "@uidotdev/usehooks": "^2.4.1",
+    "d3": "^7.9.0",
+    "d3-sankey": "^0.12.3",
+    "d3-dag": "^1.1.0",
     "graphql": "^16.10.0",
     "graphql-request": "^7.1.2",
     "openapi-fetch": "^0.13.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^7.2.0",
     "styled-components": "^5.3.7"
   }
 }

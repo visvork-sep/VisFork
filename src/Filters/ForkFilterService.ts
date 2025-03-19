@@ -1,20 +1,21 @@
 import { ACTIVE_FORK_NROF_MONTHS } from "@Utils/Constants";
 import { ForkFilter, DateRange, ForkType, OwnerType } from "../Types/ForkFilter";
-import { Fork } from "../Types/GithubTypes";
+import { ForkInfo } from "@Types/DataLayerTypes";
 
 
+// TODO: Change ForkInfo to whichever type/interface we have invented for forks.
 export class ForkFilterService {
     /**
-     * Filters an array of {@link Fork} objects according to the passed {@link ForkFilter}.
+     * Filters an array of {@link ForkInfo} objects according to the passed {@link ForkFilter}.
      *
-     * @param forks Collection of {@link Fork}s to be filtered.
+     * @param forks Collection of {@link ForkInfo}s to be filtered.
      * @param filter The {@link ForkFilter} based on which the function picks out the desired forks.
      * 
-     * @returns an array of {@link Fork}s that do not contain forks that do not pass the filter,
+     * @returns an array of {@link ForkInfo}s that do not contain forks that do not pass the filter,
      * and all forks that do are in the returned array.
      */
-    apply(forks: Fork[], filter: ForkFilter): Fork[] {
-         const resultForks: Fork[] = forks.filter(fork => {
+    apply(forks: ForkInfo[], filter: ForkFilter): ForkInfo[] {
+         const resultForks: ForkInfo[] = forks.filter(fork => {
             this.#isValidForkByFilter(fork, filter);
          });
 
@@ -29,7 +30,7 @@ export class ForkFilterService {
      * @throws TypeError, if {@param fork} is null or undefined.
      * @throws TypeError, if {@param filter} is null or undefined.
      */
-    #isValidForkByFilter(fork: Fork, filter: ForkFilter): boolean {
+    #isValidForkByFilter(fork: ForkInfo, filter: ForkFilter): boolean {
         if (fork == null) {
             throw TypeError("Fork is null or undefined");
         }
@@ -54,7 +55,7 @@ export class ForkFilterService {
      * @throws TypeError, if both the start and end properties of {@param dateRange} are null or undefined.
      * @throws TypeError, if both the start and end properties of {@param dateRange} are not of type Date.
      */
-    #isForkInDateRange(fork: Fork, dateRange: DateRange): boolean {
+    #isForkInDateRange(fork: ForkInfo, dateRange: DateRange): boolean {
         if (fork.created_at == null) {
             throw TypeError("Fork date property is undefined");
         }
@@ -93,7 +94,7 @@ export class ForkFilterService {
      * @returns True if {@code activeForksOnly === null || activeForksOnly === undefined || !activeForksOnly
      *           || {@link this.#isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS)}}, false otherwise.
      */
-    #isForkActive(fork: Fork, activeForksOnly?: boolean): boolean {
+    #isForkActive(fork: ForkInfo, activeForksOnly?: boolean): boolean {
         let result: boolean = false;
 
         if (activeForksOnly == null || !activeForksOnly) {
@@ -111,7 +112,7 @@ export class ForkFilterService {
      * 
      * @returns True if {@code forkType === undefined || forkType === null || fork.type === forkType}, false otherwise.
      */
-    #isForkOfType(fork: Fork, forkType?: ForkType): boolean {
+    #isForkOfType(fork: ForkInfo, forkType?: ForkType): boolean {
         if (forkType == null) {
             return true; // since the user is not filtering based on this
         }
@@ -127,34 +128,34 @@ export class ForkFilterService {
      * If {@param ownerType} is not undefined or null, this function determines whether
      * the owner of {@param fork} is of type {@param ownerType}.
      * 
-     * @returns True if {@code ownerType === undefined || ownerType === null || fork.ownerType === ownerType}, false otherwise.
+     * @returns True if {@code ownerType === undefined || ownerType === null || fork.owner.login.toLowerCase() === ownerType}, false otherwise.
      */
-    #isOwnerOfType(fork: Fork, ownerType?: OwnerType): boolean {
+    #isOwnerOfType(fork: ForkInfo, ownerType?: OwnerType): boolean {
         if (ownerType == null) {
             return true; // since the user is not filtering based on this
         }
 
-        return fork.owner.type.toLowerCase() === ownerType;
+        return fork.owner.login.toLowerCase() === ownerType;
     }
 
     /**
      * If {@param nrOfMonths} is not undefined or null, this function determines whether
      * the {@param fork} was updated in the previous {@code nrOfMonths}.
      * 
-     * If {@code fork.updated_at} is undefined or null, the function will return false (since it was not updated
+     * If {@code fork.last_pushed} is undefined or null, the function will return false (since it was not updated
      * in the previous {@code nrOfMonths} months).
      * 
      * @returns True if {@code fork} was updated in the previous {@code nrOfMonths}, false otherwise.
      */
-    #isForkUpdatedInLastMonths(fork: Fork, nrOfMonths?: number): boolean {
+    #isForkUpdatedInLastMonths(fork: ForkInfo, nrOfMonths?: number): boolean {
         if (nrOfMonths == null) {
             return true; // since the user is not filtering based on this
         }
 
         let lastUpdatedMilliseconds: number = -1;
 
-        if (fork.updated_at != null) {
-            lastUpdatedMilliseconds = Date.parse(fork.updated_at);
+        if (fork.last_pushed != null) {
+            lastUpdatedMilliseconds = Date.parse(fork.last_pushed);
         }
 
         const now = new Date(); // reference date object

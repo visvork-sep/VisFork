@@ -1,37 +1,18 @@
-import {Column, DataTable, Table} from "@primer/react/experimental";
+import { Column, DataTable, Table } from "@primer/react/experimental";
 import { Box, Link, TextInput, useTheme } from "@primer/react";
-import commitData from "./commit_data_example.json";
 import { useState } from "react";
+import { CommitTableData, CommitTableDetails } from "@VisInterfaces/CommitTableData";
 
-interface CommitInfo {
-  repo: string;
-  sha: string;
-  id: string;
-  parentIds: string[];
-  branch_name: string;
-  branch_id: string;
-  node_id: string;
-  author: string;
-  date: string;
-  url: string;
-  message: string;
-  commit_type: string;
-  mergedNodes: unknown[];
-}
-
-function CommitTable() {
+function CommitTable({ commitData }: CommitTableData) {
 
     // Fetch current color mode (light or dark)
-    const {colorMode} = useTheme();
+    const { colorMode } = useTheme();
 
     // To track text input for filtering
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Load commit data from JSON file
-    const data: CommitInfo[] = commitData;
-
     // Filter data based on current search term
-    const filteredData = data.filter((commit) =>
+    const filteredData = commitData.filter((commit) =>
         commit.message.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -40,13 +21,13 @@ function CommitTable() {
     const linkColor = isDarkMode ? "white" : "black";
 
     // Define how each column will be displayed
-    const columns: Column<CommitInfo>[] = [
+    const columns: Column<CommitTableDetails>[] = [
         {
             header: "Owner/Repo",
             field: "repo",
             rowHeader: true,
             width: "auto",
-            renderCell: (row: CommitInfo) => (
+            renderCell: (row: CommitTableDetails) => (
                 <Link
                     href={`https://github.com/${row.repo}`}
                     target="_blank"
@@ -66,9 +47,10 @@ function CommitTable() {
             rowHeader: true,
             width: "auto",
             // Note: Doesn't work perfectly if author's name doesn't match GitHub username
-            renderCell: (row: CommitInfo) => (
+            renderCell: (row: CommitTableDetails) => (
                 <Link
-                    href={`https://github.com/${row.author}`}
+                    // This is the link to the author's GitHub profile using the username
+                    href={`https://github.com/${row.login}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{
@@ -76,6 +58,7 @@ function CommitTable() {
                         textDecoration: "none",
                     }}
                 >
+                    {/* This is the author's name, which is not the username */}
                     {row.author}
                 </Link>
             ),
@@ -93,21 +76,21 @@ function CommitTable() {
             width: "auto",
         },
         {
-            header: "URL",
-            field: "url",
+            header: "Hash",
+            field: "id",
             rowHeader: true,
             width: "auto",
-            renderCell: (row: CommitInfo) => (
+            renderCell: (row: CommitTableDetails) => (
                 <Box
                     sx={{
                         whiteSpace: "normal",
                         wordBreak: "break-all",
                         overflowWrap: "break-word",
-                        minWidth: "100px",
+                        minWidth: "50px",
                     }}
                 >
                     <Link
-                        href={row.url}
+                        href={`https://github.com/${row.repo}/commit/${row.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         sx={{
@@ -115,7 +98,8 @@ function CommitTable() {
                             textDecoration: "none",
                         }}
                     >
-                        {row.url}
+                        {/* Short version of the commit hash */}
+                        {row.id.substring(0, 7)}
                     </Link>
                 </Box>
             ),
@@ -131,16 +115,16 @@ function CommitTable() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     aria-label="Search commit messages"
-                    sx={{width: "30%"}}
+                    sx={{ width: "30%" }}
                 />
             </Box>
 
             <Box
                 sx={{
                     maxHeight: "510px",
-                    overflowY: "auto",        
+                    overflowY: "auto",
                 }}>
-            
+
                 <Table.Container>
                     <DataTable
                         // Table will be populated with filtered data

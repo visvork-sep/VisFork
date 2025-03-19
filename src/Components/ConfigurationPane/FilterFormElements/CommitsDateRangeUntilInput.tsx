@@ -1,34 +1,21 @@
 import { FormControl, TextInput } from "@primer/react";
-
-type CommitsDateRangeUntilInputValidation = "laterFromDateError" | "futureUntilDateError" | "unknownError";
+import { InputError } from "../../../Types/FormErrors";
 
 interface CommitsDateRangeUntilInputProps {
-    validation?: CommitsDateRangeUntilInputValidation
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
+    value: string;
 };
 
-function CommitsDateRangeUntilInput({ validation, onChangeHandler }: CommitsDateRangeUntilInputProps) {
-    let validationText;
-
-    switch (validation) {
-        case "laterFromDateError":
-            validationText = "Not a valid date range";
-            break;
-        case "futureUntilDateError":
-            validationText = "Future dates are not allowed for the until field";
-            break;
-        case "unknownError":
-            validationText = "Unknown commit date range error";
-    }
-
+function CommitsDateRangeUntilInput({ error, onChangeHandler, value }: CommitsDateRangeUntilInputProps) {
     return (
-        <FormControl>
+        <FormControl required>
             <FormControl.Label>Commits until</FormControl.Label>
             <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
-            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} />
-            {validationText &&
+            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} value={value}/>
+            {error &&
                 <FormControl.Validation variant="error">
-                    {validationText}
+                    {error.message}
                 </FormControl.Validation>
             }
         </FormControl>
@@ -38,4 +25,4 @@ function CommitsDateRangeUntilInput({ validation, onChangeHandler }: CommitsDate
 export {
     CommitsDateRangeUntilInput
 };
-export type { CommitsDateRangeUntilInputProps, CommitsDateRangeUntilInputValidation };
+export type { CommitsDateRangeUntilInputProps };

@@ -75,17 +75,17 @@ function ApplicationBody() {
             <Dropdown summaryText="Histogram">
                 <Histogram {...histogramData} />
             </Dropdown>
-            {/* <Dropdown summaryText="Fork List">
+            <Dropdown summaryText="Fork List">
                 <ForkList {...forkListData} />
             </Dropdown>
             <Dropdown summaryText="Commit Table">
                 <CommitTable {...commitTableData} />
             </Dropdown>
             <Dropdown summaryText="Sankey Diagram">
-                <SankeyChartBuild {...commitTableData} />
+                <SankeyChartBuild {...sankeyData} />
             </Dropdown>
-            <Dropdown summaryText="Collaboration Graph">
-                <CollaborationGraph {...commitTableData} />
+            {/* <Dropdown summaryText="Collaboration Graph">
+                <CollaborationGraph {...collabGraphData} />
             </Dropdown> */}
         </Stack>
     );

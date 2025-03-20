@@ -123,7 +123,10 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
-
+            console.log("Constrained commits", constrainedCommits);
+            console.log("New word cloud data", mapCommitDataToWordCloud(constrainedCommits));
+            
+            
             setVisData((prev) => ({
                 ...prev,
                 commitTableData: mapCommitDataToCommitTable(constrainedCommits),

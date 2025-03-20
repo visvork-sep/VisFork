@@ -7,7 +7,7 @@ import CommitTimeline from "./Plots/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable";
 import { SankeyDiagram } from "./Plots/SankeyDiagram.tsx";
 import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
-
+import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { Dropdown } from "@Components/Dropdown";
 
 import { useVisualizationData } from "@Hooks/useVisualizationData";
@@ -41,7 +41,7 @@ const dummyCommits = [
     {
         repo: "Repo 2",
         sha: "321",
-        message: "Message 33333",
+        message: "not yes and i am will, . !",
         author: "Author 1",
         login: "Login 1",
         date: new Date(2025, 0),
@@ -49,6 +49,18 @@ const dummyCommits = [
         url: "URL 1",
         parentIds: [],
         type: "corrective" as "adaptive" | "corrective" | "perfective" | "unknown"
+    },
+    {
+        repo: "Repo 3",
+        sha: "333333",
+        message: "plants vs zombies",
+        author: "Author 2",
+        login: "Login 1",
+        date: new Date(2025, 3),
+        branch: "Branch 1",
+        url: "URL 1",
+        parentIds: ["321"],
+        type: "adaptive" as "adaptive" | "corrective" | "perfective" | "unknown"
     }
 ];
 //=================================================================================================
@@ -60,17 +72,21 @@ function ApplicationBody() {
     const { visData, handlers } =
         useVisualizationData(dummyForks, dummyCommits);
 
-    // TODO: Extract props from visData when more visualizations need them
     const {
-        forkListData, timelineData, commitTableData, histogramData, sankeyData, collabGraphData } = visData;
+        forkListData,
+        timelineData,
+        commitTableData,
+        histogramData,
+        sankeyData,
+        collabGraphData,
+        wordCloudData
+    } = visData;
 
     const { handleHistogramSelection, handleTimelineSelection } = handlers;
 
     const [measureRefCommitTimeline, { width }] = useMeasure();
     const heightCommitTimelineSVG = 600;
 
-
-    //TODO: Add other visualizations and pass respective props
     return (
         <Stack>
             <Dropdown summaryText="Histogram">
@@ -99,6 +115,9 @@ function ApplicationBody() {
             </Dropdown>
             <Dropdown summaryText="Commit Table">
                 <CommitTable {...commitTableData} />
+            </Dropdown>
+            <Dropdown summaryText="Word Cloud">
+                <WordCloud {...wordCloudData} />
             </Dropdown>
             <Dropdown summaryText="Sankey Diagram">
                 <SankeyDiagram {...sankeyData} />

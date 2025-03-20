@@ -13,17 +13,17 @@ export interface Word {
 
 // Simple tokenizer function
 export const tokenize = (text: string) => {
-    return text.split(/\s+/).filter((token) => token.length > 1); 
+    return text.split(/\s+/).filter((token) => token.length > 1);
 };
 
 // Define the processing functions
 // export const stemmingFunction = (token: string) => stemmer(token);
 export const lemmatizationFunction = (token: string) => {
-    if (typeof token !== 'string') {
+    if (typeof token !== "string") {
         return token;
     }
     const lemmatized = lemmatizer(token);
-    if (typeof lemmatized !== 'string') {
+    if (typeof lemmatized !== "string") {
         console.error(`Lemmatizer returned non-string value for token "${token}":`, lemmatized);
         return token;
     }
@@ -32,16 +32,16 @@ export const lemmatizationFunction = (token: string) => {
 
 
 export const processCommitMessages = (
-    data: any, 
-    processToken: (token: string) => string, 
-    start: number, 
-    finish: number, 
-    maxSize: number = 100, 
-    minSize: number = 25  
+    data: { message: string }[],
+    processToken: (token: string) => string,
+    start: number,
+    finish: number,
+    maxSize = 100,
+    minSize = 25
 ): Word[] => {
-    const wordFreq: { [key: string]: number } = {};
+    const wordFreq: Record<string, number> = {};
 
-    data.forEach((commit: any) => {
+    data.forEach((commit: { message: string }) => {
         const tokens = tokenize(commit.message);
         const filteredTokens = removeStopwords(tokens).filter(token => /^[a-zA-Z]+$/.test(token));
 
@@ -49,8 +49,8 @@ export const processCommitMessages = (
             let processedWord;
             try {
                 processedWord = processToken(token.toLowerCase() + "");
-                if (typeof processedWord !== 'string' || processedWord.trim() === '') {
-                    throw new Error('Invalid processed word');
+                if (typeof processedWord !== "string" || processedWord.trim() === "") {
+                    throw new Error("Invalid processed word");
                 }
             } catch (error) {
                 console.error(`Error processing token "${token}":`, error);
@@ -63,7 +63,7 @@ export const processCommitMessages = (
 
     // Convert frequencies to an array
     let sortedWords = Object.entries(wordFreq)
-        .map(([word, freq]) => ({ text: word, frequency: freq, size: freq })) 
+        .map(([word, freq]) => ({ text: word, frequency: freq, size: freq }))
         .sort((a, b) => b.frequency - a.frequency)
         .slice(Math.max(0, start), Math.min(Object.keys(wordFreq).length, finish));
 
@@ -71,10 +71,10 @@ export const processCommitMessages = (
 
     // Normalize sizes using log scaling
     const maxFreq = sortedWords[0].frequency;
-    
+
     sortedWords = sortedWords.map(({ text, frequency }) => ({
         text,
-        frequency, 
+        frequency,
         size: minSize + ((Math.log(frequency + 1) / Math.log(maxFreq + 1)) * (maxSize - minSize))
     }));
 

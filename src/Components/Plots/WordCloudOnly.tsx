@@ -1,5 +1,5 @@
 import React from "react";
-import WordCloud from "./WordCloud";
+import WordCloud from "./WordCloud/WordCloud";
 
 const WordCloudOnly: React.FC = () => {
     return (

@@ -1,6 +1,7 @@
 import { SplitPageLayout } from "@primer/react";
 import ConfigurationPane from "@Components/ConfigurationPane/ConfigurationPane";
 import ApplicationBody from "@Components/ApplicationBody";
+import WordCloud from "@Components/Plots/WordCloud/WordCloud";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { ForkFilterService } from "@Filters/ForkFilterService";
 
@@ -15,6 +16,7 @@ function DataComponents() {
             </SplitPageLayout.Pane >
             <SplitPageLayout.Content aria-label="Content">
                 <ApplicationBody />
+                <WordCloud />
             </SplitPageLayout.Content>
         </>
     );

@@ -6,7 +6,7 @@ import { HistogramData } from "@VisInterfaces/HistogramData";
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
  */
-function Histogram({ commitData }: HistogramData) {
+function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const { theme } = useTheme();
 
@@ -185,32 +185,46 @@ function Histogram({ commitData }: HistogramData) {
 
                     chartFocus.selectAll(".selection-label").remove();
 
-                    // Create group for labels
-                    const labelGroup = chartFocus.append("g").attr("class", "selection-label");
+                    if (selectedDates.length > 0) {
+                        // Create group for labels
+                        const labelGroup = chartFocus.append("g").attr("class", "selection-label");
 
-                    // Get start and end date
-                    const dateFormat = d3.timeFormat("%B %Y");
-                    const startOfSelection = selectedDates[0]?.[0];
-                    const endOfSelection = selectedDates[selectedDates.length - 1]?.[0];
+                        // Get start and end date
+                        const dateFormat = d3.timeFormat("%B %Y");
+                        const startOfSelection = selectedDates[0]?.[0];
 
-                    if (startOfSelection && endOfSelection) {
-                        const startLabel = dateFormat(startOfSelection);
-                        const endLabel = dateFormat(endOfSelection);
+                        const endOfSelection =
+                            new Date(
+                                selectedDates[selectedDates.length - 1][0].getFullYear(),
+                                selectedDates[selectedDates.length - 1][0].getMonth() + 1,
+                                0, // Last day of the month
+                                23, 59, 59, 999 // Set to the latest possible time
+                            );
+                        console.log("Start Date:", startOfSelection);
+                        console.log("End Date:", endOfSelection);
 
-                        // Left label
-                        labelGroup
-                            .append("text")
-                            .attr("x", 0)
-                            .attr("y", -5)
-                            .text(startLabel);
 
-                        // Right label
-                        labelGroup
-                            .append("text")
-                            .attr("x", focusWidth)
-                            .attr("y", -5)
-                            .attr("text-anchor", "end")
-                            .text(endLabel);
+                        if (startOfSelection && endOfSelection) {
+                            const startLabel = dateFormat(startOfSelection);
+                            const endLabel = dateFormat(endOfSelection);
+
+                            // Left label
+                            labelGroup
+                                .append("text")
+                                .attr("x", 0)
+                                .attr("y", -5)
+                                .text(startLabel);
+
+                            // Right label
+                            labelGroup
+                                .append("text")
+                                .attr("x", focusWidth)
+                                .attr("y", -5)
+                                .attr("text-anchor", "end")
+                                .text(endLabel);
+
+                            if (handleHistogramSelection) handleHistogramSelection(startOfSelection, endOfSelection);
+                        }
                     }
                 }
             });

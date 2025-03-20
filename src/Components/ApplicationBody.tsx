@@ -33,6 +33,18 @@ const dummyCommits = [
         url: "URL 1",
         parentIds: [],
         type: "adaptive" as "adaptive" | "corrective" | "perfective" | "uknown"
+    },
+    {
+        repo: "Repo 2",
+        sha: "321",
+        message: "Message 33333",
+        author: "Author 1",
+        login: "Login 1",
+        date: new Date(2025, 0),
+        branch: "Branch 1",
+        url: "URL 1",
+        parentIds: [],
+        type: "corrective" as "adaptive" | "corrective" | "perfective" | "uknown"
     }
 ];
 //=================================================================================================
@@ -74,7 +86,8 @@ function ApplicationBody() {
                 </Box>
             </Dropdown>
             <Dropdown summaryText="Histogram">
-                <Histogram {...histogramData} />
+                <Histogram commitData={histogramData.commitData}
+                    handleHistogramSelection={handleHistogramSelection} />
             </Dropdown>
             <Dropdown summaryText="Fork List">
                 <ForkList {...forkListData} />

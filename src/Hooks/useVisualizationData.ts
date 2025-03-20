@@ -99,10 +99,15 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
     // Handlers
     const handleHistogramSelection = useCallback(
         (startDate: Date, endDate: Date) => {
+            console.log("Histogram selection", startDate, endDate);
+            console.log("Commit data", commitData);
+            
             const constrainedCommits = commitData.filter(
                 (commit) => commit.date >= startDate && commit.date <= endDate
             );
 
+            console.log("Constrained commits", constrainedCommits);
+            
             setVisData((prev) => ({
                 ...prev,
                 timelineData: mapCommitDataToTimeline(constrainedCommits),

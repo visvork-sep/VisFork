@@ -37,10 +37,10 @@ export class ForkFilterService {
             throw TypeError("Filter is null or undefined");
         }
 
-        let result: boolean = false;
-        result = this.#isForkInDateRange(fork, filter.dateRange)
-        result &&= this.#isForkActive(fork, filter.activeForksOnly)
-        result &&= this.#isOwnerOfType(fork, filter.ownerTypes)
+        let result = false;
+        result = this.#isForkInDateRange(fork, filter.dateRange);
+        result &&= this.#isForkActive(fork, filter.activeForksOnly);
+        result &&= this.#isOwnerOfType(fork, filter.ownerTypes);
         result &&= this.#isForkUpdatedInLastMonths(fork, filter.updatedInLastMonths);
 
         return result;

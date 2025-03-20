@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
-import { FilterFormState, preparedForm, preparedFormComplete } from "../Types/FilterForm";
-import { CommitsDateRangeFromInputErrors, InputError } from "../Types/FormErrors";
+import { FilterFormState, preparedForm, preparedFormComplete } from "../Types/UIFormTypes";
+import { CommitsDateRangeFromInputErrors, InputError } from "../Types/UIFormErrors";
 import { 
     prepareRepository,
     prepareForksCount, 
@@ -13,7 +13,7 @@ import {
     prepareRecentlyUpdated 
 } from "@Utils/Sanitize";
 import { FilterChangeHandler } from "./useFilteredData";
-import { setInputError, filterFactory } from "@Utils/FormSubmissionUtils";
+import { setInputError, filterFactory, forkQueryStateFactory } from "@Utils/FormSubmissionUtils";
 import { ForksSortingOrder, ForkType, OwnerType, SortDirection } from "@Utils/Constants";
 
 
@@ -158,9 +158,11 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         ) {
             return;
         }
+
+        const completeForm = preparedForm as preparedFormComplete;
         
         // Type assertion because we know that the form is complete
-        onFiltersChange(filterFactory(preparedForm as preparedFormComplete));
+        onFiltersChange(filterFactory(completeForm), forkQueryStateFactory(completeForm));
     };
 
     return {

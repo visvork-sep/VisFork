@@ -6,8 +6,6 @@ import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElement
 import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
 import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { ForksQueryOrderAscDescInput }
-    from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilterInput";
 import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnerTypeFilterInput";
 import { CommitsDateRangeUntilInput }
@@ -26,7 +24,6 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         handleRepositoryChange,
         handleForksCountChange,
         handleForksOrderChange,
-        handleForksOrderAscDescChange,
         handleCommitsDateRangeFromChange,
         handleCommitsDateRangeUntilChange,
         handleForksTypeFilterChange,
@@ -44,7 +41,6 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         forksTypeFilterInputError,
         ownerTypeFilterInputError,
         forksOrderInputError,
-        forksAscDescInputError
     } = useFormSubmission(form, filterChangeHandler);
 
     return <Box as="form" onSubmit={onSubmit}>
@@ -67,15 +63,15 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
                         <ForksQueryOrderInput 
                             onChangeHandler={handleForksOrderChange} 
                             selected={form.forksOrder} 
-                            error={forksAscDescInputError}/>
+                            error={forksOrderInputError}/>
                     </Stack.Item>
 
-                    <Stack.Item>
+                    {/* <Stack.Item>
                         <ForksQueryOrderAscDescInput
                             onChangeHandler={handleForksOrderAscDescChange} 
                             selected={form.forksAscDesc} 
                             error={forksOrderInputError}/>
-                    </Stack.Item>
+                    </Stack.Item> */}
 
                     <Stack.Item>
                         <CommitsDateRangeFromInput error={commitsDateRangeFromInputError}

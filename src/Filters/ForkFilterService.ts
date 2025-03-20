@@ -2,7 +2,6 @@ import { ForkFilter, ForkInfo, DateRange } from "@Types/LogicLayerTypes";
 import { ACTIVE_FORK_NROF_MONTHS, OwnerType } from "@Utils/Constants";
 
 
-// TODO: Change ForkInfo to whichever type/interface we have invented for forks.
 export class ForkFilterService {
     /**
      * Filters an array of {@link ForkInfo} objects according to the passed {@link ForkFilter}.
@@ -40,7 +39,7 @@ export class ForkFilterService {
 
         return this.#isForkInDateRange(fork, filter.dateRange)
             && this.#isForkActive(fork, filter.activeForksOnly)
-            && this.#isOwnerOfType(fork, filter.ownerType)
+            && this.#isOwnerOfType(fork, filter.ownerTypes)
             && this.#isForkUpdatedInLastMonths(fork, filter.updatedInLastMonths);
     }
 
@@ -68,18 +67,18 @@ export class ForkFilterService {
 
         let result: boolean = false;
         if (dateRange.start instanceof Date) {
-            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start.toISOString());
+            result = fork.created_at.getTime() >= dateRange.start.getTime();
         }
 
         if (dateRange.end instanceof Date) {
-            result = Date.parse(fork.created_at) <= Date.parse(dateRange.end.toISOString());
+            result = fork.created_at.getTime() <= dateRange.end.getTime();
         }
 
         // If both are defined, it is not enough to check them separately, but they need
         // to hold at the same time.
         if (dateRange.start instanceof Date && dateRange.end instanceof Date) {
-            result = Date.parse(fork.created_at) >= Date.parse(dateRange.start.toString())
-                  && Date.parse(fork.created_at) <= Date.parse(dateRange.end.toString());
+            result = fork.created_at.getTime() >= dateRange.start.getTime()
+                  && fork.created_at.getTime() <= dateRange.end.getTime();
         }
         
         return result;
@@ -105,17 +104,17 @@ export class ForkFilterService {
     }
 
     /**
-     * If {@param ownerType} is not undefined or null, this function determines whether
-     * the owner of {@param fork} is of type {@param ownerType}.
+     * If {@param ownerTypes} is not undefined or null, this function determines whether
+     * the owner of {@param fork} is of any of the types in {@param ownerTypes}.
      * 
-     * @returns True if {@code ownerType === undefined || ownerType === null || fork.owner.login.toLowerCase() === ownerType}, false otherwise.
+     * @returns True if {@code ownerType === undefined || ownerType === null || ownerTypes.includes(fork.ownerType)}, false otherwise.
      */
-    #isOwnerOfType(fork: ForkInfo, ownerType?: OwnerType): boolean {
-        if (ownerType == null) {
+    #isOwnerOfType(fork: ForkInfo, ownerTypes?: OwnerType[]): boolean {
+        if (ownerTypes == null) {
             return true; // since the user is not filtering based on this
         }
 
-        return fork.owner.login.toLowerCase() === ownerType;
+        return ownerTypes.includes(fork.ownerType);
     }
 
     /**
@@ -135,7 +134,7 @@ export class ForkFilterService {
         let lastUpdatedMilliseconds: number = -1;
 
         if (fork.last_pushed != null) {
-            lastUpdatedMilliseconds = Date.parse(fork.last_pushed);
+            lastUpdatedMilliseconds = fork.last_pushed.getTime();
         }
 
         const now = new Date(); // reference date object

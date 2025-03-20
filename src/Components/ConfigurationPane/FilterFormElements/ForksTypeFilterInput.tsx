@@ -1,5 +1,5 @@
 import { CheckboxGroup, FormControl, Checkbox } from "@primer/react";
-import { InputError } from "@Types/FormErrors";
+import { InputError } from "@Types/UIFormErrors";
 import { FORK_TYPES } from "@Utils/Constants";
 
 interface ForksTypeFilterInputProps {

@@ -1,13 +1,12 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "@Queries/rawQueries";
-import { CommitQueryParams, ForkQueryParams, CommitJSON } from "@Types/GithubTypes";
-import { ForkInfo, ForkQueryState, CommitInfo } from "@Types/DataLayerTypes";
+import { CommitQueryParams, ForkQueryParams, CommitJSON } from "@Types/DataLayerTypes";
+import { ForkInfo, ForkQueryState, CommitInfo } from "@Types/LogicLayerTypes";
 import { GetAvatarUrlQueryVariables}
     from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";
-import { DateRange } from "@Types/ForkFilter";
-import { toCommitInfo, toForkInfo } from "@Utils/MappingJSON";
+import { toCommitInfo, toForkInfo } from "@Utils/DataToLogic";
 
 /**
  *  Gets to avatar url
@@ -34,11 +33,10 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
  * @returns The result object is of type ForkInfo.
  */
 export function useFetchForks(parameters?: ForkQueryState) {
-
     const forkQueryParams: ForkQueryParams | undefined = parameters
         ? {
             path: { owner: parameters.owner, repo: parameters.repo },
-            query: parameters.sort ? { sort: parameters.sort } : undefined
+            query: {sort: parameters.sort}
         }
         : undefined;
 
@@ -61,11 +59,16 @@ export function useFetchForks(parameters?: ForkQueryState) {
  * @returns The result object is of type CommitInfo.
  */
 
-export function useFetchCommitsBatch(forks: ForkInfo[], range?: DateRange) {
-    const commitQueries = forks.map((fork) => {
+export function useFetchCommitsBatch(forks: ForkInfo[], forkQueryState?: ForkQueryState) {
+
+    const getDateString = (date: Date | undefined) => date?.toISOString().split("T")[0] ?? undefined;
+
+
+    const commitQueries: CommitQueryParams[] = forks.map((fork) => {
         return {
             path: {owner: fork.owner.login, repo: fork.name},
-            query: {since: range?.start, until: range?.end}
+            query: { since: getDateString(forkQueryState?.range.start), 
+                until: getDateString(forkQueryState?.range.start) }
         };
     });
 

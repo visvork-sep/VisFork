@@ -65,7 +65,7 @@ interface FilterFormState {
  * Represents the prepared form state for submission.
  */
 interface preparedFormComplete {
-    owner: OwnerType;
+    owner: string;
     repositoryName: string;
     forksCount: number;
     forksOrder: ForksSortingOrder;
@@ -94,7 +94,5 @@ interface preparedForm {
     ownerTypeFilter: OwnerType[] | null;
     recentlyUpdated: number | null;
 }
-
-
 
 export type { FilterFormState, preparedFormComplete, preparedForm };

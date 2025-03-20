@@ -16,7 +16,6 @@ function DataComponents() {
             </SplitPageLayout.Pane >
             <SplitPageLayout.Content aria-label="Content">
                 <ApplicationBody />
-                <WordCloud />
             </SplitPageLayout.Content>
         </>
     );

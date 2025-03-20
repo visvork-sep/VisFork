@@ -1,5 +1,4 @@
 import { Box, Heading, Stack } from "@primer/react";
-import commitData from "./Plots/commit_data_example.json";
 import { useMeasure } from "@uidotdev/usehooks";
 
 import Histogram from "./Plots/Histogram.tsx";
@@ -32,7 +31,7 @@ const dummyCommits = [
         branch: "Branch 1",
         url: "URL 1",
         parentIds: [],
-        type: "adaptive" as "adaptive" | "corrective" | "perfective" | "uknown"
+        type: "adaptive" as "adaptive" | "corrective" | "perfective" | "unknown"
     },
     {
         repo: "Repo 2",
@@ -44,7 +43,7 @@ const dummyCommits = [
         branch: "Branch 1",
         url: "URL 1",
         parentIds: [],
-        type: "corrective" as "adaptive" | "corrective" | "perfective" | "uknown"
+        type: "corrective" as "adaptive" | "corrective" | "perfective" | "unknown"
     }
 ];
 //=================================================================================================
@@ -58,9 +57,9 @@ function ApplicationBody() {
 
     // TODO: Extract props from visData when more visualizations need them
     const {
-        forkListData, commitTableData, histogramData, sankeyData, collabGraphData } = visData;
+        forkListData, timelineData, commitTableData, histogramData, sankeyData, collabGraphData } = visData;
 
-    const { handleHistogramSelection } = handlers;
+    const { handleHistogramSelection, handleTimelineSelection } = handlers;
 
     const [measureRefCommitTimeline, { width }] = useMeasure();
     const heightCommitTimelineSVG = 600;
@@ -78,11 +77,12 @@ function ApplicationBody() {
                     }}>
 
                     <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
-                    <CommitTimeline data={commitData}
+                    <CommitTimeline
+                        commitData={timelineData.commitData}
+                        handleTimelineSelection={handleTimelineSelection}
                         c_width={width ?? 0}
                         c_height={heightCommitTimelineSVG}
-                        merged={false}
-                        defaultBranches={{/* Default branches go here */ }} />
+                        defaultBranches={{ /* Default branches go here */ }} merged={false} />
                 </Box>
             </Dropdown>
             <Dropdown summaryText="Histogram">

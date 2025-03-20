@@ -26,7 +26,7 @@ interface CommitData {
     date: Date;
     branch: string;
     url: string;
-    type: "adaptive" | "corrective" | "perfective" | "uknown";
+    type: "adaptive" | "corrective" | "perfective" | "unknown";
 }
 
 // Helper function to map commit data
@@ -43,7 +43,7 @@ const mapCommitDataToTimeline = (commitData: CommitData[]): TimelineData => ({
         id: commit.sha,
         parentIds: commit.parentIds,
         branch: commit.branch,
-        date: commit.date,
+        date: commit.date.toISOString(),
         url: commit.url,
     })),
 });

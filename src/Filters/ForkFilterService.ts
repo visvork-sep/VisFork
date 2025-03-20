@@ -1,6 +1,5 @@
-import { ACTIVE_FORK_NROF_MONTHS } from "@Utils/Constants";
-import { ForkFilter, DateRange, ForkType, OwnerType } from "../Types/ForkFilter";
-import { ForkInfo } from "@Types/DataLayerTypes";
+import { ForkFilter, ForkInfo, DateRange } from "@Types/LogicLayerTypes";
+import { ACTIVE_FORK_NROF_MONTHS, OwnerType } from "@Utils/Constants";
 
 
 // TODO: Change ForkInfo to whichever type/interface we have invented for forks.

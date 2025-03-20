@@ -1,10 +1,9 @@
 import { useState, useMemo } from "react";
-import { ForkQueryState } from "@Types/DataLayerTypes";
-import { ForkFilter } from "@Types/ForkFilter";
+import { ForkFilter, ForkQueryState } from "@Types/LogicLayerTypes";
 import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
 import { ForkFilterService } from "@Filters/ForkFilterService";
 
-export type FilterChangeHandler = (filters: ForkFilter) => void;
+export type FilterChangeHandler = (filters: ForkFilter, forkQueryState: ForkQueryState) => void;
 
 export function useFilteredData(filterService : ForkFilterService) {
     // Create the state for the query parameters
@@ -13,7 +12,8 @@ export function useFilteredData(filterService : ForkFilterService) {
     // State for additional filtering, such as sorting and date range.
     const [filters, setFilters] = useState<ForkFilter | undefined>(undefined);
 
-    const onFiltersChange: FilterChangeHandler = (filters) => {
+    const onRequestChange: FilterChangeHandler = (filters, forkQueryState) => {
+        setForkQueryState(forkQueryState);
         setFilters(filters);
     };
 
@@ -30,14 +30,13 @@ export function useFilteredData(filterService : ForkFilterService) {
     const {data: commitData,
         isLoading: isLoadingCommit,
         error: errorCommit
-    } = useFetchCommitsBatch(filteredForks, forkQueryState?.range);
+    } = useFetchCommitsBatch(filteredForks, forkQueryState);
 
     return {
         filteredForks,
         isLoadingFork,
         forkError,
-        setForkQueryState,
-        onFiltersChange,
+        onFiltersChange: onRequestChange,
         commitData,
         isLoadingCommit,
         errorCommit

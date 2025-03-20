@@ -4,7 +4,7 @@ import {
     CommitsDateRangeFromInputErrors,
     CommitsDateRangeUntilInputErrors,
     RecentlyUpdatedInputErrors 
-} from "../Types/FormErrors";
+} from "../Types/UIFormErrors";
 import {
     ForksSortingOrder, 
     ForkType, 

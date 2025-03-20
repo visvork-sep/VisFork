@@ -42,7 +42,7 @@ const WordCloud = ({ commitData }: WordCloudData) => {
     useEffect(() => {
         const newWords = processCommitMessages(commitData, lemmatizationFunction, 0, 20);
         setWords(newWords);
-    }, []);
+    }, [commitData]);
 
     useEffect(() => {
         if (!svgRef.current) return;

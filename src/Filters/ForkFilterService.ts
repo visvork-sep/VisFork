@@ -67,18 +67,18 @@ export class ForkFilterService {
 
         let result: boolean = false;
         if (dateRange.start instanceof Date) {
-            result = fork.created_at.getTime() >= dateRange.start.getTime();
+            result = new Date(fork.created_at.toString()).getTime() >= new Date(dateRange.start.toString()).getTime();
         }
 
         if (dateRange.end instanceof Date) {
-            result = fork.created_at.getTime() <= dateRange.end.getTime();
+            result = new Date(fork.created_at.toString()).getTime() <= new Date(dateRange.end.toString()).getTime();
         }
 
         // If both are defined, it is not enough to check them separately, but they need
         // to hold at the same time.
         if (dateRange.start instanceof Date && dateRange.end instanceof Date) {
-            result = fork.created_at.getTime() >= dateRange.start.getTime()
-                  && fork.created_at.getTime() <= dateRange.end.getTime();
+            result = new Date(fork.created_at.toString()).getTime() >= new Date(dateRange.start.toString()).getTime()
+                  && new Date(fork.created_at.toString()).getTime() <= new Date(dateRange.end.toString()).getTime();
         }
         
         return result;
@@ -134,7 +134,7 @@ export class ForkFilterService {
         let lastUpdatedMilliseconds: number = -1;
 
         if (fork.last_pushed != null) {
-            lastUpdatedMilliseconds = fork.last_pushed.getTime();
+            lastUpdatedMilliseconds = new Date(fork.last_pushed.toString()).getTime();
         }
 
         const now = new Date(); // reference date object

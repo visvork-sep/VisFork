@@ -1,4 +1,4 @@
-import { CommitInfo } from "@Types/DataLayerTypes";
+import { CommitInfo } from "@Types/LogicLayerTypes";
 import exampleData from "./example.json";
 
 interface CommitLocation {

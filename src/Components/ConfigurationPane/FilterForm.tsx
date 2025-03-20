@@ -6,22 +6,24 @@ import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElement
 import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
 import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { ForksQueryOrderAscDescInput }
-    from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderAscDescInput";
 import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilterInput";
 import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnerTypeFilterInput";
 import { CommitsDateRangeUntilInput }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
 import { useFilterForm } from "@Hooks/useFilterForm";
 import { useFormSubmission } from "@Hooks/useFormSubmission";
+import { FilterChangeHandler } from "@Hooks/useFilteredData";
 
-function FilterForm() {
+interface FilterFormProps { 
+    filterChangeHandler: FilterChangeHandler;
+};
+
+function FilterForm({ filterChangeHandler }: FilterFormProps) {
     const {
         form,
         handleRepositoryChange,
         handleForksCountChange,
         handleForksOrderChange,
-        handleForksOrderAscDescChange,
         handleCommitsDateRangeFromChange,
         handleCommitsDateRangeUntilChange,
         handleForksTypeFilterChange,
@@ -35,8 +37,11 @@ function FilterForm() {
         forksCountInputError,
         recentlyUpdatedInputError,
         commitsDateRangeFromInputError,
-        commitsDateRangeUntilInputError
-    } = useFormSubmission(form);
+        commitsDateRangeUntilInputError,
+        forksTypeFilterInputError,
+        ownerTypeFilterInputError,
+        forksOrderInputError,
+    } = useFormSubmission(form, filterChangeHandler);
 
     return <Box as="form" onSubmit={onSubmit}>
         <Stack direction={"vertical"}>
@@ -55,13 +60,18 @@ function FilterForm() {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <ForksQueryOrderInput onChangeHandler={handleForksOrderChange} selected={form.forksOrder} />
+                        <ForksQueryOrderInput 
+                            onChangeHandler={handleForksOrderChange} 
+                            selected={form.forksOrder} 
+                            error={forksOrderInputError}/>
                     </Stack.Item>
 
-                    <Stack.Item>
+                    {/* <Stack.Item>
                         <ForksQueryOrderAscDescInput
-                            onChangeHandler={handleForksOrderAscDescChange} selected={form.forksAscDesc} />
-                    </Stack.Item>
+                            onChangeHandler={handleForksOrderAscDescChange} 
+                            selected={form.forksAscDesc} 
+                            error={forksOrderInputError}/>
+                    </Stack.Item> */}
 
                     <Stack.Item>
                         <CommitsDateRangeFromInput error={commitsDateRangeFromInputError}
@@ -81,12 +91,16 @@ function FilterForm() {
                 <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
                         <ForksTypeFilterInput
-                            onChangeHandler={handleForksTypeFilterChange} checked={form.forksTypeFilter} />
+                            onChangeHandler={handleForksTypeFilterChange} 
+                            checked={form.forksTypeFilter} 
+                            error={forksTypeFilterInputError}/>
                     </Stack.Item>
 
                     <Stack.Item>
                         <OwnerTypeFilterInput
-                            onChangeHandler={handleOwnerTypeFilterChange} checked={form.ownerTypeFilter} />
+                            onChangeHandler={handleOwnerTypeFilterChange} 
+                            checked={form.ownerTypeFilter} 
+                            error={ownerTypeFilterInputError}/>
                     </Stack.Item>
 
                     <Stack.Item>

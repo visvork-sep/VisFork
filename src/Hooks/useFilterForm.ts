@@ -1,6 +1,15 @@
 import { useState, useCallback } from "react";
-import { FilterFormState } from "../Types/FilterForm";
-import { FORK_TYPES, FORKS_COUNT_INPUT_INITIAL, FORKS_SORTING_ORDERS, OWNER_TYPES, SORT_DIRECTION }
+import { FilterFormState } from "../Types/UIFormTypes";
+import { FORK_TYPES, 
+    FORKS_COUNT_INPUT_INITIAL, 
+    FORKS_SORTING_ORDERS, 
+    OWNER_TYPES, 
+    SORT_DIRECTION, 
+    ForksSortingOrder, 
+    SortDirection, 
+    ForkType, 
+    OwnerType 
+}
     from "@Utils/Constants";
 import { assert } from "@Utils/Assert";
 
@@ -12,8 +21,12 @@ const initialForm: FilterFormState = {
     forksAscDesc: SORT_DIRECTION.ASCENDING.value, // Default sorting direction (ascending)
     forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value), // Default fork type filter (all types selected)
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value), // Default owner type filter (all types selected)
-    commitsDateRangeFrom: "", // Start date for commits filter
-    commitsDateRangeUntil: "", // End date for commits filter
+    commitsDateRangeFrom: (() => {
+        const date = new Date();
+        date.setFullYear(date.getFullYear() - 2);
+        return date.toISOString().split("T")[0];
+    })(), // Start date for commits filter
+    commitsDateRangeUntil: new Date().toISOString().split("T")[0], // End date for commits filter
     recentlyUpdated: "" // Recently updated filter input
 };
 
@@ -45,8 +58,14 @@ function useFilterForm() {
      * The selected sorting order. Must be one of the defined sorting options in FORKS_SORTING_ORDERS.
      */
     const handleForksOrderChange = useCallback((value: string) => {
-        assert(Object.values(FORKS_SORTING_ORDERS).map(t => t.value).includes(value), "Invalid sorting order selected");
-        setForm((prev) => ({ ...prev, forksOrder: value }));
+        assert(
+            value === FORKS_SORTING_ORDERS.WATCHERS.value ||
+            value === FORKS_SORTING_ORDERS.STARGAZERS.value ||
+            value === FORKS_SORTING_ORDERS.NEWEST.value ||
+            value === FORKS_SORTING_ORDERS.OLDEST.value, 
+            "Developer error: Invalid sorting order selected");
+       
+        setForm((prev) => ({ ...prev, forksOrder: value as ForksSortingOrder }));
     }, []);
 
     /**
@@ -55,8 +74,9 @@ function useFilterForm() {
      * The selected sorting direction. Must be one of the defined sorting directions in SORT_DIRECTION.
      */
     const handleForksOrderAscDescChange = useCallback((value: string) => {
-        assert(Object.values(SORT_DIRECTION).map(t => t.value).includes(value), "Invalid sorting direction selected");
-        setForm((prev) => ({ ...prev, forksAscDesc: value }));
+        assert(value === SORT_DIRECTION.ASCENDING.value || value === SORT_DIRECTION.DESCENDING.value,
+            "Developer error: Invalid sorting direction selected");
+        setForm((prev) => ({ ...prev, forksAscDesc: value as SortDirection }));
     }, []);
 
     /**
@@ -77,24 +97,31 @@ function useFilterForm() {
 
     /**
      * Updates the selected fork types for filtering.
+     * 
      * @param {string[]} selected - 
      * An array of selected fork type values. Each value must be present in the predefined FORK_TYPES.
      */
     const handleForksTypeFilterChange = useCallback((selected: string[]) => {
-        assert(selected.every(s => Object.values(FORK_TYPES).map(t => t.value).includes(s)),
-            "Invalid fork type selected");
-        setForm((prev) => ({ ...prev, forksTypeFilter: selected }));
+        assert(selected.every(s => 
+            (s === FORK_TYPES.ADAPTIVE.value ||
+            s === FORK_TYPES.CORRECTIVE.value ||
+            s === FORK_TYPES.PERFECTIVE.value)
+        ), "Developer error: Invalid fork type selected");
+        setForm((prev) => ({ ...prev, forksTypeFilter: selected as ForkType[] }));
     }, []);
 
     /**
      * Updates the selected owner types for filtering.
+     * 
      * @param {string[]} selected - 
      * An array of selected owner type values. Each value must be present in the predefined OWNER_TYPES.
      */
     const handleOwnerTypeFilterChange = useCallback((selected: string[]) => {
-        assert(selected.every(s => Object.values(OWNER_TYPES).map(t => t.value).includes(s)),
-            "Invalid owner type selected");
-        setForm((prev) => ({ ...prev, ownerTypeFilter: selected }));
+        assert(selected.every(s =>
+            (s === OWNER_TYPES.USER.value ||
+            s === OWNER_TYPES.ORGANIZATION.value)
+        ), "Developer error: Invalid owner type selected");
+        setForm((prev) => ({ ...prev, ownerTypeFilter: selected as OwnerType[] }));
     }, []);
 
     /**

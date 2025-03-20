@@ -1,5 +1,5 @@
 import { FormControl, TextInput } from "@primer/react";
-import { InputError } from "../../../Types/FormErrors";
+import { InputError } from "../../../Types/UIFormErrors";
 
 interface CommitsDateRangeUntilInputProps {
     error: InputError | null;
@@ -9,10 +9,10 @@ interface CommitsDateRangeUntilInputProps {
 
 function CommitsDateRangeUntilInput({ error, onChangeHandler, value }: CommitsDateRangeUntilInputProps) {
     return (
-        <FormControl>
+        <FormControl required>
             <FormControl.Label>Commits until</FormControl.Label>
             <FormControl.Caption>Retrieve commits up until </FormControl.Caption>
-            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} value={value} />
+            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} value={value}/>
             {error &&
                 <FormControl.Validation variant="error">
                     {error.message}

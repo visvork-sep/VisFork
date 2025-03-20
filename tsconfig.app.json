@@ -39,6 +39,9 @@
       "@Utils/*": [
         "./src/Utils/*"
       ],
+      "@VisInterfaces/*": [
+        "./src/Types/VisualizationInterfaces/*"
+      ],
       "@Types/*": [
         "./src/Types/*"
       ],

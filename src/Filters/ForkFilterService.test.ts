@@ -104,74 +104,74 @@ describe("Regular functionality", () => {
     });
 
     describe("Date range", () => {
-        it("should return null - only start date", () => {
+        it("should return empty array - only start date", () => {
             // a date most likely way after the creation of any fork
             filter.dateRange.start = new Date("9999-01-01T19:01:12Z");
             filter.dateRange.end = undefined;
-            expect(ffs.apply([fork], filter)).toBe(null);
+            expect(ffs.apply([fork], filter)).toBe([]);
         });
 
-        it("should return the same fork - only start date", () => {
+        it("should an array containing the same fork(s) - only start date", () => {
             // a date definitely way before the creation of any fork
             // warning: don't set it to be lower than 1970.01.01
             filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
             filter.dateRange.end = undefined;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
     
-        it("should return null - only end date", () => {
+        it("should return empty array - only end date", () => {
             // a date most likely way before the creation of any fork
             // warning: don't set it to be lower than 1970.01.01
             filter.dateRange.start = undefined;
             filter.dateRange.end = new Date("1970-01-01T19:01:12Z");
-            expect(ffs.apply([fork], filter)).toBe(null);
+            expect(ffs.apply([fork], filter)).toBe([]);
         });
 
-        it("should return the same fork - only end date", () => {
+        it("should an array containing the same fork(s) - only end date", () => {
             // a date most likely way after the creation of any fork
             filter.dateRange.start = undefined;
             filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
     
-        it("should return null - both dates", () => {
+        it("should return empty array - both dates", () => {
             filter.dateRange.start = new Date("9777-01-01T19:01:12Z");
             filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
-            expect(ffs.apply([fork], filter)).toBe(null);
+            expect(ffs.apply([fork], filter)).toBe([]);
         });
 
-        it("should return the same fork - both dates", () => {
+        it("should an array containing the same fork(s) - both dates", () => {
             filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
             filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
     });
 
     describe("Fork activity", () => {
-        it("should return the same fork - undefined activeForksOnly param even though fork is inactive", () => {
+        it("should an array containing the same fork(s) - undefined activeForksOnly param even though fork is inactive", () => {
             filter.activeForksOnly = undefined;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return the same fork - null activeForksOnly param even though fork is inactive", () => {
+        it("should an array containing the same fork(s) - null activeForksOnly param even though fork is inactive", () => {
             filter.activeForksOnly = null;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
     
-        it("should return the same fork - activeForksOnly param set to true and fork is active", () => {
+        it("should an array containing the same fork(s) - activeForksOnly param set to true and fork is active", () => {
             fork.updated_at = new Date().toISOString();
             filter.activeForksOnly = true;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return null - activeForksOnly param set to true and fork is inactive", () => {
+        it("should return empty array - activeForksOnly param set to true and fork is inactive", () => {
             filter.activeForksOnly = true;
-            expect(ffs.apply([fork], filter)).toBe(null);
+            expect(ffs.apply([fork], filter)).toBe([]);
         });
 
-        it("should return the same fork - activeForksOnly param set to false even though fork is inactive", () => {
+        it("should an array containing the same fork(s) - activeForksOnly param set to false even though fork is inactive", () => {
             filter.activeForksOnly = false;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
     });
 
@@ -180,56 +180,56 @@ describe("Regular functionality", () => {
     // });
 
     describe("Owner type", () => {
-        it("should return the same fork - ownerType is undefined", () => {
+        it("should an array containing the same fork(s) - ownerType is undefined", () => {
             filter.ownerType = undefined;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return the same fork - ownerType is null", () => {
+        it("should an array containing the same fork(s) - ownerType is null", () => {
             filter.ownerType = null;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return the same fork - ownerType matches (case insensitive)", () => {
+        it("should an array containing the same fork(s) - ownerType matches (case insensitive)", () => {
             filter.ownerType = "user";
             fork.owner.type = "User";
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return the same fork - ownerType matches (case insensitive)", () => {
+        it("should an array containing the same fork(s) - ownerType matches (case insensitive)", () => {
             filter.ownerType = "organization";
             fork.owner.type = "oRgAnIzATiOn";
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return null - ownerType does not match", () => {
+        it("should return empty array - ownerType does not match", () => {
             filter.ownerType = "user";
             fork.owner.type = "organization";
-            expect(ffs.apply([fork], filter)).toBe(null);
+            expect(ffs.apply([fork], filter)).toBe([]);
         });
     });
 
     describe("Updated in last n months", () => {
-        it("should return the same fork - nrOfMonths is undefined", () => {
+        it("should an array containing the same fork(s) - nrOfMonths is undefined", () => {
             filter.updatedInLastMonths = undefined;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return the same fork - nrOfMonths is null", () => {
+        it("should an array containing the same fork(s) - nrOfMonths is null", () => {
             filter.updatedInLastMonths = null;
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
 
-        it("should return null - fork last update was NOT within last n months", () => {
+        it("should return empty array - fork last update was NOT within last n months", () => {
             filter.updatedInLastMonths = 1; // 20 years
-            expect(ffs.apply([fork], filter)).toBe(null);
+            expect(ffs.apply([fork], filter)).toBe([]);
         });
 
-        it("should return the same fork - fork last update was within last n months", () => {
+        it("should an array containing the same fork(s) - fork last update was within last n months", () => {
             filter.updatedInLastMonths = 240; // 20 years
             // fix updated_at date for consistent testing
             fork.updated_at = "2022-09-09T08:11:06.866Z";
-            expect(ffs.apply([fork], filter)).toBe(fork);
+            expect(ffs.apply([fork], filter)).toBe([fork]);
         });
     });
 });

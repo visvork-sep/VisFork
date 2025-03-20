@@ -92,7 +92,8 @@ describe("Errors", () => {
 
 describe("Regular functionality", () => {
     beforeEach(() => {
-        fork = structuredClone(example_fork); // makes sure it completely wipes any changes made during individual tests before each new test
+        fork = structuredClone(example_fork); // makes sure it completely wipes any changes made
+                                              // during individual tests before each new test
         filter = structuredClone(example_filter);
         // if (fork.created_at != null) {
         //     fork.created_at = new Date(fork.created_at.toString());
@@ -146,17 +147,20 @@ describe("Regular functionality", () => {
     });
 
     describe("Fork activity", () => {
-        it("should return an array containing the same fork(s) - undefined activeForksOnly param even though fork is inactive", () => {
+        it("should return an array containing the same fork(s) - " +
+            "undefined activeForksOnly param even though fork is inactive", () => {
             filter.activeForksOnly = undefined;
             expect(ffs.apply([fork], filter)).toStrictEqual([fork]);
         });
 
-        it("should return an array containing the same fork(s) - null activeForksOnly param even though fork is inactive", () => {
+        it("should return an array containing the same fork(s) - " + 
+            "null activeForksOnly param even though fork is inactive", () => {
             filter.activeForksOnly = null as unknown as boolean;
             expect(ffs.apply([fork], filter)).toStrictEqual([fork]);
         });
     
-        it("should return an array containing the same fork(s) - activeForksOnly param set to true and fork is active", () => {
+        it("should return an array containing the same fork(s) - " + 
+            "activeForksOnly param set to true and fork is active", () => {
             filter.activeForksOnly = true;
             expect(ffs.apply([fork], filter)).toStrictEqual([fork]);
         });
@@ -167,7 +171,8 @@ describe("Regular functionality", () => {
             expect(ffs.apply([fork], filter)).toStrictEqual([]);
         });
 
-        it("should return an array containing the same fork(s) - activeForksOnly param set to false even though fork is inactive", () => {
+        it("should return an array containing the same fork(s) - " +
+            "activeForksOnly param set to false even though fork is inactive", () => {
             filter.activeForksOnly = false;
             expect(ffs.apply([fork], filter)).toStrictEqual([fork]);
         });

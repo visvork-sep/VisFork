@@ -13,9 +13,9 @@ export class ForkFilterService {
      * and all forks that do are in the returned array.
      */
     apply(forks: ForkInfo[], filter: ForkFilter): ForkInfo[] {
-         const resultForks: ForkInfo[] = forks.filter(fork => {
+        const resultForks: ForkInfo[] = forks.filter(fork => {
             return this.#isValidForkByFilter(fork, filter);
-         });
+        });
 
         return resultForks;
     }
@@ -68,7 +68,7 @@ export class ForkFilterService {
             throw TypeError("dateRange is improperly defined (start and end is not of type Date)");
         }
 
-        let result: boolean = false;
+        let result = false;
         if (dateRange.start instanceof Date) {
             result = new Date(fork.created_at.toString()).getTime() >= new Date(dateRange.start.toString()).getTime();
         }
@@ -95,7 +95,7 @@ export class ForkFilterService {
      *           || {@link this.#isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS)}}, false otherwise.
      */
     #isForkActive(fork: ForkInfo, activeForksOnly?: boolean): boolean {
-        let result: boolean = false;
+        let result = false;
 
         if (activeForksOnly == null || !activeForksOnly) {
             result = true; // since activity is not a criterion in this case
@@ -110,7 +110,8 @@ export class ForkFilterService {
      * If {@param ownerTypes} is not undefined or null, this function determines whether
      * the owner of {@param fork} is of any of the types in {@param ownerTypes}.
      * 
-     * @returns True if {@code ownerType === undefined || ownerType === null || ownerTypes.includes(fork.ownerType)}, false otherwise.
+     * @returns True if {@code ownerType === undefined || ownerType === null ||
+     *                  ownerTypes.includes(fork.ownerType)}, false otherwise.
      */
     #isOwnerOfType(fork: ForkInfo, ownerTypes?: OwnerType[]): boolean {
         if (ownerTypes == null) {
@@ -134,7 +135,7 @@ export class ForkFilterService {
             return true; // since the user is not filtering based on this
         }
 
-        let lastUpdatedMilliseconds: number = -1;
+        let lastUpdatedMilliseconds = -1;
 
         if (fork.last_pushed != null) {
             lastUpdatedMilliseconds = new Date(fork.last_pushed.toString()).getTime();

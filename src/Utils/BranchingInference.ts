@@ -66,6 +66,17 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
     return processedCommits;
 }
 
+// Let's go gambling!
+// Returns alphabetical minimum of commit location, first sorted on repo and then branch
+function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
+    return locations.reduce((min, curr) =>
+        curr.repo.localeCompare(min.repo) < 0 ||
+        (curr.repo === min.repo && curr.branch.localeCompare(min.branch) < 0)
+            ? curr
+            : min
+    );
+}
+
 /**
  * Deletes commits that have the same hashes, leaving a single unique commit. 
  * This can only happen if the commit is present on multiple branches.
@@ -115,9 +126,6 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             // recursivity yippee
             recursiveMergeCheck(rawCommit);
 
-            // TODO after checking all merges, clean up remaining duplicate commits: these never got followed by a merge
-            // YES these can exist
-
             /**
              * Scheme:
              * for the headCommit of each branch, check if duplicate
@@ -166,17 +174,6 @@ function makeUniqueHierarchical(commit: CommitInfo) {
             // choose random branch and delete everywhere else
         }
     }
-}
-
-// Let's go gambling!
-// Returns alphabetical minimum of commit location, first sorted on repo and then branch
-function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
-    return locations.reduce((min, curr) =>
-        curr.repo.localeCompare(min.repo) < 0 ||
-        (curr.repo === min.repo && curr.branch.localeCompare(min.branch) < 0)
-            ? curr
-            : min
-    );
 }
 
 /**

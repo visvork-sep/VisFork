@@ -51,8 +51,12 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
     }
     const processedCommits: CommitInfo[] = [];
     for (const commit of commitLocationMap) {
-        if (commit[1].length !== 1) {
+        if (commit[1].length > 1) {
             console.error("Mistake in data structure encountered!");
+        }
+        if (commit[1].length === 0) {
+            console.error("Critical mistake in data structure encountered!");
+            continue;
         }
         const commitInfo = commitMap.get(commit[0]);
         if (commitInfo !== undefined) {

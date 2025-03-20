@@ -9,6 +9,7 @@ export function toForkInfo(fork: ForkJSON): ForkInfo {
         description: fork.description,
         created_at: fork.created_at ? new Date(fork.created_at) : null,
         last_pushed: fork.pushed_at ? new Date(fork.pushed_at) : null,
+        ownerType: fork.owner.type === "Organization" ? "Organization" : "User"
     };
 }
 

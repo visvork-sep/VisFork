@@ -13,6 +13,7 @@ export interface  ForkInfo {
     description: string | null;
     created_at: Date | null;
     last_pushed: Date | null;
+    ownerType: OwnerType;
 }
 
 export interface DateRange {

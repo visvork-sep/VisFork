@@ -20,6 +20,7 @@ const mockForks: ForkInfo[] = [
         description: "Test repo",
         created_at: new Date(),
         last_pushed: new Date(),
+        ownerType: "User",
     },
 ];
 

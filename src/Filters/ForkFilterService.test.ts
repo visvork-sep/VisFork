@@ -1,16 +1,28 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { ForkFilterService } from "./ForkFilterService";
-import { ForkJSON } from "../Types/GithubTypes";
-import { DateRange, ForkFilter } from "../Types/ForkFilter";
-import { getRandomFork } from "@Utils/ForkGenerator";
+import { ForkFilter } from "../Types/LogicLayerTypes";
+import { ForkInfo } from "@Types/LogicLayerTypes";
 
 const ffs: ForkFilterService = new ForkFilterService();
 
-const example_fork: ForkJSON = getRandomFork(["stargazers_count", "watchers_count", "created_at", "updated_at"]);
+const example_fork: ForkInfo = {
+    id: 1,
+    name: "a fork",
+    owner: { login: "a user" },
+    description: "a fork of a user",
+    created_at: new Date("2022-09-14T06:51:16Z"),
+    last_pushed: new Date("2024-09-14T06:51:16Z"),
+    ownerType: "User"
+};
 
 const example_filter: ForkFilter = {
-    dateRange: {start: undefined, end: undefined }
-}
+    dateRange: {
+        start: new Date("2022-09-14T06:51:16Z"),
+        end: new Date("2022-09-14T06:51:16Z")
+    },
+    forkTypes: [],
+    ownerTypes: []
+};
 
 let fork: any = null;
 let filter: any = null;

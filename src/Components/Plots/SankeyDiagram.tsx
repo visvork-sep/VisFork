@@ -316,9 +316,17 @@ export function SankeyChart(
 // SankeyChartBuild component
 export function SankeyDiagram(data: SankeyData) {
     useEffect(() => {
+
         if (!data) {
             return;
         }
+
+        // clear visualization if there is not data
+        if (!data?.commitData?.length) {
+            d3.select("#sankey-diagram").selectAll("*").remove();
+            return;
+        }
+
         // Parse the data and create the Sankey chart
         const sankeyData = parseData(data);
         const links = sankeyData.map((d) => ({

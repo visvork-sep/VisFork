@@ -311,11 +311,13 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
 
                 {/* Displays date in a readable format */}
                 <span style={{ fontWeight: "normal", color: "black" }}>
-                    {new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                    })}
+                    {allDates.length === 0
+                        ? "No data selected"
+                        : new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        })}
                 </span>
 
                 {/* Range slider to manually scrub through timeline */}

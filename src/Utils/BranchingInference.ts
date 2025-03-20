@@ -13,6 +13,17 @@ const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
+/**
+ * Deletes commits that have the same hashes, leaving a single unique commit. 
+ * This can only happen if the commit is present on multiple branches.
+ * This algorithm uses a very simple approach to make sure the deletion makes sense somewhat, but
+ * in no way actually considers merge commits or does any inference, except for prioritizing 
+ * the main repo and default branches.
+ * 
+ * @param rawCommits array of all commits to be analyzed and processed.
+ * @returns array of commits with only unique hashes. If there was a commit with a certain hash
+ * in the input, a commit with the same hash will always be present in the output.
+ */
 export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
     defaultBranches: Record<string, string>, // format: { repo: branch }
     mainRepo: string

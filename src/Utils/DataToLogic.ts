@@ -1,5 +1,5 @@
-import { ForkJSON, CommitJSON } from "@Types/GithubTypes";
-import { ForkInfo, CommitInfo } from "@Types/DataLayerTypes";
+import { ForkJSON, CommitJSON } from "@Types/DataLayerTypes";
+import { ForkInfo, CommitInfo } from "@Types/LogicLayerTypes";
 
 export function toForkInfo(fork: ForkJSON): ForkInfo {
     return {
@@ -7,8 +7,9 @@ export function toForkInfo(fork: ForkJSON): ForkInfo {
         name: fork.name,
         owner: { login: fork.owner.login },
         description: fork.description,
-        created_at: fork.created_at,
-        last_pushed: fork.pushed_at
+        created_at: fork.created_at ? new Date(fork.created_at) : null,
+        last_pushed: fork.pushed_at ? new Date(fork.pushed_at) : null,
+        ownerType: fork.owner.type === "Organization" ? "Organization" : "User"
     };
 }
 

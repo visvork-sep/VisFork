@@ -1,5 +1,5 @@
 import { FormControl, Select } from "@primer/react";
-import { InputError } from "@Types/FormErrors";
+import { InputError } from "@Types/UIFormErrors";
 import { SORT_DIRECTION } from "@Utils/Constants";
 
 interface ForksQueryOrderAscDescInputProps {

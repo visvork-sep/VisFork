@@ -18,6 +18,11 @@ const dummyForks = [
         id: 1,
         name: "Fork 1",
         description: "Description 1"
+    },
+    {
+        id: 2,
+        name: "Fork 2",
+        description: "Description 2"
     }
 ];
 const dummyCommits = [
@@ -68,6 +73,13 @@ function ApplicationBody() {
     //TODO: Add other visualizations and pass respective props
     return (
         <Stack>
+            <Dropdown summaryText="Histogram">
+                <Histogram commitData={histogramData.commitData}
+                    handleHistogramSelection={handleHistogramSelection} />
+            </Dropdown>
+            <Dropdown summaryText="Fork List">
+                <ForkList {...forkListData} />
+            </Dropdown>
             <Dropdown summaryText="Commit Timeline">
                 <Box ref={measureRefCommitTimeline}
                     style={{
@@ -84,13 +96,6 @@ function ApplicationBody() {
                         c_height={heightCommitTimelineSVG}
                         defaultBranches={{ /* Default branches go here */ }} merged={false} />
                 </Box>
-            </Dropdown>
-            <Dropdown summaryText="Histogram">
-                <Histogram commitData={histogramData.commitData}
-                    handleHistogramSelection={handleHistogramSelection} />
-            </Dropdown>
-            <Dropdown summaryText="Fork List">
-                <ForkList {...forkListData} />
             </Dropdown>
             <Dropdown summaryText="Commit Table">
                 <CommitTable {...commitTableData} />

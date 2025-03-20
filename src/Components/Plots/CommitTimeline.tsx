@@ -379,6 +379,9 @@ function CommitTimeline({ commitData,
             });
 
             console.log("Selected Nodes:", selectedNodes);
+            const selectedCommits = selectedNodes.map(node => node.data.id);
+            console.log("Selected Commits:", selectedCommits);
+            handleTimelineSelection(selectedCommits);
         }
 
         const brush = d3

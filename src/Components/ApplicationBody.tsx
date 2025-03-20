@@ -6,7 +6,6 @@ import { useMeasure } from "@uidotdev/usehooks";
 import ForkList from "@Components/Plots/ForkList";
 import CommitTable from "./Plots/CommitTable";
 import { Dropdown } from "@Components/Dropdown";
-import { deleteDuplicateCommits } from "@Utils/BranchingInference";
 
 import { useVisualizationData } from "@Hooks/useVisualizationData";
 //TODO: Replace with actual data when proper hooks is implemented

@@ -14,7 +14,7 @@ export class ForkFilterService {
      */
     apply(forks: ForkInfo[], filter: ForkFilter): ForkInfo[] {
          const resultForks: ForkInfo[] = forks.filter(fork => {
-            this.#isValidForkByFilter(fork, filter);
+            return this.#isValidForkByFilter(fork, filter);
          });
 
         return resultForks;
@@ -37,10 +37,13 @@ export class ForkFilterService {
             throw TypeError("Filter is null or undefined");
         }
 
-        return this.#isForkInDateRange(fork, filter.dateRange)
-            && this.#isForkActive(fork, filter.activeForksOnly)
-            && this.#isOwnerOfType(fork, filter.ownerTypes)
-            && this.#isForkUpdatedInLastMonths(fork, filter.updatedInLastMonths);
+        let result: boolean = false;
+        result = this.#isForkInDateRange(fork, filter.dateRange)
+        result &&= this.#isForkActive(fork, filter.activeForksOnly)
+        result &&= this.#isOwnerOfType(fork, filter.ownerTypes)
+        result &&= this.#isForkUpdatedInLastMonths(fork, filter.updatedInLastMonths);
+
+        return result;
     }
 
     /**

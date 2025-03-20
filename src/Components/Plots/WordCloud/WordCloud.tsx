@@ -1,11 +1,13 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import cloud from "d3-cloud";
-import commitData from "../commit_data_example.json";
 import { Word, processCommitMessages, lemmatizationFunction } from "./utils";
 import { createTooltip } from "./Tooltip";
+import { WordCloudData } from "@VisInterfaces/WordCloudData";
 
-const WordCloud: React.FC = () => {
+
+const WordCloud = ({ commitData }: WordCloudData) => {
+
     const svgRef = useRef<SVGSVGElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
     const [words, setWords] = useState<Word[]>([]);
@@ -14,11 +16,11 @@ const WordCloud: React.FC = () => {
         const handleResize = () => {
             if (svgRef.current) {
                 let { clientWidth, clientHeight } = svgRef.current;
-                
+
                 // Set a maximum size to prevent it from being too lengthy
-                const maxWidth = 800;  
-                const maxHeight = 600; 
-                
+                const maxWidth = 800;
+                const maxHeight = 600;
+
                 // Maintain aspect ratio
                 if (clientWidth / clientHeight > maxWidth / maxHeight) {
                     clientWidth = maxWidth;
@@ -27,20 +29,20 @@ const WordCloud: React.FC = () => {
                     clientHeight = maxHeight;
                     clientWidth = (maxHeight / clientHeight) * clientWidth;
                 }
-    
+
                 setDimensions({ width: clientWidth, height: clientHeight });
             }
         };
-    
+
         window.addEventListener("resize", handleResize);
         handleResize();
-    
+
         return () => window.removeEventListener("resize", handleResize);
     }, []);
     useEffect(() => {
         const newWords = processCommitMessages(commitData, lemmatizationFunction, 0, 20);
         setWords(newWords);
-    }, []);
+    }, [commitData]);
 
     useEffect(() => {
         if (!svgRef.current) return;
@@ -51,7 +53,7 @@ const WordCloud: React.FC = () => {
             .padding(5)
             .rotate(() => (~~(Math.random() * 2) * 90))
             .font("Impact")
-            .fontSize((d) => Math.sqrt(d.size) * 10) 
+            .fontSize((d) => Math.sqrt(d.size) * 10)
             .on("end", draw);
 
         layout.start();

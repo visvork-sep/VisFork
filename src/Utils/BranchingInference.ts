@@ -21,11 +21,14 @@ let globalMainRepo: string;
  * the main repo and default branches.
  * 
  * @param rawCommits array of all commits to be analyzed and processed.
+ * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are the default branches
+ * of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
+ * @param mainRepo the name of the queried repository. Example: torvalds/linux
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
  * in the input, a commit with the same hash will always be present in the output.
  */
 export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
-    defaultBranches: Record<string, string>, // format: { repo: branch }
+    defaultBranches: Record<string, string>,
     mainRepo: string
 ): CommitInfo[] {
     for (const rawCommit of rawCommits) {
@@ -72,6 +75,9 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
  * is almost always "Because that's how they decided Git/GitHub should work".
  * 
  * @param rawCommits array of all commits to be analyzed and processed.
+ * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are the default branches
+ * of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
+ * @param mainRepo the name of the queried repository. Example: torvalds/linux
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
  * in the input, a commit with the same hash will always be present in the output.
  */

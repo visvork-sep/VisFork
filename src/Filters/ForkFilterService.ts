@@ -1,5 +1,4 @@
-import { ForkFilter } from "@Types/ForkFilter";
-import { ForkInfo } from "@Types/DataLayerTypes";
+import { ForkFilter, ForkInfo } from "@Types/LogicLayerTypes";
 
 
 // TODO: Change ForkInfo to whichever type/interface we have invented for forks.

@@ -1,6 +1,6 @@
 import { FormControl, TextInput } from "@primer/react";
 import { RECENT_ACTIVITY_MIN_MONTHS, RECENT_ACTIVITY_MAX_MONTHS } from "@Utils/Constants";
-import { InputError } from "../../../Types/FormErrors";
+import { InputError } from "../../../Types/UIFormErrors";
 
 interface RecentlyUpdatedInputProps {
     error: InputError | null

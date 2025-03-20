@@ -321,9 +321,17 @@ export function SankeyDiagram(data: SankeyData) {
             return;
         }
 
-        // clear visualization if there is not data
+        // show user when no data is selected
         if (!data?.commitData?.length) {
             d3.select("#sankey-diagram").selectAll("*").remove();
+            d3.select("#sankey-diagram")
+                .append("text")
+                .attr("x", 200)
+                .attr("y", 200)
+                .attr("fill", "black")
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .text("No data selected");
             return;
         }
 

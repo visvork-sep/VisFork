@@ -41,7 +41,6 @@ export class ForkFilterService {
 
         return this.#isForkInDateRange(fork, filter.dateRange)
             && this.#isForkActive(fork, filter.activeForksOnly)
-            && this.#isForkOfType(fork, filter.forkType)
             && this.#isOwnerOfType(fork, filter.ownerType)
             && this.#isForkUpdatedInLastMonths(fork, filter.updatedInLastMonths);
     }
@@ -102,24 +101,6 @@ export class ForkFilterService {
         } else {
             result = this.#isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS);
         }
-
-        return result;
-    }
-
-    /**
-     * If {@param forkType} is not undefined or null, this function determines whether
-     * {@param fork} is of type {@param forkType}.  
-     * 
-     * @returns True if {@code forkType === undefined || forkType === null || fork.type === forkType}, false otherwise.
-     */
-    #isForkOfType(fork: ForkInfo, forkType?: ForkType): boolean {
-        if (forkType == null) {
-            return true; // since the user is not filtering based on this
-        }
-
-        let result: boolean = false; // placeholder
-
-        // let result: boolean = forkType === fork.type;
 
         return result;
     }

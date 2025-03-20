@@ -42,7 +42,7 @@ function ApplicationBody() {
 
     // TODO: Extract props from visData when more visualizations need them
     const {
-        forkListData, commitTableData
+        commitTableData
     } = visData;
 
     // const { handleHistogramSelection, handleTimelineSelection } = handlers;

@@ -5,8 +5,7 @@ export interface DataLayerOutput {
     commits: CommitInfo[],
 }
 
-
-export interface  ForkInfo {
+export interface ForkInfo {
     id: number;
     name: string;
     owner: { login: string };
@@ -14,6 +13,31 @@ export interface  ForkInfo {
     created_at: Date | null;
     last_pushed: Date | null;
     ownerType: OwnerType;
+}
+
+export interface ForkInfoWithCommits extends ForkInfo {
+    commits: CommitInfo[];
+}
+
+export interface RepoWithForks {
+    owner: string;
+    repo: string;
+    forks: ForkInfoWithCommits[];
+}
+
+export interface CommitInfo {
+    sha: string;
+    id: string;
+    parentIds: string[];
+    node_id: string;
+    author: string;
+    date: string;
+    url: string;
+    message: string;
+    mergedNodes: unknown[];
+    commit_type: string;
+    branch_name: string;
+    branch_id: string;
 }
 
 export interface DateRange {
@@ -30,21 +54,7 @@ export interface ForkQueryState {
     direction: SortDirection;
 }
 
-export interface CommitInfo {
-    sha: string;
-    id: string;
-    parentIds: string[];
-    node_id: string;
-    author: string;
-    date: string;
-    url: string;
-    message: string;
-    mergedNodes: unknown[];
-    repo: string;
-    commit_type?: string;
-    branch_name?: string;
-    branch_id?: string;
-}
+
 
 // Define the filter state structure
 /** See URD Section 3.1.3. "Filtering and Sorting Options". */

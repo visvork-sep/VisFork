@@ -1,7 +1,7 @@
-import { ForkJSON, CommitJSON } from "@Types/DataLayerTypes";
+import { GitHubAPIFork, GitHubAPICommit } from "@Types/DataLayerTypes";
 import { ForkInfo, CommitInfo } from "@Types/LogicLayerTypes";
 
-export function toForkInfo(fork: ForkJSON): ForkInfo {
+export function toForkInfo(fork: GitHubAPIFork): ForkInfo {
     return {
         id: fork.id,
         name: fork.name,
@@ -9,11 +9,11 @@ export function toForkInfo(fork: ForkJSON): ForkInfo {
         description: fork.description,
         created_at: fork.created_at ? new Date(fork.created_at) : null,
         last_pushed: fork.pushed_at ? new Date(fork.pushed_at) : null,
-        ownerType: fork.owner.type === "Organization" ? "Organization" : "User"
+        ownerType: fork.owner.type === "Organization" ? "Organization" : "User",
     };
 }
 
-export function toCommitInfo(commit: CommitJSON): CommitInfo {
+export function toCommitInfo(commit: GitHubAPICommit): CommitInfo {
     return {
         sha: commit.sha,
         id: commit.node_id, // Assuming `node_id` is unique and works as an ID
@@ -24,9 +24,8 @@ export function toCommitInfo(commit: CommitJSON): CommitInfo {
         url: commit.html_url,
         message: commit.commit?.message ?? "",
         mergedNodes: [], // No clear mapping, leaving as empty array
-        repo: commit.repo,
-        commit_type: undefined,
-        branch_name: undefined,
-        branch_id: undefined
+        commit_type: "",
+        branch_name: "",
+        branch_id: ""
     };
 }

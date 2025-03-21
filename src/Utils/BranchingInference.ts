@@ -169,12 +169,15 @@ function makeUniqueHierarchical(commit: CommitInfo) {
         if (locations.filter(({branch, repo}) => {
             return repo === globalMainRepo && branch === globalDefaultBranches[globalMainRepo];
         }).length === 1) {
+            // TODO
             // delete everywhere else
         } else if (locations.filter(({branch, repo}) => {
             return branch === globalDefaultBranches[repo];
         }).length >= 1) {
+            // TODO
             // delete everywhere else
         } else { 
+            // TODO
             // choose random branch and delete everywhere else
         }
     }
@@ -202,13 +205,14 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
     let commitLocations;
     if (allBranchesWithRelevantHeadCommit !== undefined) { 
         if (allBranchesWithRelevantHeadCommit.length === 1) { // found perfect branch!
-            
+            // TODO
         } else { // more than one perfect branch found, pick a random one
-
+            // TODO
         }
     } else if ((commitLocations = commitLocationMap.get(mergeCommit.parentIds[1])) !== undefined 
         && commitLocations.length > 1) { // parentId in fetched data and has duplicates
         // prioritize default branch!
+        // TODO
     }
     // Remaining conditions only include situations with no duplicates
 }
@@ -223,6 +227,7 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
  */
 function findMergeBaseCommit(parent1: string, parent2: string): string {
     // API call goes here, or maybe not and I lose reasonable hairline privileges
+    // TODO :(
     console.log("parent1: " + parent1);
     console.log("parent2: " + parent2);
     return "fresh";

@@ -2,8 +2,8 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, Mock } from "vitest";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { useFetchForks, useFetchCommitsBatch } from "@Queries/queries";
-import { ForkFilterService } from "@Filters/ForkFilterService.ts";
 import { ForkInfo, CommitInfo } from "@Types/LogicLayerTypes";
+import { act } from "react";
 
 // Mock useFetchForks and useFetchCommitsBatch
 vi.mock("@Queries/queries", () => ({
@@ -47,7 +47,7 @@ describe("useFilteredData Hook", () => {
         (useFetchForks as Mock).mockReturnValue({ data: [], isLoading: true, error: null });
         (useFetchCommitsBatch as Mock).mockReturnValue({ data: [], isLoading: false, error: null });
 
-        const { result } = renderHook(() => useFilteredData(new ForkFilterService()));
+        const { result } = renderHook(() => useFilteredData());
 
         expect(result.current.filteredForks).toEqual([]);
         expect(result.current.isLoadingFork).toBe(true);
@@ -58,7 +58,15 @@ describe("useFilteredData Hook", () => {
         (useFetchForks as Mock).mockReturnValue({ data: mockForks, isLoading: false, error: null });
         (useFetchCommitsBatch as Mock).mockReturnValue({ data: mockCommits, isLoading: false, error: null });
 
-        const { result } = renderHook(() => useFilteredData(new ForkFilterService()));
+        const { result } = renderHook(() => useFilteredData());
+        act(() => {
+            result.current.onFiltersChange(
+                { dateRange: { start: new Date("1999-01-01"), end: new Date() },
+                    forkTypes: ["adaptive"], ownerTypes: ["User"] },
+                { owner: "user1", repo: "repo-1", forksCount: 1,
+                    range: { start: new Date("1999-01-01"), end: new Date() }, sort: "watchers", direction: "asc" }
+            );
+        });
 
         await waitFor(() => expect(result.current.filteredForks).toEqual(mockForks));
 
@@ -70,7 +78,7 @@ describe("useFilteredData Hook", () => {
         (useFetchForks as Mock).mockReturnValue({ data: mockForks, isLoading: false, error: null });
         (useFetchCommitsBatch as Mock).mockReturnValue({ data: mockCommits, isLoading: false, error: null });
 
-        const { result } = renderHook(() => useFilteredData(new ForkFilterService()));
+        const { result } = renderHook(() => useFilteredData());
 
         await waitFor(() =>
             expect(result.current.commitData).toEqual(mockCommits));

@@ -205,7 +205,9 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
     const allBranchesWithRelevantHeadCommit = locationHeadCommitMapReversed.get(mergeCommit.parentIds[1]);
     let commitLocations;
     if (allBranchesWithRelevantHeadCommit !== undefined) { 
-        if (allBranchesWithRelevantHeadCommit.length === 1) { // found perfect branch!
+        if (allBranchesWithRelevantHeadCommit.length === 0) {
+            console.error("Critical mistake in data structure!");
+        } else if (allBranchesWithRelevantHeadCommit.length === 1) { // found perfect branch!
             // TODO
         } else { // more than one perfect branch found, pick a random one
             // TODO

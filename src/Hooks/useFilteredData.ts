@@ -22,7 +22,10 @@ export function useFilteredData(filterService : ForkFilterService) {
 
     // Memoized filtering: Applies filters only when data or filters change.
     const filteredForks = useMemo(() => {
-        return filterService.filterForks(data, filters);
+        if (filters === undefined) {
+            return data;
+        }
+        return filterService.apply(data, filters);
     }, [data, filters]);
 
 

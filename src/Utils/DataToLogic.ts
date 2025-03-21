@@ -1,7 +1,7 @@
 import { GitHubAPIFork, GitHubAPICommit } from "@Types/DataLayerTypes";
-import { ForkInfo, CommitInfo } from "@Types/LogicLayerTypes";
+import { RepositoryInfo, CommitInfo } from "@Types/LogicLayerTypes";
 
-export function toForkInfo(fork: GitHubAPIFork): ForkInfo {
+export function toForkInfo(fork: GitHubAPIFork): RepositoryInfo {
     return {
         id: fork.id,
         name: fork.name,
@@ -20,7 +20,7 @@ export function toCommitInfo(commit: GitHubAPICommit): CommitInfo {
         parentIds: commit.parents?.map(parent => parent.sha) ?? [],
         node_id: commit.node_id,
         author: commit.commit?.author?.name ?? "Unknown",
-        date: commit.commit?.author?.date ?? "Unknown",
+        date: commit.commit?.author?.date ? new Date(commit.commit.author.date) : "Unknown",
         url: commit.html_url,
         message: commit.commit?.message ?? "",
         mergedNodes: [], // No clear mapping, leaving as empty array

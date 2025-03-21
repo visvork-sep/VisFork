@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { CommitInfo, 
     ForkFilter, 
-    ForkInfo,
-    ForkInfoWithCommits, 
-    ForkQueryState, 
-    RepoWithForks 
+    RepositoryInfo,
+    RepositoryInfoWithCommits, 
+    ForkQueryState,
+    MainRepositoryInfo,
+    CommitInfoExtended
 } from "@Types/LogicLayerTypes";
 import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
 import { toCommitInfo, toForkInfo } from "@Utils/DataToLogic";
@@ -61,36 +62,56 @@ export function useFilteredData() {
     const simplifiedCommitData: CommitInfo[][] = commitData ? 
         commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
 
-    let repoWithForks: RepoWithForks | undefined = undefined;
+    let mainRepositoryInfo: MainRepositoryInfo| undefined = undefined;
     if (!forkError 
         && !commitError 
         && !isLoadingFork 
         && !isLoadingCommits 
         && simplifiedForkData.length > 0 
         && simplifiedCommitData.length == simplifiedForkData.length
+        && forkQueryState?.owner
+        && forkQueryState?.repo
     ) {
-        const completeForkData: ForkInfoWithCommits[] = simplifiedForkData.map((fork, index) => 
+        const completeForkData: RepositoryInfoWithCommits[] = simplifiedForkData.map((fork, index) => 
             ({
                 ...fork,
                 commits: simplifiedCommitData[index]
             })
         );
-        const completeData: RepoWithForks = {
-            owner: forkQueryState?.owner ?? "",
-            repo: forkQueryState?.repo ?? "",
-            forks: completeForkData
+
+        // temporary get data on main repository
+        const completeData: MainRepositoryInfo = {
+            owner: { login: forkQueryState.owner }, // get from query instead
+            forks: completeForkData, // get form query instead
+            commits: [], // temporary
+            id: 0, // id
+            name: "", //
+            description: null,
+            created_at: null,
+            last_pushed: null,
+            ownerType: "User" // get from query instead
         };
 
-        repoWithForks = completeData;
+        mainRepositoryInfo = completeData;
     }
+
+    const flattenedCommits: CommitInfoExtended[] = 
+        mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<CommitInfoExtended[]>((acc, fork) => {
+            const commits = fork.commits.map(commit => ({
+                ...commit,
+                repo: fork.name
+            }));
+
+            acc = acc.concat(commits);
+            return acc;
+        }, []) : [];
 
     return {
         isLoading: isLoadingFork || isLoadingCommits,
         forks: filteredForks,
-        commits: simplifiedCommitData,
-        data: repoWithForks,
+        commits: flattenedCommits,
+        data: mainRepositoryInfo,
         onFiltersChange: onRequestChange,
-
         forkError,
         commitError,
 
@@ -99,7 +120,7 @@ export function useFilteredData() {
     };
 }
 
-function isIncludedFork(filter: ForkFilter, fork: ForkInfo): boolean {
+function isIncludedFork(filter: ForkFilter, fork: RepositoryInfo): boolean {
     if (filter.dateRange.start && fork.created_at && fork.created_at < filter.dateRange.start) {
         return false;
     }

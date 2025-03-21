@@ -1,7 +1,7 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "@Queries/rawQueries";
 import { CommitQueryParams, ForkQueryParams } from "@Types/DataLayerTypes";
-import { ForkInfo, ForkQueryState } from "@Types/LogicLayerTypes";
+import { RepositoryInfo, ForkQueryState } from "@Types/LogicLayerTypes";
 import { GetAvatarUrlQueryVariables}
     from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";
@@ -55,7 +55,7 @@ export function useFetchForks(forkQueryState?: ForkQueryState) {
  * @returns The result object is of type CommitInfo.
  */
 
-export function useFetchCommitsBatch(forks: ForkInfo[], forkQueryState?: ForkQueryState) {
+export function useFetchCommitsBatch(forks: RepositoryInfo[], forkQueryState?: ForkQueryState) {
     const { isAuthenticated, getAccessToken } = useAuth();
     const accessToken = getAccessToken() ?? "";
 

@@ -1,7 +1,7 @@
 import { ForksSortingOrder, ForkType, OwnerType, SortDirection } from "@Utils/Constants";
 
 export interface DataLayerOutput {
-    forks: ForkInfo[],
+    forks: RepositoryInfo[],
     commits: CommitInfo[],
 }
 
@@ -11,7 +11,7 @@ export interface CommitInfo {
     parentIds: string[];
     node_id: string;
     author: string;
-    date: string;
+    date: Date | "Unknown";
     url: string;
     message: string;
     mergedNodes: unknown[];
@@ -20,7 +20,7 @@ export interface CommitInfo {
     branch_id: string;
 }
 
-export interface ForkInfo {
+export interface RepositoryInfo {
     id: number;
     name: string;
     owner: { login: string };
@@ -30,14 +30,17 @@ export interface ForkInfo {
     ownerType: OwnerType;
 }
 
-export interface ForkInfoWithCommits extends ForkInfo {
+export interface RepositoryInfoWithCommits extends RepositoryInfo {
     commits: CommitInfo[];
 }
 
-export interface RepoWithForks {
-    owner: string;
+export interface MainRepositoryInfo extends RepositoryInfoWithCommits {
+    forks: RepositoryInfoWithCommits[];
+}
+
+export interface CommitInfoExtended extends CommitInfo {
     repo: string;
-    forks: ForkInfoWithCommits[];
+    
 }
 
 export interface DateRange {

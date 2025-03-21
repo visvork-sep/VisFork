@@ -4,7 +4,9 @@ import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 
 function DataComponents() {
-    const { onFiltersChange }= useFilteredData();
+    const { onFiltersChange, forks, commits, data  }= useFilteredData();
+
+    console.log(JSON.stringify(data));
     return (
         <>
             <SplitPageLayout.Pane resizable aria-label="Configuration Pane">

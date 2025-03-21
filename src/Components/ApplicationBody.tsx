@@ -116,15 +116,15 @@ function ApplicationBody() {
             <Dropdown summaryText="Commit Table">
                 <CommitTable {...commitTableData} />
             </Dropdown>
-            <Dropdown summaryText="Word Cloud">
+            {/* <Dropdown summaryText="Word Cloud">
                 <WordCloud {...wordCloudData} />
-            </Dropdown>
+            </Dropdown> */}
             <Dropdown summaryText="Sankey Diagram">
                 <SankeyDiagram {...sankeyData} />
             </Dropdown>
             <Dropdown summaryText="Collaboration Graph">
                 <CollaborationGraph {...collabGraphData} />
-            </Dropdown>
+            </Dropdown>  
         </Stack>
     );
 }

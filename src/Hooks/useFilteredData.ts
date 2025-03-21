@@ -30,7 +30,6 @@ export function useFilteredData() {
     const simplifiedForkData = forkData?.data ?
         forkData.data.map(fork => toForkInfo(fork)) : []; 
 
-    console.log(simplifiedForkData);
     // Memoized filtering: Applies filters only when data or filters change.
     const filteredForks = filters ? simplifiedForkData.filter(fork =>     
         isIncludedFork(filters, fork)
@@ -87,7 +86,8 @@ export function useFilteredData() {
 
     return {
         isLoading: isLoadingFork || isLoadingCommits,
-        filteredForks,
+        forks: filteredForks,
+        commits: simplifiedCommitData,
         data: repoWithForks,
         onFiltersChange: onRequestChange,
 
@@ -109,7 +109,6 @@ function isIncludedFork(filter: ForkFilter, fork: ForkInfo): boolean {
     }
 
     if (filter.activeForksOnly) {
-        console.log("Not implemented");
     }
 
     if (!filter.ownerTypes.includes(fork.ownerType)) {
@@ -117,7 +116,6 @@ function isIncludedFork(filter: ForkFilter, fork: ForkInfo): boolean {
     }
 
     if (filter.forkTypes) {
-        console.log("Not implemented");
     }
 
     if (filter.updatedInLastMonths && fork.last_pushed) {

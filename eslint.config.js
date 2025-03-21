@@ -6,9 +6,9 @@ import "eslint-plugin-only-warn";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-    {ignores: ["dist/", "node_modules/", "__generated__/"]},
-    {files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"]},
-    {languageOptions: { globals: globals.browser }},
+    { ignores: ["dist/", "node_modules/", "__generated__/", ".contrib/"] },
+    { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
+    { languageOptions: { globals: globals.browser } },
     pluginJs.configs.recommended,
     ...tseslint.configs.recommended,
     ...tseslint.configs.strict,
@@ -30,7 +30,7 @@ export default [
     {
         settings: {
             react: {
-                version: "detect", 
+                version: "detect",
             },
         },
     }

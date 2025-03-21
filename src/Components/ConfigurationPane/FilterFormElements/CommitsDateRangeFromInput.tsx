@@ -1,38 +1,29 @@
 import { FormControl, TextInput } from "@primer/react";
+import { InputError } from "../../../Types/UIFormErrors";
 
-type CommitsDateRangeFromInputValidation = "laterFromDateError" | "unknownError";
 
 interface CommitsDateRangeFromInputProps {
-    validation? : CommitsDateRangeFromInputValidation
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
+    value: string;
 };
 
-function CommitsDateRangeFromInput({ validation, onChangeHandler } : CommitsDateRangeFromInputProps) {
-    let validationText;
-
-    switch (validation) {
-        case "laterFromDateError":
-            validationText = "Not a valid date range";
-            break;
-        case "unknownError":
-            validationText = "Unknown commit date range error";
-    }
-
+function CommitsDateRangeFromInput({ error, onChangeHandler, value }: CommitsDateRangeFromInputProps) {
     return (
-        <FormControl>
+        <FormControl required>
             <FormControl.Label>Commits from</FormControl.Label>
             <FormControl.Caption>Retrieve commits starting from</FormControl.Caption>
-            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)}/>
-            {validationText && 
+            <TextInput type="date" onChange={e => onChangeHandler(e.target.value)} value={value}/>
+            {error &&
                 <FormControl.Validation variant="error">
-                    {validationText}
+                    {error.message}
                 </FormControl.Validation>
             }
-        </FormControl> 
+        </FormControl>
     );
 }
 
 export {
     CommitsDateRangeFromInput
 };
-export type { CommitsDateRangeFromInputValidation, CommitsDateRangeFromInputProps };
+export type { CommitsDateRangeFromInputProps };

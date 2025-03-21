@@ -1,40 +1,24 @@
 import { FormControl, TextInput } from "@primer/react";
-
-type RepositoryInputValidation = "syntaxError" | "ownerError" | "repositoryNameError" | "unknownError";
+import { InputError } from "../../../Types/UIFormErrors";
 
 interface RepositoryInputProps {
-    validation?: RepositoryInputValidation;
+    error: InputError | null;
     onChangeHandler: (input: string) => void;
-}
+    value: string;
+};
 
-function RepositoryInput({ validation, onChangeHandler } : RepositoryInputProps) {
-    let validationText: string | undefined;
-
-    switch(validation) {
-        case "syntaxError":
-            validationText = "Syntax must match <Owner>/<RepositoryName>";
-            break;
-        case "ownerError":
-            validationText = "Invalid repository owner";
-            break;
-        case "repositoryNameError":
-            validationText = "Invalid repository name";
-            break;
-        case "unknownError":
-            validationText = "Unknown error in field";
-    }
-
+function RepositoryInput({ error, onChangeHandler, value }: RepositoryInputProps) {
     return (
         <FormControl required id="repository">
             <FormControl.Label>Repository</FormControl.Label>
-            <TextInput type="text" placeholder="torvalds/linux" name="repository" 
-                onChange={e => onChangeHandler(e.target.value)}/>
+            <TextInput type="text" placeholder="torvalds/linux" name="repository"
+                onChange={e => onChangeHandler(e.target.value)} value={value} />
             <FormControl.Caption>
                 This is the repository that the visualizations will be based upon
             </FormControl.Caption>
-            {validationText && 
+            {error &&
                 <FormControl.Validation variant="error">
-                    {validationText}
+                    {error.message}
                 </FormControl.Validation>
             }
         </FormControl>
@@ -44,4 +28,4 @@ function RepositoryInput({ validation, onChangeHandler } : RepositoryInputProps)
 export {
     RepositoryInput
 };
-export type { RepositoryInputProps, RepositoryInputValidation };
+export type { RepositoryInputProps };

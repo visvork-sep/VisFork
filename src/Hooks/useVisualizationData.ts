@@ -26,7 +26,7 @@ interface CommitData {
     date: Date;
     branch: string;
     url: string;
-    type: "adaptive" | "corrective" | "perfective" | "uknown";
+    type: "adaptive" | "corrective" | "perfective" | "unknown";
 }
 
 // Helper function to map commit data
@@ -43,7 +43,7 @@ const mapCommitDataToTimeline = (commitData: CommitData[]): TimelineData => ({
         id: commit.sha,
         parentIds: commit.parentIds,
         branch: commit.branch,
-        date: commit.date,
+        date: commit.date.toISOString(),
         url: commit.url,
     })),
 });
@@ -74,6 +74,7 @@ const mapCommitDataToCollabGraph = (commitData: CommitData[]): CollabGraphData =
     commitData: commitData.map((commit) => ({
         author: commit.author,
         repo: commit.repo,
+        date: commit.date.toISOString()
     })),
 });
 
@@ -98,10 +99,15 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
     // Handlers
     const handleHistogramSelection = useCallback(
         (startDate: Date, endDate: Date) => {
+            console.log("Histogram selection", startDate, endDate);
+            console.log("Commit data", commitData);
+            
             const constrainedCommits = commitData.filter(
                 (commit) => commit.date >= startDate && commit.date <= endDate
             );
 
+            console.log("Constrained commits", constrainedCommits);
+            
             setVisData((prev) => ({
                 ...prev,
                 timelineData: mapCommitDataToTimeline(constrainedCommits),
@@ -117,7 +123,10 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
-
+            console.log("Constrained commits", constrainedCommits);
+            console.log("New word cloud data", mapCommitDataToWordCloud(constrainedCommits));
+            
+            
             setVisData((prev) => ({
                 ...prev,
                 commitTableData: mapCommitDataToCommitTable(constrainedCommits),

@@ -2,9 +2,8 @@
 import * as d3Sankey from "d3-sankey";
 import * as d3 from "d3";
 import { useEffect } from "react";
-import { Repository } from "./repo";
-
-interface ParsedDataItem  {
+import { SankeyData } from "@VisInterfaces/SankeyData";
+interface ParsedDataItem {
     name: string;
     type: string;
     count: number;
@@ -12,11 +11,6 @@ interface ParsedDataItem  {
 
 //function which helpts define the nodeAlign values 
 type AlignType = "justify" | "left" | "right" | "center";
-
-// Interface for the SankeyChartBuild component
-interface SankeyChartBuildProps {
-    data: Repository[];
-}
 
 // Function to map string to d3-sankey alignment functions to define the nodeAlign value
 const getNodeAlignFunction = (align: AlignType) => {
@@ -34,14 +28,14 @@ const getNodeAlignFunction = (align: AlignType) => {
 };
 
 // Function to parse the data and return an array of ParsedDataItem
-export function parseData(data: Repository[]): ParsedDataItem[] {
+export function parseData({ commitData }: SankeyData): ParsedDataItem[] {
     const parsedData: Record<string, ParsedDataItem> = {};
 
     // Loop through the data and create a key for each unique combination of repo and commit_type
 
-    for (const dataPoint of data) {
+    for (const dataPoint of commitData) {
         const name = dataPoint.repo;
-        const type = dataPoint.commit_type;
+        const type = dataPoint.commitType;
         const key = `${name}-${type}`;
 
         // If the key already exists, increment the count, otherwise create a new entry
@@ -61,7 +55,7 @@ export function SankeyChart(
     {   // nodes and links defining the graph
         nodes, // an iterable of node objects (typically [{id}, …]); implied by links if missing
         links, // an iterable of link objects (typically [{source, target}, …])
-    }: { nodes?: d3Sankey.SankeyNodeMinimal<{ id: string }, any>[]; links: d3Sankey.SankeyLinkMinimal<any, any>[] },
+    }: { nodes?: d3Sankey.SankeyNodeMinimal<{ id: string; }, any>[]; links: d3Sankey.SankeyLinkMinimal<any, any>[]; },
     {   // configuration options with defaults
         format = d3.format(","), // a function or format specifier for values in titles
         align = "justify", // convenience shorthand for nodeAlign
@@ -76,11 +70,11 @@ export function SankeyChart(
         nodeStrokeWidth = 1, // width of stroke around node rects, in pixels
         nodeStrokeOpacity = 1, // opacity of stroke around node rects
         nodeStrokeLinejoin = 1, // line join for stroke around node rects
-        linkSource = (l)  => l.source, // given l in links, returns a node identifier string
+        linkSource = (l) => l.source, // given l in links, returns a node identifier string
         linkTarget = (l) => l.target, // given l in links, returns a node identifier string
         linkValue = (l) => l.value, // given l in links, returns the quantitative value
         linkPath = d3Sankey.sankeyLinkHorizontal(), // given d in (computed) links, returns the SVG path
-        linkTitle = (l) => 
+        linkTitle = (l) =>
             `${l.source.id} => ${l.target.id}\n${format(l.value)} commits`, // given d in (computed) links
         linkColor = "source-target", // source, target, source-target, or static color
         linkStrokeOpacity = 0.5, // link stroke opacity
@@ -92,36 +86,37 @@ export function SankeyChart(
         marginRight = 1, // right margin, in pixels
         marginBottom = 5, // bottom margin, in pixels
         marginLeft = 1, // left margin, in pixels
-    }: {    format?: (n: number) => string ; 
-            align?: AlignType; 
-            nodeId?: (n: d3Sankey.SankeyNodeMinimal<{ id: string }, any>) => number | undefined;
-            nodeGroup?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => number; 
-            nodeGroups: Iterable<number>;
-            nodeLabel?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string; 
-            nodeAlign?: (node: d3Sankey.SankeyNodeMinimal<any, any>, n: number) => number; 
-            nodeWidth?: number;
-            nodePadding?: number;
-            nodeLabelPadding?: number; 
-            nodeStroke?:  string; 
-            nodeStrokeWidth: number;
-            nodeStrokeOpacity: number; 
-            nodeStrokeLinejoin: number; 
-            linkSource?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => string; 
-            linkTarget?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => string; 
-            linkValue?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => number; 
-            linkPath?: d3.Link<any, d3Sankey.SankeyLinkMinimal<any, any>, [number, number]>;
-            linkTitle?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => string;
-            linkColor?: string; 
-            linkStrokeOpacity?:number; 
-            linkMixBlendMode?: string;
-            colors: readonly string[];
-            width?: number;
-            height?: number;
-            marginTop?: number;
-            marginRight?: number;
-            marginBottom?: number;
-            marginLeft?: number;
-        }
+    }: {
+        format?: (n: number) => string;
+        align?: AlignType;
+        nodeId?: (n: d3Sankey.SankeyNodeMinimal<{ id: string; }, any>) => number | undefined;
+        nodeGroup?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => number;
+        nodeGroups: Iterable<number>;
+        nodeLabel?: (n: d3Sankey.SankeyNodeMinimal<any, any>) => string;
+        nodeAlign?: (node: d3Sankey.SankeyNodeMinimal<any, any>, n: number) => number;
+        nodeWidth?: number;
+        nodePadding?: number;
+        nodeLabelPadding?: number;
+        nodeStroke?: string;
+        nodeStrokeWidth: number;
+        nodeStrokeOpacity: number;
+        nodeStrokeLinejoin: number;
+        linkSource?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => string;
+        linkTarget?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => string;
+        linkValue?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => number;
+        linkPath?: d3.Link<any, d3Sankey.SankeyLinkMinimal<any, any>, [number, number]>;
+        linkTitle?: (l: d3Sankey.SankeyLinkMinimal<any, any>) => string;
+        linkColor?: string;
+        linkStrokeOpacity?: number;
+        linkMixBlendMode?: string;
+        colors: readonly string[];
+        width?: number;
+        height?: number;
+        marginTop?: number;
+        marginRight?: number;
+        marginBottom?: number;
+        marginLeft?: number;
+    }
 ) {
     //Mapping the soruce, target and value of the links
     const LS = d3.map(links, linkSource).map(intern);
@@ -134,7 +129,7 @@ export function SankeyChart(
     }
 
     // Mapping the nodes to their id
-    const N = d3.map(nodes as d3Sankey.SankeyNode<{ id: string }, any>[],(n) => n.id).map(intern);
+    const N = d3.map(nodes as d3Sankey.SankeyNode<{ id: string; }, any>[], (n) => n.id).map(intern);
     const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
 
     // Construct the links
@@ -156,7 +151,7 @@ export function SankeyChart(
 
     // Computing the layout of the diagram using d3Sankey
     d3Sankey
-        .sankey<{ id: string }, any>()
+        .sankey<{ id: string; }, any>()
         .nodeId((d) => d.id)
         .nodeAlign(nodeAlign)
         .nodeWidth(nodeWidth)
@@ -164,16 +159,16 @@ export function SankeyChart(
         .extent([
             [marginLeft, marginTop],
             [width - marginRight, height - marginBottom],
-        ])({ nodes: nodes as d3Sankey.SankeyNode<{ id: string }, any>[], links });
+        ])({ nodes: nodes as d3Sankey.SankeyNode<{ id: string; }, any>[], links });
 
     // Compute titles and labels using layout nodes, so as to access aggregate values.
     if (typeof format !== "function") format = d3.format(format);
     const Tl =
-		nodeLabel === undefined
-		    ? N
-		    : nodeLabel == null
-		        ? null
-		        : d3.map(nodes, nodeLabel);
+        nodeLabel === undefined
+            ? N
+            : nodeLabel == null
+                ? null
+                : d3.map(nodes, nodeLabel);
     const Lt = linkTitle == null ? null : d3.map(links, linkTitle);
 
     // A unique identifier for clip paths (to avoid conflicts).
@@ -199,7 +194,7 @@ export function SankeyChart(
         .join("rect")
         .attr("x", (d) => d.x0 ?? 0)
         .attr("y", (d) => d.y0 ?? 0)
-        .attr("height", (d) => (d.y1 ?? 0) - (d.y0 ?? 0)) 
+        .attr("height", (d) => (d.y1 ?? 0) - (d.y0 ?? 0))
         .attr("width", (d) => (d.x1 ?? 0) - (d.x0 ?? 0));
 
     //Coloring the nodes
@@ -255,7 +250,7 @@ export function SankeyChart(
             Lt
                 ? (path) => path.append("title").text(({ index: i }) => i !== undefined ? Lt[i] : null)
                 // eslint-disable-next-line @typescript-eslint/no-empty-function
-                : () => {}
+                : () => { }
         );
 
     //Setting up the label of the nodes
@@ -319,11 +314,27 @@ export function SankeyChart(
 }
 
 // SankeyChartBuild component
-export function SankeyChartBuild({ data }: SankeyChartBuildProps) {
+export function SankeyDiagram(data: SankeyData) {
     useEffect(() => {
+
         if (!data) {
             return;
         }
+
+        // show user when no data is selected
+        if (!data?.commitData?.length) {
+            d3.select("#sankey-diagram").selectAll("*").remove();
+            d3.select("#sankey-diagram")
+                .append("text")
+                .attr("x", 200)
+                .attr("y", 200)
+                .attr("fill", "black")
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .text("No data selected");
+            return;
+        }
+
         // Parse the data and create the Sankey chart
         const sankeyData = parseData(data);
         const links = sankeyData.map((d) => ({

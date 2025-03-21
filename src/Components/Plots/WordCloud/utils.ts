@@ -32,7 +32,7 @@ export const lemmatizationFunction = (token: string) => {
 
 
 export const processCommitMessages = (
-    data: { message: string }[],
+    data: string [],
     processToken: (token: string) => string,
     start: number,
     finish: number,
@@ -41,8 +41,8 @@ export const processCommitMessages = (
 ): Word[] => {
     const wordFreq: Record<string, number> = {};
 
-    data.forEach((commit: { message: string }) => {
-        const tokens = tokenize(commit.message);
+    data.forEach( (message: string ) => {
+        const tokens = tokenize(message);
         const filteredTokens = removeStopwords(tokens).filter(token => /^[a-zA-Z]+$/.test(token));
 
         filteredTokens.forEach((token: string) => {

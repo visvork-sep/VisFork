@@ -3,7 +3,8 @@
  */
 interface CollabGraphDetails{
     author: string,
-    repo: string
+    repo: string,
+    date: string
 }
 
 /**

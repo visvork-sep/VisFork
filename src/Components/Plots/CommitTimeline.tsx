@@ -2,22 +2,7 @@ import {useRef, useEffect} from "react";
 import * as d3 from "d3";
 import * as d3dag from "d3-dag";
 
-interface Commit {
-    id: string; // hash of commit
-    parentIds: string[]; // hashes of parent commits
-    repo: string; // repo name the commit belongs to
-    branch_name: string; // branch the commit belongs to
-    date: string; // date of commit
-    url: string; // url pointing to github page of commit
-}
-
-interface DagProps {
-    data: Commit[];
-    c_width: number;
-    c_height: number;
-    merged: boolean;
-    defaultBranches: Record<string, string>;
-}
+import { TimelineProps, TimelineDetails as Commit } from "@VisInterfaces/TimelineData";
 
 interface GroupedNode extends Commit {
     nodes: string[];
@@ -51,11 +36,15 @@ const LEGEND_TEXT_MARGIN = "10px";
 const EDGE_STROKE_COLOR = "#999";
 const DATE_LABEL_HEIGHT = 21;
 
-function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defaultBranches }: DagProps) {
+function CommitTimeline({ commitData,
+    c_width, c_height,
+    merged = false,
+    defaultBranches,
+    handleTimelineSelection }: TimelineProps) {
     const svgRef = useRef<SVGSVGElement>(null);
     const colorMap = new Map();
     const repoNames = new Set();
-    data.forEach(item => {
+    commitData.forEach(item => {
         repoNames.add(item.repo);
     });
     for (const [i, repo] of [...repoNames].entries()) {
@@ -95,7 +84,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
             );
 
             // group nodes by branch
-            const branchGroups = groupBy(repoNodes, (node) => node.data.branch_name);
+            const branchGroups = groupBy(repoNodes, (node) => node.data.branch);
 
             // only reassign if we have enough unique x values.
             if (branchGroups.size == distinctX.length) {
@@ -241,7 +230,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
                     id: `${counter}`,
                     parentIds: [],
                     repo: nodes[lastBreak].repo,
-                    branch_name: "default",
+                    branch: "default",
                     date: nodes[lastBreak].date,
                     url: "",
                     nodes: nodes.slice(lastBreak, i).map(node => node.id) || [],
@@ -255,7 +244,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
                 id: `Special ${counter}`,
                 parentIds: [],
                 repo: nodes[i].repo,
-                branch_name: type,
+                branch: type,
                 date: nodes[i].date,
                 url: nodes[i].url,
                 nodes: [nodes[i].id],
@@ -279,7 +268,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
                     id: `${counter}`,
                     parentIds: [],
                     repo: repo,
-                    branch_name: "default",
+                    branch: "default",
                     date: nodes[lastBreak].date,
                     url: "",
                     nodes: finalGroupNodeIds,
@@ -305,7 +294,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
     }
 
     useEffect(() => {
-        if (!svgRef.current || !data.length) return;
+        if (!svgRef.current || !commitData.length) return;
 
         // clear previous visualization
         d3.select(svgRef.current).selectAll("*").remove();
@@ -315,7 +304,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
         const builder = d3dag.graphStratify();
         let dag: d3dag.MutGraph<Commit | GroupedNode, undefined> | null = null;
         try {
-            dag = builder(merged ? groupNodes(data) as GroupedNode[] : data as Commit[]);
+            dag = builder(merged ? groupNodes(commitData) as GroupedNode[] : commitData as Commit[]);
         } catch (error) {
             console.error("Failed to build Commit Timeline: ", error);
             return;
@@ -433,7 +422,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
             const [x0, y0] = brushSelection[0];
             const [x1, y1] = brushSelection[1];
 
-            const selectedNodes = sortedNodes.filter((node) => {
+            const selectedCommits = sortedNodes.filter((node) => {
                 const x = node.y + NODE_RADIUS; // swapped x and y because graph is horizontal
                 const y = node.x + NODE_RADIUS;
                 return x >= x0 && x <= x1 && y >= y0 && y <= y1;
@@ -442,7 +431,8 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
                     merged ? (node as d3dag.MutGraphNode<GroupedNode, unknown>).data.nodes : [node.data.id]);
 
             // FOR DATA LAYER TEAM: use selectedNodes to get array of selected commits' hashes 
-            console.log("Selected Nodes:", selectedNodes);
+            console.log("Selected Commits:", selectedCommits);
+            handleTimelineSelection(selectedCommits);
         }
 
         const brush = d3
@@ -505,7 +495,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
 
         if (merged) {
             const mergedNodes = sortedNodes as unknown as d3dag.MutGraphNode<GroupedNode, undefined>[];
-            const mergedCircles = mergedNodes.filter(node => node.data.branch_name === "forkParent");
+            const mergedCircles = mergedNodes.filter(node => node.data.branch === "forkParent");
             const circles = g.append("g")
                 .selectAll("circle")
                 .data(mergedCircles)
@@ -516,7 +506,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
                 .attr("r", NODE_RADIUS)
                 .attr("fill", d => colorMap.get(d.data.repo));
 
-            const mergedSquares = mergedNodes.filter(node => node.data.branch_name === "default");
+            const mergedSquares = mergedNodes.filter(node => node.data.branch === "default");
             const squares = g.append("g")
                 .selectAll("rect")
                 .data(mergedSquares)
@@ -528,7 +518,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
                 .attr("height", NODE_RADIUS * 2)
                 .attr("fill", d => colorMap.get(d.data.repo));
 
-            const mergedTriangles = mergedNodes.filter(node => node.data.branch_name === "merge");
+            const mergedTriangles = mergedNodes.filter(node => node.data.branch === "merge");
             const triangles = g.append("g")
                 .selectAll("polygon")
                 .data(mergedTriangles)
@@ -548,9 +538,9 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
 
         } else {
             const regularCircles = sortedNodes.filter(node =>
-                node.data.branch_name !== defaultBranches[node.data.repo]);
+                node.data.branch !== defaultBranches[node.data.repo]);
             const regularTriangles = sortedNodes.filter(node =>
-                node.data.branch_name === defaultBranches[node.data.repo]);
+                node.data.branch === defaultBranches[node.data.repo]);
 
             const circles = g.append("g")
                 .selectAll("circle")
@@ -592,13 +582,13 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
                         content = `
                         <strong>Commit</strong>: ${commitData.id}<br>
                         <strong>Repo</strong>: ${commitData.repo}<br>
-                        <strong>Branch</strong>: ${commitData.branch_name}<br>
+                        <strong>Branch</strong>: ${commitData.branch}<br>
                         <strong>Date</strong>: ${commitData.date}`;
                     } else {
                         // merged view (linter issues for indenting)
                         const mergedData = d.data as GroupedNode;
                         content = `
-                        <strong>Type of Commit</strong>: ${mergedData.branch_name}<br>
+                        <strong>Type of Commit</strong>: ${mergedData.branch}<br>
                         <strong>Repo</strong>: ${mergedData.repo}<br>
                          ${mergedData.nodes.length > 1
         ? `<strong>Number of Commits</strong>: ${mergedData.nodes.length}<br>
@@ -698,7 +688,7 @@ function CommitTimeline({ data, c_width: c_width, c_height, merged = false, defa
             tooltip.remove();
         };
 
-    }, [data]);
+    }, [commitData]);
 
     return (
         <>

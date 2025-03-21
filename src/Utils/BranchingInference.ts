@@ -220,6 +220,47 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
     // Remaining conditions only include situations with no duplicates
 }
 
+function deleteFromBranch(commit: CommitInfo, branch: string, repo: string, mergeBaseCommit: string) {
+    commitLocationMap.set(commit.sha, [{repo, branch}]);
+    while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
+        commitLocationMap.set(commit.sha, [{repo, branch}]);
+        if (commit.parentIds.length === 2) {
+            recursiveMergeCheck(commit);
+        }
+
+        const nextCommit = commitMap.get(commit.parentIds[0]);
+        if (nextCommit === undefined) {
+            console.error("Critical mistake in data structure!");
+            commit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: "",url: "",message: "",
+                mergedNodes: [],repo: "",branch_name: ""};
+        } else {
+            commit = nextCommit;
+        }
+    }
+
+    while (true) {
+        const currentLocations = commitLocationMap.get(commit.sha);
+        if (currentLocations === undefined) {
+            console.error("Critical mistake in data structure!");
+        } else {
+            commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
+                return branch_name !== branch && repo_name !== repo;
+            }));
+        }
+        if (commit.parentIds.length === 0) {
+            break;
+        }
+        const nextCommit = commitMap.get(commit.parentIds[0]);
+        if (nextCommit === undefined) {
+            console.error("Critical mistake in data structure!");
+            commit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: "",url: "",message: "",
+                mergedNodes: [],repo: "",branch_name: ""};
+        } else {
+            commit = nextCommit;
+        }
+    }
+}
+
 /**
  * Aims to find the commit returned by the `git merge-base parent1 parent2` command.
  * for more info see here https://git-scm.com/docs/git-merge-base

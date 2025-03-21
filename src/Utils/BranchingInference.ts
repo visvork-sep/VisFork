@@ -166,19 +166,20 @@ function makeUniqueHierarchical(commit: CommitInfo) {
         locations = [];
     }
     if (locations.length >= 2) {
-        if (locations.filter(({branch, repo}) => {
-            return repo === globalMainRepo && branch === globalDefaultBranches[globalMainRepo];
-        }).length === 1) {
-            // TODO
-            // delete everywhere else
-        } else if (locations.filter(({branch, repo}) => {
+        const defaultBranchLocations = locations.filter(({branch, repo}) => {
             return branch === globalDefaultBranches[repo];
-        }).length >= 1) {
-            // TODO
+        });
+        if (defaultBranchLocations.filter(({repo}) => {
+            return repo === globalMainRepo;
+        }).length === 1) {
             // delete everywhere else
+            commitLocationMap.set(commit.sha, [{repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}]);
+        } else if (defaultBranchLocations.length >= 1) {
+            // delete everywhere else
+            commitLocationMap.set(commit.sha, [getMinimumCommitLocation(defaultBranchLocations)]);
         } else { 
-            // TODO
             // choose random branch and delete everywhere else
+            commitLocationMap.set(commit.sha, [getMinimumCommitLocation(locations)]);
         }
     }
 }

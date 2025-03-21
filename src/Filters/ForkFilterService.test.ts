@@ -3,7 +3,7 @@ import { ForkFilterService } from "./ForkFilterService";
 import { ForkFilter } from "../Types/LogicLayerTypes";
 import { ForkInfo } from "@Types/LogicLayerTypes";
 
-const ffs: ForkFilterService = new ForkFilterService();
+let ffs: ForkFilterService;
 
 const example_fork: ForkInfo = {
     id: 1,
@@ -32,6 +32,7 @@ describe("Errors", () => {
         beforeEach(() => {
             fork = structuredClone(example_fork);
             filter = structuredClone(example_filter);
+            ffs = new ForkFilterService();
         });
 
         it("should throw an error when param fork is null", () => {
@@ -62,6 +63,7 @@ describe("Errors", () => {
         beforeEach(() => {
             fork = structuredClone(example_fork);
             filter = structuredClone(example_filter);
+            ffs = new ForkFilterService();
         });
 
         describe("isForkInDateRange errors", () => {
@@ -101,6 +103,7 @@ describe("Regular functionality", () => {
         // }
         // the base is that we include all forks based on date:
         filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
+        ffs = new ForkFilterService();
     });
 
     describe("Date range", () => {

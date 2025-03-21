@@ -26,7 +26,7 @@ export function toCommitInfo(commit: CommitJSON): CommitInfo {
         mergedNodes: [], // No clear mapping, leaving as empty array
         repo: commit.repo,
         commit_type: undefined,
-        branch_name: undefined,
+        branch_name: "",
         branch_id: undefined
     };
 }

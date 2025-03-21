@@ -42,7 +42,7 @@ export interface CommitInfo {
     mergedNodes: unknown[];
     repo: string;
     commit_type?: string;
-    branch_name?: string;
+    branch_name: string;
     branch_id?: string;
 }
 

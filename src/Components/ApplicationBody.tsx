@@ -9,8 +9,10 @@ import { SankeyDiagram } from "./Plots/SankeyDiagram.tsx";
 import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
 import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { Dropdown } from "@Components/Dropdown";
-
+import { InfoButton } from "./InfoButton.tsx";
 import { useVisualizationData } from "@Hooks/useVisualizationData";
+import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
+
 //TODO: Replace with actual data when proper hooks is implemented
 //=================================================================================================
 const dummyForks = [
@@ -89,14 +91,40 @@ function ApplicationBody() {
 
     return (
         <Stack>
-            <Dropdown summaryText="Histogram">
-                <Histogram commitData={histogramData.commitData}
-                    handleHistogramSelection={handleHistogramSelection} />
+           <Dropdown
+            summaryText="Histogram"
+            infoButton={
+                <InfoButton
+                title="Histogram"
+                hoverDescription={visualizationDescriptions.histogram.short}
+                description={visualizationDescriptions.histogram.full}
+                />
+            }
+            >
+            <Histogram commitData={histogramData.commitData} handleHistogramSelection={handleHistogramSelection} />
             </Dropdown>
-            <Dropdown summaryText="Fork List">
+
+            <Dropdown
+                summaryText="Fork List"
+                infoButton={
+                    <InfoButton
+                    title="Fork List"
+                    hoverDescription={visualizationDescriptions.forkList.short}
+                    description={visualizationDescriptions.forkList.full}
+                    />
+                }
+                >
                 <ForkList {...forkListData} />
             </Dropdown>
-            <Dropdown summaryText="Commit Timeline">
+            <Dropdown summaryText="Commit Timeline"
+                infoButton={
+                    <InfoButton
+                    title="Commit Timeline"
+                    hoverDescription={visualizationDescriptions.commitTimeline.short}
+                    description={visualizationDescriptions.commitTimeline.full}
+                    />
+                }
+                >
                 <Box ref={measureRefCommitTimeline}
                     style={{
                         resize: "vertical",
@@ -113,16 +141,48 @@ function ApplicationBody() {
                         defaultBranches={{ /* Default branches go here */ }} merged={false} />
                 </Box>
             </Dropdown>
-            <Dropdown summaryText="Commit Table">
+            <Dropdown summaryText="Commit Table"
+                infoButton={
+                    <InfoButton
+                    title="Commit Table"
+                    hoverDescription={visualizationDescriptions.commitTable.short}
+                    description={visualizationDescriptions.commitTable.full}
+                    />
+                }
+            >
                 <CommitTable {...commitTableData} />
             </Dropdown>
-            <Dropdown summaryText="Word Cloud">
+            <Dropdown summaryText="Word Cloud"
+                infoButton={
+                    <InfoButton
+                    title="Word Cloud"
+                    hoverDescription={visualizationDescriptions.wordCloud.short}
+                    description={visualizationDescriptions.wordCloud.full}
+                    />
+                }
+            >
                 <WordCloud {...wordCloudData} />
             </Dropdown>
-            <Dropdown summaryText="Sankey Diagram">
+            <Dropdown summaryText="Sankey Diagram"
+                infoButton={
+                    <InfoButton
+                    title="Sankey Diagram"
+                    hoverDescription={visualizationDescriptions.sankeyDiagram.short}
+                    description={visualizationDescriptions.sankeyDiagram.full}
+                    />
+                }
+            >
                 <SankeyDiagram {...sankeyData} />
             </Dropdown>
-            <Dropdown summaryText="Collaboration Graph">
+            <Dropdown summaryText="Collaboration Graph"
+                infoButton={
+                    <InfoButton
+                    title="Collaboration Graph"
+                    hoverDescription={visualizationDescriptions.collaborationGraph.short}
+                    description={visualizationDescriptions.collaborationGraph.full}
+                    />
+                }
+            >
                 <CollaborationGraph {...collabGraphData} />
             </Dropdown>
         </Stack>

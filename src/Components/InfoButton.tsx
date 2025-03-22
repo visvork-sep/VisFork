@@ -4,15 +4,16 @@ import { useState } from "react";
 
 interface InfoButtonProps {
   title: string;
+  hoverDescription: string;
   description: string;
 }
 
-export function InfoButton({ title, description }: InfoButtonProps) {
+export function InfoButton({ title, hoverDescription, description }: InfoButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <Tooltip text="Info">
+      <Tooltip text={hoverDescription}>
         <Button
           variant="invisible"
           onClick={() => setIsOpen(true)}

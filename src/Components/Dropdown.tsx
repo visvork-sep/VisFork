@@ -1,14 +1,16 @@
 import { Box, Details } from "@primer/react";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import styles from "./Dropdown.module.scss";
 
 interface DropdownProps {
-    summaryText: string;
+  summaryText: string;
+  infoButton?: ReactNode; // Allow an optional info button
 }
 
-function Dropdown({ children, summaryText }: PropsWithChildren<DropdownProps>) {
-    return (
-        <Details className={styles.details}>
+function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<DropdownProps>) {
+  return (
+    <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Details className={styles.details} sx={{ flexGrow: 1 }}>
             <Details.Summary>{summaryText}</Details.Summary>
             <Box
                 sx={{
@@ -23,10 +25,14 @@ function Dropdown({ children, summaryText }: PropsWithChildren<DropdownProps>) {
                 {children}
             </Box>
         </Details>
+        {infoButton && (
+            <Box > {/* Small margin to separate from dropdown */}
+            {infoButton}
+            </Box>
+        )}
+    </Box>
     );
 }
 
-export {
-    Dropdown
-};
+export { Dropdown };
 export type { DropdownProps };

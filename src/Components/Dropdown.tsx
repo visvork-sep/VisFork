@@ -3,7 +3,7 @@ import { PropsWithChildren, ReactNode } from "react";
 import styles from "./Dropdown.module.scss";
 
 interface DropdownProps {
-  summaryText: string;
+  summaryText: string; // Title of the dropdown boxes
   infoButton?: ReactNode; // Allow an optional info button
 }
 
@@ -26,7 +26,7 @@ function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<Dropd
             </Box>
         </Details>
         {infoButton && (
-            <Box > {/* Small margin to separate from dropdown */}
+            <Box >
             {infoButton}
             </Box>
         )}

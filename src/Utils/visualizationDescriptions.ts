@@ -1,3 +1,7 @@
+/**
+ * Descriptions used in ApplicationBody.tsx for 
+ * the info button hover and click actions
+ */
 export const visualizationDescriptions = {
     histogram: {
         short: "Shows commit activity over time with a zoomable focus chart.",

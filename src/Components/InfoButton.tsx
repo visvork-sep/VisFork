@@ -3,9 +3,9 @@ import { Tooltip, Dialog, Button } from "@primer/react";
 import { useState } from "react";
 
 interface InfoButtonProps {
-  title: string;
-  hoverDescription: string;
-  description: string;
+  title: string; //Name of the visualization
+  hoverDescription: string; //Quick hover over description
+  description: string; // Extended description for clicking
 }
 
 export function InfoButton({ title, hoverDescription, description }: InfoButtonProps) {

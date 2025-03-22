@@ -5,30 +5,30 @@
 export const visualizationDescriptions = {
     histogram: {
         short: "Shows commit activity over time with a zoomable focus chart.",
-        full: "This visualization provides an overview of the number of commits made across selected forks over a specified time period. It consists of two parts: the Context Chart, which shows the entire timeline and allows users to create a selection window, and the Focus Chart, which zooms in on the selected range for detailed inspection. Users can hover over bars in the Focus Chart to view exact commit counts and trends over time."
+        full: "View the number of commits made across selected forks over a time period. Use the Context Chart to see the full timeline and create a selection window. The Focus Chart zooms in on the selected range for detailed inspection. Hover over bars to see exact commit counts and trends over time."
     },
     forkList: {
         short: "Lists repository forks with filtering and pagination.",
-        full: "Displays a paginated list of forks in the repository, allowing users to explore and navigate through different forks efficiently. Users can filter forks based on activity status and other metadata, helping them identify active versus stale forks in the ecosystem."
+        full: "Browse a paginated list of forks in the repository. Filter forks based on activity status and metadata to identify active vs. stale forks."
     },
     commitTimeline: {
         short: "Chronological view of commits with branching and merging.",
-        full: "This visualization illustrates the chronological sequence of commits across multiple forks, highlighting branching and merging events. It offers two levels of granularity: the Full View, which displays each commit as an individual node, and the Merged View, which condenses consecutive commits into single nodes for better readability. Users can interact with the timeline through tooltips, click actions to open commits on GitHub, and brushing to filter the selection."
+        full: "Explore the sequence of commits across multiple forks. Switch between Full View (detailed commit history) and Merged View (condensed view). Hover for tooltips, click commits to open them on GitHub, and use brushing to filter selections."
     },
     commitTable: {
         short: "A searchable table of commits with key details.",
-        full: "A structured table that presents detailed commit information for the selected range. Each row represents a commit and includes details such as the repository name, author, commit date, message, and a direct link to the commit on GitHub. Users can filter the table using a search bar to find specific commits."
+        full: "View commit details for a selected range. Each row includes the repository name, author, commit date, message, and a link to GitHub. Use the search bar to filter commits."
     },
     wordCloud: {
         short: "Highlights frequent words in commit messages.",
-        full: "Generates a word cloud from the most frequently used words in commit messages. The word size represents frequency, allowing users to identify recurring themes. Words undergo preprocessing, including tokenization, stopword removal, and optional lemmatization or stemming to improve readability. The system dynamically updates the visualization based on the selected commits."
+        full: "See the most commonly used words in commit messages. Word size represents frequency. The system preprocesses text by removing stopwords and applying lemmatization or stemming. Updates dynamically based on selected commits."
     },
     sankeyDiagram: {
         short: "Shows commit classification by type.",
-        full: "Represents the classification of commits based on their type (adaptive, corrective, perfective, or unknown). The left-side nodes correspond to forks, while the right-side nodes represent commit categories. Links between nodes indicate the number of commits in each category, with link thickness reflecting commit volume. Users can hover over links to see additional details about commit distribution."
+        full: "Visualize commit types (adaptive, corrective, perfective, or unknown). Forks are on the left, commit categories on the right. Link thickness reflects commit volume. Hover over links for details on commit distribution."
     },
     collaborationGraph: {
         short: "Visualizes contributor interactions and commit activity.",
-        full: "A force-directed graph illustrating the interactions between contributors and repositories. Nodes represent contributors and repositories, with edges representing commit relationships. The size of the nodes reflects their level of contribution, and a time slider allows users to animate commit activity over time."
+        full: "See how contributors and repositories are connected. Nodes represent contributors (circles) and repositories (squares), with size based on activity. Use the time slider to animate commit activity."
     }
 };

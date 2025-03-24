@@ -1,5 +1,4 @@
 import { CommitInfo } from "@Types/LogicLayerTypes";
-import exampleData from "./example.json";
 
 interface CommitLocation {
     branch: string,
@@ -103,7 +102,6 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
     mainRepo: string): CommitInfo[] {
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
-    rawCommits = exampleData;
     //rawCommits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // might be optional
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];

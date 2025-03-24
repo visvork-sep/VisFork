@@ -348,8 +348,6 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
  * @returns sha of merge-base commit
  */
 function findMergeBaseCommit(parent1: string, parent2: string): string | undefined {
-    // API call goes here, or maybe not and I lose reasonable hairline privileges
-    return "fresh";
     function getAncestors(startNode: string): Set<string> {
         const ancestors = new Set<string>();
         const queue = [startNode];

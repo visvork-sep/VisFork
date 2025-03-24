@@ -1,4 +1,5 @@
 import { CommitInfo } from "@Types/LogicLayerTypes";
+import exampleData from "./example.json";
 
 interface CommitLocation {
     branch: string,
@@ -7,7 +8,7 @@ interface CommitLocation {
 
 const commitLocationMap = new Map<string, CommitLocation[]>();
 const commitMap = new Map<string, CommitInfo>();
-const locationHeadCommitMap = new Map<CommitLocation, CommitInfo>();
+const locationHeadCommitMap = new Map<string, CommitInfo>();
 const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
@@ -102,23 +103,24 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
     mainRepo: string): CommitInfo[] {
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
-    rawCommits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // might be optional
+    rawCommits = exampleData;
+    //rawCommits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // might be optional
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
         locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
         commitLocationMap.set(rawCommit.sha, locationArray);
         commitMap.set(rawCommit.sha, rawCommit);
-        const headCommit = locationHeadCommitMap.get({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
+        const key = JSON.stringify({ repo: rawCommit.repo, branch: rawCommit.branch_name });
+        const headCommit = locationHeadCommitMap.get(key);
         if (headCommit === undefined || new Date(headCommit.date).getTime() < new Date(rawCommit.date).getTime()) {
             locationHeadCommitMap.set(
-                { branch: rawCommit.branch_name as string, repo: rawCommit.repo }, 
-                rawCommit
+                key, rawCommit
             );
         }
     }
     for (const entry of locationHeadCommitMap.entries()) {
         const locations: CommitLocation[] = locationHeadCommitMapReversed.get(entry[1].sha) ?? [];
-        locations.push(entry[0]);
+        locations.push(JSON.parse(entry[0]));
         locationHeadCommitMapReversed.set(entry[1].sha, locations);
     }
     for (const rawCommit of rawCommits) {
@@ -172,6 +174,7 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             console.error("Critical mistake in data structure encountered!");
         }
     }
+    console.log(processedCommits);
     return processedCommits;
 }
 
@@ -190,12 +193,15 @@ function makeUniqueHierarchical(commit: CommitInfo) {
         }).length === 1) {
             // delete everywhere else
             commitLocationMap.set(commit.sha, [{repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}]);
+            console.log(commitLocationMap.get(commit.sha));
         } else if (defaultBranchLocations.length >= 1) {
             // delete everywhere else
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(defaultBranchLocations)]);
+            console.log(commitLocationMap.get(commit.sha));
         } else { 
             // choose random branch and delete everywhere else
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(locations)]);
+            console.log(commitLocationMap.get(commit.sha));
         }
     }
 }
@@ -231,12 +237,13 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
         if (allBranchesWithRelevantHeadCommit.length === 0) {
             console.error("Critical mistake in data structure!");
         } else if (allBranchesWithRelevantHeadCommit.length >= 1) { // found perfect branch!
+            console.log("bad news kinda");
             deleteFromBranch(secondParent, allBranchesWithRelevantHeadCommit[0], mergeBaseCommit);
         }
     } else if (commitLocations !== undefined 
         && commitLocations.length > 1) { // parentId in fetched data and has duplicates
-        let regex = /^merge pull request .* from ([^\s]+)/i;
-        let match = secondParent.message.match(regex);
+        let regex = /^merge pull request .* from ([^\s]+).*/i;
+        let match = mergeCommit.message.match(regex);
         if (match !== null) {
             const [repo_name, branch_name] = match[1].split("/", 2);
             if (commitLocations.filter(({repo, branch}) => {
@@ -246,25 +253,29 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
                 return;
             }
         }
-        regex = /^merge branch [']([^']+)[']/i;
-        match = secondParent.message.match(regex);
+        regex = /^merge branch [']([^']+)['].*/i;
+        match = mergeCommit.message.match(regex);
         if (match !== null && commitLocations.filter(({branch}) => {
             return branch === match[1];
         }).length >= 1) {
+            console.log("match found!");
             const commitLocationsFiltered = commitLocations.filter(({branch}) => {
                 return branch === match[1];
             });
             if (commitLocationsFiltered.some(({repo}) => {
                 return repo === globalMainRepo;
             })) {
+                console.log("here");
                 deleteFromBranch(secondParent, {repo: globalMainRepo, branch: match[1]}, mergeBaseCommit);
                 return;
             } else {
+                console.log("hm???");
                 deleteFromBranch(secondParent, getMinimumCommitLocation(commitLocationsFiltered), mergeBaseCommit);
                 return;
             }
         }
         // No inference could be made: apply priority rules and gamble
+        console.log("cooked");
         const mainRepoCommitLocations = commitLocations.filter(({repo}) => {
             return repo === globalMainRepo;
         });
@@ -286,9 +297,11 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
 
 function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, mergeBaseCommit: string | undefined) {
     commitLocationMap.set(commit.sha, [{repo, branch}]);
+    console.log(commitLocationMap.get(commit.sha));
     while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
         commitLocationMap.set(commit.sha, [{repo, branch}]);
-        if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])!.length !== 1) {
+        console.log(commitLocationMap.get(commit.sha));
+        if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])?.length !== 1) {
             recursiveMergeCheck(commit);
         }
 
@@ -310,6 +323,7 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
             commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
                 return !(branch_name === branch && repo_name === repo);
             }));
+            console.log(commitLocationMap.get(commit.sha));
         }
         if (commit.parentIds.length === 0) {
             break;

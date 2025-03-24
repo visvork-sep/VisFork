@@ -7,72 +7,24 @@ import CommitTimeline from "./Plots/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable";
 import { SankeyDiagram } from "./Plots/SankeyDiagram.tsx";
 import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
-import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { Dropdown } from "@Components/Dropdown";
 import { InfoButton } from "./InfoButton.tsx";
 import { useVisualizationData } from "@Hooks/useVisualizationData";
+import { Commit, Repository } from "@Types/LogicLayerTypes.ts";
 import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
+import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 
-//TODO: Replace with actual data when proper hooks is implemented
-//=================================================================================================
-const dummyForks = [
-    {
-        id: 1,
-        name: "Fork 1",
-        description: "Description 1"
-    },
-    {
-        id: 2,
-        name: "Fork 2",
-        description: "Description 2"
-    }
-];
-const dummyCommits = [
-    {
-        repo: "Repo 1",
-        sha: "123",
-        message: "Message 1",
-        author: "Author 1",
-        login: "Login 1",
-        date: new Date(),
-        branch: "Branch 1",
-        url: "URL 1",
-        parentIds: [],
-        type: "adaptive" as "adaptive" | "corrective" | "perfective" | "unknown"
-    },
-    {
-        repo: "Repo 2",
-        sha: "321",
-        message: "not yes and i am will, . !",
-        author: "Author 1",
-        login: "Login 1",
-        date: new Date(2025, 0),
-        branch: "Branch 1",
-        url: "URL 1",
-        parentIds: [],
-        type: "corrective" as "adaptive" | "corrective" | "perfective" | "unknown"
-    },
-    {
-        repo: "Repo 3",
-        sha: "333333",
-        message: "plants vs zombies",
-        author: "Author 2",
-        login: "Login 1",
-        date: new Date(2025, 3),
-        branch: "Branch 1",
-        url: "URL 1",
-        parentIds: ["321"],
-        type: "adaptive" as "adaptive" | "corrective" | "perfective" | "unknown"
-    }
-];
-//=================================================================================================
 
+interface ApplicationBodyProps {
+    forks: Repository[],
+    commits: Commit[]
+}
 // TODO: add props passed down from the parent component containing Commit and Fork data
-function ApplicationBody() {
+function ApplicationBody({ forks, commits } : ApplicationBodyProps) {
 
     // TODO: Add props as initial data when provided
     const { visData, handlers } =
-        useVisualizationData(dummyForks, dummyCommits);
+        useVisualizationData(forks, commits);
 
     const {
         forkListData,

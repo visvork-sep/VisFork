@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { ForkListData } from "@VisInterfaces/ForkListData";
 import { CommitTableData } from "@VisInterfaces/CommitTableData";
 import { HistogramData } from "@VisInterfaces/HistogramData";
@@ -7,37 +7,18 @@ import { WordCloudData } from "@VisInterfaces/WordCloudData";
 import { SankeyData } from "@VisInterfaces/SankeyData";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 import { VisualizationData } from "@VisInterfaces/VisualizationData";
+import { Commit, Repository } from "@Types/LogicLayerTypes";
 
-// TEMPORARY
-interface ForkData {
-    id: number;
-    name: string;
-    description: string;
-}
-
-// TEMPORARY
-interface CommitData {
-    repo: string;
-    sha: string;
-    parentIds: string[];
-    message: string;
-    author: string;
-    login: string;
-    date: Date;
-    branch: string;
-    url: string;
-    type: "adaptive" | "corrective" | "perfective" | "unknown";
-}
 
 // Helper function to map commit data
-const mapCommitDataToHistogram = (commitData: CommitData[]): HistogramData => ({
+const mapCommitDataToHistogram = (commitData: Commit[]): HistogramData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
         date: commit.date,
     })),
 });
 
-const mapCommitDataToTimeline = (commitData: CommitData[]): TimelineData => ({
+const mapCommitDataToTimeline = (commitData: Commit[]): TimelineData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
         id: commit.sha,
@@ -48,29 +29,29 @@ const mapCommitDataToTimeline = (commitData: CommitData[]): TimelineData => ({
     })),
 });
 
-const mapCommitDataToCommitTable = (commitData: CommitData[]): CommitTableData => ({
+const mapCommitDataToCommitTable = (commitData: Commit[]): CommitTableData => ({
     commitData: commitData.map((commit) => ({
         id: commit.sha,
         repo: commit.repo,
         author: commit.author,
-        login: commit.login,
+        login: commit.author,
         date: commit.date.toISOString(),
         message: commit.message,
     })),
 });
 
-const mapCommitDataToWordCloud = (commitData: CommitData[]): WordCloudData => ({
+const mapCommitDataToWordCloud = (commitData: Commit[]): WordCloudData => ({
     commitData: commitData.map((commit) => commit.message),
 });
 
-const mapCommitDataToSankey = (commitData: CommitData[]): SankeyData => ({
+const mapCommitDataToSankey = (commitData: Commit[]): SankeyData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
-        commitType: commit.type,
+        commitType: commit.commitType,
     })),
 });
 
-const mapCommitDataToCollabGraph = (commitData: CommitData[]): CollabGraphData => ({
+const mapCommitDataToCollabGraph = (commitData: Commit[]): CollabGraphData => ({
     commitData: commitData.map((commit) => ({
         author: commit.author,
         repo: commit.repo,
@@ -78,11 +59,13 @@ const mapCommitDataToCollabGraph = (commitData: CommitData[]): CollabGraphData =
     })),
 });
 
-export function useVisualizationData(forkData: ForkData[], commitData: CommitData[]) {
+export function useVisualizationData(forkData: Repository[], commitData: Commit[]) {
     // Memoize the initial visualization data
     const initialVisData = useMemo(() => {
-        const forkListData: ForkListData = { forkData };
+        console.log("data passed to visualization:", forkData);
+        const forkListData: ForkListData = { forkData: forkData };
 
+        console.log("After type transform:", forkListData.forkData);
         return {
             forkListData,
             histogramData: mapCommitDataToHistogram(commitData),
@@ -95,6 +78,8 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
     }, [forkData, commitData]);
 
     const [visData, setVisData] = useState<VisualizationData>(initialVisData);
+
+    useEffect(() => setVisData(initialVisData), [forkData, commitData]);
 
     // Handlers
     const handleHistogramSelection = useCallback(
@@ -128,7 +113,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
-            
+
             setVisData((prev) => ({
                 ...prev,
                 commitTableData: mapCommitDataToCommitTable(constrainedCommits),
@@ -138,6 +123,7 @@ export function useVisualizationData(forkData: ForkData[], commitData: CommitDat
         [commitData]
     );
 
+    console.log("Returned from visualization hook", visData.forkListData);
     return {
         visData,
         handlers: {

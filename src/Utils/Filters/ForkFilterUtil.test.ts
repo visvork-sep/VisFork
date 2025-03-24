@@ -1,17 +1,17 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { ForkFilter } from "../../Types/LogicLayerTypes";
-import { ForkInfo } from "@Types/LogicLayerTypes";
+import { ForkFilter, UnprocessedRepository } from "../../Types/LogicLayerTypes";
 import { isValidForkByFilter } from "./ForkFilterUtil";
 
 
-const example_fork: ForkInfo = {
+const example_fork: UnprocessedRepository = {
     id: 1,
     name: "a fork",
     owner: { login: "a user" },
     description: "a fork of a user",
     created_at: new Date("2022-09-14T06:51:16Z"),
     last_pushed: new Date(), // today
-    ownerType: "User"
+    ownerType: "User",
+    defaultBranch: "main"
 };
 
 const example_filter: ForkFilter = {
@@ -23,7 +23,7 @@ const example_filter: ForkFilter = {
     ownerTypes: ["User", "Organization"]
 };
 
-let fork: ForkInfo = null as unknown as ForkInfo;
+let fork: UnprocessedRepository = null as unknown as UnprocessedRepository;
 let filter: ForkFilter = null as unknown as ForkFilter;
 
 describe("Regular functionality", () => {
@@ -37,24 +37,6 @@ describe("Regular functionality", () => {
         // }
         // the base is that we include all forks based on date:
         filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
-    });
-
-    describe("Date range", () => {
-        it("should return empty array - both dates", () => {
-            filter.dateRange.start = new Date("9777-01-01T19:01:12Z");
-            filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
-            expect(
-                [fork].filter((fork => isValidForkByFilter(fork, filter)))
-            ).toStrictEqual([]);
-        });
-
-        it("should return an array containing the same fork(s) - both dates", () => {
-            filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
-            filter.dateRange.end = new Date("9999-01-01T19:01:12Z");
-            expect(
-                [fork].filter((fork => isValidForkByFilter(fork, filter)))
-            ).toStrictEqual([fork]);
-        });
     });
 
     describe("Fork activity", () => {

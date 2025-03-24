@@ -34,14 +34,15 @@ export const SORT_DIRECTION = {
 export type SortDirection = typeof SORT_DIRECTION[keyof typeof SORT_DIRECTION]["value"];
 
 /// Types of forks adaptive corrective perfective
-export const FORK_TYPES = {
+
+export const COMMIT_TYPES = {
     PERFECTIVE: { label: "Perfective", value: "perfective" },
     ADAPTIVE: { label: "Adaptive", value: "adaptive" },
     CORRECTIVE: { label: "Corrective", value: "corrective" }
 } as const;
 
 
-export type ForkType = typeof FORK_TYPES[keyof typeof FORK_TYPES]["value"];
+export type CommitType = typeof COMMIT_TYPES[keyof typeof COMMIT_TYPES]["value"];
 
 /// Types of repository owners
 export const OWNER_TYPES = {

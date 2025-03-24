@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ForkListData } from "@VisInterfaces/ForkListData";
 
 function ForkList({ forkData }: ForkListData) {
+    console.log("data passed to Fork list:", forkData);
     // States to control page size and current page index
     const [pageSize, setPageSize] = useState(10);
     const [pageIndex, setPageIndex] = useState(0);

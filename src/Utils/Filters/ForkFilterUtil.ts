@@ -1,4 +1,5 @@
-import { ForkFilter, ForkInfo, DateRange } from "@Types/LogicLayerTypes";
+import {  UnprocessedRepository } from "@Types/LogicLayerTypes";
+import { ForkFilter } from "@Types/LogicLayerTypes";
 import { ACTIVE_FORK_NROF_MONTHS, OwnerType } from "@Utils/Constants";
 
 /**
@@ -7,10 +8,7 @@ import { ACTIVE_FORK_NROF_MONTHS, OwnerType } from "@Utils/Constants";
      * @returns True if {@code fork} is valid according to the {@param filter}, false otherwise.
      * 
      */
-function isValidForkByFilter(fork: ForkInfo, filter: ForkFilter): boolean {
-    if (fork.created_at && !isForkInDateRange(fork, filter.dateRange)) {
-        return false;
-    }
+function isValidForkByFilter(fork: UnprocessedRepository, filter: ForkFilter): boolean {
 
     if (!isForkWithOwnerOfType(fork, filter.ownerTypes)) {
         return false;
@@ -32,29 +30,12 @@ function isValidForkByFilter(fork: ForkInfo, filter: ForkFilter): boolean {
 }
 
 /**
- * Determines if the {@param fork} was created in the date range given by {@param dateRange}.
- * 
- * @returns True if {@code fork.date >= dateRange.start && fork.date <= dateRange.end}.
- * 
- * @throws TypeError, if the date property of {@param fork} is null or undefined.
- * @throws TypeError, if both the start and end properties of {@param dateRange} are null or undefined.
- * @throws TypeError, if both the start and end properties of {@param dateRange} are not of type Date.
- */
-function isForkInDateRange(fork: ForkInfo, dateRange: DateRange): boolean {
-    if (!fork.created_at) {
-        throw TypeError("Fork date is null or undefined");
-    }    
-
-    return fork.created_at >= dateRange.start && fork.created_at <= dateRange.end; 
-}
-
-/**
  * If {@param activeForksOnly} is not undefined, null or false, this function determines
  * whether {@param fork} is active or not.
  * 
  * @returns {@link isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS)}
  */
-function isForkActive(fork: ForkInfo): boolean {
+function isForkActive(fork: UnprocessedRepository): boolean {
     return isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS);
 }
 
@@ -64,7 +45,7 @@ function isForkActive(fork: ForkInfo): boolean {
  * 
  * @returns True if {@code onwerTypes.includes(fork.ownerType).
  */
-function isForkWithOwnerOfType(fork: ForkInfo, ownerTypes: OwnerType[]): boolean {
+function isForkWithOwnerOfType(fork: UnprocessedRepository, ownerTypes: OwnerType[]): boolean {
     return ownerTypes.includes(fork.ownerType);
 }
 
@@ -79,7 +60,7 @@ function isForkWithOwnerOfType(fork: ForkInfo, ownerTypes: OwnerType[]): boolean
  * 
  * @returns True if {@code fork} was updated in the previous {@code nrOfMonths}, false otherwise.
  */
-function isForkUpdatedInLastMonths(fork: ForkInfo, nrOfMonths: number): boolean {
+function isForkUpdatedInLastMonths(fork: UnprocessedRepository, nrOfMonths: number): boolean {
     if (!fork.last_pushed) {
         throw TypeError("Fork last pushed date is null or undefined");
     }

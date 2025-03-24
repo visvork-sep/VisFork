@@ -91,40 +91,40 @@ function ApplicationBody() {
 
     return (
         <Stack>
-           <Dropdown
-            summaryText="Histogram"
-            infoButton={
-                <InfoButton
-                title="Histogram"
-                hoverDescription={visualizationDescriptions.histogram.short}
-                description={visualizationDescriptions.histogram.full}
-                />
-            }
+            <Dropdown
+                summaryText="Histogram"
+                infoButton={
+                    <InfoButton
+                        title="Histogram"
+                        hoverDescription={visualizationDescriptions.histogram.short}
+                        description={visualizationDescriptions.histogram.full}
+                    />
+                }
             >
-            <Histogram commitData={histogramData.commitData} handleHistogramSelection={handleHistogramSelection} />
+                <Histogram commitData={histogramData.commitData} handleHistogramSelection={handleHistogramSelection} />
             </Dropdown>
 
             <Dropdown
                 summaryText="Fork List"
                 infoButton={
                     <InfoButton
-                    title="Fork List"
-                    hoverDescription={visualizationDescriptions.forkList.short}
-                    description={visualizationDescriptions.forkList.full}
+                        title="Fork List"
+                        hoverDescription={visualizationDescriptions.forkList.short}
+                        description={visualizationDescriptions.forkList.full}
                     />
                 }
-                >
+            >
                 <ForkList {...forkListData} />
             </Dropdown>
             <Dropdown summaryText="Commit Timeline"
                 infoButton={
                     <InfoButton
-                    title="Commit Timeline"
-                    hoverDescription={visualizationDescriptions.commitTimeline.short}
-                    description={visualizationDescriptions.commitTimeline.full}
+                        title="Commit Timeline"
+                        hoverDescription={visualizationDescriptions.commitTimeline.short}
+                        description={visualizationDescriptions.commitTimeline.full}
                     />
                 }
-                >
+            >
                 <Box ref={measureRefCommitTimeline}
                     style={{
                         resize: "vertical",
@@ -144,9 +144,9 @@ function ApplicationBody() {
             <Dropdown summaryText="Commit Table"
                 infoButton={
                     <InfoButton
-                    title="Commit Table"
-                    hoverDescription={visualizationDescriptions.commitTable.short}
-                    description={visualizationDescriptions.commitTable.full}
+                        title="Commit Table"
+                        hoverDescription={visualizationDescriptions.commitTable.short}
+                        description={visualizationDescriptions.commitTable.full}
                     />
                 }
             >
@@ -155,9 +155,9 @@ function ApplicationBody() {
             <Dropdown summaryText="Word Cloud"
                 infoButton={
                     <InfoButton
-                    title="Word Cloud"
-                    hoverDescription={visualizationDescriptions.wordCloud.short}
-                    description={visualizationDescriptions.wordCloud.full}
+                        title="Word Cloud"
+                        hoverDescription={visualizationDescriptions.wordCloud.short}
+                        description={visualizationDescriptions.wordCloud.full}
                     />
                 }
             >
@@ -166,9 +166,9 @@ function ApplicationBody() {
             <Dropdown summaryText="Sankey Diagram"
                 infoButton={
                     <InfoButton
-                    title="Sankey Diagram"
-                    hoverDescription={visualizationDescriptions.sankeyDiagram.short}
-                    description={visualizationDescriptions.sankeyDiagram.full}
+                        title="Sankey Diagram"
+                        hoverDescription={visualizationDescriptions.sankeyDiagram.short}
+                        description={visualizationDescriptions.sankeyDiagram.full}
                     />
                 }
             >
@@ -177,9 +177,9 @@ function ApplicationBody() {
             <Dropdown summaryText="Collaboration Graph"
                 infoButton={
                     <InfoButton
-                    title="Collaboration Graph"
-                    hoverDescription={visualizationDescriptions.collaborationGraph.short}
-                    description={visualizationDescriptions.collaborationGraph.full}
+                        title="Collaboration Graph"
+                        hoverDescription={visualizationDescriptions.collaborationGraph.short}
+                        description={visualizationDescriptions.collaborationGraph.full}
                     />
                 }
             >

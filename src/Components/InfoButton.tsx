@@ -9,25 +9,25 @@ interface InfoButtonProps {
 }
 
 export function InfoButton({ title, hoverDescription, description }: InfoButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
-  return (
-    <>
-      <Tooltip text={hoverDescription}>
-        <Button
-          variant="invisible"
-          onClick={() => setIsOpen(true)}
-          aria-label={`More info about ${title}`}
-        >
-          <InfoIcon size={16} />
-        </Button>
-      </Tooltip>
+    return (
+        <>
+            <Tooltip text={hoverDescription}>
+                <Button
+                    variant="invisible"
+                    onClick={() => setIsOpen(true)}
+                    aria-label={`More info about ${title}`}
+                >
+                    <InfoIcon size={16} />
+                </Button>
+            </Tooltip>
 
-      {isOpen && (
-        <Dialog title={title} onClose={() => setIsOpen(false)}>
-          <p>{description}</p>
-        </Dialog>
-      )}
-    </>
-  );
+            {isOpen && (
+                <Dialog title={title} onClose={() => setIsOpen(false)}>
+                    <p>{description}</p>
+                </Dialog>
+            )}
+        </>
+    );
 }

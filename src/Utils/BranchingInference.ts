@@ -222,7 +222,7 @@ function makeUniqueHierarchical(commit: CommitInfo) {
  * @param mergeCommit the commit to check duplicates from
  */
 function recursiveMergeCheck(mergeCommit: CommitInfo) {
-    if (commitLocationMap.get(mergeCommit.parentIds[1])!.length === 1) {
+    if ((commitLocationMap.get(mergeCommit.parentIds[1])?.length ?? []) === 1) {
         return;
     }
     const mergeBaseCommit = findMergeBaseCommit(mergeCommit.parentIds[0], mergeCommit.parentIds[1]);
@@ -356,8 +356,13 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
             const node = queue.shift();
             if (node !== undefined && !ancestors.has(node)) {
                 ancestors.add(node);
-                if (commitMap.get(node)!.parentIds) {
-                    queue.concat(commitMap.get(node)!.parentIds); // Add all parents to the queue
+                if (!commitMap.has(node)) {
+                    console.error("Critical mistake in data structure!");
+                } else {
+                    const parents = commitMap.get(node)?.parentIds; // Use optional chaining
+                    if (parents) {
+                        queue.push(...parents); // Add all parents to the queue
+                    }
                 }
             }
         }
@@ -373,13 +378,18 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
 
     while (queue.length > 0) {
         const node = queue.shift();
-        if (ancestorsA.has(node as string)) {
-            return node; // First common ancestor found
-        }
         if (node !== undefined && !visited.has(node)) {
+            if (ancestorsA.has(node)) {
+                return node; // First common ancestor found
+            }
             visited.add(node);
-            if (commitMap.get(node as string)!.parentIds) {
-                queue.concat(commitMap.get(node as string)!.parentIds);
+            if (!commitMap.has(node)) {
+                console.error("Critical mistake in data structure!");
+            } else {
+                const parents = commitMap.get(node)?.parentIds; // Use optional chaining
+                if (parents) {
+                    queue.push(...parents); // Add all parents to the queue
+                }
             }
         }
     }

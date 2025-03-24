@@ -155,8 +155,26 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             }
         }
     }
-    
-    return [];
+    const processedCommits: CommitInfo[] = [];
+    for (const commit of commitLocationMap) {
+        if (commit[1].length > 1) {
+            console.error("Mistake in data structure encountered!");
+        }
+        if (commit[1].length === 0) {
+            console.error("Critical mistake in data structure encountered!");
+            continue;
+        }
+        const commitInfo = commitMap.get(commit[0]);
+        if (commitInfo !== undefined) {
+            commitInfo.branch_name = commit[1][0].branch;
+            commitInfo.repo = commit[1][0].repo;
+            processedCommits.push(commitInfo);
+        } else {
+            console.error("Critical mistake in data structure encountered!");
+        }
+    }
+    console.log(processedCommits);
+    return processedCommits;
 }
 
 function makeUniqueHierarchical(commit: CommitInfo) {
@@ -203,7 +221,7 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
     const mergeBaseCommit = findMergeBaseCommit(mergeCommit.parentIds[0], mergeCommit.parentIds[1]);
     console.log(mergeBaseCommit);
     const secondParent = commitMap.get(mergeCommit.parentIds[1]);
-    const commitLocations = commitLocationMap.get(mergeCommit.parentIds[1])
+    const commitLocations = commitLocationMap.get(mergeCommit.parentIds[1]);
     if (secondParent === undefined) {
         console.error("Critical mistake in data structure!");
         return;
@@ -266,7 +284,7 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
     // Remaining conditions only include situations with no duplicates
 }
 
-function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, mergeBaseCommit: string) {
+function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, mergeBaseCommit: string | undefined) {
     commitLocationMap.set(commit.sha, [{repo, branch}]);
     while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
         commitLocationMap.set(commit.sha, [{repo, branch}]);
@@ -315,10 +333,44 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
  * @param parent2 sha of second parent commit of merge commit, by convention the last commit on branch that got merged
  * @returns sha of merge-base commit
  */
-function findMergeBaseCommit(parent1: string, parent2: string): string {
+function findMergeBaseCommit(parent1: string, parent2: string): string | undefined {
     // API call goes here, or maybe not and I lose reasonable hairline privileges
-    // TODO :(
-    console.log("parent1: " + parent1);
-    console.log("parent2: " + parent2);
     return "fresh";
+    function getAncestors(startNode: string): Set<string> {
+        const ancestors = new Set<string>();
+        const queue = [startNode];
+
+        while (queue.length > 0) {
+            const node = queue.shift()!;
+            if (node !== null && !ancestors.has(node)) {
+                ancestors.add(node);
+                if (commitMap.get(node)!.parentIds) {
+                    queue.concat(commitMap.get(node)!.parentIds); // Add all parents to the queue
+                }
+            }
+        }
+        return ancestors;
+    }
+
+    // Get ancestor sets for both nodes
+    const ancestorsA = getAncestors(parent1);
+
+    // Find the first common ancestor by BFS from nodeB's ancestor list
+    const queue = [parent2];
+    const visited = new Set(); // Track visited nodes
+
+    while (queue.length > 0) {
+        const node = queue.shift()!;
+        if (ancestorsA.has(node)) {
+            return node; // First common ancestor found
+        }
+        if (node !== undefined && !visited.has(node)) {
+            visited.add(node);
+            if (commitMap.get(node)!.parentIds) {
+                queue.concat(commitMap.get(node)!.parentIds);
+            }
+        }
+    }
+
+    return undefined; // No common ancestor found
 }

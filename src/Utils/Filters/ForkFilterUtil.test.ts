@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { ForkFilter } from "../../Types/LogicLayerTypes";
 import { ForkInfo } from "@Types/LogicLayerTypes";
-import { isValidForkByFilter } from "./ForkFilter";
+import { isValidForkByFilter } from "./ForkFilterUtil";
 
 
 const example_fork: ForkInfo = {

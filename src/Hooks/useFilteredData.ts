@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ForkFilter, ForkQueryState } from "@Types/LogicLayerTypes";
 import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
-import { isValidForkByFilter } from "@Utils/Filters/ForkFilter";
+import { isValidForkByFilter } from "@Utils/Filters/ForkFilterUtil";
 
 export type FilterChangeHandler = (filters: ForkFilter, forkQueryState: ForkQueryState) => void;
 

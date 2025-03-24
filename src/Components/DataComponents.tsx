@@ -22,7 +22,8 @@ function DataComponents() {
     );
 }
 
-function preprocessor(commits: UnprocessedCommitExtended[], forks: UnprocessedRepository[]): {forks: Repository[], commits: Commit[]} {
+function preprocessor(commits: UnprocessedCommitExtended[], 
+    forks: UnprocessedRepository[]): {forks: Repository[], commits: Commit[]} {
     const processedForks: Repository[] = forks.map(fork => ({
         id: fork.id,
         name: fork.name,

@@ -129,30 +129,29 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             }
             // recursivity yippee
             recursiveMergeCheck(rawCommit);
-
-            /**
-             * Scheme:
-             * for the headCommit of each branch, check if duplicate
-             * go to parentId (if 2, pick the first one)
-             * if duplicates are found, delete the ones that arent on default branch
-             * if there are no duplicates on default branch, randomly select a branch to not delete duplicates from
-             * recursively delete duplicates of everything except the chosen branch until parentIds is empty
-             */
-            const headCommits = [...locationHeadCommitMap.values()];
-            for (let headCommit of headCommits) {
-                makeUniqueHierarchical(headCommit);
-                while (headCommit.parentIds.length !== 0) {
-                    const nextCommit = commitMap.get(headCommit.parentIds[0]);
-                    if (nextCommit === undefined) {
-                        console.error("Critical mistake in data structure!");
-                        headCommit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: "",url: "",message: "",
-                            mergedNodes: [],repo: "",branch_name: ""};
-                    } else {
-                        headCommit = nextCommit;
-                    }
-                    makeUniqueHierarchical(headCommit);
-                }
+        }
+    }
+    /**
+     * Scheme:
+     * for the headCommit of each branch, check if duplicate
+     * go to parentId (if 2, pick the first one)
+     * if duplicates are found, delete the ones that arent on default branch
+     * if there are no duplicates on default branch, randomly select a branch to not delete duplicates from
+     * recursively delete duplicates of everything except the chosen branch until parentIds is empty
+     */
+    const headCommits = [...locationHeadCommitMap.values()];
+    for (let headCommit of headCommits) {
+        makeUniqueHierarchical(headCommit);
+        while (headCommit.parentIds.length !== 0) {
+            const nextCommit = commitMap.get(headCommit.parentIds[0]);
+            if (nextCommit === undefined) {
+                console.error("Critical mistake in data structure!");
+                headCommit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: "",url: "",message: "",
+                    mergedNodes: [],repo: "",branch_name: ""};
+            } else {
+                headCommit = nextCommit;
             }
+            makeUniqueHierarchical(headCommit);
         }
     }
     const processedCommits: CommitInfo[] = [];
@@ -173,7 +172,6 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             console.error("Critical mistake in data structure encountered!");
         }
     }
-    console.log(processedCommits);
     return processedCommits;
 }
 
@@ -308,7 +306,7 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
             console.error("Critical mistake in data structure!");
         } else {
             commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
-                return branch_name !== branch && repo_name !== repo;
+                return !(branch_name === branch && repo_name === repo);
             }));
         }
         if (commit.parentIds.length === 0) {

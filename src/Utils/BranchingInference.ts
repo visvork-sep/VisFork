@@ -1,4 +1,4 @@
-import { CommitInfo } from "@Types/LogicLayerTypes";
+import { UnprocessedCommitExtended } from "@Types/LogicLayerTypes";
 
 interface CommitLocation {
     branch: string,
@@ -6,8 +6,8 @@ interface CommitLocation {
 }
 
 const commitLocationMap = new Map<string, CommitLocation[]>();
-const commitMap = new Map<string, CommitInfo>();
-const locationHeadCommitMap = new Map<CommitLocation, CommitInfo>();
+const commitMap = new Map<string, UnprocessedCommitExtended>();
+const locationHeadCommitMap = new Map<CommitLocation, UnprocessedCommitExtended>();
 const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
@@ -26,10 +26,10 @@ let globalMainRepo: string;
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
  * in the input, a commit with the same hash will always be present in the output.
  */
-export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
+export function deleteDuplicateCommitsSimple(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string
-): CommitInfo[] {
+): UnprocessedCommitExtended[] {
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
         locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
@@ -49,7 +49,7 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
             commitLocationMap.set(duplicateCommit[0], [getMinimumCommitLocation(duplicateCommit[1])]);
         }
     }
-    const processedCommits: CommitInfo[] = [];
+    const processedCommits: UnprocessedCommitExtended[] = [];
     for (const commit of commitLocationMap) {
         if (commit[1].length > 1) {
             console.error("Mistake in data structure encountered!");
@@ -97,9 +97,9 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
  * 
  * @deprecated DO NOT USE!!!! Use {@link deleteDuplicateCommitsSimple} instead for now.
  */
-export function deleteDuplicateCommits(rawCommits: CommitInfo[], 
+export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[], 
     defaultBranches: Record<string, string>, // format: { repo: branch }
-    mainRepo: string): CommitInfo[] {
+    mainRepo: string): UnprocessedCommitExtended[] {
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
     rawCommits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // might be optional
@@ -159,7 +159,7 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
     return [];
 }
 
-function makeUniqueHierarchical(commit: CommitInfo) {
+function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
     let locations = commitLocationMap.get(commit.sha);
     if (locations === undefined) {
         console.error("Critical mistake in data structure!");
@@ -199,7 +199,7 @@ function makeUniqueHierarchical(commit: CommitInfo) {
  * 
  * @param mergeCommit the commit to check duplicates from
  */
-function recursiveMergeCheck(mergeCommit: CommitInfo) {
+function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
     const mergeBaseCommit = findMergeBaseCommit(mergeCommit.parentIds[0], mergeCommit.parentIds[1]);
     console.log(mergeBaseCommit);
     const allBranchesWithRelevantHeadCommit = locationHeadCommitMapReversed.get(mergeCommit.parentIds[1]);

@@ -5,7 +5,7 @@ import {
     FORKS_COUNT_INPUT_INITIAL,
     FORKS_SORTING_ORDERS,
     SORT_DIRECTION,
-    FORK_TYPES,
+    COMMIT_TYPES,
     OWNER_TYPES,
 } from "@Utils/Constants";
 import { act } from "react";
@@ -35,7 +35,7 @@ describe("useFilterForm - Initial values", () => {
     it("should set the initial value of forksTypeFilter to all fork types", () => {
         const { result } = renderHook(useFilterForm);
         expect(result.current.form.forksTypeFilter).toEqual(
-            Object.values(FORK_TYPES).map((t) => t.value)
+            Object.values(COMMIT_TYPES).map((t) => t.value)
         );
     });
 
@@ -159,7 +159,7 @@ describe("useFilterForm - forksTypeFilter", () => {
 
     it("should change the value of forksTypeFilter to any fork type", () => {
         const { result } = renderHook(useFilterForm);
-        const newValue = [FORK_TYPES.ADAPTIVE.value, FORK_TYPES.CORRECTIVE.value, FORK_TYPES.PERFECTIVE.value];
+        const newValue = [COMMIT_TYPES.ADAPTIVE.value, COMMIT_TYPES.CORRECTIVE.value, COMMIT_TYPES.PERFECTIVE.value];
         const handler = result.current.handleForksTypeFilterChange;
 
         act(() => handler(newValue));
@@ -169,7 +169,7 @@ describe("useFilterForm - forksTypeFilter", () => {
 
     it("should fail if any of the values are not included in FORK_TYPES", () => {
         const { result } = renderHook(useFilterForm);
-        const newValue = [FORK_TYPES.ADAPTIVE.value, "N"];
+        const newValue = [COMMIT_TYPES.ADAPTIVE.value, "N"];
         const handler = result.current.handleForksTypeFilterChange;
 
         expect(() => {

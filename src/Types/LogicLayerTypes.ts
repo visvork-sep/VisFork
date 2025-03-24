@@ -1,11 +1,11 @@
-import { ForksSortingOrder, ForkType, OwnerType, SortDirection } from "@Utils/Constants";
+import { ForksSortingOrder, CommitType, OwnerType, SortDirection } from "@Utils/Constants";
 
 export interface DataLayerOutput {
-    forks: RepositoryInfo[],
-    commits: CommitInfo[],
+    forks: UnprocessedRepository[],
+    commits: UnprocessedCommitExtended[],
 }
 
-export interface CommitInfo {
+export interface UnprocessedCommitExtended {
     sha: string;
     id: string;
     parentIds: string[];
@@ -14,13 +14,22 @@ export interface CommitInfo {
     date: Date | "Unknown";
     url: string;
     message: string;
-    mergedNodes: unknown[];
-    commit_type: string;
-    branch_name: string;
-    branch_id: string;
+    branch: string | null;
+    repo: string | null;
 }
 
-export interface RepositoryInfo {
+// TEMPORARY
+export interface Commit extends UnprocessedCommitExtended {
+    mergedNodes: string[];
+    date: Date;
+    branch: string;
+    commitType: CommitType;
+    repo: string;
+}
+
+
+
+export interface UnprocessedRepository {
     id: number;
     name: string;
     owner: { login: string };
@@ -28,19 +37,23 @@ export interface RepositoryInfo {
     created_at: Date | null;
     last_pushed: Date | null;
     ownerType: OwnerType;
+    defaultBranch: string;
 }
 
-export interface RepositoryInfoWithCommits extends RepositoryInfo {
-    commits: CommitInfo[];
+// TEMPORARY
+export interface Repository extends UnprocessedRepository{
+    description: string;
+    created_at: Date;
+    last_pushed: Date;
+}
+
+
+export interface RepositoryInfoWithCommits extends UnprocessedRepository {
+    commits: UnprocessedCommitExtended[];
 }
 
 export interface MainRepositoryInfo extends RepositoryInfoWithCommits {
     forks: RepositoryInfoWithCommits[];
-}
-
-export interface CommitInfoExtended extends CommitInfo {
-    repo: string;
-    
 }
 
 export interface DateRange {
@@ -62,7 +75,7 @@ export interface ForkQueryState {
 export interface ForkFilter {
     dateRange: DateRange;
     activeForksOnly?: boolean;
-    forkTypes: ForkType[];
+    forkTypes: CommitType[];
     // sortByLastCommit?: boolean; -> moved to SortingCriterionExtra "latestCommit"
     ownerTypes: OwnerType[];
     updatedInLastMonths?: number;

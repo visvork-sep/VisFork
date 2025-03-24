@@ -1,7 +1,7 @@
 import { GitHubAPIFork, GitHubAPICommit } from "@Types/DataLayerTypes";
-import { RepositoryInfo, CommitInfo } from "@Types/LogicLayerTypes";
+import { UnprocessedRepository, UnprocessedCommitExtended } from "@Types/LogicLayerTypes";
 
-export function toForkInfo(fork: GitHubAPIFork): RepositoryInfo {
+export function toForkInfo(fork: GitHubAPIFork): UnprocessedRepository {
     return {
         id: fork.id,
         name: fork.name,
@@ -10,10 +10,11 @@ export function toForkInfo(fork: GitHubAPIFork): RepositoryInfo {
         created_at: fork.created_at ? new Date(fork.created_at) : null,
         last_pushed: fork.pushed_at ? new Date(fork.pushed_at) : null,
         ownerType: fork.owner.type === "Organization" ? "Organization" : "User",
+        defaultBranch: fork.default_branch ?? ""
     };
 }
 
-export function toCommitInfo(commit: GitHubAPICommit): CommitInfo {
+export function toCommitInfo(commit: GitHubAPICommit): UnprocessedCommitExtended {
     return {
         sha: commit.sha,
         id: commit.node_id, // Assuming `node_id` is unique and works as an ID
@@ -23,9 +24,7 @@ export function toCommitInfo(commit: GitHubAPICommit): CommitInfo {
         date: commit.commit?.author?.date ? new Date(commit.commit.author.date) : "Unknown",
         url: commit.html_url,
         message: commit.commit?.message ?? "",
-        mergedNodes: [], // No clear mapping, leaving as empty array
-        commit_type: "",
-        branch_name: "",
-        branch_id: ""
+        branch: null,
+        repo: null
     };
 }

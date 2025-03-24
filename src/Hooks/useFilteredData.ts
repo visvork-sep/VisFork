@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { CommitInfo,
+import { UnprocessedCommitExtended,
     ForkFilter,
-    RepositoryInfo,
+    UnprocessedRepository,
     RepositoryInfoWithCommits,
     ForkQueryState,
     MainRepositoryInfo,
-    CommitInfoExtended
 } from "@Types/LogicLayerTypes";
 import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
 import { toCommitInfo, toForkInfo } from "@Utils/DataToLogic";
@@ -32,10 +31,12 @@ export function useFilteredData() {
         forkData.data.map(fork => toForkInfo(fork)) : [];
 
     // Memoized filtering: Applies filters only when data or filters change.
-    const filteredForks = filters ? simplifiedForkData.filter(fork =>
-        isIncludedFork(filters, fork)
-    ) : simplifiedForkData;
-    console.log("or not:", filteredForks);
+    // const filteredForks = filters ? simplifiedForkData.filter(fork =>
+    //     isIncludedFork(filters, fork)
+    // ) : simplifiedForkData;
+    // console.log("or not:", filteredForks);
+
+    const filteredForks = simplifiedForkData;
 
     // TODO: Fix pagination
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
@@ -60,7 +61,7 @@ export function useFilteredData() {
             error: null
         });
 
-    const simplifiedCommitData: CommitInfo[][] = commitData ?
+    const simplifiedCommitData: UnprocessedCommitExtended[][] = commitData ?
         commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
 
     let mainRepositoryInfo: MainRepositoryInfo| undefined = undefined;
@@ -90,17 +91,20 @@ export function useFilteredData() {
             description: null,
             created_at: null,
             last_pushed: null,
-            ownerType: "User" // get from query instead
+            ownerType: "User", // get from query instead
+            defaultBranch: "main"
         };
 
         mainRepositoryInfo = completeData;
     }
 
-    const flattenedCommits: CommitInfoExtended[] =
-        mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<CommitInfoExtended[]>((acc, fork) => {
-            const commits = fork.commits.map(commit => ({
+    const flattenedCommits: UnprocessedCommitExtended[] =
+        mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
+            const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
                 ...commit,
-                repo: fork.name
+                repo: fork.name,
+                branch: fork.defaultBranch,
+                
             }));
 
             acc = acc.concat(commits);
@@ -122,41 +126,3 @@ export function useFilteredData() {
         isLoadingCommits
     };
 }
-
-function isIncludedFork(filter: ForkFilter, fork: RepositoryInfo): boolean {
-    return true;
-    if (filter.dateRange.start && fork.created_at && fork.created_at < filter.dateRange.start) {
-        return false;
-    }
-
-    if (filter.dateRange.end && fork.last_pushed && fork.last_pushed > filter.dateRange.end) {
-        return false;
-    }
-
-    if (filter.activeForksOnly) {
-    }
-
-    if (!filter.ownerTypes.includes(fork.ownerType)) {
-        return false;
-    }
-
-    if (filter.forkTypes) {
-    }
-
-    if (filter.updatedInLastMonths && fork.last_pushed) {
-        const now = new Date();
-        const yearsDiff = now.getFullYear() - fork.last_pushed.getFullYear();
-        const monthsDiff = now.getMonth() - fork.last_pushed.getMonth();
-
-        const totalMonthsDiff = yearsDiff * 12 + monthsDiff;
-
-        if (totalMonthsDiff > filter.updatedInLastMonths) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
-

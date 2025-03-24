@@ -7,38 +7,18 @@ import { WordCloudData } from "@VisInterfaces/WordCloudData";
 import { SankeyData } from "@VisInterfaces/SankeyData";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 import { VisualizationData } from "@VisInterfaces/VisualizationData";
-import { RepositoryInfo } from "@Types/LogicLayerTypes";
+import { Commit, Repository } from "@Types/LogicLayerTypes";
 
-// TEMPORARY
-interface ForkData {
-    id: number;
-    name: string;
-    description: string;
-}
-
-// TEMPORARY
-interface CommitInfo {
-    repo: string;
-    sha: string;
-    parentIds: string[];
-    message: string;
-    author: string;
-    login: string;
-    date: Date;
-    branch: string;
-    url: string;
-    type: "adaptive" | "corrective" | "perfective" | "unknown";
-}
 
 // Helper function to map commit data
-const mapCommitDataToHistogram = (commitData: CommitInfo[]): HistogramData => ({
+const mapCommitDataToHistogram = (commitData: Commit[]): HistogramData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
         date: commit.date,
     })),
 });
 
-const mapCommitDataToTimeline = (commitData: CommitInfo[]): TimelineData => ({
+const mapCommitDataToTimeline = (commitData: Commit[]): TimelineData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
         id: commit.sha,
@@ -49,29 +29,29 @@ const mapCommitDataToTimeline = (commitData: CommitInfo[]): TimelineData => ({
     })),
 });
 
-const mapCommitDataToCommitTable = (commitData: CommitInfo[]): CommitTableData => ({
+const mapCommitDataToCommitTable = (commitData: Commit[]): CommitTableData => ({
     commitData: commitData.map((commit) => ({
         id: commit.sha,
         repo: commit.repo,
         author: commit.author,
-        login: commit.login,
+        login: commit.author,
         date: commit.date.toISOString(),
         message: commit.message,
     })),
 });
 
-const mapCommitDataToWordCloud = (commitData: CommitInfo[]): WordCloudData => ({
+const mapCommitDataToWordCloud = (commitData: Commit[]): WordCloudData => ({
     commitData: commitData.map((commit) => commit.message),
 });
 
-const mapCommitDataToSankey = (commitData: CommitInfo[]): SankeyData => ({
+const mapCommitDataToSankey = (commitData: Commit[]): SankeyData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
-        commitType: commit.type,
+        commitType: commit.commitType,
     })),
 });
 
-const mapCommitDataToCollabGraph = (commitData: CommitInfo[]): CollabGraphData => ({
+const mapCommitDataToCollabGraph = (commitData: Commit[]): CollabGraphData => ({
     commitData: commitData.map((commit) => ({
         author: commit.author,
         repo: commit.repo,
@@ -79,7 +59,7 @@ const mapCommitDataToCollabGraph = (commitData: CommitInfo[]): CollabGraphData =
     })),
 });
 
-export function useVisualizationData(forkData: RepositoryInfo[], commitData: CommitInfo[]) {
+export function useVisualizationData(forkData: Repository[], commitData: Commit[]) {
     // Memoize the initial visualization data
     const initialVisData = useMemo(() => {
         console.log("data passed to visualization:", forkData);

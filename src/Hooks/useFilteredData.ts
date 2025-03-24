@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { ForkFilter, ForkQueryState } from "@Types/LogicLayerTypes";
 import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
-import { ForkFilterService } from "@Filters/ForkFilterService";
+import { isValidForkByFilter } from "@Utils/Filters/ForkFilterUtil";
 
 export type FilterChangeHandler = (filters: ForkFilter, forkQueryState: ForkQueryState) => void;
 
-export function useFilteredData(filterService : ForkFilterService) {
+export function useFilteredData() {
     // Create the state for the query parameters
     const [forkQueryState, setForkQueryState] = useState<ForkQueryState | undefined>(undefined);
 
@@ -19,11 +19,13 @@ export function useFilteredData(filterService : ForkFilterService) {
 
     // Fetch forks data using the constructed query parameters.
     const {data, isLoading: isLoadingFork, error: forkError} = useFetchForks(forkQueryState);
-
-    // Memoized filtering: Applies filters only when data or filters change.
-    const filteredForks = useMemo(() => {
-        return filterService.filterForks(data, filters);
-    }, [data, filters]);
+    
+    const filteredForks = (data && filters) 
+        ?
+        data.filter(fork => isValidForkByFilter(fork, filters))
+        :
+        [];
+    
 
 
     // TODO: Fix pagination

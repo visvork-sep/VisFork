@@ -174,7 +174,6 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             console.error("Critical mistake in data structure encountered!");
         }
     }
-    console.log(processedCommits);
     return processedCommits;
 }
 
@@ -193,15 +192,12 @@ function makeUniqueHierarchical(commit: CommitInfo) {
         }).length === 1) {
             // delete everywhere else
             commitLocationMap.set(commit.sha, [{repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}]);
-            console.log(commitLocationMap.get(commit.sha));
         } else if (defaultBranchLocations.length >= 1) {
             // delete everywhere else
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(defaultBranchLocations)]);
-            console.log(commitLocationMap.get(commit.sha));
         } else { 
             // choose random branch and delete everywhere else
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(locations)]);
-            console.log(commitLocationMap.get(commit.sha));
         }
     }
 }
@@ -237,7 +233,6 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
         if (allBranchesWithRelevantHeadCommit.length === 0) {
             console.error("Critical mistake in data structure!");
         } else if (allBranchesWithRelevantHeadCommit.length >= 1) { // found perfect branch!
-            console.log("bad news kinda");
             deleteFromBranch(secondParent, allBranchesWithRelevantHeadCommit[0], mergeBaseCommit);
         }
     } else if (commitLocations !== undefined 
@@ -258,24 +253,20 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
         if (match !== null && commitLocations.filter(({branch}) => {
             return branch === match[1];
         }).length >= 1) {
-            console.log("match found!");
             const commitLocationsFiltered = commitLocations.filter(({branch}) => {
                 return branch === match[1];
             });
             if (commitLocationsFiltered.some(({repo}) => {
                 return repo === globalMainRepo;
             })) {
-                console.log("here");
                 deleteFromBranch(secondParent, {repo: globalMainRepo, branch: match[1]}, mergeBaseCommit);
                 return;
             } else {
-                console.log("hm???");
                 deleteFromBranch(secondParent, getMinimumCommitLocation(commitLocationsFiltered), mergeBaseCommit);
                 return;
             }
         }
         // No inference could be made: apply priority rules and gamble
-        console.log("cooked");
         const mainRepoCommitLocations = commitLocations.filter(({repo}) => {
             return repo === globalMainRepo;
         });
@@ -297,10 +288,8 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
 
 function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, mergeBaseCommit: string | undefined) {
     commitLocationMap.set(commit.sha, [{repo, branch}]);
-    console.log(commitLocationMap.get(commit.sha));
     while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
         commitLocationMap.set(commit.sha, [{repo, branch}]);
-        console.log(commitLocationMap.get(commit.sha));
         if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])?.length !== 1) {
             recursiveMergeCheck(commit);
         }
@@ -323,7 +312,6 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
             commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
                 return !(branch_name === branch && repo_name === repo);
             }));
-            console.log(commitLocationMap.get(commit.sha));
         }
         if (commit.parentIds.length === 0) {
             break;

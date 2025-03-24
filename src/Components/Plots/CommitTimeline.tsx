@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import {useRef, useEffect, useState, useMemo} from "react";
 import * as d3 from "d3";
 import * as d3dag from "d3-dag";
 
@@ -22,6 +22,7 @@ const NODE_SIZE = [NODE_RADIUS * 2, NODE_RADIUS * 2] as const;
 const LANE_GAP = NODE_RADIUS * 2;
 const CURVE_SIZE = 15;
 const EDGE_WIDTH = 2;
+const MIN_LABEL_SPACING = 40; 
 const TOOLTIP_BG_COLOR = "#f4f4f4";
 const TOOLTIP_BORDER = "1px solid #ccc";
 const TOOLTIP_PADDING = "8px";
@@ -38,10 +39,11 @@ const DATE_LABEL_HEIGHT = 21;
 
 function CommitTimeline({ commitData,
     c_width, c_height,
-    merged = false,
     defaultBranches,
     handleTimelineSelection }: TimelineProps) {
+        
     const svgRef = useRef<SVGSVGElement>(null);
+    const [merged, setMerged] = useState(false); // state for merged view
     const colorMap = new Map();
     const repoNames = new Set();
     commitData.forEach(item => {
@@ -87,7 +89,7 @@ function CommitTimeline({ commitData,
             const branchGroups = groupBy(repoNodes, (node) => node.data.branch);
 
             // only reassign if we have enough unique x values.
-            if (branchGroups.size == distinctX.length) {
+            if (branchGroups.size === distinctX.length) {
                 // sort branches by the earliest commit date
                 const sortedBranches = Array.from(branchGroups.entries()).sort(
                     (a, b) => {
@@ -293,6 +295,27 @@ function CommitTimeline({ commitData,
         return groupedNodes;
     }
 
+    // precompute both views, update only when data changes
+    const builder = d3dag.graphStratify();
+    const dagMerged = useMemo(() => {
+        try {
+            return builder(groupNodes(commitData) as GroupedNode[]);
+        } catch (error) {
+            console.error("Error building merged DAG:", error);
+            return null;
+        }
+    }, [commitData]);
+  
+    const dagFull = useMemo(() => {
+        try {
+            return builder(commitData as Commit[]);
+        } catch (error) {
+            console.error("Error building full DAG:", error);
+            return null;
+        }
+    }, [commitData]);
+  
+
     useEffect(() => {
         if (!svgRef.current || !commitData.length) return;
 
@@ -300,15 +323,9 @@ function CommitTimeline({ commitData,
         d3.select(svgRef.current).selectAll("*").remove();
         d3.select("#dag-legends").selectAll("*").remove();
 
-
-        const builder = d3dag.graphStratify();
         let dag: d3dag.MutGraph<Commit | GroupedNode, undefined> | null = null;
-        try {
-            dag = builder(merged ? groupNodes(commitData) as GroupedNode[] : commitData as Commit[]);
-        } catch (error) {
-            console.error("Failed to build Commit Timeline: ", error);
-            return;
-        }
+        dag = merged ? dagMerged as d3dag.MutGraph<Commit | GroupedNode, undefined>: 
+        dagFull as d3dag.MutGraph<Commit | GroupedNode, undefined>; 
 
         const layout = d3dag.grid()
             .nodeSize(NODE_SIZE)
@@ -321,7 +338,7 @@ function CommitTimeline({ commitData,
 
         // swap intial width and height for horizontal layout
         const svg = d3.select(svgRef.current)
-            .attr("width", height + MARGIN.left + MARGIN.right)
+            .attr("width", Math.max(height + MARGIN.left + MARGIN.right, c_width ?? 0))
             .attr("height", width + MARGIN.top + MARGIN.bottom);
         const g = svg.append("g")
             .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
@@ -346,7 +363,7 @@ function CommitTimeline({ commitData,
             backgrounds.append("rect")
                 .attr("x", -MARGIN.left)
                 .attr("y", minX - NODE_RADIUS)
-                .attr("width", height + MARGIN.left + MARGIN.right)
+                .attr("width", Math.max(height + MARGIN.left + MARGIN.right, c_width ?? 0))
                 .attr("height", maxX - minX + LANE_GAP)
                 .attr("fill", laneColor)
                 .attr("stroke", "#dde")
@@ -370,38 +387,44 @@ function CommitTimeline({ commitData,
             let lastYear = "";
 
             const monthGroup = g.append("g").attr("class", "month-lines");
+            let lastLabelX = -Infinity;
 
             for (const node of sortedNodes) {
                 const currentDate = new Date(node.data.date);
                 const currentMonth = formatMonth(currentDate);
                 const currentYear = formatYear(currentDate);
+                const labelX = node.y;
 
                 if (currentMonth !== lastMonth) {
+                    // always draw the vertical line
                     monthGroup.append("line")
-                        .attr("x1", node.y)
-                        .attr("x2", node.y)
+                        .attr("x1", labelX)
+                        .attr("x2", labelX)
                         .attr("y1", 0)
                         .attr("y2", totalHeight - 10)
                         .attr("stroke", "gray")
                         .attr("stroke-dasharray", "3,3");
 
-                    const isNewYear = (currentYear !== lastYear);
-                    const labelText = isNewYear
-                        ? `${currentMonth} ${currentYear}`
-                        : currentMonth;
+                    // only add text label if we have enough space
+                    if (Math.abs(labelX - lastLabelX) > MIN_LABEL_SPACING) {
+                        const isNewYear = currentYear !== lastYear;
+                        const labelText = isNewYear 
+                            ? `${currentMonth} ${currentYear}`
+                            : currentMonth;
 
-                    monthGroup.append("text")
-                        .attr("x", node.y)
-                        .attr("y", totalHeight + MARGIN.bottom - 10)
-                        .attr("font-size", 12)
-                        .style("text-anchor", "middle")
-                        .style("fill", "black")
-                        .text(labelText);
+                        monthGroup.append("text")
+                            .attr("x", labelX)
+                            .attr("y", totalHeight + MARGIN.bottom - 10)
+                            .attr("font-size", 12)
+                            .style("text-anchor", "middle")
+                            .style("fill", "black")
+                            .text(labelText);
+
+                        lastLabelX = labelX;
+                    }
 
                     lastMonth = currentMonth;
-                    if (isNewYear) {
-                        lastYear = currentYear;
-                    }
+                    lastYear = currentYear;
                 }
             }
         }
@@ -688,27 +711,72 @@ function CommitTimeline({ commitData,
             tooltip.remove();
         };
 
-    }, [commitData]);
+    }, [commitData, merged, c_width]);
 
     return (
-        <>
+        <div style={{ width: c_width }}>
+            {/* button at the top */}
             <div
                 style={{
-                    width: c_width,
+                    padding: "10px",
+                    background: "#fff",
+                    borderBottom: "1px solid #ccc",
+                    textAlign: "left", 
+                }}
+            >
+                <button
+                    onClick={() => setMerged(!merged)}
+                    style={{
+                        width: "120px", 
+                        height: "40px", 
+                        padding: "5px 10px",
+                        cursor: "pointer",
+                        backgroundColor: "transparent", 
+                        border: "2px solid #eef", 
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transition: "background-color 0.3s", 
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#eef"; 
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent"; 
+                    }}
+                >
+                    {merged ? "Full View" : "Merged View"}
+                </button>
+            </div>
+      
+            {/* scrollable container for the SVG */}
+            <div
+                style={{
                     height: Math.min(
                         c_height,
                         (svgRef.current?.getBoundingClientRect().height ?? 0) + DATE_LABEL_HEIGHT
                     ),
                     overflow: "auto",
-                    whiteSpace: "normal",
-                    resize: "vertical",
                 }}
             >
                 <svg ref={svgRef}></svg>
             </div>
-            <div id="dag-legends">{/* Legends */}</div>
-        </>
+      
+            {/* legends at the bottom */}
+            <div
+                id="dag-legends"
+                style={{
+                    padding: "10px",
+                    background: "transparent",
+                    borderTop: "1px solid #ccc",
+                }}
+            >
+            </div>
+        </div>
     );
+      
+      
+      
 };
 
 export default CommitTimeline;

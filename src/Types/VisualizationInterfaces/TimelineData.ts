@@ -22,6 +22,5 @@ export interface TimelineProps {
     handleTimelineSelection: (commitIds: string[]) => void;
     c_width: number;
     c_height: number;
-    merged: boolean;
     defaultBranches: Record<string, string>;
 }

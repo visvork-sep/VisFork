@@ -90,7 +90,7 @@ function ApplicationBody({ forks, commits } : ApplicationBodyProps) {
                         handleTimelineSelection={handleTimelineSelection}
                         c_width={width ?? 0}
                         c_height={heightCommitTimelineSVG}
-                        defaultBranches={{ /* Default branches go here */ }} merged={false} />
+                        defaultBranches={{ /* Default branches go here */ }} />
                 </Box>
             </Dropdown>
             <Dropdown summaryText="Commit Table"

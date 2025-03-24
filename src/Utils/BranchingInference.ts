@@ -216,8 +216,10 @@ function makeUniqueHierarchical(commit: CommitInfo) {
  * @param mergeCommit the commit to check duplicates from
  */
 function recursiveMergeCheck(mergeCommit: CommitInfo) {
+    if (commitLocationMap.get(mergeCommit.parentIds[1])!.length === 1) {
+        return;
+    }
     const mergeBaseCommit = findMergeBaseCommit(mergeCommit.parentIds[0], mergeCommit.parentIds[1]);
-    console.log(mergeBaseCommit);
     const secondParent = commitMap.get(mergeCommit.parentIds[1]);
     const commitLocations = commitLocationMap.get(mergeCommit.parentIds[1]);
     if (secondParent === undefined) {
@@ -286,7 +288,7 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
     commitLocationMap.set(commit.sha, [{repo, branch}]);
     while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
         commitLocationMap.set(commit.sha, [{repo, branch}]);
-        if (commit.parentIds.length === 2) {
+        if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])!.length !== 1) {
             recursiveMergeCheck(commit);
         }
 

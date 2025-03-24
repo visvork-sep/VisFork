@@ -341,8 +341,8 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
         const queue = [startNode];
 
         while (queue.length > 0) {
-            const node = queue.shift()!;
-            if (node !== null && !ancestors.has(node)) {
+            const node = queue.shift();
+            if (node !== undefined && !ancestors.has(node)) {
                 ancestors.add(node);
                 if (commitMap.get(node)!.parentIds) {
                     queue.concat(commitMap.get(node)!.parentIds); // Add all parents to the queue
@@ -360,14 +360,14 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
     const visited = new Set(); // Track visited nodes
 
     while (queue.length > 0) {
-        const node = queue.shift()!;
-        if (ancestorsA.has(node)) {
+        const node = queue.shift();
+        if (ancestorsA.has(node as string)) {
             return node; // First common ancestor found
         }
         if (node !== undefined && !visited.has(node)) {
             visited.add(node);
-            if (commitMap.get(node)!.parentIds) {
-                queue.concat(commitMap.get(node)!.parentIds);
+            if (commitMap.get(node as string)!.parentIds) {
+                queue.concat(commitMap.get(node as string)!.parentIds);
             }
         }
     }

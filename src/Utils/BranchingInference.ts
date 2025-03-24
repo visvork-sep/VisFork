@@ -102,7 +102,6 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
     mainRepo: string): CommitInfo[] {
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
-    //rawCommits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // might be optional
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
         locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });

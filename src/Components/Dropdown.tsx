@@ -9,7 +9,7 @@ interface DropdownProps {
 
 function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<DropdownProps>) {
     return (
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box display="flex" alignItems="top" justifyContent="space-between">
             <Details className={styles.details} sx={{ flexGrow: 1 }}>
                 <Details.Summary>{summaryText}</Details.Summary>
                 <Box

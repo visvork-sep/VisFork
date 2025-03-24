@@ -94,8 +94,6 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
  * @param mainRepo the name of the queried repository. Example: torvalds/linux
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
  * in the input, a commit with the same hash will always be present in the output.
- * 
- * @deprecated DO NOT USE!!!! Use {@link deleteDuplicateCommitsSimple} instead for now.
  */
 export function deleteDuplicateCommits(rawCommits: CommitInfo[], 
     defaultBranches: Record<string, string>, // format: { repo: branch }

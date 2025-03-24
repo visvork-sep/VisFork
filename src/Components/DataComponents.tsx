@@ -13,7 +13,7 @@ function DataComponents() {
                 <ConfigurationPane filterChangeHandler={onFiltersChange}/>
             </SplitPageLayout.Pane >
             <SplitPageLayout.Content aria-label="Content">
-                <ApplicationBody />
+                <ApplicationBody forks={forks} commits={commits} />
             </SplitPageLayout.Content>
         </>
     );

@@ -11,19 +11,19 @@ import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { Dropdown } from "@Components/Dropdown";
 
 import { useVisualizationData } from "@Hooks/useVisualizationData";
+import { CommitInfo, RepositoryInfo } from "@Types/LogicLayerTypes.ts";
 //TODO: Replace with actual data when proper hooks is implemented
 //=================================================================================================
-const dummyForks = [
+const dummyForks : RepositoryInfo[] = [
     {
         id: 1,
         name: "Fork 1",
-        description: "Description 1"
+        owner: { login: "user1" },
+        description: "Test repo",
+        created_at: new Date(),
+        last_pushed: new Date(),
+        ownerType: "User",
     },
-    {
-        id: 2,
-        name: "Fork 2",
-        description: "Description 2"
-    }
 ];
 const dummyCommits = [
     {
@@ -65,12 +65,16 @@ const dummyCommits = [
 ];
 //=================================================================================================
 
+interface ApplicationBodyProps {
+    forks: RepositoryInfo[],
+    commits: CommitInfo[]
+}
 // TODO: add props passed down from the parent component containing Commit and Fork data
-function ApplicationBody() {
+function ApplicationBody({ forks, commits } : ApplicationBodyProps) {
 
     // TODO: Add props as initial data when provided
     const { visData, handlers } =
-        useVisualizationData(dummyForks, dummyCommits);
+        useVisualizationData(forks, dummyCommits);
 
     const {
         forkListData,
@@ -124,7 +128,7 @@ function ApplicationBody() {
             </Dropdown>
             <Dropdown summaryText="Collaboration Graph">
                 <CollaborationGraph {...collabGraphData} />
-            </Dropdown>  
+            </Dropdown>
         </Stack>
     );
 }

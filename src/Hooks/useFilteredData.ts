@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { CommitInfo, 
-    ForkFilter, 
+import { CommitInfo,
+    ForkFilter,
     RepositoryInfo,
-    RepositoryInfoWithCommits, 
+    RepositoryInfoWithCommits,
     ForkQueryState,
     MainRepositoryInfo,
     CommitInfoExtended
@@ -27,14 +27,15 @@ export function useFilteredData() {
 
     // Fetch forks data using the constructed query parameters.
     const {data: forkData, isLoading: isLoadingFork, error: forkError} = useFetchForks(forkQueryState);
-
+    console.log("are we here:", forkData);
     const simplifiedForkData = forkData?.data ?
-        forkData.data.map(fork => toForkInfo(fork)) : []; 
+        forkData.data.map(fork => toForkInfo(fork)) : [];
 
     // Memoized filtering: Applies filters only when data or filters change.
-    const filteredForks = filters ? simplifiedForkData.filter(fork =>     
+    const filteredForks = filters ? simplifiedForkData.filter(fork =>
         isIncludedFork(filters, fork)
     ) : simplifiedForkData;
+    console.log("or not:", filteredForks);
 
     // TODO: Fix pagination
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
@@ -44,35 +45,35 @@ export function useFilteredData() {
             if ((acc.commitData && response.data?.data)) {
                 acc.commitData.push(response.data.data);
             }
-            
+
             acc.isLoading = acc.isLoading || response.isLoading;
-            
+
             if (!acc.error) {
                 acc.error = response.error;
             }
 
             return acc;
-        }, 
+        },
         {
             commitData: [],
             isLoading: false,
             error: null
         });
-    
-    const simplifiedCommitData: CommitInfo[][] = commitData ? 
+
+    const simplifiedCommitData: CommitInfo[][] = commitData ?
         commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
 
     let mainRepositoryInfo: MainRepositoryInfo| undefined = undefined;
-    if (!forkError 
-        && !commitError 
-        && !isLoadingFork 
-        && !isLoadingCommits 
-        && simplifiedForkData.length > 0 
+    if (!forkError
+        && !commitError
+        && !isLoadingFork
+        && !isLoadingCommits
+        && simplifiedForkData.length > 0
         && simplifiedCommitData.length == simplifiedForkData.length
         && forkQueryState?.owner
         && forkQueryState?.repo
     ) {
-        const completeForkData: RepositoryInfoWithCommits[] = simplifiedForkData.map((fork, index) => 
+        const completeForkData: RepositoryInfoWithCommits[] = simplifiedForkData.map((fork, index) =>
             ({
                 ...fork,
                 commits: simplifiedCommitData[index]
@@ -95,7 +96,7 @@ export function useFilteredData() {
         mainRepositoryInfo = completeData;
     }
 
-    const flattenedCommits: CommitInfoExtended[] = 
+    const flattenedCommits: CommitInfoExtended[] =
         mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<CommitInfoExtended[]>((acc, fork) => {
             const commits = fork.commits.map(commit => ({
                 ...commit,
@@ -105,6 +106,8 @@ export function useFilteredData() {
             acc = acc.concat(commits);
             return acc;
         }, []) : [];
+
+    console.log("Filter data component:", filteredForks);
 
     return {
         isLoading: isLoadingFork || isLoadingCommits,
@@ -121,6 +124,7 @@ export function useFilteredData() {
 }
 
 function isIncludedFork(filter: ForkFilter, fork: RepositoryInfo): boolean {
+    return true;
     if (filter.dateRange.start && fork.created_at && fork.created_at < filter.dateRange.start) {
         return false;
     }
@@ -151,7 +155,7 @@ function isIncludedFork(filter: ForkFilter, fork: RepositoryInfo): boolean {
         }
     }
 
-    return true;    
+    return true;
 }
 
 

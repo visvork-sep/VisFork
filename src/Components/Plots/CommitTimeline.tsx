@@ -41,7 +41,7 @@ function CommitTimeline({ commitData,
     c_width, c_height,
     defaultBranches,
     handleTimelineSelection }: TimelineProps) {
-        
+
     const svgRef = useRef<SVGSVGElement>(null);
     const [merged, setMerged] = useState(false); // state for merged view
     const colorMap = new Map();
@@ -89,7 +89,7 @@ function CommitTimeline({ commitData,
             const branchGroups = groupBy(repoNodes, (node) => node.data.branch);
 
             // only reassign if we have enough unique x values.
-            if (branchGroups.size === distinctX.length) {
+            if (branchGroups.size <= distinctX.length) {
                 // sort branches by the earliest commit date
                 const sortedBranches = Array.from(branchGroups.entries()).sort(
                     (a, b) => {
@@ -337,8 +337,9 @@ function CommitTimeline({ commitData,
         const { width, height } = layout(dag);
 
         // swap intial width and height for horizontal layout
+        const svgWidth = Math.max(height + MARGIN.left + MARGIN.right, c_width ?? 0);
         const svg = d3.select(svgRef.current)
-            .attr("width", Math.max(height + MARGIN.left + MARGIN.right, c_width ?? 0))
+            .attr("width", svgWidth)
             .attr("height", width + MARGIN.top + MARGIN.bottom);
         const g = svg.append("g")
             .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
@@ -435,11 +436,11 @@ function CommitTimeline({ commitData,
         const brushStart = (event: d3.D3BrushEvent<unknown>) => {
             if (event.sourceEvent && event.sourceEvent.type !== "end") {
                 brushSelection = [[0, 0], [0, 0]];
-            }
+            } 
         };
 
         function brushEnd(event: d3.D3BrushEvent<unknown>) {
-            if (event.selection === null) return; // exit if no selection
+            if (event.selection === null || !event.sourceEvent) return; // exit if no selection
 
             brushSelection = event.selection as [[number, number], [number, number]];
             const [x0, y0] = brushSelection[0];
@@ -460,6 +461,10 @@ function CommitTimeline({ commitData,
 
         const brush = d3
             .brush()
+            .extent([
+                [-MARGIN.left, 0],                      
+                [svgWidth - MARGIN.left, totalHeight]   
+            ])
             .on("start", brushStart)
             .on("end", brushEnd);
 

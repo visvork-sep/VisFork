@@ -32,7 +32,7 @@ export function deleteDuplicateCommitsSimple(rawCommits: UnprocessedCommitExtend
 ): UnprocessedCommitExtended[] {
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
-        locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
+        locationArray.push({ branch: rawCommit.branch as string, repo: rawCommit.repo });
         commitLocationMap.set(rawCommit.sha, locationArray);
         commitMap.set(rawCommit.sha, rawCommit);
     }
@@ -60,7 +60,7 @@ export function deleteDuplicateCommitsSimple(rawCommits: UnprocessedCommitExtend
         }
         const commitInfo = commitMap.get(commit[0]);
         if (commitInfo !== undefined) {
-            commitInfo.branch_name = commit[1][0].branch;
+            commitInfo.branch = commit[1][0].branch;
             commitInfo.repo = commit[1][0].repo;
             processedCommits.push(commitInfo);
         } else {
@@ -105,13 +105,13 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
     rawCommits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // might be optional
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
-        locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
+        locationArray.push({ branch: rawCommit.branch as string, repo: rawCommit.repo });
         commitLocationMap.set(rawCommit.sha, locationArray);
         commitMap.set(rawCommit.sha, rawCommit);
-        const headCommit = locationHeadCommitMap.get({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
+        const headCommit = locationHeadCommitMap.get({ branch: rawCommit.branch as string, repo: rawCommit.repo });
         if (headCommit === undefined || new Date(headCommit.date).getTime() < new Date(rawCommit.date).getTime()) {
             locationHeadCommitMap.set(
-                { branch: rawCommit.branch_name as string, repo: rawCommit.repo }, 
+                { branch: rawCommit.branch as string, repo: rawCommit.repo }, 
                 rawCommit
             );
         }
@@ -145,8 +145,8 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
                     const nextCommit = commitMap.get(headCommit.parentIds[0]);
                     if (nextCommit === undefined) {
                         console.error("Critical mistake in data structure!");
-                        headCommit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: "",url: "",message: "",
-                            mergedNodes: [],repo: "",branch_name: ""};
+                        headCommit = {sha: "",id: "",parentIds: [],node_id: "",
+                            author: "",date: "Unknown",url: "",message: "",repo: "",branch: ""};
                     } else {
                         headCommit = nextCommit;
                     }

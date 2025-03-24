@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { UnprocessedCommitExtended,
     ForkFilter,
-    UnprocessedRepository,
     RepositoryInfoWithCommits,
     ForkQueryState,
     MainRepositoryInfo,
 } from "@Types/LogicLayerTypes";
-import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
 import { toCommitInfo, toForkInfo } from "@Utils/DataToLogic";
 import { GitHubAPICommit } from "@Types/DataLayerTypes";
+import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
+import { isValidForkByFilter } from "@Utils/Filters/ForkFilterUtil";
 
 export type FilterChangeHandler = (filters: ForkFilter, forkQueryState: ForkQueryState) => void;
 
@@ -25,18 +25,25 @@ export function useFilteredData() {
     };
 
     // Fetch forks data using the constructed query parameters.
-    const {data: forkData, isLoading: isLoadingFork, error: forkError} = useFetchForks(forkQueryState);
-    console.log("are we here:", forkData);
-    const simplifiedForkData = forkData?.data ?
-        forkData.data.map(fork => toForkInfo(fork)) : [];
 
+    
     // Memoized filtering: Applies filters only when data or filters change.
     // const filteredForks = filters ? simplifiedForkData.filter(fork =>
     //     isIncludedFork(filters, fork)
     // ) : simplifiedForkData;
     // console.log("or not:", filteredForks);
+    const {data: forkData, isLoading: isLoadingFork, error: forkError} = useFetchForks(forkQueryState);
 
-    const filteredForks = simplifiedForkData;
+    const simplifiedForkData = forkData?.data ?
+        forkData.data.map(fork => toForkInfo(fork)) : [];
+
+    
+    const filteredForks = (filters) 
+        ?
+        simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters))
+        :
+        [];
+    
 
     // TODO: Fix pagination
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
@@ -104,7 +111,7 @@ export function useFilteredData() {
                 ...commit,
                 repo: fork.name,
                 branch: fork.defaultBranch,
-                
+
             }));
 
             acc = acc.concat(commits);

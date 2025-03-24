@@ -51,3 +51,5 @@ export const OWNER_TYPES = {
 } as const;
 
 export type OwnerType = typeof OWNER_TYPES[keyof typeof OWNER_TYPES]["value"];
+/** Number of months since last update such that a fork is still considered active. */
+export const ACTIVE_FORK_NROF_MONTHS = 12;

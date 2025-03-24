@@ -48,11 +48,6 @@
       "@Queries/*": [
         "./src/Queries/*"
       ],
-      "@Filters/*": [
-        "./src/Filters/*"
-      ],
-
-
     }
   },
   "include": [

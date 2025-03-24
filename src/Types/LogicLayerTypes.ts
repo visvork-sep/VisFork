@@ -14,8 +14,8 @@ export interface UnprocessedCommitExtended {
     date: Date | "Unknown";
     url: string;
     message: string;
-    branch: string | null;
-    repo: string | null;
+    branch: string;
+    repo: string;
 }
 
 // TEMPORARY

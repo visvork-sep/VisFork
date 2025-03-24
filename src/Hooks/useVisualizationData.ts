@@ -84,15 +84,20 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
     // Handlers
     const handleHistogramSelection = useCallback(
         (startDate: Date, endDate: Date) => {
-            console.log("Histogram selection", startDate, endDate);
-            console.log("Commit data", commitData);
-
-            const constrainedCommits = commitData.filter(
-                (commit) => commit.date >= startDate && commit.date <= endDate
+            // Filter commits based on date range
+            const filteredCommits = commitData.filter(
+                (commit) => new Date(commit.date) >= startDate && new Date(commit.date) <= endDate
             );
 
-            console.log("Constrained commits", constrainedCommits);
+            // Create a Set of valid commit IDs for fast lookup
+            const validCommitIds = new Set(filteredCommits.map(commit => commit.sha));
 
+            // Remove parents that are outside the valid set
+            const constrainedCommits = filteredCommits.map(commit => ({
+                ...commit,
+                parentIds: commit.parentIds.filter(parentId => validCommitIds.has(parentId))
+            }));
+        
             setVisData((prev) => ({
                 ...prev,
                 timelineData: mapCommitDataToTimeline(constrainedCommits),
@@ -108,9 +113,6 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
-            console.log("Constrained commits", constrainedCommits);
-            console.log("New word cloud data", mapCommitDataToWordCloud(constrainedCommits));
-
 
             setVisData((prev) => ({
                 ...prev,

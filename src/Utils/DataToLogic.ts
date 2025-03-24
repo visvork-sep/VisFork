@@ -24,7 +24,7 @@ export function toCommitInfo(commit: GitHubAPICommit): UnprocessedCommitExtended
         date: commit.commit?.author?.date ? new Date(commit.commit.author.date) : "Unknown",
         url: commit.html_url,
         message: commit.commit?.message ?? "",
-        branch: null,
-        repo: null
+        branch: "",
+        repo: ""
     };
 }

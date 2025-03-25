@@ -68,6 +68,8 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
             console.error("Critical mistake in data structure encountered!");
         }
     }
+    commitMap.clear();
+    commitLocationMap.clear();
     return processedCommits;
 }
 
@@ -172,6 +174,11 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             console.error("Critical mistake in data structure encountered!");
         }
     }
+    commitLocationMap.clear();
+    authorRepoMap.clear();
+    commitMap.clear();
+    locationHeadCommitMap.clear();
+    locationHeadCommitMapReversed.clear();
     return processedCommits;
 }
 

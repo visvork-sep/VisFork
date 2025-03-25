@@ -5,10 +5,18 @@ interface CommitLocation {
     repo: string
 }
 
+// maps author to its repo. E.g. { "me": "me/my-repo" }
 const authorRepoMap = new Map<string, string>();
+// maps a commit's hash to all of its locations in the gathered data
 const commitLocationMap = new Map<string, CommitLocation[]>();
+// maps a commit's hash to the rest of its info
 const commitMap = new Map<string, CommitInfo>();
+// maps a JSON string of the CommitLocation of a commit to its info
+// This map will only contain commits at the end of a branch
+// In other words: this map contains the commits that each branch points to
+// https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell 
 const locationHeadCommitMap = new Map<string, CommitInfo>();
+// Maps the hash of all commits at the end of a branch to their locations.
 const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
@@ -31,15 +39,18 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
     defaultBranches: Record<string, string>,
     mainRepo: string
 ): CommitInfo[] {
+    // Initialize data structures
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
         locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
         commitLocationMap.set(rawCommit.sha, locationArray);
         commitMap.set(rawCommit.sha, rawCommit);
     }
+    // Find all duplicate commits and get rid of them with priority given to main repo and default branches
     const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
         return locations.length >= 2;
     });
+    // TODO replace with makeUniqueHierarchical
     for (const duplicateCommit of duplicateCommits) {
         const mainRepoCommits = duplicateCommit[1].filter(({ repo }) => repo === mainRepo);
         if (mainRepoCommits.some(({ branch }) => branch === defaultBranches[mainRepo])) {
@@ -50,6 +61,7 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
             commitLocationMap.set(duplicateCommit[0], [getMinimumCommitLocation(duplicateCommit[1])]);
         }
     }
+    // From commitLocationMap, derive the true location of each commit
     const processedCommits: CommitInfo[] = [];
     for (const commit of commitLocationMap) {
         if (commit[1].length > 1) {
@@ -68,13 +80,19 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
             console.error("Critical mistake in data structure encountered!");
         }
     }
+    // Necessary to ensure consistency in next runs
     commitMap.clear();
     commitLocationMap.clear();
     return processedCommits;
 }
 
-// Let's go gambling!
-// Returns alphabetical minimum of commit location, first sorted on repo and then branch
+/**
+ * Let's go gambling!
+ * Used to deterministically get a random branch.
+ * 
+ * @param locations all CommitLocations to get a random one from
+ * @returns alphabetical minimum of commit location, first sorted on repo and then branch
+ */
 function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
     return locations.reduce((min, curr) =>
         curr.repo.localeCompare(min.repo) < 0 ||
@@ -99,8 +117,9 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
  * in the input, a commit with the same hash will always be present in the output.
  */
 export function deleteDuplicateCommits(rawCommits: CommitInfo[], 
-    defaultBranches: Record<string, string>, // format: { repo: branch }
+    defaultBranches: Record<string, string>,
     mainRepo: string): CommitInfo[] {
+    // Initialize data structures
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
     for (const rawCommit of rawCommits) {
@@ -118,11 +137,13 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
         const author = rawCommit.repo.split("/")[0];
         authorRepoMap.set(author, rawCommit.repo);
     }
+    // Reverse locationHeadCommitMap to make it useful for our purpose
     for (const entry of locationHeadCommitMap.entries()) {
         const locations: CommitLocation[] = locationHeadCommitMapReversed.get(entry[1].sha) ?? [];
         locations.push(JSON.parse(entry[0]));
         locationHeadCommitMapReversed.set(entry[1].sha, locations);
     }
+    // Iterate over all commits and find the merge commits
     for (const rawCommit of rawCommits) {
         if (rawCommit.parentIds.length > 1) {
             if (rawCommit.parentIds.length > 2) {
@@ -156,6 +177,7 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             makeUniqueHierarchical(headCommit);
         }
     }
+    // From commitLocationMap, derive the true location of each commit
     const processedCommits: CommitInfo[] = [];
     for (const commit of commitLocationMap) {
         if (commit[1].length > 1) {
@@ -174,6 +196,7 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
             console.error("Critical mistake in data structure encountered!");
         }
     }
+    // Necessary to ensure consistency in next runs
     commitLocationMap.clear();
     authorRepoMap.clear();
     commitMap.clear();
@@ -182,12 +205,18 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
     return processedCommits;
 }
 
+/**
+ * Makes a single commit unique according to some basic priority logic
+ * 
+ * @param commit the commit to make unique 
+ */
 function makeUniqueHierarchical(commit: CommitInfo) {
     let locations = commitLocationMap.get(commit.sha);
     if (locations === undefined) {
         console.error("Critical mistake in data structure!");
         locations = [];
     }
+    // If there are multiple of this commit, take action
     if (locations.length >= 2) {
         const defaultBranchLocations = locations.filter(({branch, repo}) => {
             return branch === globalDefaultBranches[repo];
@@ -195,13 +224,13 @@ function makeUniqueHierarchical(commit: CommitInfo) {
         if (defaultBranchLocations.filter(({repo}) => {
             return repo === globalMainRepo;
         }).length === 1) {
-            // delete everywhere else
+            // Delete everywhere else but main repo and default branch of main repo
             commitLocationMap.set(commit.sha, [{repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}]);
         } else if (defaultBranchLocations.length >= 1) {
-            // delete everywhere else
+            // Delete everywhere else but a random branch where this commit is on its default branch
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(defaultBranchLocations)]);
         } else { 
-            // choose random branch and delete everywhere else
+            // Choose random branch and delete everywhere else
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(locations)]);
         }
     }
@@ -223,9 +252,11 @@ function makeUniqueHierarchical(commit: CommitInfo) {
  * @param mergeCommit the commit to check duplicates from
  */
 function recursiveMergeCheck(mergeCommit: CommitInfo) {
+    // If this merge commit already got handled before, don't handle it again
     if ((commitLocationMap.get(mergeCommit.parentIds[1])?.length ?? []) === 1) {
         return;
     }
+    // Get relevant data
     const mergeBaseCommit = findMergeBaseCommit(mergeCommit.parentIds[0], mergeCommit.parentIds[1]);
     const secondParent = commitMap.get(mergeCommit.parentIds[1]);
     const commitLocations = commitLocationMap.get(mergeCommit.parentIds[1]);
@@ -233,15 +264,17 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
         console.error("Critical mistake in data structure!");
         return;
     }
+    // Get all perfect branches
     const allBranchesWithRelevantHeadCommit = locationHeadCommitMapReversed.get(secondParent.sha);
     if (allBranchesWithRelevantHeadCommit !== undefined) { 
         if (allBranchesWithRelevantHeadCommit.length === 0) {
             console.error("Critical mistake in data structure!");
-        } else if (allBranchesWithRelevantHeadCommit.length >= 1) { // found perfect branch!
+        } else if (allBranchesWithRelevantHeadCommit.length >= 1) { // found a perfect branch!
             deleteFromBranch(secondParent, allBranchesWithRelevantHeadCommit[0], mergeBaseCommit);
         }
     } else if (commitLocations !== undefined 
         && commitLocations.length > 1) { // parentId in fetched data and has duplicates
+        // Try inferring whether this commit is from a PR and has a default message and get its branch from it
         let regex = /^merge pull request .* from ([^\s]+).*/i;
         let match = mergeCommit.message.match(regex);
         if (match !== null) {
@@ -258,14 +291,17 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
                 return;
             }
         }
+        // Try inferring whether this commit has a regular merge commit message and derive its branch from it
         regex = /^merge branch [']([^']+)['].*/i;
         match = mergeCommit.message.match(regex);
+        // Make sure branch still exists too
         if (match !== null && commitLocations.some(({branch}) => {
             return branch === match[1];
         })) {
             const commitLocationsFiltered = commitLocations.filter(({branch}) => {
                 return branch === match[1];
             });
+            // Give priority to branch in main repo if it exists
             if (commitLocationsFiltered.some(({repo}) => {
                 return repo === globalMainRepo;
             })) {
@@ -277,6 +313,7 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
             }
         }
         // No inference could be made: apply priority rules and gamble
+        // TODO replace with makeUniqueHierarchical
         const mainRepoCommitLocations = commitLocations.filter(({repo}) => {
             return repo === globalMainRepo;
         });
@@ -296,14 +333,29 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
     // Remaining conditions only include situations with no duplicates
 }
 
+/**
+ * Handles the deletion of commits if we know its branch.
+ * 
+ * @param commit commit that is a parent of a merge commit
+ * @param repo repo where commit is located
+ * @param branch branch where commit is located
+ * @param mergeBaseCommit the commit where this repo/branch combination started deviating
+ */
 function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, mergeBaseCommit: string | undefined) {
+    if (mergeBaseCommit === undefined) {
+        return;
+    }
+    // Do not delete this line. In edge cases, it is necessary, such as when the called commit has no parents
     commitLocationMap.set(commit.sha, [{repo, branch}]);
     while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
+        // Set the current commit to the given repo and branch, since we have determined it's from there.
         commitLocationMap.set(commit.sha, [{repo, branch}]);
+        // If the current commit is also a merge commit, handle that one too
         if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])?.length !== 1) {
             recursiveMergeCheck(commit);
         }
 
+        // Go to parent commit and keep assigning it to the given commit location
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
             console.error("Critical mistake in data structure!");
@@ -314,18 +366,25 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
         }
     }
 
+    // We have now arrived at duplicated history from the branch, so we delete itself from
+    // the commit locations associated with the commit's hash
     while (true) {
         const currentLocations = commitLocationMap.get(commit.sha);
         if (currentLocations === undefined) {
             console.error("Critical mistake in data structure!");
         } else {
+            // Delete the branch itself from this commit's hash
             commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
                 return !(branch_name === branch && repo_name === repo);
             }));
         }
+
+        // We have arrived at the end of its history
         if (commit.parentIds.length === 0) {
             break;
         }
+
+        // We go to the parent commit and continue execution
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
             console.error("Critical mistake in data structure!");
@@ -346,6 +405,8 @@ function deleteFromBranch(commit: CommitInfo, {repo, branch}: CommitLocation, me
  * @returns sha of merge-base commit
  */
 function findMergeBaseCommit(parent1: string, parent2: string): string | undefined {
+
+    // Simple BFS algorithm to return all ancestors
     function getAncestors(startNode: string): Set<string> {
         const ancestors = new Set<string>();
         const queue = [startNode];
@@ -367,13 +428,14 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
         return ancestors;
     }
 
-    // Get ancestor sets for both nodes
+    // Get ancestor set for first parent
     const ancestorsA = getAncestors(parent1);
 
-    // Find the first common ancestor by BFS from nodeB's ancestor list
+    // Find the first common ancestor by BFS from the second parent's ancestor list
     const queue = [parent2];
     const visited = new Set(); // Track visited nodes
 
+    // Another BFS execution with an early return once we find the first common ancestor
     while (queue.length > 0) {
         const node = queue.shift();
         if (node !== undefined && !visited.has(node)) {
@@ -384,9 +446,9 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
             if (!commitMap.has(node)) {
                 console.error("Critical mistake in data structure!");
             } else {
-                const parents = commitMap.get(node)?.parentIds; // Use optional chaining
+                const parents = commitMap.get(node)?.parentIds;
                 if (parents) {
-                    queue.push(...parents); // Add all parents to the queue
+                    queue.push(...parents);
                 }
             }
         }

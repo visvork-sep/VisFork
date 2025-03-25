@@ -1,13 +1,13 @@
 import { useState, useCallback } from "react";
-import { FilterFormState } from "../Types/FilterForm";
-import { FORK_TYPES, 
+import { FilterFormState } from "../Types/UIFormTypes";
+import { COMMIT_TYPES, 
     FORKS_COUNT_INPUT_INITIAL, 
     FORKS_SORTING_ORDERS, 
     OWNER_TYPES, 
     SORT_DIRECTION, 
     ForksSortingOrder, 
     SortDirection, 
-    ForkType, 
+    CommitType, 
     OwnerType 
 }
     from "@Utils/Constants";
@@ -19,7 +19,7 @@ const initialForm: FilterFormState = {
     forksCount: FORKS_COUNT_INPUT_INITIAL, // Default fork count input
     forksOrder: FORKS_SORTING_ORDERS.STARGAZERS.value, // Default sorting order (by stargazers)
     forksAscDesc: SORT_DIRECTION.ASCENDING.value, // Default sorting direction (ascending)
-    forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value), // Default fork type filter (all types selected)
+    forksTypeFilter: Object.values(COMMIT_TYPES).map(t => t.value), // Default fork type filter (all types selected)
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value), // Default owner type filter (all types selected)
     commitsDateRangeFrom: (() => {
         const date = new Date();
@@ -58,11 +58,12 @@ function useFilterForm() {
      * The selected sorting order. Must be one of the defined sorting options in FORKS_SORTING_ORDERS.
      */
     const handleForksOrderChange = useCallback((value: string) => {
-        assert(value === FORKS_SORTING_ORDERS.LAST_COMMIT.value ||
-            value === FORKS_SORTING_ORDERS.AUTHOR_STARS.value ||
+        assert(
             value === FORKS_SORTING_ORDERS.WATCHERS.value ||
             value === FORKS_SORTING_ORDERS.STARGAZERS.value ||
-            value === FORKS_SORTING_ORDERS.DATE.value, "Developer error: Invalid sorting order selected");
+            value === FORKS_SORTING_ORDERS.NEWEST.value ||
+            value === FORKS_SORTING_ORDERS.OLDEST.value, 
+            "Developer error: Invalid sorting order selected");
        
         setForm((prev) => ({ ...prev, forksOrder: value as ForksSortingOrder }));
     }, []);
@@ -102,11 +103,11 @@ function useFilterForm() {
      */
     const handleForksTypeFilterChange = useCallback((selected: string[]) => {
         assert(selected.every(s => 
-            (s === FORK_TYPES.ADAPTIVE.value ||
-            s === FORK_TYPES.CORRECTIVE.value ||
-            s === FORK_TYPES.PERFECTIVE.value)
+            (s === COMMIT_TYPES.ADAPTIVE.value ||
+            s === COMMIT_TYPES.CORRECTIVE.value ||
+            s === COMMIT_TYPES.PERFECTIVE.value)
         ), "Developer error: Invalid fork type selected");
-        setForm((prev) => ({ ...prev, forksTypeFilter: selected as ForkType[] }));
+        setForm((prev) => ({ ...prev, forksTypeFilter: selected as CommitType[] }));
     }, []);
 
     /**

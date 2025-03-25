@@ -4,10 +4,10 @@ import {
     CommitsDateRangeFromInputErrors,
     CommitsDateRangeUntilInputErrors,
     RecentlyUpdatedInputErrors 
-} from "../Types/FormErrors";
+} from "../Types/UIFormErrors";
 import {
     ForksSortingOrder, 
-    ForkType, 
+    CommitType, 
     MAX_QUERIABLE_FORKS, 
     MIN_QUERIABLE_FORKS, 
     OwnerType, 
@@ -212,7 +212,7 @@ function prepareCommitsDateRangeUntil(input: string): Date {
  * @param {String[]} forkTypes - list of fork types
  * @returns forks type filter
  */
-function prepareForksTypeFilter(forkTypes: ForkType[]): ForkType[] {
+function prepareForksTypeFilter(forkTypes: CommitType[]): CommitType[] {
     forkTypes.forEach(element => {
         const { conflicts } = sanitizeString(element);
         if (conflicts) {

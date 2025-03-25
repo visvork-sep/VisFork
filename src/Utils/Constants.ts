@@ -17,13 +17,13 @@ export const FORKS_COUNT_INPUT_INITIAL = "5";
 /// FORKS_SORTING_ORDERS ways to sort orders for the user to select
 export const FORKS_SORTING_ORDERS = {
     STARGAZERS: { label: "Stargazers", value: "stargazers" },
-    DATE: { label: "Date of creation", value: "date" },
+    NEWEST: { label: "Newest", value: "newest" },
     WATCHERS: { label: "Watchers", value: "watchers" },
-    LAST_COMMIT: { label: "Last commit", value: "lastCommit" },
-    AUTHOR_STARS: { label: "Author stars", value: "authorStars" }
+    OLDEST: { label: "Oldest", value: "oldest" },
 } as const;
 
 export type ForksSortingOrder = typeof FORKS_SORTING_ORDERS[keyof typeof FORKS_SORTING_ORDERS]["value"];
+
 
 /// Ascending and descending
 export const SORT_DIRECTION = {
@@ -34,18 +34,22 @@ export const SORT_DIRECTION = {
 export type SortDirection = typeof SORT_DIRECTION[keyof typeof SORT_DIRECTION]["value"];
 
 /// Types of forks adaptive corrective perfective
-export const FORK_TYPES = {
+
+export const COMMIT_TYPES = {
     PERFECTIVE: { label: "Perfective", value: "perfective" },
     ADAPTIVE: { label: "Adaptive", value: "adaptive" },
     CORRECTIVE: { label: "Corrective", value: "corrective" }
 } as const;
 
-export type ForkType = typeof FORK_TYPES[keyof typeof FORK_TYPES]["value"];
+
+export type CommitType = typeof COMMIT_TYPES[keyof typeof COMMIT_TYPES]["value"];
 
 /// Types of repository owners
 export const OWNER_TYPES = {
-    USER: { label: "User", value: "user" },
-    ORGANIZATION: { label: "Organization", value: "org" }
+    USER: { label: "User", value: "User" },
+    ORGANIZATION: { label: "Organization", value: "Organization" }
 } as const;
 
 export type OwnerType = typeof OWNER_TYPES[keyof typeof OWNER_TYPES]["value"];
+/** Number of months since last update such that a fork is still considered active. */
+export const ACTIVE_FORK_NROF_MONTHS = 12;

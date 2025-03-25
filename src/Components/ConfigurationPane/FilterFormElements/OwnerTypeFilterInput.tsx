@@ -1,5 +1,5 @@
 import { Checkbox, CheckboxGroup, FormControl } from "@primer/react";
-import { InputError } from "@Types/FormErrors";
+import { InputError } from "@Types/UIFormErrors";
 import { OWNER_TYPES } from "@Utils/Constants";
 
 interface OwnerTypeFilterInputProps {

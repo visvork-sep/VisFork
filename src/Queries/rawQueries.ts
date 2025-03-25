@@ -3,7 +3,7 @@ import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, Get
 import { paths, components } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-import { CommitQueryParams, ForkQueryParams, RepoQueryParams} from "../Types/GithubTypes";
+import { CommitQueryParams, ForkQueryParams, RepoQueryParams } from "../Types/DataLayerTypes";
 import { API_URL } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;

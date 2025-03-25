@@ -40,6 +40,8 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
     mainRepo: string
 ): CommitInfo[] {
     // Initialize data structures
+    globalDefaultBranches = defaultBranches;
+    globalMainRepo = mainRepo;
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
         locationArray.push({ branch: rawCommit.branch_name as string, repo: rawCommit.repo });
@@ -50,15 +52,10 @@ export function deleteDuplicateCommitsSimple(rawCommits: CommitInfo[],
     const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
         return locations.length >= 2;
     });
-    // TODO replace with makeUniqueHierarchical
     for (const duplicateCommit of duplicateCommits) {
-        const mainRepoCommits = duplicateCommit[1].filter(({ repo }) => repo === mainRepo);
-        if (mainRepoCommits.some(({ branch }) => branch === defaultBranches[mainRepo])) {
-            commitLocationMap.set(duplicateCommit[0], [{repo: mainRepo, branch: defaultBranches[mainRepo]}]);
-        } else if (mainRepoCommits.length >= 1) {
-            commitLocationMap.set(duplicateCommit[0], [getMinimumCommitLocation(mainRepoCommits)]);
-        } else {
-            commitLocationMap.set(duplicateCommit[0], [getMinimumCommitLocation(duplicateCommit[1])]);
+        const duplicateCommitInfo = commitMap.get(duplicateCommit[0]);
+        if (duplicateCommitInfo !== undefined) {
+            makeUniqueHierarchical(duplicateCommitInfo);
         }
     }
     // From commitLocationMap, derive the true location of each commit
@@ -313,7 +310,6 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
             }
         }
         // No inference could be made: apply priority rules and gamble
-        // TODO replace with makeUniqueHierarchical
         const mainRepoCommitLocations = commitLocations.filter(({repo}) => {
             return repo === globalMainRepo;
         });

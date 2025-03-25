@@ -1,6 +1,6 @@
 import { CheckboxGroup, FormControl, Checkbox } from "@primer/react";
 import { InputError } from "@Types/UIFormErrors";
-import { FORK_TYPES } from "@Utils/Constants";
+import { COMMIT_TYPES } from "@Utils/Constants";
 
 interface ForksTypeFilterInputProps {
     onChangeHandler: (selected: string[]) => void;
@@ -9,7 +9,7 @@ interface ForksTypeFilterInputProps {
 };
 
 function ForksTypeFilterInput({ onChangeHandler, checked, error }: ForksTypeFilterInputProps) {
-    const checkBoxes = Object.values(FORK_TYPES).map(t => (
+    const checkBoxes = Object.values(COMMIT_TYPES).map(t => (
         <FormControl key={t.value}>
             <FormControl.Label>{t.label}</FormControl.Label>
             <Checkbox value={t.value} checked={checked.includes(t.value)} />

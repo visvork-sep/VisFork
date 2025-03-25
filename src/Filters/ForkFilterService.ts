@@ -1,18 +1,18 @@
-import { ForkFilter, ForkInfo } from "@Types/LogicLayerTypes";
+import { ForkFilter, UnprocessedRepository } from "@Types/LogicLayerTypes";
 
 
 // TODO: Change ForkInfo to whichever type/interface we have invented for forks.
 export class ForkFilterService {
 
     /**
-     * Filters an array of {@link ForkInfo} objects according to the passed {@link ForkFilter}.
+     * Filters an array of {@link UnprocessedRepository} objects according to the passed {@link ForkFilter}.
      *
-     * @param forks Collection of {@link ForkInfo}s to be filtered.
+     * @param forks Collection of {@link UnprocessedRepository}s to be filtered.
      * @param filter The {@link ForkFilter} based on which the function picks out the desired forks.
      */
-    filterForks(forks: ForkInfo[], filter?: ForkFilter): ForkInfo[] {
+    filterForks(forks: UnprocessedRepository[], filter?: ForkFilter): UnprocessedRepository[] {
         if (!filter) return forks;
-        const resultForks: ForkInfo[] = [];
+        const resultForks: UnprocessedRepository[] = [];
 
         for (let fork of forks) {
             fork = this.#applyFilter(fork, filter);
@@ -24,14 +24,14 @@ export class ForkFilterService {
     }
 
     /**
-     * Private function to apply a filter to a single {@link ForkInfo} object.
+     * Private function to apply a filter to a single {@link UnprocessedRepository} object.
      *
-     * @param fork the {@link ForkInfo} object to be filtered.
+     * @param fork the {@link UnprocessedRepository} object to be filtered.
      * @param filter the {@link ForkFilter} to be applied.
      *
-     * @returns the filtered {@link ForkInfo}.
+     * @returns the filtered {@link UnprocessedRepository}.
      */
-    #applyFilter(fork: ForkInfo, filter: ForkFilter): ForkInfo {
+    #applyFilter(fork: UnprocessedRepository, filter: ForkFilter): UnprocessedRepository {
         // Loops through all properties of ForkInfo that have a value.
         for (const [key, value] of Object.entries(filter)) {
             if (value !== undefined && value !== null) {

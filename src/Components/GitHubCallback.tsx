@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { paths } from "@generated/auth-schema";
 import createClient from "openapi-fetch";
 import { AUTH_URL } from "@Utils/Constants";
+import { useEffect } from "react";
 
 const fetchClient = createClient<paths>({
     baseUrl: AUTH_URL
@@ -12,15 +13,14 @@ const fetchClient = createClient<paths>({
 
 /**
  * GitHubCallback Component
- * 
- * This component handles the GitHub OAuth callback process. It extracts the authorization
- * code from the URL, exchanges it for an access token via the backend, and stores the
- * token in session storage before redirecting the user to the home page.
+ *
+ * Handles GitHub OAuth callback, exchanges the authorization code for an access token,
+ * stores it, and redirects the user.
  */
 function GitHubCallback() {
-    const [searchParams] = useSearchParams(); // Retrieve query parameters
-    const navigate = useNavigate(); // React Router navigation function
-    const code = searchParams.get("code"); // Extract GitHub OAuth authorization code
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const code = searchParams.get("code");
     const { isAuthenticated, login } = useAuth();
 
     const { isSuccess, isPending, data } = useQuery({
@@ -34,21 +34,22 @@ function GitHubCallback() {
         enabled: !!code && !isAuthenticated
     });
 
+    useEffect(() => {
+        if (isSuccess && data?.data?.accessToken) {
+            login(data.data.accessToken);
+            navigate("/");
+        }
+    }, [isSuccess, data, login, navigate]);
+
     if (isPending) {
         return <Spinner />;
     }
 
-    if (isSuccess) {
-        const accessToken = data.data?.accessToken;
-
-        if (accessToken) {
-            login(accessToken);
-            navigate("/");
-        } else {
-            return <div>Error: Invalid access token received</div>;
-        }
+    if (!isSuccess || !data?.data?.accessToken) {
+        return <div>Error: Authentication failed. Please try again.</div>;
     }
-    return <div>Error: Authentication failed. Please try again.</div>;
+
+    return null; // No need to render anything since user will be redirected.
 }
 
 export default GitHubCallback;

@@ -14,7 +14,7 @@ import {
 } from "@Utils/Sanitize";
 import { FilterChangeHandler } from "./useFilteredData";
 import { setInputError, filterFactory, forkQueryStateFactory } from "@Utils/FormSubmissionUtils";
-import { ForksSortingOrder, ForkType, OwnerType, SortDirection } from "@Utils/Constants";
+import { ForksSortingOrder, CommitType, OwnerType, SortDirection } from "@Utils/Constants";
 
 
 
@@ -48,7 +48,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         let forksSortDirection: SortDirection | null = null;
         let commitsDateRangeFrom: Date | null = null;
         let commitsDateRangeUntil: Date | null = null;
-        let forksTypeFilter: ForkType[] | null = null;
+        let forksTypeFilter: CommitType[] | null = null;
         let ownerTypeFilter: OwnerType[] | null = null;
         let recentlyUpdated: number | null = null; // non required
 

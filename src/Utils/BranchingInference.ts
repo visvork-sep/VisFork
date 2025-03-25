@@ -260,9 +260,9 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
         }
         regex = /^merge branch [']([^']+)['].*/i;
         match = mergeCommit.message.match(regex);
-        if (match !== null && commitLocations.filter(({branch}) => {
+        if (match !== null && commitLocations.some(({branch}) => {
             return branch === match[1];
-        }).length >= 1) {
+        })) {
             const commitLocationsFiltered = commitLocations.filter(({branch}) => {
                 return branch === match[1];
             });
@@ -280,9 +280,9 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
         const mainRepoCommitLocations = commitLocations.filter(({repo}) => {
             return repo === globalMainRepo;
         });
-        if (mainRepoCommitLocations.filter(({branch}) => {
+        if (mainRepoCommitLocations.some(({branch}) => {
             return branch === globalDefaultBranches[globalMainRepo];
-        }).length >= 1) {
+        })) {
             deleteFromBranch(secondParent, 
                 {repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}, 
                 mergeBaseCommit);

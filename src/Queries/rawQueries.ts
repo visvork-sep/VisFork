@@ -4,7 +4,7 @@ import { paths, components } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
 import { CommitQueryParams, ForkQueryParams, RepoQueryParams } from "../Types/DataLayerTypes";
-import { API_URL } from "@Utils/Constants";
+import { API_URL, MAX_QUERIABLE_COMMIT_PAGES } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;
 const fetchClient = createClient<paths>({ baseUrl: API_URL });
@@ -19,10 +19,20 @@ export async function fetchForksGql(parameters: GetForksQueryVariables, accessTo
 export async function fetchCommits(parameters: CommitQueryParams, accessToken: string, page = 1) {
     const allCommits:  components["schemas"]["commit"][] = [];
     let response;
+    let pagesRemaining = true;
 
-    do {
+    while (pagesRemaining && page <= MAX_QUERIABLE_COMMIT_PAGES) {
+
+        console.log(`Requesting page: ${page}`);
+
         response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
-            params: { ...parameters, per_page: 100, page },
+            params: { ...parameters,
+                query: {
+                    ...parameters.query, // Keep existing query params
+                    per_page: 100,
+                    page
+                }
+            },
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
@@ -32,9 +42,15 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
         if (response?.data) {
             allCommits.push(...response.data); // Collect all commits in a single array:q
         }
+        console.log("Fetchig page:", page);
+        const linkHeader = response.response.headers.get("link");
+        console.log("Header", linkHeader);
+
+        pagesRemaining = linkHeader?.includes("rel=\"next\"") ?? false;
+        console.log("Are there more pages:", pagesRemaining);
         page++;
 
-    } while (response.response.headers.get("next")); // Continue until there is no next header
+    }
 
     // Return a single FetchResponse-like object with all the data
     return {

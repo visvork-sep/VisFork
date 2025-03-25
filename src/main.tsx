@@ -15,7 +15,7 @@ createRoot(document.getElementById("root")!).render(
             <BaseStyles>
                 <QueryClientProvider client={queryClient}>
                     <AuthProvider>
-                        <Box className="body" sx={{ height: "100%" }}>
+                        <Box className="body">
                             <App />
                         </Box>
                     </AuthProvider>

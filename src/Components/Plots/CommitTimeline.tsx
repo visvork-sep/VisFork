@@ -72,47 +72,6 @@ function CommitTimeline({ commitData,
         return map;
     }
 
-    // custom branches layout
-    function assignUniqueBranches(
-        nodes: d3dag.GraphNode<Commit | GroupedNode, unknown>[]
-    ): void {
-        // group nodes by repo
-        const repoGroups = groupBy(nodes, (node) => node.data.repo);
-
-        repoGroups.forEach((repoNodes) => {
-            // get distinct x assignments within the repo
-            const distinctX = Array.from(new Set(repoNodes.map((n) => n.x))).sort(
-                (a, b) => a - b
-            );
-
-            // group nodes by branch
-            const branchGroups = groupBy(repoNodes, (node) => node.data.branch);
-
-            // only reassign if we have enough unique x values.
-            if (branchGroups.size <= distinctX.length) {
-                // sort branches by the earliest commit date
-                const sortedBranches = Array.from(branchGroups.entries()).sort(
-                    (a, b) => {
-                        const earliestA = Math.min(
-                            ...a[1].map((n) => new Date(n.data.date).getTime())
-                        );
-                        const earliestB = Math.min(
-                            ...b[1].map((n) => new Date(n.data.date).getTime())
-                        );
-                        return earliestA - earliestB;
-                    }
-                );
-                // assign each branch the corresponding distinct x value.
-                sortedBranches.forEach((entry, index) => {
-                    const newX = distinctX[index];
-                    entry[1].forEach((node) => {
-                        node.x = newX;
-                    });
-                });
-            }
-        });
-    }
-
     // custom lanes layout
     function assignUniqueLanes(
         nodes: Iterable<d3dag.GraphNode<Commit | GroupedNode, unknown>>,
@@ -350,9 +309,6 @@ function CommitTimeline({ commitData,
         });
 
         // apply custom layout 
-        if (!merged) {
-            assignUniqueBranches(sortedNodes);
-        }
         const { lanes, totalHeight } = assignUniqueLanes(sortedNodes, LANE_GAP);
         // adjust height to custom layout
         d3.select(svgRef.current).attr("height", totalHeight + MARGIN.top + MARGIN.bottom);

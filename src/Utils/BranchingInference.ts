@@ -14,7 +14,7 @@ const commitMap = new Map<string, UnprocessedCommitExtended>();
 // maps a JSON string of the CommitLocation of a commit to its info
 // This map will only contain commits at the end of a branch
 // In other words: this map contains the commits that each branch points to
-// https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell 
+// https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
 const locationHeadCommitMap = new Map<string, UnprocessedCommitExtended>();
 // Maps the hash of all commits at the end of a branch to their locations.
 const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
@@ -22,14 +22,14 @@ let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
 /**
- * Deletes commits that have the same hashes, leaving a single unique commit. 
+ * Deletes commits that have the same hashes, leaving a single unique commit.
  * This can only happen if the commit is present on multiple branches.
  * This algorithm uses a very simple approach to make sure the deletion makes sense somewhat, but
- * in no way actually considers merge commits or does any inference, except for prioritizing 
+ * in no way actually considers merge commits or does any inference, except for prioritizing
  * the main repo and default branches.
- * 
+ *
  * @param rawCommits array of all commits to be analyzed and processed.
- * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are 
+ * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
  * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
  * @param mainRepo the name of the queried repository. Example: torvalds/linux
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
@@ -86,7 +86,7 @@ export function deleteDuplicateCommitsSimple(rawCommits: UnprocessedCommitExtend
 /**
  * Let's go gambling!
  * Used to deterministically get a random branch.
- * 
+ *
  * @param locations all CommitLocations to get a random one from
  * @returns alphabetical minimum of commit location, first sorted on repo and then branch
  */
@@ -100,22 +100,23 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
 }
 
 /**
- * Deletes commits that have the same hashes, leaving a single unique commit. 
+ * Deletes commits that have the same hashes, leaving a single unique commit.
  * This can only happen if the commit is present on multiple branches.
  * This function aims to preserve the branching logic by inspecting merge commits.
  * In case you are confused about some part of the implementation, the answer to your question
  * is almost always "Because that's how they decided Git/GitHub should work".
- * 
+ *
  * @param rawCommits array of all commits to be analyzed and processed.
- * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are 
+ * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
  * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
  * @param mainRepo the name of the queried repository. Example: torvalds/linux
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
  * in the input, a commit with the same hash will always be present in the output.
  */
-export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[], 
+export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
+    console.log(rawCommits);
     // Initialize data structures
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
@@ -126,7 +127,7 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
         commitMap.set(rawCommit.sha, rawCommit);
         const key = JSON.stringify({ repo: rawCommit.repo, branch: rawCommit.branch });
         const headCommit = locationHeadCommitMap.get(key);
-        if (rawCommit.date !== "Unknown" 
+        if (rawCommit.date !== "Unknown"
             && (headCommit === undefined || new Date(headCommit.date).getTime() < new Date(rawCommit.date).getTime())) {
             locationHeadCommitMap.set(
                 key, rawCommit
@@ -179,6 +180,8 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
     const processedCommits: UnprocessedCommitExtended[] = [];
     for (const commit of commitLocationMap) {
         if (commit[1].length > 1) {
+            console.log("Commit: ", commitMap.get(commit[0]));
+            console.log("Commit data: ", commit);
             console.error("Mistake in data structure encountered!");
         }
         if (commit[1].length === 0) {
@@ -205,8 +208,8 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
 
 /**
  * Makes a single commit unique according to some basic priority logic
- * 
- * @param commit the commit to make unique 
+ *
+ * @param commit the commit to make unique
  */
 function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
     let locations = commitLocationMap.get(commit.sha);
@@ -227,7 +230,7 @@ function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
         } else if (defaultBranchLocations.length >= 1) {
             // Delete everywhere else but a random branch where this commit is on its default branch
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(defaultBranchLocations)]);
-        } else { 
+        } else {
             // Choose random branch and delete everywhere else
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(locations)]);
         }
@@ -238,15 +241,15 @@ function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
  * Scheme:
  * check second parent sha and see where else you can find it.
  * if it's at a head of a branch, infer it's from there
- * if it's not at any head, but there are duplicates (it's present on other branches too), 
+ * if it's not at any head, but there are duplicates (it's present on other branches too),
  * infer it's from any other random branch, prioritizing default branch (semantically the same)
  * if there are no duplicates either, someone forgor to git pull
  * THIS IS THE WHOLE SCHEME OF FINDING WHERE THE COMMIT CAME FROM
- * 
+ *
  * now go to that branch and start deleting the duplicates everywhere else.
  * when encountering another merge commit, recursively do the same thing,
  * and afterwards continue deleting duplicates of itself again
- * 
+ *
  * @param mergeCommit the commit to check duplicates from
  */
 function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
@@ -264,23 +267,23 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
     }
     // Get all perfect branches
     const allBranchesWithRelevantHeadCommit = locationHeadCommitMapReversed.get(secondParent.sha);
-    if (allBranchesWithRelevantHeadCommit !== undefined) { 
+    if (allBranchesWithRelevantHeadCommit !== undefined) {
         if (allBranchesWithRelevantHeadCommit.length === 0) {
             console.error("Critical mistake in data structure!");
         } else if (allBranchesWithRelevantHeadCommit.length >= 1) { // found a perfect branch!
             deleteFromBranch(secondParent, allBranchesWithRelevantHeadCommit[0], mergeBaseCommit);
         }
-    } else if (commitLocations !== undefined 
+    } else if (commitLocations !== undefined
         && commitLocations.length > 1) { // parentId in fetched data and has duplicates
         // Try inferring whether this commit is from a PR and has a default message and get its branch from it
         let regex = /^merge pull request .* from ([^\s]+).*/i;
         let match = mergeCommit.message.match(regex);
         if (match !== null) {
             const [author, branch_name] = match[1].split("/", 2);
+            console.log("Author:", author);
             let repo_name = authorRepoMap.get(author);
             if (!repo_name) {
-                console.error("Critical mistake in data structure!");
-                repo_name = globalMainRepo;
+                repo_name = "";
             }
             if (commitLocations.filter(({repo, branch}) => {
                 return repo === repo_name && branch === branch_name;
@@ -317,29 +320,29 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
         if (mainRepoCommitLocations.some(({branch}) => {
             return branch === globalDefaultBranches[globalMainRepo];
         })) {
-            deleteFromBranch(secondParent, 
-                {repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}, 
+            deleteFromBranch(secondParent,
+                {repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]},
                 mergeBaseCommit);
         } else if (mainRepoCommitLocations.length >= 1) {
             deleteFromBranch(secondParent, getMinimumCommitLocation(mainRepoCommitLocations), mergeBaseCommit);
         } else { // Complete gamble
             deleteFromBranch(secondParent, getMinimumCommitLocation(commitLocations), mergeBaseCommit);
         }
-        
+
     }
     // Remaining conditions only include situations with no duplicates
 }
 
 /**
  * Handles the deletion of commits if we know its branch.
- * 
+ *
  * @param commit commit that is a parent of a merge commit
  * @param repo repo where commit is located
  * @param branch branch where commit is located
  * @param mergeBaseCommit the commit where this repo/branch combination started deviating
  */
-function deleteFromBranch(commit: UnprocessedCommitExtended, 
-    {repo, branch}: CommitLocation, 
+function deleteFromBranch(commit: UnprocessedCommitExtended,
+    {repo, branch}: CommitLocation,
     mergeBaseCommit: string | undefined) {
     if (mergeBaseCommit === undefined) {
         return;
@@ -398,7 +401,7 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
 /**
  * Aims to find the commit returned by the `git merge-base parent1 parent2` command.
  * for more info see here https://git-scm.com/docs/git-merge-base
- * 
+ *
  * @param parent1 sha of first parent commit of merge commit, by convention the last commit on branch
  * @param parent2 sha of second parent commit of merge commit, by convention the last commit on branch that got merged
  * @returns sha of merge-base commit

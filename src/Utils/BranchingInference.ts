@@ -5,6 +5,7 @@ interface CommitLocation {
     repo: string
 }
 
+const authorRepoMap = new Map<string, string>();
 const commitLocationMap = new Map<string, CommitLocation[]>();
 const commitMap = new Map<string, CommitInfo>();
 const locationHeadCommitMap = new Map<string, CommitInfo>();
@@ -112,6 +113,8 @@ export function deleteDuplicateCommits(rawCommits: CommitInfo[],
                 key, rawCommit
             );
         }
+        const author = rawCommit.repo.split("/")[0];
+        authorRepoMap.set(author, rawCommit.repo);
     }
     for (const entry of locationHeadCommitMap.entries()) {
         const locations: CommitLocation[] = locationHeadCommitMapReversed.get(entry[1].sha) ?? [];
@@ -235,7 +238,12 @@ function recursiveMergeCheck(mergeCommit: CommitInfo) {
         let regex = /^merge pull request .* from ([^\s]+).*/i;
         let match = mergeCommit.message.match(regex);
         if (match !== null) {
-            const [repo_name, branch_name] = match[1].split("/", 2);
+            const [author, branch_name] = match[1].split("/", 2);
+            let repo_name = authorRepoMap.get(author);
+            if (!repo_name) {
+                console.error("Critical mistake in data structure!");
+                repo_name = globalMainRepo;
+            }
             if (commitLocations.filter(({repo, branch}) => {
                 return repo === repo_name && branch === branch_name;
             }).length === 1) {

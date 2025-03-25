@@ -116,7 +116,6 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
 export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
-    console.log(rawCommits);
     // Initialize data structures
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
@@ -176,12 +175,20 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
             makeUniqueHierarchical(headCommit);
         }
     }
+    // Find all duplicate commits and get rid of them with priority given to main repo and default branches
+    const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
+        return locations.length >= 2;
+    });
+    for (const duplicateCommit of duplicateCommits) {
+        const duplicateCommitInfo = commitMap.get(duplicateCommit[0]);
+        if (duplicateCommitInfo !== undefined) {
+            makeUniqueHierarchical(duplicateCommitInfo);
+        }
+    }
     // From commitLocationMap, derive the true location of each commit
     const processedCommits: UnprocessedCommitExtended[] = [];
     for (const commit of commitLocationMap) {
         if (commit[1].length > 1) {
-            console.log("Commit: ", commitMap.get(commit[0]));
-            console.log("Commit data: ", commit);
             console.error("Mistake in data structure encountered!");
         }
         if (commit[1].length === 0) {
@@ -280,7 +287,6 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
         let match = mergeCommit.message.match(regex);
         if (match !== null) {
             const [author, branch_name] = match[1].split("/", 2);
-            console.log("Author:", author);
             let repo_name = authorRepoMap.get(author);
             if (!repo_name) {
                 repo_name = "";

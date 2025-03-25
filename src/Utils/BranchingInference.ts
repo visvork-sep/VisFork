@@ -126,8 +126,8 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
         commitMap.set(rawCommit.sha, rawCommit);
         const key = JSON.stringify({ repo: rawCommit.repo, branch: rawCommit.branch });
         const headCommit = locationHeadCommitMap.get(key);
-        // TODO change date logic to include unknown dates
-        if (headCommit === undefined || new Date(headCommit.date).getTime() < new Date(rawCommit.date).getTime()) {
+        if (rawCommit.date !== "Unknown" 
+            && (headCommit === undefined || new Date(headCommit.date).getTime() < new Date(rawCommit.date).getTime())) {
             locationHeadCommitMap.set(
                 key, rawCommit
             );

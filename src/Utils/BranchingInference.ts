@@ -5,6 +5,10 @@ interface CommitLocation {
     repo: string
 }
 
+// TODO better error logging
+// TODO change URL to correct repo
+// TODO fix found commit with more than 2 parentIds error
+
 // maps owner to its repo. E.g. { "me": "me/my-repo" }
 const ownerRepoMap = new Map<string, string>();
 // maps a commit's hash to all of its locations in the gathered data
@@ -379,6 +383,11 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
         } else {
             commit = nextCommit;
         }
+    }
+
+    // In case this is the only branch containing this history, we do not delete the history
+    if ((commitLocationMap.get(mergeBaseCommit)?.length ?? []) === 1) {
+        return;
     }
 
     // We have now arrived at duplicated history from the branch, so we delete itself from

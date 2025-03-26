@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { UnprocessedCommitExtended,
     ForkFilter,
     RepositoryInfoWithCommits,
@@ -24,25 +24,19 @@ export function useFilteredData() {
         setFilters(filters);
     };
 
-    // Fetch forks data using the constructed query parameters.
-
-
-    // Memoized filtering: Applies filters only when data or filters change.
-    // const filteredForks = filters ? simplifiedForkData.filter(fork =>
-    //     isIncludedFork(filters, fork)
-    // ) : simplifiedForkData;
-    // console.log("or not:", filteredForks);
     const {data: forkData, isLoading: isLoadingFork, error: forkError} = useFetchForks(forkQueryState);
 
-    const simplifiedForkData = forkData?.data ?
-        forkData.data.map(fork => toForkInfo(fork)) : [];
+    const simplifiedForkData = useMemo(() => forkData?.data ?
+        forkData.data.map(fork => toForkInfo(fork)) : [], [forkData]);
 
 
-    const filteredForks = (filters)
-        ?
-        simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters))
-        :
-        [];
+    const filteredForks = useMemo(() => {
+        return (filters)
+            ?
+            simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters))
+            :
+            [];},
+    [simplifiedForkData, filters]);
 
 
     // TODO: Fix pagination
@@ -68,8 +62,10 @@ export function useFilteredData() {
             error: null
         });
 
-    const simplifiedCommitData: UnprocessedCommitExtended[][] = commitData ?
-        commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
+    const simplifiedCommitData: UnprocessedCommitExtended[][] = useMemo(() => {
+        return commitData ?
+            commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];}
+    , [commitData]);
 
     let mainRepositoryInfo: MainRepositoryInfo| undefined = undefined;
     if (!forkError

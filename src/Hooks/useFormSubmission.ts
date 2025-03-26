@@ -8,7 +8,7 @@ import {
     prepareForksSortDirection, 
     prepareCommitsDateRangeFrom, 
     prepareCommitsDateRangeUntil, 
-    prepareForksTypeFilter, 
+    prepareCommitsTypeFilter, 
     prepareOwnerTypeFilter, 
     prepareRecentlyUpdated 
 } from "@Utils/Sanitize";
@@ -27,7 +27,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         useState<InputError | null>(null);
     const [commitsDateRangeUntilInputError, setCommitsDateRangeUntilInputError]
         = useState<InputError | null>(null);
-    const [forksTypeFilterInputError, setForksTypeFilterInputError] = useState<InputError | null>(null);
+    const [commitsTypeFilterInputError, setCommitsTypeFilterInputError] = useState<InputError | null>(null);
     const [ownerTypeFilterInputError, setOwnerTypeFilterInputError] = useState<InputError | null>(null);
     const [forksOrderInputError, setForksOrderInputError] = useState<InputError | null>(null);
     const [forksAscDescInputError, setForksAscDescInputError] = useState<InputError | null>(null);
@@ -48,7 +48,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         let forksSortDirection: SortDirection | null = null;
         let commitsDateRangeFrom: Date | null = null;
         let commitsDateRangeUntil: Date | null = null;
-        let forksTypeFilter: CommitType[] | null = null;
+        let commitsTypeFilter: CommitType[] | null = null;
         let ownerTypeFilter: OwnerType[] | null = null;
         let recentlyUpdated: number | null = null; // non required
 
@@ -97,10 +97,10 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         }
 
         try {
-            forksTypeFilter = prepareForksTypeFilter(form.forksTypeFilter);
-            setForksTypeFilterInputError(null);
+            commitsTypeFilter = prepareCommitsTypeFilter(form.commitTypeFilter);
+            setCommitsTypeFilterInputError(null);
         } catch (e) {
-            setInputError(e, setForksTypeFilterInputError);
+            setInputError(e, setCommitsTypeFilterInputError);
         }
 
         try {
@@ -132,7 +132,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
             forksSortDirection,
             commitsDateRangeFrom,
             commitsDateRangeUntil,
-            forksTypeFilter,
+            commitsTypeFilter,
             ownerTypeFilter,
             recentlyUpdated
         };
@@ -153,7 +153,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
             || !preparedForm.forksSortDirection
             || !preparedForm.commitsDateRangeFrom
             || !preparedForm.commitsDateRangeUntil
-            || !preparedForm.forksTypeFilter
+            || !preparedForm.commitsTypeFilter
             || !preparedForm.ownerTypeFilter
         ) {
             return;
@@ -172,7 +172,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         commitsDateRangeFromInputError,
         commitsDateRangeUntilInputError,
         recentlyUpdatedInputError,
-        forksTypeFilterInputError,
+        commitsTypeFilterInputError,
         ownerTypeFilterInputError,
         forksOrderInputError,
         forksAscDescInputError

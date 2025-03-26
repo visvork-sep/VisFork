@@ -93,6 +93,7 @@ jobs:
         run: docker exec visfork npm run build
 
       - name: Deploy
+        if: github.ref == 'refs/heads/main'
         run: docker cp visfork:/workspace/dist/. /var/www/html/react-app
 
   cleanup:

@@ -7,7 +7,6 @@ interface CommitLocation {
 
 // TODO better error logging
 // TODO change URL to correct repo
-// TODO fix found commit with more than 2 parentIds error
 
 // maps owner to its repo. E.g. { "me": "me/my-repo" }
 const ownerRepoMap = new Map<string, string>();
@@ -398,9 +397,14 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
             console.error("Critical mistake in data structure!");
         } else {
             // Delete the branch itself from this commit's hash
-            commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
-                return !(branch_name === branch && repo_name === repo);
-            }));
+            // First check whether we are not making a commit disappear
+            if (!currentLocations.every(({branch: branch_name, repo: repo_name}) => {
+                return branch_name === branch && repo_name === repo;
+            })) {
+                commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
+                    return !(branch_name === branch && repo_name === repo);
+                }));
+            }
         }
 
         // We have arrived at the end of its history

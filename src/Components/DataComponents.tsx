@@ -3,12 +3,12 @@ import ConfigurationPane from "@Components/ConfigurationPane/ConfigurationPane";
 import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
-import { deleteDuplicateCommits } from "@Utils/BranchingInference";
+import { processCommits } from "@Utils/BranchingInference";
 
 function DataComponents() {
     const { onFiltersChange, forks, commits, forkQuery  }= useFilteredData();
     const mainRepo = `${forkQuery?.owner}/${forkQuery?.repo}`;
-    const removedCommits = deleteDuplicateCommits(commits, createDefaultBranchesMap(forks), mainRepo);
+    const removedCommits = processCommits(commits, createDefaultBranchesMap(forks), mainRepo);
     const {forks: processedForks, commits: processedCommits} = preprocessor(removedCommits, forks);
 
     return (

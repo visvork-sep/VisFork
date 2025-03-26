@@ -10,3 +10,12 @@
         list-style: revert;
     }
 }
+
+.content {
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--borderColor-default);
+    height: 100%;
+    border-radius: var(--borderRadius-medium);
+    padding: var(--base-size-16);
+}

@@ -1,4 +1,4 @@
-import { Box, Details } from "@primer/react";
+import { Box, Details, Stack } from "@primer/react";
 import { PropsWithChildren, ReactNode } from "react";
 import styles from "./Dropdown.module.scss";
 
@@ -9,28 +9,23 @@ interface DropdownProps {
 
 function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<DropdownProps>) {
     return (
-        <Box display="flex" alignItems="top" justifyContent="space-between">
-            <Details className={styles.details} sx={{ flexGrow: 1 }}>
-                <Details.Summary>{summaryText}</Details.Summary>
-                <Box
-                    sx={{
-                        borderWidth: 1,
-                        borderStyle: "solid",
-                        borderColor: "border.default",
-                        height: "100%",
-                        borderRadius: 2,
-                        p: 3,
-                    }}
-                >
-                    {children}
-                </Box>
-            </Details>
+        <Stack direction="horizontal" spacing={2}>
+            <Stack.Item grow>
+                <Details className={styles.details} sx={{ flexGrow: 1 }}>
+                    <Details.Summary>{summaryText}</Details.Summary>
+                    <Box className={styles.content}>
+                        {children}
+                    </Box>
+                </Details>
+            </Stack.Item>
             {infoButton && (
-                <Box >
-                    {infoButton}
-                </Box>
+                <Stack.Item>
+                    <Box>
+                        {infoButton}
+                    </Box>
+                </Stack.Item>
             )}
-        </Box>
+        </Stack>
     );
 }
 

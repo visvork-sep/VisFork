@@ -4,12 +4,24 @@ import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
 import { deleteDuplicateCommits } from "@Utils/BranchingInference";
+import { useMemo } from "react";
 
 function DataComponents() {
-    const { onFiltersChange, forks, commits, forkQuery  }= useFilteredData();
+    const { onFiltersChange, forks, commits, forkQuery }= useFilteredData();
+
     const mainRepo = `${forkQuery?.owner}/${forkQuery?.repo}`;
-    const removedCommits = deleteDuplicateCommits(commits, createDefaultBranchesMap(forks), mainRepo);
-    const {forks: processedForks, commits: processedCommits} = preprocessor(removedCommits, forks);
+
+    const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);
+    const removedCommits = useMemo(() => deleteDuplicateCommits(commits, defaultBranchesMap, mainRepo), [
+        commits,
+        defaultBranchesMap,
+        mainRepo,
+    ]);
+
+    const { forks: processedForks, commits: processedCommits } = useMemo(
+        () => preprocessor(removedCommits, forks),
+        [removedCommits, forks]
+    );
 
     return (
         <>
@@ -28,7 +40,7 @@ function preprocessor(commits: UnprocessedCommitExtended[],
     forks: UnprocessedRepository[]): {forks: Repository[], commits: Commit[]} {
     const processedForks: Repository[] = forks.map(fork => ({
         id: fork.id,
-        name: fork.name,
+        name: `${fork.owner.login}/${fork.name}`,
         owner: {login: fork.owner.login},
         description: fork.description ?? "",
         created_at: fork.created_at ?? new Date(),
@@ -62,8 +74,6 @@ function createDefaultBranchesMap(repos: UnprocessedRepository[]): Record<string
     for (const repo of repos) {
         const fullName = `${repo.owner.login}/${repo.name}`;
         defaultBranches[fullName] = repo.defaultBranch;
-        repo.name = fullName;
-
     }
 
     return defaultBranches;

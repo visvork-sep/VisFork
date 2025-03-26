@@ -123,6 +123,17 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    const defaultBranches = useMemo(() => {
+        const branches = forkData.reduce((acc, fork) => {
+            if (!acc[fork.name]) {
+                acc[fork.name] = fork.defaultBranch;
+            }
+            return acc;
+        }, {} as Record<string, string>);
+
+        return branches;
+    }, [commitData]);
+
     console.log("Returned from visualization hook", visData.forkListData);
     return {
         visData,
@@ -130,5 +141,6 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
             handleHistogramSelection,
             handleTimelineSelection,
         },
+        defaultBranches
     };
 }

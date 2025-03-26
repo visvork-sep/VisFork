@@ -21,6 +21,7 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
     let response;
     let pagesRemaining = true;
 
+    // Hard limit page count so we only fetch maximum 2000 commits
     while (pagesRemaining && page <= MAX_QUERIABLE_COMMIT_PAGES) {
         response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
             params: { ...parameters,

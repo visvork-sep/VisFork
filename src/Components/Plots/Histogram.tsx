@@ -118,7 +118,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         // Brush setup
         const brush = d3.brushX()
             .extent([[0, 0], [contextWidth, contextHeight]])
-            .on("brush", ({ selection }) => {
+            .on("end", ({ selection }) => {
                 if (selection) {
                     const [x0, x1] = selection;
                     // Update background bar colors based on selection

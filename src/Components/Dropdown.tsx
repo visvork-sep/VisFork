@@ -9,9 +9,9 @@ interface DropdownProps {
 
 function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<DropdownProps>) {
     return (
-        <Stack direction="horizontal" spacing={2}>
+        <Stack direction="horizontal" gap="condensed">
             <Stack.Item grow>
-                <Details className={styles.details} sx={{ flexGrow: 1 }}>
+                <Details className={styles.details}>
                     <Details.Summary>{summaryText}</Details.Summary>
                     <Box className={styles.content}>
                         {children}
@@ -20,9 +20,7 @@ function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<Dropd
             </Stack.Item>
             {infoButton && (
                 <Stack.Item>
-                    <Box>
-                        {infoButton}
-                    </Box>
+                    {infoButton}
                 </Stack.Item>
             )}
         </Stack>

@@ -96,8 +96,8 @@ function ApplicationBody() {
                 infoButton={
                     <InfoButton
                         title="Histogram"
-                        hoverDescription={visualizationDescriptions.histogram.short}
-                        description={visualizationDescriptions.histogram.full}
+                        shortDescription={visualizationDescriptions.histogram.short}
+                        fullDescription={visualizationDescriptions.histogram.full}
                     />
                 }
             >
@@ -109,8 +109,8 @@ function ApplicationBody() {
                 infoButton={
                     <InfoButton
                         title="Fork List"
-                        hoverDescription={visualizationDescriptions.forkList.short}
-                        description={visualizationDescriptions.forkList.full}
+                        shortDescription={visualizationDescriptions.forkList.short}
+                        fullDescription={visualizationDescriptions.forkList.full}
                     />
                 }
             >
@@ -120,8 +120,8 @@ function ApplicationBody() {
                 infoButton={
                     <InfoButton
                         title="Commit Timeline"
-                        hoverDescription={visualizationDescriptions.commitTimeline.short}
-                        description={visualizationDescriptions.commitTimeline.full}
+                        shortDescription={visualizationDescriptions.commitTimeline.short}
+                        fullDescription={visualizationDescriptions.commitTimeline.full}
                     />
                 }
             >
@@ -145,8 +145,8 @@ function ApplicationBody() {
                 infoButton={
                     <InfoButton
                         title="Commit Table"
-                        hoverDescription={visualizationDescriptions.commitTable.short}
-                        description={visualizationDescriptions.commitTable.full}
+                        shortDescription={visualizationDescriptions.commitTable.short}
+                        fullDescription={visualizationDescriptions.commitTable.full}
                     />
                 }
             >
@@ -156,8 +156,8 @@ function ApplicationBody() {
                 infoButton={
                     <InfoButton
                         title="Word Cloud"
-                        hoverDescription={visualizationDescriptions.wordCloud.short}
-                        description={visualizationDescriptions.wordCloud.full}
+                        shortDescription={visualizationDescriptions.wordCloud.short}
+                        fullDescription={visualizationDescriptions.wordCloud.full}
                     />
                 }
             >
@@ -167,8 +167,8 @@ function ApplicationBody() {
                 infoButton={
                     <InfoButton
                         title="Sankey Diagram"
-                        hoverDescription={visualizationDescriptions.sankeyDiagram.short}
-                        description={visualizationDescriptions.sankeyDiagram.full}
+                        shortDescription={visualizationDescriptions.sankeyDiagram.short}
+                        fullDescription={visualizationDescriptions.sankeyDiagram.full}
                     />
                 }
             >
@@ -178,8 +178,8 @@ function ApplicationBody() {
                 infoButton={
                     <InfoButton
                         title="Collaboration Graph"
-                        hoverDescription={visualizationDescriptions.collaborationGraph.short}
-                        description={visualizationDescriptions.collaborationGraph.full}
+                        shortDescription={visualizationDescriptions.collaborationGraph.short}
+                        fullDescription={visualizationDescriptions.collaborationGraph.full}
                     />
                 }
             >

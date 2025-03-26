@@ -75,7 +75,7 @@ export interface ForkQueryState {
 export interface ForkFilter {
     dateRange: DateRange;
     activeForksOnly?: boolean;
-    forkTypes: CommitType[];
+    commitTypes: CommitType[];
     // sortByLastCommit?: boolean; -> moved to SortingCriterionExtra "latestCommit"
     ownerTypes: OwnerType[];
     updatedInLastMonths?: number;

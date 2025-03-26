@@ -24,7 +24,7 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
 }
 
 /**
- * Fetches fork data using a the underlying Json function.
+ * Fetches fork data using a the underlying Json function as well as the original repo data.
  * Converts the ForkQueryState to the necessary query parameters.
  *
  * @param forkQueryState - ForkQuery state, high level representation of the settings for querrying.
@@ -40,8 +40,8 @@ export function useFetchForks(forkQueryState?: ForkQueryState) {
     const accessToken = getAccessToken() ?? "";
 
     return useQuery({
-        queryKey: ["forks", forkQueryParams],
-        queryFn: () => fetchForks(forkQueryParams as ForkQueryParams, accessToken),
+        queryKey: ["forks", forkQueryState],
+        queryFn: () => fetchForks(forkQueryParams as ForkQueryParams, accessToken, forkQueryState?.forksCount),
         // Done so query is not triggered on first render.
         enabled: isAuthenticated && !!forkQueryParams
     });
@@ -59,13 +59,13 @@ export function useFetchCommitsBatch(forks: UnprocessedRepository[], forkQuerySt
     const { isAuthenticated, getAccessToken } = useAuth();
     const accessToken = getAccessToken() ?? "";
 
-    const commitQueryParameters: CommitQueryParams[] = forkQueryState ? forks.map(fork => 
+    const commitQueryParameters: CommitQueryParams[] = forkQueryState ? forks.map(fork =>
         createCommitQueryParams(
-            fork.owner.login, 
-            fork.name, 
-            forkQueryState.range.start.toISOString().split("T")[0], 
+            fork.owner.login,
+            fork.name,
+            forkQueryState.range.start.toISOString().split("T")[0],
             forkQueryState.range.end.toISOString().split("T")[0]
-        )) 
+        ))
         : [];
 
     return useQueries({

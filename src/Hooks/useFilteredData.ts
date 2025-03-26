@@ -26,7 +26,7 @@ export function useFilteredData() {
 
     // Fetch forks data using the constructed query parameters.
 
-    
+
     // Memoized filtering: Applies filters only when data or filters change.
     // const filteredForks = filters ? simplifiedForkData.filter(fork =>
     //     isIncludedFork(filters, fork)
@@ -37,13 +37,13 @@ export function useFilteredData() {
     const simplifiedForkData = forkData?.data ?
         forkData.data.map(fork => toForkInfo(fork)) : [];
 
-    
-    const filteredForks = (filters) 
+
+    const filteredForks = (filters)
         ?
         simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters))
         :
         [];
-    
+
 
     // TODO: Fix pagination
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
@@ -109,7 +109,7 @@ export function useFilteredData() {
         mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
             const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
                 ...commit,
-                repo: fork.name,
+                repo: `${fork.owner.login}/${fork.name}`,
                 branch: fork.defaultBranch,
 
             }));
@@ -126,6 +126,7 @@ export function useFilteredData() {
         commits: flattenedCommits,
         data: mainRepositoryInfo,
         onFiltersChange: onRequestChange,
+        forkQuery: forkQueryState,
         forkError,
         commitError,
 

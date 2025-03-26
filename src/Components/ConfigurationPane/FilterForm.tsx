@@ -13,6 +13,7 @@ import { CommitsDateRangeUntilInput }
 import { useFilterForm } from "@Hooks/useFilterForm";
 import { useFormSubmission } from "@Hooks/useFormSubmission";
 import { FilterChangeHandler } from "@Hooks/useFilteredData";
+import { useAuth } from "@Providers/AuthProvider";
 
 interface FilterFormProps { 
     filterChangeHandler: FilterChangeHandler;
@@ -42,6 +43,8 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         ownerTypeFilterInputError,
         forksOrderInputError,
     } = useFormSubmission(form, filterChangeHandler);
+
+    const { isAuthenticated } = useAuth();
 
     return <Box as="form" onSubmit={onSubmit}>
         <Stack direction={"vertical"}>
@@ -111,7 +114,7 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
             </Stack.Item>
 
             <Stack.Item>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={ !isAuthenticated }>Submit</Button>
             </Stack.Item>
         </Stack>
     </Box>;

@@ -79,6 +79,8 @@ jobs:
 
   test-build-deploy:
     runs-on: self-hosted
+    needs: setup
+
     steps:      
       # Run 7 inside a docker container for consistency
       - name: Run ESLint
@@ -98,6 +100,7 @@ jobs:
 
   cleanup:
     runs-on: self-hosted
+    needs: test-build-deploy
 
     steps:
       - name: Remove Docker Image

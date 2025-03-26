@@ -16,13 +16,13 @@ type NodeSelection = d3.Selection<
     unknown
 >;
 
+//nodes
 const NODE_RADIUS = 8;
-const MARGIN = { top: 10, right: 0, bottom: 10, left: 150 };
-const NODE_SIZE = [NODE_RADIUS * 2, NODE_RADIUS * 2] as const;
-const LANE_GAP = NODE_RADIUS * 2;
+// edges
+const EDGE_STROKE_COLOR = "#999";
 const CURVE_SIZE = 15;
 const EDGE_WIDTH = 2;
-const MIN_LABEL_SPACING = 40; 
+// tooltip
 const TOOLTIP_BG_COLOR = "#f4f4f4";
 const TOOLTIP_BORDER = "1px solid #ccc";
 const TOOLTIP_PADDING = "8px";
@@ -30,12 +30,25 @@ const TOOLTIP_BORDER_RADIUS = "4px";
 const TOOLTIP_FONT = "var(--text-body-shorthand-medium)";
 const TOOLTIP_MOUSEOVER_DUR = 200;
 const TOOLTIP_MOUSEOUT_DUR = 500;
+// legends
 const LEGEND_SIZE = 12;
 const LEGEND_SYMBOL_SIZE = 60;
 const LEGENDS_SPACING = "100px";
 const LEGEND_TEXT_MARGIN = "10px";
-const EDGE_STROKE_COLOR = "#999";
+// misc
 const DATE_LABEL_HEIGHT = 21;
+const MARGIN = { top: 10, right: 0, bottom: 10, left: 150 };
+const MIN_LABEL_SPACING = 40; 
+// buttons
+const BUTTON_STYLE: React.CSSProperties = {
+    width: "120px", height: "40px", padding: "5px 10px",
+    cursor: "pointer", backgroundColor: "transparent",
+    border: "2px solid #eef", display: "flex",
+    alignItems: "center", justifyContent: "center",
+    transition: "background-color 0.3s",
+};
+const onHover = (e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.backgroundColor = "#eef";
+const onLeave = (e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.backgroundColor = "transparent";
 
 function CommitTimeline({ commitData,
     c_width, c_height,
@@ -44,6 +57,7 @@ function CommitTimeline({ commitData,
 
     const svgRef = useRef<SVGSVGElement>(null);
     const [merged, setMerged] = useState(false); // state for merged view
+    const [selectAll, setSelectAll] = useState(false); // state for selection
     const colorMap = new Map();
     const repoNames = new Set();
     commitData.forEach(item => {
@@ -287,7 +301,7 @@ function CommitTimeline({ commitData,
         dagFull as d3dag.MutGraph<Commit | GroupedNode, undefined>; 
 
         const layout = d3dag.grid()
-            .nodeSize(NODE_SIZE)
+            .nodeSize([NODE_RADIUS * 2, NODE_RADIUS * 2])
             .gap([5, 5])
             .rank(dateRankOperator)
             .lane(d3dag.laneGreedy().topDown(true).compressed(false));
@@ -309,8 +323,8 @@ function CommitTimeline({ commitData,
         });
 
         // apply custom layout 
-        const { lanes, totalHeight } = assignUniqueLanes(sortedNodes, LANE_GAP);
-        // adjust height to custom layout
+        const { lanes, totalHeight } = assignUniqueLanes(sortedNodes, NODE_RADIUS * 2);
+        // adjust height to custom layouts
         d3.select(svgRef.current).attr("height", totalHeight + MARGIN.top + MARGIN.bottom);
 
         //lane shading and author labels
@@ -321,7 +335,7 @@ function CommitTimeline({ commitData,
                 .attr("x", -MARGIN.left)
                 .attr("y", minX - NODE_RADIUS)
                 .attr("width", Math.max(height + MARGIN.left + MARGIN.right, c_width ?? 0))
-                .attr("height", maxX - minX + LANE_GAP)
+                .attr("height", maxX - minX + NODE_RADIUS * 2)
                 .attr("fill", laneColor)
                 .attr("stroke", "#dde")
                 .attr("stroke-width", "1")
@@ -329,7 +343,7 @@ function CommitTimeline({ commitData,
 
             backgrounds.append("text")
                 .attr("x", -MARGIN.left + 5)
-                .attr("y", (minX - NODE_RADIUS) + (maxX - minX + LANE_GAP) / 2)
+                .attr("y", (minX - NODE_RADIUS) + (maxX - minX + NODE_RADIUS * 2) / 2)
                 .attr("text-anchor", "start")
                 .attr("alignment-baseline", "middle")
                 .text(repo.split("/")[0])
@@ -386,10 +400,23 @@ function CommitTimeline({ commitData,
             }
         }
 
+        // selection overlay for selectAll
+        if (selectAll) {
+            g.append("rect")
+                .attr("class", "selection-overlay")
+                .attr("x", 0).attr("y", MARGIN.top)
+                .attr("width", svgWidth).attr("height", totalHeight - MARGIN.bottom - MARGIN.top)
+                .style("fill", "#777")
+                .style("fill-opacity", "0.3");
+        } else {
+            g.select(".selection-overlay").remove();
+        }
+
 
         let brushSelection: [[number, number], [number, number]] = [[0, 0], [0, 0]];
 
         const brushStart = (event: d3.D3BrushEvent<unknown>) => {
+            setSelectAll(false);
             if (event.sourceEvent && event.sourceEvent.type !== "end") {
                 brushSelection = [[0, 0], [0, 0]];
             } 
@@ -423,8 +450,6 @@ function CommitTimeline({ commitData,
             ])
             .on("start", brushStart)
             .on("end", brushEnd);
-
-        g.call(brush);
 
         function drawEdgeCurve(d: d3dag.MutGraphLink<Commit | GroupedNode, undefined>) {
             // makes curves at branches and merges
@@ -464,6 +489,8 @@ function CommitTimeline({ commitData,
             .attr("stroke", EDGE_STROKE_COLOR)
             .attr("stroke-width", EDGE_WIDTH)
             .attr("d", drawEdgeCurve);
+
+        g.call(brush);
 
         const tooltip = d3.select("body")
             .append("div")
@@ -554,7 +581,7 @@ function CommitTimeline({ commitData,
             applyToolTip(triangles as NodeSelection);
         }
 
-
+          
         function applyToolTip(selection: NodeSelection) {
             selection
                 .on("mouseover", (event, d) => {
@@ -598,6 +625,7 @@ function CommitTimeline({ commitData,
                 });
         }
 
+        
         // display legends for the colors in #dag-legends
         const legend = d3
             .select("#dag-legends")
@@ -672,7 +700,7 @@ function CommitTimeline({ commitData,
             tooltip.remove();
         };
 
-    }, [commitData, merged, c_width]);
+    }, [commitData, merged, c_width, selectAll]);
 
     return (
         <div style={{ width: c_width }}>
@@ -682,33 +710,33 @@ function CommitTimeline({ commitData,
                     padding: "10px",
                     background: "#fff",
                     borderBottom: "1px solid #ccc",
-                    textAlign: "left", 
+                    textAlign: "left",
                 }}
             >
-                <button
-                    onClick={() => setMerged(!merged)}
-                    style={{
-                        width: "120px", 
-                        height: "40px", 
-                        padding: "5px 10px",
-                        cursor: "pointer",
-                        backgroundColor: "transparent", 
-                        border: "2px solid #eef", 
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transition: "background-color 0.3s", 
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#eef"; 
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent"; 
-                    }}
-                >
-                    {merged ? "Full View" : "Merged View"}
-                </button>
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                        onClick={() => setMerged(!merged)}
+                        style={BUTTON_STYLE}
+                        onMouseEnter={onHover}
+                        onMouseLeave={onLeave}
+                    >{merged? "Full View" : "Merged View"}</button>
+
+                    <button
+                        onClick={() => {
+                            const selectedCommits = !selectAll
+                                ? commitData.map(n => n.id) // select all
+                                : []; //deselect all
+                            handleTimelineSelection(!selectAll ? selectedCommits : []);
+                            setSelectAll(!selectAll);
+                        }}
+                        style={BUTTON_STYLE}
+                        onMouseEnter={onHover}
+                        onMouseLeave={onLeave}
+                    >{selectAll ? "Deselect All" : "Select All"}</button>
+
+                </div>
             </div>
+
       
             {/* scrollable container for the SVG */}
             <div

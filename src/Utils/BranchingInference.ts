@@ -156,11 +156,12 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
     for (const rawCommit of rawCommits) {
         if (rawCommit.parentIds.length > 1) {
             if (rawCommit.parentIds.length > 2) {
-                console.error("Found a commit with more than 2 parentIds");
-                return [];
+                console.log("Found a commit with more than 2 parentIds");
             }
-            // recursivity yippee
-            recursiveMergeCheck(rawCommit);
+            if (rawCommit.parentIds.length === 2) {
+                // recursivity yippee
+                recursiveMergeCheck(rawCommit);
+            }
         }
     }
     /**

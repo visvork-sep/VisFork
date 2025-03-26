@@ -132,7 +132,7 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         }, {} as Record<string, string>);
 
         return branches;
-    }, [commitData]);
+    }, [forkData]);
 
     console.log("Returned from visualization hook", visData.forkListData);
     return {

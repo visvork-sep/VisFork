@@ -17,13 +17,11 @@ import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 
 interface ApplicationBodyProps {
     forks: Repository[],
-    commits: Commit[]
+    commits: Commit[];
 }
-// TODO: add props passed down from the parent component containing Commit and Fork data
-function ApplicationBody({ forks, commits } : ApplicationBodyProps) {
+function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
 
-    // TODO: Add props as initial data when provided
-    const { visData, handlers } =
+    const { visData, handlers, defaultBranches } =
         useVisualizationData(forks, commits);
 
     const {
@@ -90,7 +88,7 @@ function ApplicationBody({ forks, commits } : ApplicationBodyProps) {
                         handleTimelineSelection={handleTimelineSelection}
                         c_width={width ?? 0}
                         c_height={heightCommitTimelineSVG}
-                        defaultBranches={{ /* Default branches go here */ }} merged={false} />
+                        defaultBranches={defaultBranches} merged={false} />
                 </Box>
             </Dropdown>
             <Dropdown summaryText="Commit Table"

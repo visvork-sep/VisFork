@@ -103,5 +103,8 @@ jobs:
     needs: test-build-deploy
 
     steps:
+      - name: Stop Docker Image
+        run: docker stop visfork
+        
       - name: Remove Docker Image
         run: docker rm visfork

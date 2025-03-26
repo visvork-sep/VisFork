@@ -3,7 +3,7 @@ import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, Get
 import { paths, components } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-import { CommitQueryParams, ForkQueryParams, RepoQueryParams } from "../Types/DataLayerTypes";
+import { CommitQueryParams, ForkQueryParams, GitHubAPIFork} from "../Types/DataLayerTypes";
 import { API_URL, MAX_QUERIABLE_COMMIT_PAGES } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;
@@ -22,9 +22,6 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
     let pagesRemaining = true;
 
     while (pagesRemaining && page <= MAX_QUERIABLE_COMMIT_PAGES) {
-
-        console.log(`Requesting page: ${page}`);
-
         response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
             params: { ...parameters,
                 query: {
@@ -42,12 +39,9 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
         if (response?.data) {
             allCommits.push(...response.data); // Collect all commits in a single array:q
         }
-        console.log("Fetchig page:", page);
         const linkHeader = response.response.headers.get("link");
-        console.log("Header", linkHeader);
 
         pagesRemaining = linkHeader?.includes("rel=\"next\"") ?? false;
-        console.log("Are there more pages:", pagesRemaining);
         page++;
 
     }
@@ -62,22 +56,62 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
 /**
  * Fetch forks using REST API.
  */
-export async function fetchForks(parameters: ForkQueryParams, accessToken: string) {
-    return fetchClient.GET("/repos/{owner}/{repo}/forks", { params: parameters,
+export async function fetchForks(parameters: ForkQueryParams, accessToken: string, forksNumber = 5) {
+    const allForks: GitHubAPIFork[] = [];
+
+    // Fetch main repository, not just the forks
+    const mainRepoResponse = await fetchClient.GET("/repos/{owner}/{repo}", {
+        params: {
+            // Parameters for main repo only need the repo and ownder info
+            path: parameters.path,
+        },
         headers: {
             Authorization: `Bearer ${accessToken}`,
-        }
+        },
     });
-}/**
- * Fetch forks using REST API.
- */
-export async function fetchRepo(parameters: RepoQueryParams, accessToken: string) {
-    return fetchClient.GET("/repos/{owner}/{repo}", { params: parameters,
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
+
+    if (mainRepoResponse?.data) {
+        allForks.push(mainRepoResponse.data as GitHubAPIFork);
+    }
+
+    let response;
+    let page = 1;
+    let pagesRemaining = true;
+
+    // Fetch all repos
+    while (pagesRemaining && allForks.length < forksNumber) {
+        response = await fetchClient.GET("/repos/{owner}/{repo}/forks", {
+            params: {
+                ...parameters,
+                query: {
+                    ...parameters.query, // Keep existing query params
+                    per_page: 100, // Prevent exceeding limit
+                    page
+                }
+            },
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        if (response?.data) {
+            allForks.push(...response.data);
         }
-    });
+
+        if (allForks.length >= forksNumber) break;
+
+        const linkHeader = response.response.headers.get("link");
+        pagesRemaining = linkHeader?.includes("rel=\"next\"") ?? false;
+        page++;
+    }
+
+    // Return a combined response
+    return {
+        ...response, // Retain original response structure
+        data: allForks.slice(0, forksNumber + 1), // Replace data with accumulated main repo + forks
+    };
 }
+
 
 export async function fetchAvatarUrlGql(parameters: GetAvatarUrlQueryVariables, accessToken: string) {
     return request(GRAPHQL_URL, GetAvatarUrlDocument, parameters, [["Authorization", "bearer " + accessToken]]);

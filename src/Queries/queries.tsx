@@ -40,8 +40,8 @@ export function useFetchForks(forkQueryState?: ForkQueryState) {
     const accessToken = getAccessToken() ?? "";
 
     return useQuery({
-        queryKey: ["forks", forkQueryParams],
-        queryFn: () => fetchForks(forkQueryParams as ForkQueryParams, accessToken),
+        queryKey: ["forks", forkQueryState],
+        queryFn: () => fetchForks(forkQueryParams as ForkQueryParams, accessToken, forkQueryState?.forksCount),
         // Done so query is not triggered on first render.
         enabled: isAuthenticated && !!forkQueryParams
     });

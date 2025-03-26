@@ -20,8 +20,6 @@ interface Link extends d3.SimulationLinkDatum<Node> {
 
 function CollaborationGraph({ commitData }: CollabGraphData) {
     const svgRef = useRef<SVGSVGElement | null>(null);
-    const width = 800;
-    const height = 600;
 
     // Timeline bar
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
@@ -108,6 +106,9 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
 
         // D3 force graph setup
         const svg = d3.select(svgRef.current);
+        const container = svg.node()?.parentElement as HTMLElement;
+        const width = container.clientWidth;
+        const height = 600;
         // Clear previous render
         svg.selectAll("*").remove();
 
@@ -301,6 +302,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .attr("fill", "#333");
     }, [currentDateIndex, allDates]);
 
+
     return (
         <>
             {/* UI container for date display, slider, and play/pause button */}
@@ -327,7 +329,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                     max={allDates.length - 1}
                     value={currentDateIndex}
                     onChange={(e) => setCurrentDateIndex(parseInt(e.target.value))}
-                    style={{ width: "300px" }}
+                    style={{ width: "100%" }}
                 />
 
                 {/* Play/Pause button */}
@@ -352,8 +354,8 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             {/* SVG element where graph gets rendered */}
             <svg
                 ref={svgRef}
-                width={width}
-                height={height}
+                width="100%"
+                height="600"
                 style={{ border: "1px solid #ccc" }}
             />
         </>

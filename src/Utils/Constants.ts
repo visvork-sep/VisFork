@@ -2,6 +2,8 @@
 export const MIN_QUERIABLE_FORKS = 1;
 /// For numforks input: Maximum amount of forks to query for
 export const MAX_QUERIABLE_FORKS = 200;
+// For querying of commits, each page is 100
+export const MAX_QUERIABLE_COMMIT_PAGES = 20;
 /// Lower bound for recent activity filtering (most recent updates)
 export const RECENT_ACTIVITY_MIN_MONTHS = 1;
 /// Upper bound for recent activity filtering (least recent updates)
@@ -34,14 +36,15 @@ export const SORT_DIRECTION = {
 export type SortDirection = typeof SORT_DIRECTION[keyof typeof SORT_DIRECTION]["value"];
 
 /// Types of forks adaptive corrective perfective
-export const FORK_TYPES = {
+
+export const COMMIT_TYPES = {
     PERFECTIVE: { label: "Perfective", value: "perfective" },
     ADAPTIVE: { label: "Adaptive", value: "adaptive" },
     CORRECTIVE: { label: "Corrective", value: "corrective" }
 } as const;
 
 
-export type ForkType = typeof FORK_TYPES[keyof typeof FORK_TYPES]["value"];
+export type CommitType = typeof COMMIT_TYPES[keyof typeof COMMIT_TYPES]["value"];
 
 /// Types of repository owners
 export const OWNER_TYPES = {
@@ -50,3 +53,5 @@ export const OWNER_TYPES = {
 } as const;
 
 export type OwnerType = typeof OWNER_TYPES[keyof typeof OWNER_TYPES]["value"];
+/** Number of months since last update such that a fork is still considered active. */
+export const ACTIVE_FORK_NROF_MONTHS = 12;

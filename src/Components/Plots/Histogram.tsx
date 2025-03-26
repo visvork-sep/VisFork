@@ -118,7 +118,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         // Brush setup
         const brush = d3.brushX()
             .extent([[0, 0], [contextWidth, contextHeight]])
-            .on("brush", ({ selection }) => {
+            .on("end", ({ selection }) => {
                 if (selection) {
                     const [x0, x1] = selection;
                     // Update background bar colors based on selection
@@ -142,7 +142,6 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         const pos = xScaleContext(d3.timeFormat("%b %Y")(d[0])) as number;
                         return pos >= x0 && pos <= x1;
                     });
-                    console.log("Selected Dates:", selectedDates);
 
                     // Update focus chart
                     xScaleFocus = d3.scaleBand()
@@ -200,8 +199,8 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                                 0, // Last day of the month
                                 23, 59, 59, 999 // Set to the latest possible time
                             );
-                        console.log("Start Date:", startOfSelection);
-                        console.log("End Date:", endOfSelection);
+                        // console.log("Start Date:", startOfSelection);
+                        // console.log("End Date:", endOfSelection);
 
 
                         if (startOfSelection && endOfSelection) {

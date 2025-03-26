@@ -7,7 +7,6 @@ interface InfoButtonProps {
   shortDescription: string; //Quick hover over description
   fullDescription: string; // Extended description for clicking
 }
-
 export function InfoButton({ title, shortDescription, fullDescription }: InfoButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
 

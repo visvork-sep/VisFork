@@ -3,8 +3,8 @@ import ConfigurationPane from "@Components/ConfigurationPane/ConfigurationPane";
 import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
-import { deleteDuplicateCommits } from "@Utils/BranchingInference";
 import { useMemo } from "react";
+import { processCommits } from "@Utils/BranchingInference";
 
 function DataComponents() {
     const { onFiltersChange, forks, commits, forkQuery }= useFilteredData();
@@ -12,7 +12,7 @@ function DataComponents() {
     const mainRepo = `${forkQuery?.owner}/${forkQuery?.repo}`;
 
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);
-    const removedCommits = useMemo(() => deleteDuplicateCommits(commits, defaultBranchesMap, mainRepo), [
+    const removedCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepo), [
         commits,
         defaultBranchesMap,
         mainRepo,

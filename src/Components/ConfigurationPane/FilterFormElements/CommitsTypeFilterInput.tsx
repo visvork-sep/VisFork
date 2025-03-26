@@ -23,11 +23,11 @@ function CommitTypeFilterInput({ onChangeHandler, checked, error }: CommitTypeFi
             {checkBoxes}
             {error && <CheckboxGroup.Validation variant="error">{error.message}</CheckboxGroup.Validation>}
         </CheckboxGroup>
-            
+
     );
 }
 
 export {
     CommitTypeFilterInput
 };
-export type { CommitTypeFilterInputProps as ForksTypeFilterInputProps };
+export type { CommitTypeFilterInputProps };

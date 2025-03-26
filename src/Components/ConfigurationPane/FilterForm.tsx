@@ -6,7 +6,7 @@ import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElement
 import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
 import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { CommitTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilterInput";
+import { CommitTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsTypeFilterInput";
 import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnerTypeFilterInput";
 import { CommitsDateRangeUntilInput }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
@@ -14,7 +14,7 @@ import { useFilterForm } from "@Hooks/useFilterForm";
 import { useFormSubmission } from "@Hooks/useFormSubmission";
 import { FilterChangeHandler } from "@Hooks/useFilteredData";
 
-interface FilterFormProps { 
+interface FilterFormProps {
     filterChangeHandler: FilterChangeHandler;
 };
 
@@ -26,7 +26,7 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         handleForksOrderChange,
         handleCommitsDateRangeFromChange,
         handleCommitsDateRangeUntilChange,
-        handleForksTypeFilterChange,
+        handleCommitsTypeFilterChange,
         handleOwnerTypeFilterChange,
         handleRecentlyUpdatedChange
     } = useFilterForm();
@@ -38,7 +38,7 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         recentlyUpdatedInputError,
         commitsDateRangeFromInputError,
         commitsDateRangeUntilInputError,
-        forksTypeFilterInputError,
+        commitsTypeFilterInputError,
         ownerTypeFilterInputError,
         forksOrderInputError,
     } = useFormSubmission(form, filterChangeHandler);
@@ -60,10 +60,10 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
                     </Stack.Item>
 
                     <Stack.Item>
-                        <ForksQueryOrderInput 
-                            onChangeHandler={handleForksOrderChange} 
-                            selected={form.forksOrder} 
-                            error={forksOrderInputError}/>
+                        <ForksQueryOrderInput
+                            onChangeHandler={handleForksOrderChange}
+                            selected={form.forksOrder}
+                            error={forksOrderInputError} />
                     </Stack.Item>
 
                     {/* <Stack.Item>
@@ -91,16 +91,16 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
                 <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
                         <CommitTypeFilterInput
-                            onChangeHandler={handleForksTypeFilterChange} 
-                            checked={form.commitTypeFilter} 
-                            error={forksTypeFilterInputError}/>
+                            onChangeHandler={handleCommitsTypeFilterChange}
+                            checked={form.commitTypeFilter}
+                            error={commitsTypeFilterInputError} />
                     </Stack.Item>
 
                     <Stack.Item>
                         <OwnerTypeFilterInput
-                            onChangeHandler={handleOwnerTypeFilterChange} 
-                            checked={form.ownerTypeFilter} 
-                            error={ownerTypeFilterInputError}/>
+                            onChangeHandler={handleOwnerTypeFilterChange}
+                            checked={form.ownerTypeFilter}
+                            error={ownerTypeFilterInputError} />
                     </Stack.Item>
 
                     <Stack.Item>

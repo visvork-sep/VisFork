@@ -34,7 +34,7 @@ describe("useFilterForm - Initial values", () => {
 
     it("should set the initial value of forksTypeFilter to all fork types", () => {
         const { result } = renderHook(useFilterForm);
-        expect(result.current.form.forksTypeFilter).toEqual(
+        expect(result.current.form.commitTypeFilter).toEqual(
             Object.values(COMMIT_TYPES).map((t) => t.value)
         );
     });
@@ -154,7 +154,7 @@ describe("useFilterForm - forksTypeFilter", () => {
 
         act(() => handler([]));
        
-        expect(result.current.form.forksTypeFilter).toEqual([]);
+        expect(result.current.form.commitTypeFilter).toEqual([]);
     });
 
     it("should change the value of forksTypeFilter to any fork type", () => {
@@ -164,7 +164,7 @@ describe("useFilterForm - forksTypeFilter", () => {
 
         act(() => handler(newValue));
 
-        expect(result.current.form.forksTypeFilter).toEqual(newValue);
+        expect(result.current.form.commitTypeFilter).toEqual(newValue);
     });
 
     it("should fail if any of the values are not included in FORK_TYPES", () => {

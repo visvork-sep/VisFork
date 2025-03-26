@@ -45,7 +45,7 @@ interface FilterFormState {
      * This is an array of strings representing available fork categories.
      * Must be one of the defined fork types in FORK_TYPES.
      */
-    forksTypeFilter: CommitType[];
+    commitTypeFilter: CommitType[];
 
     /**
      * The selected owner types to filter repositories by.

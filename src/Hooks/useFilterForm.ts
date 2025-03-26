@@ -19,7 +19,7 @@ const initialForm: FilterFormState = {
     forksCount: FORKS_COUNT_INPUT_INITIAL, // Default fork count input
     forksOrder: FORKS_SORTING_ORDERS.STARGAZERS.value, // Default sorting order (by stargazers)
     forksAscDesc: SORT_DIRECTION.ASCENDING.value, // Default sorting direction (ascending)
-    forksTypeFilter: Object.values(COMMIT_TYPES).map(t => t.value), // Default fork type filter (all types selected)
+    commitTypeFilter: Object.values(COMMIT_TYPES).map(t => t.value), // Default fork type filter (all types selected)
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value), // Default owner type filter (all types selected)
     commitsDateRangeFrom: (() => {
         const date = new Date();
@@ -107,7 +107,7 @@ function useFilterForm() {
             s === COMMIT_TYPES.CORRECTIVE.value ||
             s === COMMIT_TYPES.PERFECTIVE.value)
         ), "Developer error: Invalid fork type selected");
-        setForm((prev) => ({ ...prev, forksTypeFilter: selected as CommitType[] }));
+        setForm((prev) => ({ ...prev, commitTypeFilter: selected as CommitType[] }));
     }, []);
 
     /**

@@ -19,7 +19,7 @@ const example_filter: ForkFilter = {
         start: new Date("2022-09-14T06:51:16Z"),
         end: new Date("2022-09-14T06:51:16Z")
     },
-    forkTypes: ["adaptive"],
+    commitTypes: ["adaptive"],
     ownerTypes: ["User", "Organization"]
 };
 

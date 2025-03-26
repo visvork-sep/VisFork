@@ -2,13 +2,13 @@ import { CheckboxGroup, FormControl, Checkbox } from "@primer/react";
 import { InputError } from "@Types/UIFormErrors";
 import { COMMIT_TYPES } from "@Utils/Constants";
 
-interface ForksTypeFilterInputProps {
+interface CommitTypeFilterInputProps {
     onChangeHandler: (selected: string[]) => void;
     checked: string[];
     error: InputError | null;
 };
 
-function ForksTypeFilterInput({ onChangeHandler, checked, error }: ForksTypeFilterInputProps) {
+function CommitTypeFilterInput({ onChangeHandler, checked, error }: CommitTypeFilterInputProps) {
     const checkBoxes = Object.values(COMMIT_TYPES).map(t => (
         <FormControl key={t.value}>
             <FormControl.Label>{t.label}</FormControl.Label>
@@ -18,8 +18,8 @@ function ForksTypeFilterInput({ onChangeHandler, checked, error }: ForksTypeFilt
 
     return (
         <CheckboxGroup onChange={onChangeHandler} >
-            <CheckboxGroup.Label>Included forks</CheckboxGroup.Label>
-            <CheckboxGroup.Caption>Fork types to include into visualizations</CheckboxGroup.Caption>
+            <CheckboxGroup.Label>Included commits</CheckboxGroup.Label>
+            <CheckboxGroup.Caption>Commit types to include into visualizations</CheckboxGroup.Caption>
             {checkBoxes}
             {error && <CheckboxGroup.Validation variant="error">{error.message}</CheckboxGroup.Validation>}
         </CheckboxGroup>
@@ -28,6 +28,6 @@ function ForksTypeFilterInput({ onChangeHandler, checked, error }: ForksTypeFilt
 }
 
 export {
-    ForksTypeFilterInput
+    CommitTypeFilterInput
 };
-export type { ForksTypeFilterInputProps };
+export type { CommitTypeFilterInputProps as ForksTypeFilterInputProps };

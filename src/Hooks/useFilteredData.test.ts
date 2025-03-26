@@ -68,7 +68,7 @@ describe("useFilteredData Hook", () => {
         act(() => {
             result.current.onFiltersChange(
                 { dateRange: { start: new Date("1999-01-01"), end: new Date() },
-                    forkTypes: ["adaptive"], ownerTypes: ["User"] },
+                    commitTypes: ["adaptive"], ownerTypes: ["User"] },
                 { owner: "user1", repo: "repo-1", forksCount: 1,
                     range: { start: new Date("1999-01-01"), end: new Date() }, sort: "watchers", direction: "asc" }
             );

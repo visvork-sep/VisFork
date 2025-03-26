@@ -6,7 +6,7 @@ import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElement
 import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
 import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
 import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { ForksTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilterInput";
+import { CommitTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/ForksTypeFilterInput";
 import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnerTypeFilterInput";
 import { CommitsDateRangeUntilInput }
     from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
@@ -90,9 +90,9 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
             <Stack.Item>
                 <Stack direction="horizontal" wrap="wrap" gap="spacious">
                     <Stack.Item>
-                        <ForksTypeFilterInput
+                        <CommitTypeFilterInput
                             onChangeHandler={handleForksTypeFilterChange} 
-                            checked={form.forksTypeFilter} 
+                            checked={form.commitTypeFilter} 
                             error={forksTypeFilterInputError}/>
                     </Stack.Item>
 

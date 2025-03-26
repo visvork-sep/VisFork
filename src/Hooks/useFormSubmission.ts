@@ -97,7 +97,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         }
 
         try {
-            forksTypeFilter = prepareForksTypeFilter(form.forksTypeFilter);
+            forksTypeFilter = prepareForksTypeFilter(form.commitTypeFilter);
             setForksTypeFilterInputError(null);
         } catch (e) {
             setInputError(e, setForksTypeFilterInputError);

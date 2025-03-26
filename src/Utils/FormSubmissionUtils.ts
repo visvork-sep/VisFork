@@ -19,7 +19,7 @@ function filterFactory(form: preparedFormComplete): ForkFilter {
         },
         ownerTypes: form.ownerTypeFilter,
         activeForksOnly: false,
-        forkTypes: form.forksTypeFilter,
+        commitTypes: form.forksTypeFilter,
         updatedInLastMonths: form.recentlyUpdated ?? undefined
     };
 

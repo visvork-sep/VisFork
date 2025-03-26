@@ -4,16 +4,16 @@ import { useState } from "react";
 
 interface InfoButtonProps {
   title: string; //Name of the visualization
-  hoverDescription: string; //Quick hover over description
-  description: string; // Extended description for clicking
+  shortDescription: string; //Quick hover over description
+  fullDescription: string; // Extended description for clicking
 }
 
-export function InfoButton({ title, hoverDescription, description }: InfoButtonProps) {
+export function InfoButton({ title, shortDescription, fullDescription }: InfoButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <>
-            <Tooltip text={hoverDescription}>
+            <Tooltip text={shortDescription}>
                 <Button
                     variant="invisible"
                     onClick={() => setIsOpen(true)}
@@ -25,7 +25,7 @@ export function InfoButton({ title, hoverDescription, description }: InfoButtonP
 
             {isOpen && (
                 <Dialog title={title} onClose={() => setIsOpen(false)}>
-                    <p>{description}</p>
+                    <p>{fullDescription}</p>
                 </Dialog>
             )}
         </>

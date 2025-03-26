@@ -45,7 +45,6 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
     } = useFormSubmission(form, filterChangeHandler);
 
     const { isAuthenticated } = useAuth();
-    console.log("isAuthenticated", isAuthenticated);
 
     return <Box as="form" onSubmit={onSubmit}>
         <Stack direction={"vertical"}>

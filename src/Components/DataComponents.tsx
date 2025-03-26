@@ -15,7 +15,7 @@ function DataComponents() {
             <SplitPageLayout.Pane resizable aria-label="Configuration Pane">
                 <ConfigurationPane filterChangeHandler={onFiltersChange}/>
             </SplitPageLayout.Pane >
-            <SplitPageLayout.Content aria-label="Content">
+            <SplitPageLayout.Content aria-label="Content" width="xlarge">
                 <ApplicationBody forks={processedForks} commits={processedCommits} />
             </SplitPageLayout.Content>
         </>

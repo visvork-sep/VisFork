@@ -6,13 +6,11 @@ import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } 
 import { deleteDuplicateCommits } from "@Utils/BranchingInference";
 
 function DataComponents() {
-    const { onFiltersChange, forks, commits, data, forkQuery  }= useFilteredData();
-
+    const { onFiltersChange, forks, commits, forkQuery  }= useFilteredData();
     const mainRepo = `${forkQuery?.owner}/${forkQuery?.repo}`;
     const removedCommits = deleteDuplicateCommits(commits, createDefaultBranchesMap(forks), mainRepo);
     const {forks: processedForks, commits: processedCommits} = preprocessor(removedCommits, forks);
 
-    console.log(JSON.stringify(data));
     return (
         <>
             <SplitPageLayout.Pane resizable aria-label="Configuration Pane">
@@ -25,6 +23,7 @@ function DataComponents() {
     );
 }
 
+// TODO: Change preprocessor to actually calculate commit type.
 function preprocessor(commits: UnprocessedCommitExtended[],
     forks: UnprocessedRepository[]): {forks: Repository[], commits: Commit[]} {
     const processedForks: Repository[] = forks.map(fork => ({

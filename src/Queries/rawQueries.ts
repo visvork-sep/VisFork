@@ -78,7 +78,7 @@ export async function fetchForks(parameters: ForkQueryParams, accessToken: strin
     let page = 1;
     let pagesRemaining = true;
 
-    // Fetch all repos
+    // Fetch all fork repositories
     while (pagesRemaining && allForks.length < forksNumber) {
         response = await fetchClient.GET("/repos/{owner}/{repo}/forks", {
             params: {

@@ -69,34 +69,35 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
 
-
       # Step 6: Build Docker image
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
-      
+
+      - name: Run Docker container
+        run: docker run -dit --name visfork visfork-ci bash
+
+
+  test-build-deploy:
+    runs-on: self-hosted
+    steps:      
       # Run 7 inside a docker container for consistency
       - name: Run ESLint
-        run: docker run --rm visfork-ci npm run lint
+        run: docker exec visfork npm run lint
 
       # Step 8
       - name: Run tests
-        run: docker run --rm visfork-ci npm run test 
+        run: docker exec visfork npm run test 
 
       # Step 9
       - name: Build
-        run: docker run --rm visfork-ci npm run build
+        run: docker exec visfork npm run build
 
-      # Step 7
-      # This is so we can use cached files to build faster next time
-      # - name: Store Build Artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-output
-      #     path: dist/
+      - name: Deploy
+        run: docker cp visfork:/workspace/dist/. /var/www/html/react-app
 
-  # deploy:
-  #   runs-on: ubuntu-latest
+  cleanup:
+    runs-on: self-hosted
 
-    # push the build artifact generated in build@step7 to the VM
-    # NOTE: also either run a script on the server remotely as a step here,
-    # or add a trigger to the server to automatically publish the new build
+    steps:
+      - name: Remove Docker Image
+        run: docker rm visfork

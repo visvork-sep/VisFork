@@ -23,7 +23,7 @@ const initialForm: FilterFormState = {
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value), // Default owner type filter (all types selected)
     commitsDateRangeFrom: (() => {
         const date = new Date();
-        date.setFullYear(date.getFullYear() - 2);
+        date.setFullYear(date.getFullYear() - 1);
         return date.toISOString().split("T")[0];
     })(), // Start date for commits filter
     commitsDateRangeUntil: new Date().toISOString().split("T")[0], // End date for commits filter

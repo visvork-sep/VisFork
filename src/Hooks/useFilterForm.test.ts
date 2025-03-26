@@ -46,10 +46,10 @@ describe("useFilterForm - Initial values", () => {
         );
     });
 
-    it("should set the initial value of commitsDateRangeFrom to The current date 2 years ago", () => {
+    it("should set the initial value of commitsDateRangeFrom to The current date 1 year ago", () => {
         const { result } = renderHook(useFilterForm);
         const date = new Date();
-        date.setFullYear(date.getFullYear() - 2);
+        date.setFullYear(date.getFullYear() - 1);
         const expected = date.toISOString().split("T")[0];
 
         expect(result.current.form.commitsDateRangeFrom).toEqual(expected);

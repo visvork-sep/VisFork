@@ -104,7 +104,7 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
         const key = JSON.stringify({ repo: rawCommit.repo, branch: rawCommit.branch });
         const headCommit = locationHeadCommitMap.get(key);
         if (rawCommit.date !== "Unknown"
-            && (headCommit === undefined || new Date(headCommit.date).getTime() < new Date(rawCommit.date).getTime())) {
+            && (headCommit === undefined || (headCommit.date as Date).getTime() < (rawCommit.date as Date).getTime())) {
             locationHeadCommitMap.set(
                 key, rawCommit
             );

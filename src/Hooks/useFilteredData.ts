@@ -116,7 +116,6 @@ export function useFilteredData() {
             return acc;
         }, []) : [];
 
-
     // Add final update only if all data has been loaded
     useEffect(() => {
         if(!isLoadingFork && !isLoadingCommits && filteredForks.length > 0 && flattenedCommits.length > 0) {
@@ -124,6 +123,7 @@ export function useFilteredData() {
             setFinalCommitData(flattenedCommits);
         }
     }, [isLoadingFork, isLoadingCommits]);
+
 
     return {
         isLoading: isLoadingFork || isLoadingCommits,

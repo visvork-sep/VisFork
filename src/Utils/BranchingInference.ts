@@ -5,8 +5,8 @@ interface CommitLocation {
     repo: string
 }
 
-// maps author to its repo. E.g. { "me": "me/my-repo" }
-const authorRepoMap = new Map<string, string>();
+// maps owner to its repo. E.g. { "me": "me/my-repo" }
+const ownerRepoMap = new Map<string, string>();
 // maps a commit's hash to all of its locations in the gathered data
 const commitLocationMap = new Map<string, CommitLocation[]>();
 // maps a commit's hash to the rest of its info
@@ -35,19 +35,7 @@ let globalMainRepo: string;
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
  * in the input, a commit with the same hash will always be present in the output.
  */
-export function deleteDuplicateCommitsSimple(rawCommits: UnprocessedCommitExtended[],
-    defaultBranches: Record<string, string>,
-    mainRepo: string
-): UnprocessedCommitExtended[] {
-    // Initialize data structures
-    globalDefaultBranches = defaultBranches;
-    globalMainRepo = mainRepo;
-    for (const rawCommit of rawCommits) {
-        const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];
-        locationArray.push({ branch: rawCommit.branch as string, repo: rawCommit.repo });
-        commitLocationMap.set(rawCommit.sha, locationArray);
-        commitMap.set(rawCommit.sha, rawCommit);
-    }
+export function deleteDuplicateCommitsSimple(): UnprocessedCommitExtended[] {
     // Find all duplicate commits and get rid of them with priority given to main repo and default branches
     const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
         return locations.length >= 2;
@@ -99,21 +87,7 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
     );
 }
 
-/**
- * Deletes commits that have the same hashes, leaving a single unique commit.
- * This can only happen if the commit is present on multiple branches.
- * This function aims to preserve the branching logic by inspecting merge commits.
- * In case you are confused about some part of the implementation, the answer to your question
- * is almost always "Because that's how they decided Git/GitHub should work".
- *
- * @param rawCommits array of all commits to be analyzed and processed.
- * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
- * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
- * @param mainRepo the name of the queried repository. Example: torvalds/linux
- * @returns array of commits with only unique hashes. If there was a commit with a certain hash
- * in the input, a commit with the same hash will always be present in the output.
- */
-export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
+export function processCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
     // Initialize data structures
@@ -132,8 +106,8 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
                 key, rawCommit
             );
         }
-        const author = rawCommit.repo.split("/")[0];
-        authorRepoMap.set(author, rawCommit.repo);
+        const owner = rawCommit.repo.split("/")[0];
+        ownerRepoMap.set(owner, rawCommit.repo);
     }
     // Reverse locationHeadCommitMap to make it useful for our purpose
     for (const entry of locationHeadCommitMap.entries()) {
@@ -141,6 +115,39 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
         locations.push(JSON.parse(entry[0]));
         locationHeadCommitMapReversed.set(entry[1].sha, locations);
     }
+
+    // Remove parentIds that dont exist in data
+    removeParentIds(rawCommits);
+    console.log(rawCommits);
+
+    return deleteDuplicateCommits(rawCommits);
+}
+
+function removeParentIds(rawCommits: UnprocessedCommitExtended[]) {
+    for (const rawCommit of rawCommits) {
+        for (const parent of rawCommit.parentIds) {
+            if (!commitMap.get(parent)) {
+                rawCommit.parentIds = rawCommit.parentIds.filter((p) => p != parent);
+            }
+        }
+    }
+}
+
+/**
+ * Deletes commits that have the same hashes, leaving a single unique commit.
+ * This can only happen if the commit is present on multiple branches.
+ * This function aims to preserve the branching logic by inspecting merge commits.
+ * In case you are confused about some part of the implementation, the answer to your question
+ * is almost always "Because that's how they decided Git/GitHub should work".
+ *
+ * @param rawCommits array of all commits to be analyzed and processed.
+ * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
+ * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
+ * @param mainRepo the name of the queried repository. Example: torvalds/linux
+ * @returns array of commits with only unique hashes. If there was a commit with a certain hash
+ * in the input, a commit with the same hash will always be present in the output.
+ */
+function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): UnprocessedCommitExtended[] {
     // Iterate over all commits and find the merge commits
     for (const rawCommit of rawCommits) {
         if (rawCommit.parentIds.length > 1) {
@@ -206,7 +213,7 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[],
     }
     // Necessary to ensure consistency in next runs
     commitLocationMap.clear();
-    authorRepoMap.clear();
+    ownerRepoMap.clear();
     commitMap.clear();
     locationHeadCommitMap.clear();
     locationHeadCommitMapReversed.clear();
@@ -286,8 +293,8 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
         let regex = /^merge pull request .* from ([^\s]+).*/i;
         let match = mergeCommit.message.match(regex);
         if (match !== null) {
-            const [author, branch_name] = match[1].split("/", 2);
-            let repo_name = authorRepoMap.get(author);
+            const [owner, branch_name] = match[1].split("/", 2);
+            let repo_name = ownerRepoMap.get(owner);
             if (!repo_name) {
                 repo_name = "";
             }

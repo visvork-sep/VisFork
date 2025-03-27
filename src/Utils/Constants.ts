@@ -40,7 +40,8 @@ export type SortDirection = typeof SORT_DIRECTION[keyof typeof SORT_DIRECTION]["
 export const COMMIT_TYPES = {
     PERFECTIVE: { label: "Perfective", value: "perfective" },
     ADAPTIVE: { label: "Adaptive", value: "adaptive" },
-    CORRECTIVE: { label: "Corrective", value: "corrective" }
+    CORRECTIVE: { label: "Corrective", value: "corrective" },
+    UNKNOWN: { label: "Unknown", value: "unknown"}
 } as const;
 
 

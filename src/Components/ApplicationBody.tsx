@@ -3,7 +3,7 @@ import { useMeasure } from "@uidotdev/usehooks";
 
 import Histogram from "./Plots/Histogram.tsx";
 import ForkList from "@Components/Plots/ForkList";
-import CommitTimeline from "./Plots/CommitTimeline.tsx";
+import CommitTimeline from "./Plots/Timeline/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable";
 import { SankeyDiagram } from "./Plots/SankeyDiagram.tsx";
 import CollaborationGraph from "./Plots/CollaborationGraph.tsx";

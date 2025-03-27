@@ -90,6 +90,8 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
 export function processCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
+
+
     // Initialize data structures
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
@@ -118,7 +120,6 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
 
     // Remove parentIds that dont exist in data
     removeParentIds(rawCommits);
-    console.log(rawCommits);
 
     return deleteDuplicateCommits(rawCommits);
 }

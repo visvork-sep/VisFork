@@ -116,6 +116,6 @@ describe("processCommits", () => {
         ];
         expect(processCommits(diffMockCommits, defaultBranches, mainRepo)
             .find((commit) => commit.sha === "2")?.branch === "test").toBe(true);
-    })
+    });
 
 });

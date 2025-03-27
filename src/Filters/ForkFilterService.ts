@@ -35,7 +35,6 @@ export class ForkFilterService {
         // Loops through all properties of ForkInfo that have a value.
         for (const [key, value] of Object.entries(filter)) {
             if (value !== undefined && value !== null) {
-                console.log(key + ": " + value); // placeholder
             }
         }
 

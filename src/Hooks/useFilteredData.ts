@@ -114,7 +114,6 @@ export function useFilteredData() {
             return acc;
         }, []) : [];
 
-    console.log("Filter data component:", filteredForks);
 
     return {
         isLoading: isLoadingFork || isLoadingCommits,

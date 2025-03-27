@@ -42,7 +42,6 @@ export function useFilteredData() {
     [simplifiedForkData, filters]);
 
 
-    // TODO: Fix pagination
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
 
     const { commitData, isLoading: isLoadingCommits, error: commitError } = commitResponses
@@ -116,6 +115,7 @@ export function useFilteredData() {
             acc = acc.concat(commits);
             return acc;
         }, []) : [];
+
 
     // Add final update only if all data has been loaded
     useEffect(() => {

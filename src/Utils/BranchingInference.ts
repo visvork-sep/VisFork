@@ -23,55 +23,6 @@ const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
-/**
- * Deletes commits that have the same hashes, leaving a single unique commit.
- * This can only happen if the commit is present on multiple branches.
- * This algorithm uses a very simple approach to make sure the deletion makes sense somewhat, but
- * in no way actually considers merge commits or does any inference, except for prioritizing
- * the main repo and default branches.
- *
- * @param rawCommits array of all commits to be analyzed and processed.
- * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
- * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
- * @param mainRepo the name of the queried repository. Example: torvalds/linux
- * @returns array of commits with only unique hashes. If there was a commit with a certain hash
- * in the input, a commit with the same hash will always be present in the output.
- */
-export function deleteDuplicateCommitsSimple(): UnprocessedCommitExtended[] {
-    // Find all duplicate commits and get rid of them with priority given to main repo and default branches
-    const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
-        return locations.length >= 2;
-    });
-    for (const duplicateCommit of duplicateCommits) {
-        const duplicateCommitInfo = commitMap.get(duplicateCommit[0]);
-        if (duplicateCommitInfo !== undefined) {
-            makeUniqueHierarchical(duplicateCommitInfo);
-        }
-    }
-    // From commitLocationMap, derive the true location of each commit
-    const processedCommits: UnprocessedCommitExtended[] = [];
-    for (const commit of commitLocationMap) {
-        if (commit[1].length > 1) {
-            console.error("Found more than one location for a commit after processing!");
-        }
-        if (commit[1].length === 0) {
-            console.error("Found no locations for a commit, commit got deleted!");
-            continue;
-        }
-        const commitInfo = commitMap.get(commit[0]);
-        if (commitInfo !== undefined) {
-            commitInfo.branch = commit[1][0].branch;
-            commitInfo.repo = commit[1][0].repo;
-            processedCommits.push(commitInfo);
-        } else {
-            console.error("Commit data not found!");
-        }
-    }
-    // Necessary to ensure consistency in next runs
-    commitMap.clear();
-    commitLocationMap.clear();
-    return processedCommits;
-}
 
 /**
  * Let's go gambling!
@@ -120,7 +71,6 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
 
     // Remove parentIds that dont exist in data
     removeParentIds(rawCommits);
-    console.log(rawCommits);
 
     return deleteDuplicateCommits(rawCommits);
 }

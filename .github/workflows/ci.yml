@@ -70,16 +70,14 @@ jobs:
           curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
 
       # Step 6: Build Docker image
-      - name: Build Docker image
-        run: docker build -t visfork-ci -f Dockerfile.build .
-
-      - name: Run Docker container
+      - name: Remove existing Docker container if exists
         run: |
-              if [ "$(docker ps -aq -f name=visfork)" = "" ]; then
-                docker run -dit --name visfork -v ${{ github.workspace }}:/workspace visfork-ci bash
-              else
-                echo "visfork container is already running"
+              if [ "$(docker ps -aq -f name=visfork)" != "" ]; then
+                docker stop visfork
+                docker rm visfork
               fi
+      - name: Run Docker container
+        run: docker run -dit --name visfork visfork-ci bash
 
 
   test-build-deploy:

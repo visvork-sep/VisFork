@@ -219,11 +219,6 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
     commitMap.clear();
     locationHeadCommitMap.clear();
     locationHeadCommitMapReversed.clear();
-    for (const rawCommit of processedCommits) {
-        if ((rawCommit.date as Date).getFullYear() === 2019) {
-            console.error("oops");
-        }
-    }
     return processedCommits;
 }
 

@@ -43,7 +43,8 @@ export function useFetchForks(forkQueryState?: ForkQueryState) {
         queryKey: ["forks", forkQueryState],
         queryFn: () => fetchForks(forkQueryParams as ForkQueryParams, accessToken, forkQueryState?.forksCount),
         // Done so query is not triggered on first render.
-        enabled: isAuthenticated && !!forkQueryParams
+        enabled: isAuthenticated && !!forkQueryParams,
+        refetchOnWindowFocus: false,
     });
 }
 
@@ -74,6 +75,7 @@ export function useFetchCommitsBatch(forks: UnprocessedRepository[], forkQuerySt
                 queryKey: ["commits", parameters],
                 queryFn: async () => fetchCommits(parameters, accessToken),
                 enabled: isAuthenticated,
+                refetchOnWindowFocus: false,
             };
         }),
     });

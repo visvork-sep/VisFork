@@ -1,17 +1,21 @@
-import { Box, Details, Stack } from "@primer/react";
+import { Box, Details, Stack, useDetails } from "@primer/react";
 import { PropsWithChildren, ReactNode } from "react";
 import styles from "./Dropdown.module.scss";
 
 interface DropdownProps {
-  summaryText: string; // Title of the dropdown boxes
-  infoButton?: ReactNode; // Allow an optional info button
+    summaryText: string; // Title of the dropdown boxes
+    infoButton?: ReactNode; // Allow an optional info button
+    open?: boolean; // Allow the dropdown to be open by default
 }
 
-function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<DropdownProps>) {
+function Dropdown({ children, summaryText, infoButton, open = false }: PropsWithChildren<DropdownProps>) {
+
+    const { getDetailsProps } = useDetails({ defaultOpen: open });
+
     return (
         <Stack direction="horizontal" gap="condensed">
             <Stack.Item grow>
-                <Details className={styles.details}>
+                <Details {...getDetailsProps()} className={styles.details}>
                     <Details.Summary>{summaryText}</Details.Summary>
                     <Box className={styles.content}>
                         {children}

@@ -1,4 +1,4 @@
-import { Box, Heading, Stack } from "@primer/react";
+import { Box, Stack } from "@primer/react";
 import { useMeasure } from "@uidotdev/usehooks";
 
 import Histogram from "./Plots/Histogram.tsx";
@@ -42,6 +42,20 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
     return (
         <Stack>
             <Dropdown
+                open={true}
+                summaryText="Fork List"
+                infoButton={
+                    <InfoButton
+                        title="Fork List"
+                        shortDescription={visualizationDescriptions.forkList.short}
+                        fullDescription={visualizationDescriptions.forkList.full}
+                    />
+                }
+            >
+                <ForkList {...forkListData} />
+            </Dropdown>
+            <Dropdown
+                open={true}
                 summaryText="Histogram"
                 infoButton={
                     <InfoButton
@@ -55,18 +69,8 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
             </Dropdown>
 
             <Dropdown
-                summaryText="Fork List"
-                infoButton={
-                    <InfoButton
-                        title="Fork List"
-                        shortDescription={visualizationDescriptions.forkList.short}
-                        fullDescription={visualizationDescriptions.forkList.full}
-                    />
-                }
-            >
-                <ForkList {...forkListData} />
-            </Dropdown>
-            <Dropdown summaryText="Commit Timeline"
+                open={true}
+                summaryText="Commit Timeline"
                 infoButton={
                     <InfoButton
                         title="Commit Timeline"
@@ -81,14 +85,12 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
                         overflow: "hidden", // Ensure resizing works
                         minHeight: "200px", // Set an initial height
                     }}>
-
-                    <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
                     <CommitTimeline
                         commitData={timelineData.commitData}
                         handleTimelineSelection={handleTimelineSelection}
                         c_width={width ?? 0}
                         c_height={heightCommitTimelineSVG}
-                        defaultBranches={defaultBranches}/>
+                        defaultBranches={defaultBranches} />
                 </Box>
             </Dropdown>
             <Dropdown summaryText="Commit Table"
@@ -117,7 +119,6 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
                 infoButton={
                     <InfoButton
                         title="Sankey Diagram"
-
                         shortDescription={visualizationDescriptions.sankeyDiagram.short}
                         fullDescription={visualizationDescriptions.sankeyDiagram.full}
                     />

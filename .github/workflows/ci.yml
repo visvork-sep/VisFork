@@ -32,11 +32,11 @@ jobs:
 
       - name: Run Docker container
         run: |
-              if [ "$(docker ps -aq -f name=visfork)" = "" ]; then
-                docker run -dit --name visfork visfork-ci bash
-              else
-                echo "visfork container is already running"
+              if [ "$(docker ps -aq -f name=visfork)" != "" ]; then
+                docker stop visfork
+                docker rm visfork
               fi
+              docker run -dit --name visfork visfork-ci bash
 
 
   test-build-deploy:

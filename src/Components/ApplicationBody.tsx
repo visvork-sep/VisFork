@@ -1,4 +1,4 @@
-import { Box, Heading, Stack } from "@primer/react";
+import { Box, Heading, Label, Stack } from "@primer/react";
 import { useMeasure } from "@uidotdev/usehooks";
 
 import Histogram from "./Plots/Histogram.tsx";
@@ -13,6 +13,7 @@ import { useVisualizationData } from "@Hooks/useVisualizationData";
 import { Commit, Repository } from "@Types/LogicLayerTypes.ts";
 import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
 import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
+import { useRef, useEffect } from "react";
 
 
 interface ApplicationBodyProps {
@@ -20,6 +21,23 @@ interface ApplicationBodyProps {
     commits: Commit[];
 }
 function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
+
+    const timerRef = useRef<number>(null);
+    const renderTimeRef = useRef<number>(0);
+    // Start the timer when forkData updates
+    useEffect(() => {
+        timerRef.current = performance.now();
+    }, [forks, commits]);
+
+    // Measure the time on render completion
+    useEffect(() => {
+        if (timerRef.current !== null) {
+            const renderTime = performance.now() - timerRef.current;
+            renderTimeRef.current = renderTime;
+            console.log(`Render time: ${renderTime.toFixed(2)} ms`);
+
+        }
+    });
 
     const { visData, handlers, defaultBranches } =
         useVisualizationData(forks, commits);
@@ -40,102 +58,109 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
     const heightCommitTimelineSVG = 600;
 
     return (
-        <Stack>
-            <Dropdown
-                summaryText="Histogram"
-                infoButton={
-                    <InfoButton
-                        title="Histogram"
-                        hoverDescription={visualizationDescriptions.histogram.short}
-                        description={visualizationDescriptions.histogram.full}
-                    />
-                }
-            >
-                <Histogram commitData={histogramData.commitData} handleHistogramSelection={handleHistogramSelection} />
-            </Dropdown>
+        <>
+            <Label>
+                {`Render time: ${renderTimeRef.current.toFixed(2)} ms`}
+            </Label>
+            <Stack>
+                <Dropdown
+                    summaryText="Histogram"
+                    infoButton={
+                        <InfoButton
+                            title="Histogram"
+                            hoverDescription={visualizationDescriptions.histogram.short}
+                            description={visualizationDescriptions.histogram.full}
+                        />
+                    }
+                >
+                    <Histogram
+                        commitData={histogramData.commitData}
+                        handleHistogramSelection={handleHistogramSelection} />
+                </Dropdown>
 
-            <Dropdown
-                summaryText="Fork List"
-                infoButton={
-                    <InfoButton
-                        title="Fork List"
-                        hoverDescription={visualizationDescriptions.forkList.short}
-                        description={visualizationDescriptions.forkList.full}
-                    />
-                }
-            >
-                <ForkList {...forkListData} />
-            </Dropdown>
-            <Dropdown summaryText="Commit Timeline"
-                infoButton={
-                    <InfoButton
-                        title="Commit Timeline"
-                        hoverDescription={visualizationDescriptions.commitTimeline.short}
-                        description={visualizationDescriptions.commitTimeline.full}
-                    />
-                }
-            >
-                <Box ref={measureRefCommitTimeline}
-                    style={{
-                        resize: "vertical",
-                        overflow: "hidden", // Ensure resizing works
-                        minHeight: "200px", // Set an initial height
-                    }}>
+                <Dropdown
+                    summaryText="Fork List"
+                    infoButton={
+                        <InfoButton
+                            title="Fork List"
+                            hoverDescription={visualizationDescriptions.forkList.short}
+                            description={visualizationDescriptions.forkList.full}
+                        />
+                    }
+                >
+                    <ForkList {...forkListData} />
+                </Dropdown>
+                <Dropdown summaryText="Commit Timeline"
+                    infoButton={
+                        <InfoButton
+                            title="Commit Timeline"
+                            hoverDescription={visualizationDescriptions.commitTimeline.short}
+                            description={visualizationDescriptions.commitTimeline.full}
+                        />
+                    }
+                >
+                    <Box ref={measureRefCommitTimeline}
+                        style={{
+                            resize: "vertical",
+                            overflow: "hidden", // Ensure resizing works
+                            minHeight: "200px", // Set an initial height
+                        }}>
 
-                    <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
-                    <CommitTimeline
-                        commitData={timelineData.commitData}
-                        handleTimelineSelection={handleTimelineSelection}
-                        c_width={width ?? 0}
-                        c_height={heightCommitTimelineSVG}
-                        defaultBranches={defaultBranches}/>
-                </Box>
-            </Dropdown>
-            <Dropdown summaryText="Commit Table"
-                infoButton={
-                    <InfoButton
-                        title="Commit Table"
-                        hoverDescription={visualizationDescriptions.commitTable.short}
-                        description={visualizationDescriptions.commitTable.full}
-                    />
-                }
-            >
-                <CommitTable {...commitTableData} />
-            </Dropdown>
-            <Dropdown summaryText="Word Cloud"
-                infoButton={
-                    <InfoButton
-                        title="Word Cloud"
-                        hoverDescription={visualizationDescriptions.wordCloud.short}
-                        description={visualizationDescriptions.wordCloud.full}
-                    />
-                }
-            >
-                <WordCloud {...wordCloudData} />
-            </Dropdown>
-            <Dropdown summaryText="Sankey Diagram"
-                infoButton={
-                    <InfoButton
-                        title="Sankey Diagram"
-                        hoverDescription={visualizationDescriptions.sankeyDiagram.short}
-                        description={visualizationDescriptions.sankeyDiagram.full}
-                    />
-                }
-            >
-                <SankeyDiagram {...sankeyData} />
-            </Dropdown>
-            <Dropdown summaryText="Collaboration Graph"
-                infoButton={
-                    <InfoButton
-                        title="Collaboration Graph"
-                        hoverDescription={visualizationDescriptions.collaborationGraph.short}
-                        description={visualizationDescriptions.collaborationGraph.full}
-                    />
-                }
-            >
-                <CollaborationGraph {...collabGraphData} />
-            </Dropdown>
-        </Stack>
+                        <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
+                        <CommitTimeline
+                            commitData={timelineData.commitData}
+                            handleTimelineSelection={handleTimelineSelection}
+                            c_width={width ?? 0}
+                            c_height={heightCommitTimelineSVG}
+                            defaultBranches={defaultBranches} />
+                    </Box>
+                </Dropdown>
+                <Dropdown summaryText="Commit Table"
+                    infoButton={
+                        <InfoButton
+                            title="Commit Table"
+                            hoverDescription={visualizationDescriptions.commitTable.short}
+                            description={visualizationDescriptions.commitTable.full}
+                        />
+                    }
+                >
+                    <CommitTable {...commitTableData} />
+                </Dropdown>
+                <Dropdown summaryText="Word Cloud"
+                    infoButton={
+                        <InfoButton
+                            title="Word Cloud"
+                            hoverDescription={visualizationDescriptions.wordCloud.short}
+                            description={visualizationDescriptions.wordCloud.full}
+                        />
+                    }
+                >
+                    <WordCloud {...wordCloudData} />
+                </Dropdown>
+                <Dropdown summaryText="Sankey Diagram"
+                    infoButton={
+                        <InfoButton
+                            title="Sankey Diagram"
+                            hoverDescription={visualizationDescriptions.sankeyDiagram.short}
+                            description={visualizationDescriptions.sankeyDiagram.full}
+                        />
+                    }
+                >
+                    <SankeyDiagram {...sankeyData} />
+                </Dropdown>
+                <Dropdown summaryText="Collaboration Graph"
+                    infoButton={
+                        <InfoButton
+                            title="Collaboration Graph"
+                            hoverDescription={visualizationDescriptions.collaborationGraph.short}
+                            description={visualizationDescriptions.collaborationGraph.full}
+                        />
+                    }
+                >
+                    <CollaborationGraph {...collabGraphData} />
+                </Dropdown>
+            </Stack>
+        </>
     );
 }
 

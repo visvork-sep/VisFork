@@ -23,7 +23,6 @@ const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
-
 /**
  * Let's go gambling!
  * Used to deterministically get a random branch.
@@ -43,6 +42,8 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
 export function processCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
+
+
     // Initialize data structures
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;

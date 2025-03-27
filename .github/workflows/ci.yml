@@ -74,7 +74,12 @@ jobs:
         run: docker build -t visfork-ci -f Dockerfile.build .
 
       - name: Run Docker container
-        run: docker run -dit --name visfork visfork-ci bash
+        run: |
+              if [ "$(docker ps -aq -f name=visfork)" = "" ]; then
+                docker run -dit --name visfork visfork-ci bash
+              else
+                echo "visfork container is already running"
+              fi
 
 
   test-build-deploy:
@@ -103,8 +108,11 @@ jobs:
     needs: test-build-deploy
 
     steps:
-      - name: Stop Docker Image
-        run: docker stop visfork
-        
-      - name: Remove Docker Image
-        run: docker rm visfork
+      - name: Stop and Remove Docker Image
+        run: |
+              if [ "$(docker ps -aq -f name=visfork)" = "" ]; then
+                echo "visfork container is not running"
+              else
+                docker stop visfork
+                docker rm visfork
+              fi

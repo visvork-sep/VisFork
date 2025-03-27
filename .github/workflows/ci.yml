@@ -76,7 +76,7 @@ jobs:
       - name: Run Docker container
         run: |
               if [ "$(docker ps -aq -f name=visfork)" = "" ]; then
-                docker run -dit --name visfork visfork-ci bash
+                docker run -dit --name visfork -v ${{ github.workspace }}:/workspace visfork-ci bash
               else
                 echo "visfork container is already running"
               fi

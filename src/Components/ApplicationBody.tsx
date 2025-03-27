@@ -1,4 +1,4 @@
-import { Box, Heading, Stack } from "@primer/react";
+import { Box, Stack } from "@primer/react";
 import { useMeasure } from "@uidotdev/usehooks";
 
 import Histogram from "./Plots/Histogram.tsx";

@@ -103,6 +103,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
                 timelineData: mapCommitDataToTimeline(constrainedCommits),
                 sankeyData: mapCommitDataToSankey(constrainedCommits),
                 collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
+                commitTableData: mapCommitDataToCommitTable(constrainedCommits),
+                wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
             }));
         },
         [commitData]
@@ -116,6 +118,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
 
             setVisData((prev) => ({
                 ...prev,
+                sankeyData: mapCommitDataToSankey(constrainedCommits),
+                collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
                 commitTableData: mapCommitDataToCommitTable(constrainedCommits),
                 wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
             }));

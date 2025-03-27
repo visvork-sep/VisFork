@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 
@@ -25,6 +25,11 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const playInterval = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        setCurrentDateIndex(0);
+        setIsPlaying(false);
+    }, [commitData]);
 
     // Get all unique commit dates
     const allDates = Array.from(

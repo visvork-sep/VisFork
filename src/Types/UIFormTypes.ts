@@ -1,4 +1,4 @@
-import { ForksSortingOrder, ForkType, OwnerType, SortDirection } from "@Utils/Constants";
+import { ForksSortingOrder, CommitType, OwnerType, SortDirection } from "@Utils/Constants";
 
 /**
  * Represents the state of the filter form used to configure 
@@ -41,11 +41,11 @@ interface FilterFormState {
     commitsDateRangeUntil: string;
 
     /**
-     * The selected fork types to be included in the visualization.
-     * This is an array of strings representing available fork categories.
-     * Must be one of the defined fork types in FORK_TYPES.
+     * The selected commit types to be included in the visualization.
+     * This is an array of strings representing available commit categories.
+     * Must be one of the defined commit types in COMMIT_TYPES.
      */
-    forksTypeFilter: ForkType[];
+    commitTypeFilter: CommitType[];
 
     /**
      * The selected owner types to filter repositories by.
@@ -72,7 +72,7 @@ interface preparedFormComplete {
     forksSortDirection: SortDirection;
     commitsDateRangeFrom: Date;
     commitsDateRangeUntil: Date;
-    forksTypeFilter: ForkType[];
+    commitsTypeFilter: CommitType[];
     ownerTypeFilter: OwnerType[];
     recentlyUpdated: number | null; // non required
 }
@@ -90,7 +90,7 @@ interface preparedForm {
     forksSortDirection: SortDirection | null;
     commitsDateRangeFrom: Date | null;
     commitsDateRangeUntil: Date | null;
-    forksTypeFilter: ForkType[] | null;
+    commitsTypeFilter: CommitType[] | null;
     ownerTypeFilter: OwnerType[] | null;
     recentlyUpdated: number | null;
 }

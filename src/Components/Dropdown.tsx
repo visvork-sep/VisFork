@@ -1,32 +1,31 @@
-import { Box, Details } from "@primer/react";
-import { PropsWithChildren } from "react";
+import { Box, Details, Stack } from "@primer/react";
+import { PropsWithChildren, ReactNode } from "react";
 import styles from "./Dropdown.module.scss";
 
 interface DropdownProps {
-    summaryText: string;
+  summaryText: string; // Title of the dropdown boxes
+  infoButton?: ReactNode; // Allow an optional info button
 }
 
-function Dropdown({ children, summaryText }: PropsWithChildren<DropdownProps>) {
+function Dropdown({ children, summaryText, infoButton }: PropsWithChildren<DropdownProps>) {
     return (
-        <Details className={styles.details}>
-            <Details.Summary>{summaryText}</Details.Summary>
-            <Box
-                sx={{
-                    borderWidth: 1,
-                    borderStyle: "solid",
-                    borderColor: "border.default",
-                    height: "100%",
-                    borderRadius: 2,
-                    p: 3,
-                }}
-            >
-                {children}
-            </Box>
-        </Details>
+        <Stack direction="horizontal" gap="condensed">
+            <Stack.Item grow>
+                <Details className={styles.details}>
+                    <Details.Summary>{summaryText}</Details.Summary>
+                    <Box className={styles.content}>
+                        {children}
+                    </Box>
+                </Details>
+            </Stack.Item>
+            {infoButton && (
+                <Stack.Item>
+                    {infoButton}
+                </Stack.Item>
+            )}
+        </Stack>
     );
 }
 
-export {
-    Dropdown
-};
+export { Dropdown };
 export type { DropdownProps };

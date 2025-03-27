@@ -1,12 +1,12 @@
 /**
  * Interface of the data format used by the timeline per commit.
  */
-interface TimelineDetails {
+export interface TimelineDetails {
   id: string;
   parentIds: string[];
   repo: string;
   branch:string;
-  date: Date;
+  date: string;
   url: string;
 }
 
@@ -14,5 +14,13 @@ interface TimelineDetails {
  * Interface of the data format used by the timeline.
  */
 export interface TimelineData {
-    commitData: TimelineDetails[]
+    commitData: TimelineDetails[];
+}
+
+export interface TimelineProps {
+    commitData: TimelineDetails[];
+    handleTimelineSelection: (commitIds: string[]) => void;
+    c_width: number;
+    c_height: number;
+    defaultBranches: Record<string, string>;
 }

@@ -7,7 +7,7 @@ import {
 } from "../Types/UIFormErrors";
 import {
     ForksSortingOrder, 
-    ForkType, 
+    CommitType, 
     MAX_QUERIABLE_FORKS, 
     MIN_QUERIABLE_FORKS, 
     OwnerType, 
@@ -207,20 +207,20 @@ function prepareCommitsDateRangeUntil(input: string): Date {
 }
 
 /**
- * Prepare the forks type filter input for passing to logic layer.
+ * Prepare the commits type filter input for passing to logic layer.
  * 
- * @param {String[]} forkTypes - list of fork types
- * @returns forks type filter
+ * @param {String[]} commitTypes - list of commit types
+ * @returns commits type filter
  */
-function prepareForksTypeFilter(forkTypes: ForkType[]): ForkType[] {
-    forkTypes.forEach(element => {
+function prepareCommitsTypeFilter(commitTypes: CommitType[]): CommitType[] {
+    commitTypes.forEach(element => {
         const { conflicts } = sanitizeString(element);
         if (conflicts) {
-            throw new ForksCountInputErrors.DeveloperFaultError("Invalid fork type selected");
+            //TODO
         }
     });
 
-    return forkTypes;
+    return commitTypes;
 }
 
 /**
@@ -279,7 +279,7 @@ export {
     prepareForksSortDirection,
     prepareCommitsDateRangeFrom,
     prepareCommitsDateRangeUntil,
-    prepareForksTypeFilter,
+    prepareCommitsTypeFilter,
     prepareOwnerTypeFilter,
     prepareRecentlyUpdated
 };

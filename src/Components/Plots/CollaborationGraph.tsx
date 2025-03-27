@@ -1,23 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import commitData from "./commit_data_example.json";
-
-// Commit info type
-interface CommitInfo {
-    repo: string;
-    sha: string;
-    id: string;
-    parentIds: string[];
-    branch_name: string;
-    branch_id: string;
-    node_id: string;
-    author: string;
-    date: string;
-    url: string;
-    message: string;
-    commit_type: string;
-    mergedNodes: unknown[];
-}
+import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 
 // Graph node type: author or repo
 interface Node extends d3.SimulationNodeDatum {
@@ -27,7 +10,7 @@ interface Node extends d3.SimulationNodeDatum {
     radius?: number;
     // Commit count
     commits?: number;
-}  
+}
 
 // Graph link type: connects author to repo
 interface Link extends d3.SimulationLinkDatum<Node> {
@@ -35,10 +18,8 @@ interface Link extends d3.SimulationLinkDatum<Node> {
     target: string | Node;
 }
 
-function CollaborationGraph() {
+function CollaborationGraph({ commitData }: CollabGraphData) {
     const svgRef = useRef<SVGSVGElement | null>(null);
-    const width = 800;
-    const height = 600;
 
     // Timeline bar
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
@@ -47,7 +28,7 @@ function CollaborationGraph() {
 
     // Get all unique commit dates
     const allDates = Array.from(
-        new Set(commitData.map((entry: CommitInfo) => entry.date.split("T")[0]))
+        new Set(commitData.map((entry) => entry.date.split("T")[0]))
     ).sort();
 
     // Autoplay effect
@@ -64,7 +45,7 @@ function CollaborationGraph() {
                 clearInterval(playInterval.current);
             }
         }
-        
+
         return () => {
             if (playInterval.current) {
                 clearInterval(playInterval.current);
@@ -78,7 +59,7 @@ function CollaborationGraph() {
         if (!svgRef.current) return;
 
         // Filters commit data until the current date selected in the slider
-        const visibleCommits = commitData.filter((commit: CommitInfo) => {
+        const visibleCommits = commitData.filter((commit) => {
             const commitDate = commit.date.split("T")[0];
             return commitDate <= allDates[currentDateIndex];
         });
@@ -92,14 +73,14 @@ function CollaborationGraph() {
         const repoCommitCounts: Record<string, number> = {};
 
         // Make sure each set of authors and repos is unique
-        visibleCommits.forEach((entry: CommitInfo) => {
+        visibleCommits.forEach((entry) => {
             authors.add(entry.author);
             repos.add(entry.repo);
             links.push({
                 source: entry.author,
                 target: entry.repo,
             });
-      
+
             // Keep track of commit counts for scaling nodes
             authorCommitCounts[entry.author] = (authorCommitCounts[entry.author] || 0) + 1;
             repoCommitCounts[entry.repo] = (repoCommitCounts[entry.repo] || 0) + 1;
@@ -121,10 +102,13 @@ function CollaborationGraph() {
                 radius: 4 + Math.log(repoCommitCounts[repo] || 1) * 2,
                 commits: repoCommitCounts[repo] || 0,
             })),
-        ];        
-          
+        ];
+
         // D3 force graph setup
         const svg = d3.select(svgRef.current);
+        const container = svg.node()?.parentElement as HTMLElement;
+        const width = container.clientWidth;
+        const height = 600;
         // Clear previous render
         svg.selectAll("*").remove();
 
@@ -138,7 +122,7 @@ function CollaborationGraph() {
             // Centers the graph
             .force("center", d3.forceCenter(width / 2, height / 2))
             // Determines how quickly the simulation slows down (default is 0.0228)
-            .alphaDecay(0.025); 
+            .alphaDecay(0.025);
 
         // Draw links as lines
         const link = svg
@@ -204,7 +188,7 @@ function CollaborationGraph() {
             .on("dblclick", (_event, d) => {
                 const url = `https://github.com/${d.id}`;
                 window.open(url, "_blank");
-            })    
+            })
             // Makes nodes draggable        
             .call(
                 d3.drag<SVGPathElement, Node>()
@@ -223,7 +207,7 @@ function CollaborationGraph() {
                         d.fy = null;
                     })
             );
-      
+
         // Add labels above nodes
         const label = svg
             .append("g")
@@ -239,33 +223,33 @@ function CollaborationGraph() {
             .attr("dy", (d) => `-${(d.radius ?? 8) + 4}px`)
             .attr("text-anchor", "middle")
             // Allow clicks to pass through
-            .attr("pointer-events", "none") 
+            .attr("pointer-events", "none")
             .attr("fill", "#333")
             // Make labels non-selectable
-            .attr("pointer-events", "none") 
+            .attr("pointer-events", "none")
             .style("user-select", "none");
 
         // Add toolttip to show full name and number of commits on hover
         [...authorNodes.nodes(), ...repoNodes.nodes()].forEach((el, i) => {
             const d = nodes[i];
             d3.select(el).append("title").text(`${d.id}\nCommits: ${d.commits ?? 0}`);
-        });                  
+        });
 
         // Tick function: updates positions of links, nodes, and labels every tick
         simulation.on("tick", () => {
             // Clamp positions so nodes stay within the viewbox
             nodes.forEach((d) => {
-                d.x = Math.max(18, Math.min(width - 18, d.x ?? 0));  
+                d.x = Math.max(18, Math.min(width - 18, d.x ?? 0));
                 d.y = Math.max(18, Math.min(height - 10, d.y ?? 0));
             });
-        
+
             // Update link lines
             link
                 .attr("x1", (d) => (typeof d.source === "object" ? d.source.x ?? 0 : 0))
                 .attr("y1", (d) => (typeof d.source === "object" ? d.source.y ?? 0 : 0))
                 .attr("x2", (d) => (typeof d.target === "object" ? d.target.x ?? 0 : 0))
                 .attr("y2", (d) => (typeof d.target === "object" ? d.target.y ?? 0 : 0));
-        
+
             // Update node and label positions
             authorNodes
                 .attr("cx", (d) => d.x ?? 0)
@@ -284,7 +268,7 @@ function CollaborationGraph() {
             .append("g")
             .attr("class", "legend")
             // Top-right corner
-            .attr("transform", `translate(${width - 85}, 20)`); 
+            .attr("transform", `translate(${width - 85}, 20)`);
 
         // Author (blue circle)
         legend
@@ -305,7 +289,7 @@ function CollaborationGraph() {
         // Repository (orange square)
         legend
             .append("path")
-            .attr("d", d3.symbol().type(d3.symbolSquare).size(120)()) 
+            .attr("d", d3.symbol().type(d3.symbolSquare).size(120)())
             .attr("transform", "translate(0, 20)")
             .attr("fill", "#ff7f0e");
 
@@ -317,20 +301,25 @@ function CollaborationGraph() {
             .style("font-size", "12px")
             .attr("fill", "#333");
     }, [currentDateIndex, allDates]);
-    
+
+
     return (
         <>
             {/* UI container for date display, slider, and play/pause button */}
-            <div style={{ marginBottom: "1rem", display: "flex", alignItems: "center", 
-                gap: "1rem"}}>
-                
+            <div style={{
+                marginBottom: "1rem", display: "flex", alignItems: "center",
+                gap: "1rem"
+            }}>
+
                 {/* Displays date in a readable format */}
                 <span style={{ fontWeight: "normal", color: "black" }}>
-                    {new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                    })}
+                    {allDates.length === 0
+                        ? "No data selected"
+                        : new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        })}
                 </span>
 
                 {/* Range slider to manually scrub through timeline */}
@@ -340,7 +329,7 @@ function CollaborationGraph() {
                     max={allDates.length - 1}
                     value={currentDateIndex}
                     onChange={(e) => setCurrentDateIndex(parseInt(e.target.value))}
-                    style={{ width: "300px" }}
+                    style={{ width: "100%" }}
                 />
 
                 {/* Play/Pause button */}
@@ -355,7 +344,7 @@ function CollaborationGraph() {
                         cursor: "pointer",
                         transition: "background-color 0.2s",
                     }}
-                > 
+                >
                     {/* Updates label based on play state */}
                     {isPlaying ? "Pause" : "Play"}
                 </button>
@@ -365,8 +354,8 @@ function CollaborationGraph() {
             {/* SVG element where graph gets rendered */}
             <svg
                 ref={svgRef}
-                width={width}
-                height={height}
+                width="100%"
+                height="600"
                 style={{ border: "1px solid #ccc" }}
             />
         </>

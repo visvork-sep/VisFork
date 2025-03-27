@@ -11,4 +11,5 @@ interface HistogramDetails {
  */
 export interface HistogramData {
     commitData: HistogramDetails[]
+    handleHistogramSelection?: (start: Date, end: Date) => void;
 }

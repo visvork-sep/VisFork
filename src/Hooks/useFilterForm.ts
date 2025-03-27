@@ -1,13 +1,13 @@
 import { useState, useCallback } from "react";
 import { FilterFormState } from "../Types/UIFormTypes";
-import { FORK_TYPES, 
+import { COMMIT_TYPES, 
     FORKS_COUNT_INPUT_INITIAL, 
     FORKS_SORTING_ORDERS, 
     OWNER_TYPES, 
     SORT_DIRECTION, 
     ForksSortingOrder, 
     SortDirection, 
-    ForkType, 
+    CommitType, 
     OwnerType 
 }
     from "@Utils/Constants";
@@ -19,11 +19,11 @@ const initialForm: FilterFormState = {
     forksCount: FORKS_COUNT_INPUT_INITIAL, // Default fork count input
     forksOrder: FORKS_SORTING_ORDERS.STARGAZERS.value, // Default sorting order (by stargazers)
     forksAscDesc: SORT_DIRECTION.ASCENDING.value, // Default sorting direction (ascending)
-    forksTypeFilter: Object.values(FORK_TYPES).map(t => t.value), // Default fork type filter (all types selected)
+    commitTypeFilter: Object.values(COMMIT_TYPES).map(t => t.value), // Default commit type filter (all types selected)
     ownerTypeFilter: Object.values(OWNER_TYPES).map(t => t.value), // Default owner type filter (all types selected)
     commitsDateRangeFrom: (() => {
         const date = new Date();
-        date.setFullYear(date.getFullYear() - 2);
+        date.setFullYear(date.getFullYear() - 1);
         return date.toISOString().split("T")[0];
     })(), // Start date for commits filter
     commitsDateRangeUntil: new Date().toISOString().split("T")[0], // End date for commits filter
@@ -96,18 +96,18 @@ function useFilterForm() {
     }, []);
 
     /**
-     * Updates the selected fork types for filtering.
+     * Updates the selected commit types for filtering.
      * 
      * @param {string[]} selected - 
-     * An array of selected fork type values. Each value must be present in the predefined FORK_TYPES.
+     * An array of selected commit type values. Each value must be present in the predefined COMMIT_TYPES.
      */
-    const handleForksTypeFilterChange = useCallback((selected: string[]) => {
+    const handleCommitsTypeFilterChange = useCallback((selected: string[]) => {
         assert(selected.every(s => 
-            (s === FORK_TYPES.ADAPTIVE.value ||
-            s === FORK_TYPES.CORRECTIVE.value ||
-            s === FORK_TYPES.PERFECTIVE.value)
-        ), "Developer error: Invalid fork type selected");
-        setForm((prev) => ({ ...prev, forksTypeFilter: selected as ForkType[] }));
+            (s === COMMIT_TYPES.ADAPTIVE.value ||
+            s === COMMIT_TYPES.CORRECTIVE.value ||
+            s === COMMIT_TYPES.PERFECTIVE.value)
+        ), "Developer error: Invalid commit type selected");
+        setForm((prev) => ({ ...prev, commitTypeFilter: selected as CommitType[] }));
     }, []);
 
     /**
@@ -140,7 +140,7 @@ function useFilterForm() {
         handleForksOrderAscDescChange,
         handleCommitsDateRangeFromChange,
         handleCommitsDateRangeUntilChange,
-        handleForksTypeFilterChange,
+        handleCommitsTypeFilterChange,
         handleOwnerTypeFilterChange,
         handleRecentlyUpdatedChange,
     };

@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { UnprocessedCommitExtended,
     ForkFilter,
     RepositoryInfoWithCommits,
     ForkQueryState,
     MainRepositoryInfo,
+    UnprocessedRepository,
 } from "@Types/LogicLayerTypes";
 import { toCommitInfo, toForkInfo } from "@Utils/DataToLogic";
 import { GitHubAPICommit } from "@Types/DataLayerTypes";
@@ -18,6 +19,8 @@ export function useFilteredData() {
 
     // State for additional filtering, such as sorting and date range.
     const [filters, setFilters] = useState<ForkFilter | undefined>(undefined);
+    const [finalForkData, setFinalForkData] = useState<UnprocessedRepository[]>([]);
+    const [finalCommitData, setFinalCommitData] = useState<UnprocessedCommitExtended[]>([]);
 
     const onRequestChange: FilterChangeHandler = (filters, forkQueryState) => {
         setForkQueryState(forkQueryState);
@@ -39,7 +42,6 @@ export function useFilteredData() {
     [simplifiedForkData, filters]);
 
 
-    // TODO: Fix pagination
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
 
     const { commitData, isLoading: isLoadingCommits, error: commitError } = commitResponses
@@ -114,11 +116,19 @@ export function useFilteredData() {
             return acc;
         }, []) : [];
 
+    // Add final update only if all data has been loaded
+    useEffect(() => {
+        if(!isLoadingFork && !isLoadingCommits && filteredForks.length > 0 && flattenedCommits.length > 0) {
+            setFinalForkData(filteredForks);
+            setFinalCommitData(flattenedCommits);
+        }
+    }, [isLoadingFork, isLoadingCommits]);
+
 
     return {
         isLoading: isLoadingFork || isLoadingCommits,
-        forks: filteredForks,
-        commits: flattenedCommits,
+        forks: finalForkData,
+        commits: finalCommitData,
         data: mainRepositoryInfo,
         onFiltersChange: onRequestChange,
         forkQuery: forkQueryState,

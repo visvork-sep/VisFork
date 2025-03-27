@@ -7,15 +7,18 @@ import { useMemo } from "react";
 import { processCommits } from "@Utils/BranchingInference";
 
 function DataComponents() {
-    const { onFiltersChange, forks, commits, forkQuery }= useFilteredData();
+    const { onFiltersChange, forks, commits }= useFilteredData();
 
-    const mainRepo = `${forkQuery?.owner}/${forkQuery?.repo}`;
+    // Main repo is the first member of the forks list
+    const mainRepoName = useMemo(() => {
+        return `${forks[0]?.owner}/${forks[0]?.name}`;
+    }, [forks]);
 
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);
-    const removedCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepo), [
+    const removedCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepoName), [
         commits,
         defaultBranchesMap,
-        mainRepo,
+        mainRepoName,
     ]);
 
     const { forks: processedForks, commits: processedCommits } = useMemo(

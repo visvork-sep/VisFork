@@ -5,7 +5,6 @@ interface CommitLocation {
     repo: string
 }
 
-// TODO better error logging
 // TODO change URL to correct repo
 
 // maps owner to its repo. E.g. { "me": "me/my-repo" }

@@ -88,7 +88,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
                         handleTimelineSelection={handleTimelineSelection}
                         c_width={width ?? 0}
                         c_height={heightCommitTimelineSVG}
-                        defaultBranches={defaultBranches}/>
+                        defaultBranches={defaultBranches} />
                 </Box>
             </Dropdown>
             <Dropdown summaryText="Commit Table"

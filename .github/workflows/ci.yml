@@ -7,27 +7,66 @@ on:
   pull_request:
     branches:
       - main
-      - release
+      - develop
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  setup:
+    runs-on: self-hosted
 
     steps:
-      # Step 1: Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Build Docker image
-      - name: Build Docker image
-        run: docker build -t visfork-ci -f Dockerfile.build .
+      # Get GraphQL resources
+      - name: Get resources
+        run: |
+          curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
 
-      # Step 4: Run Tests
-      - name: Run Tests
-        run: docker run --rm visfork-ci npm run test-slim
+      # Get openapi Resources
+      - name: Get resources
+        run: |
+          curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
 
-      # Step 5: Build 
+      # Step 6: Build Docker image
+      - name: Remove existing Docker container if exists
+        run: |
+              if [ "$(docker ps -aq -f name=visfork)" != "" ]; then
+                docker stop visfork
+                docker rm visfork
+              fi
+
+      - name: Run Docker container
+        run: docker run -dit --name visfork visfork-ci bash
+
+
+  test-build-deploy:
+    runs-on: self-hosted
+    needs: setup
+
+    steps:
+      - name: Run ESLint
+        run: docker exec visfork npm run lint
+
+      - name: Run tests
+        run: docker exec visfork npm run test 
+
       - name: Build
-        run: docker run --rm visfork-ci npm run build-ts
+        run: docker exec visfork npm run build
 
-      # Step 6: TODO: Store the build artifact
+      - name: Deploy
+        if: github.ref == 'refs/heads/main'
+        run: docker cp visfork:/workspace/dist/. /var/www/html/react-app
+
+  cleanup:
+    runs-on: self-hosted
+    needs: test-build-deploy
+
+    steps:
+      - name: Stop and Remove Docker Image
+        run: |
+              if [ "$(docker ps -aq -f name=visfork)" = "" ]; then
+                echo "visfork container is not running"
+              else
+                docker stop visfork
+                docker rm visfork
+              fi

@@ -54,6 +54,7 @@ jobs:
 
   cleanup:
     runs-on: self-hosted
+    needs: test-build-deploy
 
     steps:
       - name: Stop and Remove Docker Image

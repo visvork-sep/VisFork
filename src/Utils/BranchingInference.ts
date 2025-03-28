@@ -174,6 +174,8 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
         if (commitInfo !== undefined) {
             commitInfo.branch = commit[1][0].branch;
             commitInfo.repo = commit[1][0].repo;
+            const regex = /(github\.com\/)[^/]+\/[^/]+/;
+            commitInfo.url = commitInfo.url.replace(regex, `$1${commit[1][0].repo}`);
             processedCommits.push(commitInfo);
         } else {
             console.error("Commit data not found!");

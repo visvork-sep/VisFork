@@ -21,6 +21,43 @@ const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function deleteDuplicateCommitsSimple(): UnprocessedCommitExtended[] {
+    // Find all duplicate commits and get rid of them with priority given to main repo and default branches
+    const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
+        return locations.length >= 2;
+    });
+    for (const duplicateCommit of duplicateCommits) {
+        const duplicateCommitInfo = commitMap.get(duplicateCommit[0]);
+        if (duplicateCommitInfo !== undefined) {
+            makeUniqueHierarchical(duplicateCommitInfo);
+        }
+    }
+    // From commitLocationMap, derive the true location of each commit
+    const processedCommits: UnprocessedCommitExtended[] = [];
+    for (const commit of commitLocationMap) {
+        if (commit[1].length > 1) {
+            console.error("Found more than one location for a commit after processing!");
+        }
+        if (commit[1].length === 0) {
+            console.error("Found no locations for a commit, commit got deleted!");
+            continue;
+        }
+        const commitInfo = commitMap.get(commit[0]);
+        if (commitInfo !== undefined) {
+            commitInfo.branch = commit[1][0].branch;
+            commitInfo.repo = commit[1][0].repo;
+            processedCommits.push(commitInfo);
+        } else {
+            console.error("Commit data not found!");
+        }
+    }
+    // Necessary to ensure consistency in next runs
+    commitMap.clear();
+    commitLocationMap.clear();
+    return processedCommits;
+}
+
 /**
  * Let's go gambling!
  * Used to deterministically get a random branch.
@@ -204,9 +241,9 @@ function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
         const defaultBranchLocations = locations.filter(({branch, repo}) => {
             return branch === globalDefaultBranches[repo];
         });
-        if (defaultBranchLocations.filter(({repo}) => {
+        if (defaultBranchLocations.some(({repo}) => {
             return repo === globalMainRepo;
-        }).length === 1) {
+        })) {
             // Delete everywhere else but main repo and default branch of main repo
             commitLocationMap.set(commit.sha, [{repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}]);
         } else if (defaultBranchLocations.length >= 1) {
@@ -258,54 +295,27 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
     } else if (commitLocations !== undefined
         && commitLocations.length > 1) { // parentId in fetched data and has duplicates
         // Try inferring whether this commit is from a PR and has a default message and get its branch from it
-        let regex = /^merge pull request .* from ([^\s]+).*/i;
-        let match = mergeCommit.message.match(regex);
+        const regex = /^merge pull request .* from ([^\s]+).*/i;
+        const match = mergeCommit.message.match(regex);
         if (match !== null) {
             const [owner, branch_name] = match[1].split("/", 2);
             let repo_name = ownerRepoMap.get(owner);
             if (!repo_name) {
                 repo_name = "";
             }
-            if (commitLocations.filter(({repo, branch}) => {
+            if (commitLocations.some(({repo, branch}) => {
                 return repo === repo_name && branch === branch_name;
-            }).length === 1) {
+            })) {
                 deleteFromBranch(secondParent, {repo: repo_name, branch: branch_name}, mergeBaseCommit);
                 return;
             }
         }
-        // Try inferring whether this commit has a regular merge commit message and derive its branch from it
-        regex = /^merge branch [']([^']+)['].*/i;
-        match = mergeCommit.message.match(regex);
-        // Make sure branch still exists too
-        if (match !== null && commitLocations.some(({branch}) => {
-            return branch === match[1];
-        })) {
-            const commitLocationsFiltered = commitLocations.filter(({branch}) => {
-                return branch === match[1];
-            });
-            // Give priority to branch in main repo if it exists
-            if (commitLocationsFiltered.some(({repo}) => {
-                return repo === globalMainRepo;
-            })) {
-                deleteFromBranch(secondParent, {repo: globalMainRepo, branch: match[1]}, mergeBaseCommit);
-                return;
-            } else {
-                deleteFromBranch(secondParent, getMinimumCommitLocation(commitLocationsFiltered), mergeBaseCommit);
-                return;
-            }
-        }
         // No inference could be made: apply priority rules and gamble
-        const mainRepoCommitLocations = commitLocations.filter(({repo}) => {
-            return repo === globalMainRepo;
+        const nonMainRepoCommitLocations = commitLocations.filter(({repo}) => {
+            return repo !== globalMainRepo;
         });
-        if (mainRepoCommitLocations.some(({branch}) => {
-            return branch === globalDefaultBranches[globalMainRepo];
-        })) {
-            deleteFromBranch(secondParent,
-                {repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]},
-                mergeBaseCommit);
-        } else if (mainRepoCommitLocations.length >= 1) {
-            deleteFromBranch(secondParent, getMinimumCommitLocation(mainRepoCommitLocations), mergeBaseCommit);
+        if (nonMainRepoCommitLocations.length >= 1) {
+            deleteFromBranch(secondParent, getMinimumCommitLocation(nonMainRepoCommitLocations), mergeBaseCommit);
         } else { // Complete gamble
             deleteFromBranch(secondParent, getMinimumCommitLocation(commitLocations), mergeBaseCommit);
         }

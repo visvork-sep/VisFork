@@ -199,8 +199,6 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                                 0, // Last day of the month
                                 23, 59, 59, 999 // Set to the latest possible time
                             );
-                        // console.log("Start Date:", startOfSelection);
-                        // console.log("End Date:", endOfSelection);
 
 
                         if (startOfSelection && endOfSelection) {

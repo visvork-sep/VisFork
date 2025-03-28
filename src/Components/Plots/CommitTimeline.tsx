@@ -411,7 +411,6 @@ function CommitTimeline({ commitData,
                     merged ? (node as d3dag.MutGraphNode<GroupedNode, unknown>).data.nodes : [node.data.id]);
 
             // FOR DATA LAYER TEAM: use selectedNodes to get array of selected commits' hashes 
-            console.log("Selected Commits:", selectedCommits);
             handleTimelineSelection(selectedCommits);
         }
 

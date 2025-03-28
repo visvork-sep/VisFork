@@ -62,10 +62,8 @@ const mapCommitDataToCollabGraph = (commitData: Commit[]): CollabGraphData => ({
 export function useVisualizationData(forkData: Repository[], commitData: Commit[]) {
     // Memoize the initial visualization data
     const initialVisData = useMemo(() => {
-        console.log("data passed to visualization:", forkData);
         const forkListData: ForkListData = { forkData: forkData };
 
-        console.log("After type transform:", forkListData.forkData);
         return {
             forkListData,
             histogramData: mapCommitDataToHistogram(commitData),
@@ -103,6 +101,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
                 timelineData: mapCommitDataToTimeline(constrainedCommits),
                 sankeyData: mapCommitDataToSankey(constrainedCommits),
                 collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
+                commitTableData: mapCommitDataToCommitTable(constrainedCommits),
+                wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
             }));
         },
         [commitData]
@@ -116,6 +116,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
 
             setVisData((prev) => ({
                 ...prev,
+                sankeyData: mapCommitDataToSankey(constrainedCommits),
+                collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
                 commitTableData: mapCommitDataToCommitTable(constrainedCommits),
                 wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
             }));
@@ -134,7 +136,6 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         return branches;
     }, [forkData]);
 
-    console.log("Returned from visualization hook", visData.forkListData);
     return {
         visData,
         handlers: {

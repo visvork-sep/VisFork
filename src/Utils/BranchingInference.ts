@@ -21,43 +21,6 @@ const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function deleteDuplicateCommitsSimple(): UnprocessedCommitExtended[] {
-    // Find all duplicate commits and get rid of them with priority given to main repo and default branches
-    const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
-        return locations.length >= 2;
-    });
-    for (const duplicateCommit of duplicateCommits) {
-        const duplicateCommitInfo = commitMap.get(duplicateCommit[0]);
-        if (duplicateCommitInfo !== undefined) {
-            makeUniqueHierarchical(duplicateCommitInfo);
-        }
-    }
-    // From commitLocationMap, derive the true location of each commit
-    const processedCommits: UnprocessedCommitExtended[] = [];
-    for (const commit of commitLocationMap) {
-        if (commit[1].length > 1) {
-            console.error("Found more than one location for a commit after processing!");
-        }
-        if (commit[1].length === 0) {
-            console.error("Found no locations for a commit, commit got deleted!");
-            continue;
-        }
-        const commitInfo = commitMap.get(commit[0]);
-        if (commitInfo !== undefined) {
-            commitInfo.branch = commit[1][0].branch;
-            commitInfo.repo = commit[1][0].repo;
-            processedCommits.push(commitInfo);
-        } else {
-            console.error("Commit data not found!");
-        }
-    }
-    // Necessary to ensure consistency in next runs
-    commitMap.clear();
-    commitLocationMap.clear();
-    return processedCommits;
-}
-
 /**
  * Let's go gambling!
  * Used to deterministically get a random branch.

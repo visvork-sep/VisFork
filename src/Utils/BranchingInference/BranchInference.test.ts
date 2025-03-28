@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { processCommits } from "@Utils/BranchingInference.ts";
+import { processCommits } from "./BranchingInference.ts";
 import { UnprocessedCommitExtended } from "@Types/LogicLayerTypes";
 import rawMockCommits from "./MockCommits.json";
 

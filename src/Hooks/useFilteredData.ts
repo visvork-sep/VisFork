@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   UnprocessedCommitExtended,
   ForkFilter,
@@ -23,10 +23,10 @@ export function useFilteredData() {
   const [finalForkData, setFinalForkData] = useState<UnprocessedRepository[]>([]);
   const [finalCommitData, setFinalCommitData] = useState<UnprocessedCommitExtended[]>([]);
 
-  const onRequestChange: FilterChangeHandler = useCallback((filters, forkQueryState) => {
+  const onRequestChange: FilterChangeHandler = (filters, forkQueryState) => {
     setForkQueryState(forkQueryState);
-    setFilters(filters)
-  }, []);
+    setFilters(filters);
+  };
 
   const { data: forkData, isLoading: isLoadingFork, error: forkError } = useFetchForks(forkQueryState);
 

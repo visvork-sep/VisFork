@@ -22,22 +22,6 @@ let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
 
 /**
- * Let's go gambling!
- * Used to deterministically get a random branch.
- *
- * @param locations all CommitLocations to get a random one from
- * @returns alphabetical minimum of commit location, first sorted on repo and then branch
- */
-function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
-    return locations.reduce((min, curr) =>
-        curr.repo.localeCompare(min.repo) < 0 ||
-        (curr.repo === min.repo && curr.branch.localeCompare(min.branch) < 0)
-            ? curr
-            : min
-    );
-}
-
-/**
  * Initializes data structures to be used for processing the commits, after which it calls
  * {@link removeParentIds} and {@link deleteDuplicateCommits}.
  * 
@@ -81,6 +65,22 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
     removeParentIds(rawCommits);
 
     return deleteDuplicateCommits(rawCommits);
+}
+
+/**
+ * Let's go gambling!
+ * Used to deterministically get a random branch.
+ *
+ * @param locations all CommitLocations to get a random one from
+ * @returns alphabetical minimum of commit location, first sorted on repo and then branch
+ */
+function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
+    return locations.reduce((min, curr) =>
+        curr.repo.localeCompare(min.repo) < 0 ||
+        (curr.repo === min.repo && curr.branch.localeCompare(min.branch) < 0)
+            ? curr
+            : min
+    );
 }
 
 /**

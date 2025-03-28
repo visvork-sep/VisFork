@@ -4,7 +4,7 @@ import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
 import { useMemo } from "react";
-import { processCommits } from "@Utils//BranchingInference/BranchingInference";
+import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
 
 function DataComponents() {
     const { onFiltersChange, forks, commits }= useFilteredData();

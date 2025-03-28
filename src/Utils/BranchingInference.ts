@@ -39,11 +39,20 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
     );
 }
 
+/**
+ * Initializes data structures to be used for processing the commits, after which it calls
+ * {@link removeParentIds} and {@link deleteDuplicateCommits}.
+ * 
+ * @param rawCommits commits array to be processed
+ * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
+ * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
+ * @param mainRepo the name of the queried repository. Example: torvalds/linux
+ * @returns an array of processed commits where each commit's parentIds array will only contain hashes
+ * of commits present in the array and where no duplicate commits exist
+ */
 export function processCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
-
-
     // Initialize data structures
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
@@ -76,6 +85,12 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
     return deleteDuplicateCommits(rawCommits);
 }
 
+/**
+ * Checks for each commit in its input whether it has parentIds that are not in the data.
+ * If it does, it deletes just those parentIds.
+ * 
+ * @param rawCommits commits for the parentIds to be filtered on
+ */
 function removeParentIds(rawCommits: UnprocessedCommitExtended[]) {
     for (const rawCommit of rawCommits) {
         for (const parent of rawCommit.parentIds) {

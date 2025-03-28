@@ -17,14 +17,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Get GraphQL resources
       - name: Get resources
         run: |
           curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
-
-      # Get openapi Resources
-      - name: Get resources
-        run: |
           curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
 
       - name: Build Docker image

@@ -5,8 +5,6 @@ interface CommitLocation {
     repo: string
 }
 
-// TODO change URL to correct repo
-
 // maps owner to its repo. E.g. { "me": "me/my-repo" }
 const ownerRepoMap = new Map<string, string>();
 // maps a commit's hash to all of its locations in the gathered data

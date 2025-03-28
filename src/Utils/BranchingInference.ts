@@ -5,6 +5,8 @@ interface CommitLocation {
     repo: string
 }
 
+// TODO change URL to correct repo
+
 // maps owner to its repo. E.g. { "me": "me/my-repo" }
 const ownerRepoMap = new Map<string, string>();
 // maps a commit's hash to all of its locations in the gathered data
@@ -20,56 +22,6 @@ const locationHeadCommitMap = new Map<string, UnprocessedCommitExtended>();
 const locationHeadCommitMapReversed = new Map<string, CommitLocation[]>();
 let globalDefaultBranches: Record<string, string>;
 let globalMainRepo: string;
-
-/**
- * Deletes commits that have the same hashes, leaving a single unique commit.
- * This can only happen if the commit is present on multiple branches.
- * This algorithm uses a very simple approach to make sure the deletion makes sense somewhat, but
- * in no way actually considers merge commits or does any inference, except for prioritizing
- * the main repo and default branches.
- *
- * @param rawCommits array of all commits to be analyzed and processed.
- * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
- * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
- * @param mainRepo the name of the queried repository. Example: torvalds/linux
- * @returns array of commits with only unique hashes. If there was a commit with a certain hash
- * in the input, a commit with the same hash will always be present in the output.
- */
-export function deleteDuplicateCommitsSimple(): UnprocessedCommitExtended[] {
-    // Find all duplicate commits and get rid of them with priority given to main repo and default branches
-    const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
-        return locations.length >= 2;
-    });
-    for (const duplicateCommit of duplicateCommits) {
-        const duplicateCommitInfo = commitMap.get(duplicateCommit[0]);
-        if (duplicateCommitInfo !== undefined) {
-            makeUniqueHierarchical(duplicateCommitInfo);
-        }
-    }
-    // From commitLocationMap, derive the true location of each commit
-    const processedCommits: UnprocessedCommitExtended[] = [];
-    for (const commit of commitLocationMap) {
-        if (commit[1].length > 1) {
-            console.error("Mistake in data structure encountered!");
-        }
-        if (commit[1].length === 0) {
-            console.error("Critical mistake in data structure encountered!");
-            continue;
-        }
-        const commitInfo = commitMap.get(commit[0]);
-        if (commitInfo !== undefined) {
-            commitInfo.branch = commit[1][0].branch;
-            commitInfo.repo = commit[1][0].repo;
-            processedCommits.push(commitInfo);
-        } else {
-            console.error("Critical mistake in data structure encountered!");
-        }
-    }
-    // Necessary to ensure consistency in next runs
-    commitMap.clear();
-    commitLocationMap.clear();
-    return processedCommits;
-}
 
 /**
  * Let's go gambling!
@@ -90,6 +42,8 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
 export function processCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
+
+
     // Initialize data structures
     globalDefaultBranches = defaultBranches;
     globalMainRepo = mainRepo;
@@ -101,7 +55,7 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
         const key = JSON.stringify({ repo: rawCommit.repo, branch: rawCommit.branch });
         const headCommit = locationHeadCommitMap.get(key);
         if (rawCommit.date !== "Unknown"
-            && (headCommit === undefined || new Date(headCommit.date).getTime() < new Date(rawCommit.date).getTime())) {
+            && (headCommit === undefined || (headCommit.date as Date).getTime() < (rawCommit.date as Date).getTime())) {
             locationHeadCommitMap.set(
                 key, rawCommit
             );
@@ -118,7 +72,6 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
 
     // Remove parentIds that dont exist in data
     removeParentIds(rawCommits);
-    console.log(rawCommits);
 
     return deleteDuplicateCommits(rawCommits);
 }
@@ -152,11 +105,11 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
     for (const rawCommit of rawCommits) {
         if (rawCommit.parentIds.length > 1) {
             if (rawCommit.parentIds.length > 2) {
-                console.error("Found a commit with more than 2 parentIds");
-                return [];
+                console.log("Found a commit with more than 2 parentIds");
+            } else {
+                // recursivity yippee
+                recursiveMergeCheck(rawCommit);
             }
-            // recursivity yippee
-            recursiveMergeCheck(rawCommit);
         }
     }
     /**
@@ -173,7 +126,7 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
         while (headCommit.parentIds.length !== 0) {
             const nextCommit = commitMap.get(headCommit.parentIds[0]);
             if (nextCommit === undefined) {
-                console.error("Critical mistake in data structure!");
+                console.error("Commit data not found!");
                 headCommit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: new Date(),url: "",message: ""
                     ,repo: "",branch: ""};
             } else {
@@ -196,10 +149,10 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
     const processedCommits: UnprocessedCommitExtended[] = [];
     for (const commit of commitLocationMap) {
         if (commit[1].length > 1) {
-            console.error("Mistake in data structure encountered!");
+            console.error("Found more than one location for a commit!");
         }
         if (commit[1].length === 0) {
-            console.error("Critical mistake in data structure encountered!");
+            console.error("Found no locations associated with a commit, commit got deleted!");
             continue;
         }
         const commitInfo = commitMap.get(commit[0]);
@@ -208,7 +161,7 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
             commitInfo.repo = commit[1][0].repo;
             processedCommits.push(commitInfo);
         } else {
-            console.error("Critical mistake in data structure encountered!");
+            console.error("Commit data not found!");
         }
     }
     // Necessary to ensure consistency in next runs
@@ -228,7 +181,7 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
 function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
     let locations = commitLocationMap.get(commit.sha);
     if (locations === undefined) {
-        console.error("Critical mistake in data structure!");
+        console.error("Commit locations not found!");
         locations = [];
     }
     // If there are multiple of this commit, take action
@@ -276,14 +229,14 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
     const secondParent = commitMap.get(mergeCommit.parentIds[1]);
     const commitLocations = commitLocationMap.get(mergeCommit.parentIds[1]);
     if (secondParent === undefined) {
-        console.error("Critical mistake in data structure!");
+        console.error("Second parent not found!");
         return;
     }
     // Get all perfect branches
     const allBranchesWithRelevantHeadCommit = locationHeadCommitMapReversed.get(secondParent.sha);
     if (allBranchesWithRelevantHeadCommit !== undefined) {
         if (allBranchesWithRelevantHeadCommit.length === 0) {
-            console.error("Critical mistake in data structure!");
+            console.error("Found no relevant head commits due to mistake in data structure!");
         } else if (allBranchesWithRelevantHeadCommit.length >= 1) { // found a perfect branch!
             deleteFromBranch(secondParent, allBranchesWithRelevantHeadCommit[0], mergeBaseCommit);
         }
@@ -373,7 +326,7 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
         // Go to parent commit and keep assigning it to the given commit location
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
-            console.error("Critical mistake in data structure!");
+            console.error("Commit data not found!");
             commit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: new Date(),url: "",message: "",
                 repo: "",branch: ""};
         } else {
@@ -381,17 +334,27 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
         }
     }
 
+    // In case this is the only branch containing this history, we do not delete the history
+    if ((commitLocationMap.get(mergeBaseCommit)?.length ?? []) === 1) {
+        return;
+    }
+
     // We have now arrived at duplicated history from the branch, so we delete itself from
     // the commit locations associated with the commit's hash
     while (true) {
         const currentLocations = commitLocationMap.get(commit.sha);
         if (currentLocations === undefined) {
-            console.error("Critical mistake in data structure!");
+            console.error("Commit location not found!");
         } else {
             // Delete the branch itself from this commit's hash
-            commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
-                return !(branch_name === branch && repo_name === repo);
-            }));
+            // First check whether we are not making a commit disappear
+            if (!currentLocations.every(({branch: branch_name, repo: repo_name}) => {
+                return branch_name === branch && repo_name === repo;
+            })) {
+                commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
+                    return !(branch_name === branch && repo_name === repo);
+                }));
+            }
         }
 
         // We have arrived at the end of its history
@@ -402,7 +365,7 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
         // We go to the parent commit and continue execution
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
-            console.error("Critical mistake in data structure!");
+            console.error("Commit data not found!");
             commit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: new Date(),url: "",message: "",
                 repo: "",branch: ""};
         } else {
@@ -431,7 +394,7 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
             if (node !== undefined && !ancestors.has(node)) {
                 ancestors.add(node);
                 if (!commitMap.has(node)) {
-                    console.error("Critical mistake in data structure!");
+                    console.error("Commit data not found!");
                 } else {
                     const parents = commitMap.get(node)?.parentIds; // Use optional chaining
                     if (parents) {
@@ -459,7 +422,7 @@ function findMergeBaseCommit(parent1: string, parent2: string): string | undefin
             }
             visited.add(node);
             if (!commitMap.has(node)) {
-                console.error("Critical mistake in data structure!");
+                console.error("Commit data not found!");
             } else {
                 const parents = commitMap.get(node)?.parentIds;
                 if (parents) {

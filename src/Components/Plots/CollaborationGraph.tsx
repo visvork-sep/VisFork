@@ -26,6 +26,11 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
     const [isPlaying, setIsPlaying] = useState(false);
     const playInterval = useRef<NodeJS.Timeout | null>(null);
 
+    useEffect(() => {
+        setCurrentDateIndex(0);
+        setIsPlaying(false);
+    }, [commitData]);
+
     // Get all unique commit dates
     const allDates = Array.from(
         new Set(commitData.map((entry) => entry.date.split("T")[0]))

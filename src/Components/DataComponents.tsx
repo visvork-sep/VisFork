@@ -7,15 +7,18 @@ import { useMemo } from "react";
 import { processCommits } from "@Utils/BranchingInference";
 
 function DataComponents() {
-    const { onFiltersChange, forks, commits, forkQuery }= useFilteredData();
+    const { onFiltersChange, forks, commits }= useFilteredData();
 
-    const mainRepo = `${forkQuery?.owner}/${forkQuery?.repo}`;
+    // Main repo is the first member of the forks list
+    const mainRepoName = useMemo(() => {
+        return `${forks[0]?.owner}/${forks[0]?.name}`;
+    }, [forks]);
 
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);
-    const removedCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepo), [
+    const removedCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepoName), [
         commits,
         defaultBranchesMap,
-        mainRepo,
+        mainRepoName,
     ]);
 
     const { forks: processedForks, commits: processedCommits } = useMemo(
@@ -28,7 +31,7 @@ function DataComponents() {
             <SplitPageLayout.Pane resizable aria-label="Configuration Pane">
                 <ConfigurationPane filterChangeHandler={onFiltersChange}/>
             </SplitPageLayout.Pane >
-            <SplitPageLayout.Content aria-label="Content">
+            <SplitPageLayout.Content aria-label="Content" width="xlarge">
                 <ApplicationBody forks={processedForks} commits={processedCommits} />
             </SplitPageLayout.Content>
         </>

@@ -11,7 +11,7 @@ function DataComponents() {
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {
-        return `${forks[0]?.owner}/${forks[0]?.name}`;
+        return `${forks[0]?.owner.login}/${forks[0]?.name}`;
     }, [forks]);
 
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);

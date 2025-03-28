@@ -2,6 +2,7 @@ import { useEffect, useRef, useMemo, useCallback, useState } from "react";
 import * as d3 from "d3";
 import { useTheme, themeGet } from "@primer/react";
 import { HistogramData } from "@VisInterfaces/HistogramData";
+import { sortDates, computeFrequency } from "./HistogramUtils";
 
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
@@ -19,36 +20,12 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
   const barColorSelected = themeGet("colors.accent.emphasis")({ theme });
 
   // Extract and sort commit dates
-  const dates = useMemo(() => {
-    const sortedCommits = [...commitData].sort(
-      (a, b) => a.date.getTime() - b.date.getTime()
-    );
-    return sortedCommits.map((commit) => commit.date);
-  }, [commitData]);
+  const dates = useMemo(() => sortDates(commitData), [commitData]);
 
   /**
    * Processes date data into a frequency map for visualization.
    */
-  const frequency = useMemo(() => {
-    // Group commits by month
-    const data = dates.map((d) => ({ date: d3.timeMonth(d) }));
-    const freqMap = d3.rollup(
-      data,
-      (v) => v.length,
-      (d) => d.date
-    );
-
-    // Fill missing months with 0
-    const minDate = d3.min(data, (d) => d.date) as Date;
-    const maxDate = d3.max(data, (d) => d.date) as Date;
-    d3.timeMonths(minDate, maxDate).forEach((d) => {
-      if (!freqMap.has(d)) freqMap.set(d, 0);
-    });
-
-    return new Map(
-      Array.from(freqMap).sort((a, b) => d3.ascending(a[0], b[0]))
-    );
-  }, [dates]);
+  const frequency = useMemo(() => computeFrequency(dates), [dates]);
 
   /**
    * Draws the bar chart.

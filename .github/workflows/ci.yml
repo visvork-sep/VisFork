@@ -45,19 +45,19 @@ jobs:
       - name: Run tests
         run: docker exec visfork-ci npm run test
 
-      - name: Authentication
-        if: github.ref == 'refs/heads/main'
-        run: |
-              docker cp ~/auth/.env visfork-ci:/workspace/.contrib
-              docker cp ~/auth/backend/.env visfork-ci:/workspace/.contrib/backend
-              docker cp ~/auth/backend/index.js visfork-ci:/workspace/.contrib/backend
+      # - name: Authentication
+      #   if: github.ref == 'refs/heads/main'
+      #   run: |
+      #         docker cp ~/auth/.env visfork-ci:/workspace/.contrib
+      #         docker cp ~/auth/backend/.env visfork-ci:/workspace/.contrib/backend
+      #         docker cp ~/auth/backend/index.js visfork-ci:/workspace/.contrib/backend
 
       - name: Build
         run: docker exec visfork-ci npm run build
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
-        run: docker cp visfork-ci:/workspace/dist/. /tmp/visfork-build
+        run: docker cp visfork-ci:/workspace/dist/. /var/www/html/react-app
 
   cleanup:
     runs-on: self-hosted

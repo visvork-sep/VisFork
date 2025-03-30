@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import * as d3 from "d3";
+import { schemeCategory10, select, } from "d3";
 import cloud from "d3-cloud";
 import { Word, processCommitMessages, lemmatizationFunction } from "./utils";
 import { createTooltip } from "./Tooltip";
@@ -59,7 +59,7 @@ const WordCloud = ({ commitData }: WordCloudData) => {
         layout.start();
 
         function draw(words: Word[]) {
-            const svg = d3.select(svgRef.current);
+            const svg = select(svgRef.current);
 
             // Clear previous word cloud
             svg.selectAll("*").remove();
@@ -77,7 +77,7 @@ const WordCloud = ({ commitData }: WordCloudData) => {
                 .enter().append("text")
                 .style("font-size", (d) => d.size + "px")
                 .style("font-family", "Impact")
-                .style("fill", (_, i) => d3.schemeCategory10[i % 10])
+                .style("fill", (_, i) => schemeCategory10[i % 10])
                 .attr("text-anchor", "middle")
                 .attr("transform", (d) => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
                 .text((d) => d.text)

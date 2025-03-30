@@ -1,7 +1,20 @@
 import { useEffect, useRef, useMemo, useCallback } from "react";
-import * as d3 from "d3";
 import { useTheme, themeGet } from "@primer/react";
 import { HistogramData } from "@VisInterfaces/HistogramData";
+import {
+    timeMonth,
+    rollup,
+    min,
+    max,
+    timeMonths,
+    ascending,
+    select,
+    timeFormat,
+    scaleBand,
+    scaleLinear,
+    brushX,
+    axisBottom
+} from "d3";
 
 /**
  * Component that renders a bar chart using D3 with brush selection functionality.
@@ -27,17 +40,17 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
      */
     const frequency = useMemo(() => {
         // Group commits by month
-        const data = dates.map(d => ({ date: d3.timeMonth(d) }));
-        const freqMap = d3.rollup(data, v => v.length, d => d.date);
+        const data = dates.map(d => ({ date: timeMonth(d) }));
+        const freqMap = rollup(data, v => v.length, d => d.date);
 
         // Fill missing months with 0
-        const minDate = d3.min(data, d => d.date) as Date;
-        const maxDate = d3.max(data, d => d.date) as Date;
-        d3.timeMonths(minDate, maxDate).forEach(d => {
+        const minDate = min(data, d => d.date) as Date;
+        const maxDate = max(data, d => d.date) as Date;
+        timeMonths(minDate, maxDate).forEach(d => {
             if (!freqMap.has(d)) freqMap.set(d, 0);
         });
 
-        return new Map(Array.from(freqMap).sort((a, b) => d3.ascending(a[0], b[0])));
+        return new Map(Array.from(freqMap).sort((a, b) => ascending(a[0], b[0])));
     }, [dates]);
 
     /**
@@ -47,7 +60,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         if (!svgRef.current) return;
 
         // Setup chart dimensions
-        const svg = d3.select(svgRef.current);
+        const svg = select(svgRef.current);
         const container = svg.node()?.parentElement as HTMLElement;
         const width = container.clientWidth;
         const height = 300;
@@ -61,22 +74,22 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         const focusWidth = width - focusMargin.left - focusMargin.right;
 
         // Define scales for context chart
-        const formattedDates = Array.from(frequency.keys()).map(d => d3.timeFormat("%b %Y")(d));
-        const xScaleContext = d3.scaleBand()
+        const formattedDates = Array.from(frequency.keys()).map(d => timeFormat("%b %Y")(d));
+        const xScaleContext = scaleBand()
             .domain(formattedDates)
             .range([0, contextWidth])
             .padding(0.1);
-        const yScaleContext = d3.scaleLinear()
-            .domain([0, d3.max(Array.from(frequency.values())) || 1])
+        const yScaleContext = scaleLinear()
+            .domain([0, max(Array.from(frequency.values())) || 1])
             .range([contextHeight, 0]);
 
         // Define scales for focus chart
-        let xScaleFocus = d3.scaleBand()
+        let xScaleFocus = scaleBand()
             .domain(formattedDates)
             .range([0, focusWidth])
             .padding(0.1);
-        const yScaleFocus = d3.scaleLinear()
-            .domain([0, d3.max(Array.from(frequency.values())) || 1])
+        const yScaleFocus = scaleLinear()
+            .domain([0, max(Array.from(frequency.values())) || 1])
             .range([focusHeight, 0]);
 
         // Set SVG size
@@ -97,7 +110,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .enter()
             .append("rect")
             .attr("class", "bar-bg")
-            .attr("x", d => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("x", d => xScaleContext(timeFormat("%b %Y")(d[0])) || 0)
             .attr("y", 0)
             .attr("width", xScaleContext.bandwidth())
             .attr("height", contextHeight)
@@ -109,14 +122,14 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", d => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr("x", d => xScaleContext(timeFormat("%b %Y")(d[0])) || 0)
             .attr("y", d => yScaleContext(d[1]))
             .attr("width", xScaleContext.bandwidth())
             .attr("height", d => contextHeight - yScaleContext(d[1]))
             .style("fill", barColor);
 
         // Brush setup
-        const brush = d3.brushX()
+        const brush = brushX()
             .extent([[0, 0], [contextWidth, contextHeight]])
             .on("end", ({ selection }) => {
                 if (selection) {
@@ -125,7 +138,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                     chartContext.selectAll(".bar-bg")
                         .style("fill", (d: unknown) => {
                             const data = d as [Date, number];
-                            const pos = xScaleContext(d3.timeFormat("%b %Y")(data[0])) as number;
+                            const pos = xScaleContext(timeFormat("%b %Y")(data[0])) as number;
                             return pos >= x0 && pos <= x1 ? bgColorSelected : bgColor;
                         });
 
@@ -133,19 +146,19 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                     chartContext.selectAll(".bar")
                         .style("fill", (d: unknown) => {
                             const data = d as [Date, number];
-                            const pos = xScaleContext(d3.timeFormat("%b %Y")(data[0])) as number;
+                            const pos = xScaleContext(timeFormat("%b %Y")(data[0])) as number;
                             return pos >= x0 && pos <= x1 ? barColorSelected : barColor;
                         });
 
                     // Store selected date range
                     const selectedDates = Array.from(frequency).filter(d => {
-                        const pos = xScaleContext(d3.timeFormat("%b %Y")(d[0])) as number;
+                        const pos = xScaleContext(timeFormat("%b %Y")(d[0])) as number;
                         return pos >= x0 && pos <= x1;
                     });
 
                     // Update focus chart
-                    xScaleFocus = d3.scaleBand()
-                        .domain(selectedDates.map(d => d3.timeFormat("%b %Y")(d[0])))
+                    xScaleFocus = scaleBand()
+                        .domain(selectedDates.map(d => timeFormat("%b %Y")(d[0])))
                         .range([0, focusWidth])
                         .padding(0.1);
                     chartFocus.selectAll("*").remove();
@@ -156,7 +169,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         .enter()
                         .append("rect")
                         .attr("class", "bar-bg")
-                        .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
+                        .attr("x", d => xScaleFocus(timeFormat("%b %Y")(d[0])) || 0)
                         .attr("y", 0)
                         .attr("width", xScaleFocus.bandwidth())
                         .attr("height", focusHeight)
@@ -168,7 +181,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         .enter()
                         .append("rect")
                         .attr("class", "bar")
-                        .attr("x", d => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
+                        .attr("x", d => xScaleFocus(timeFormat("%b %Y")(d[0])) || 0)
                         .attr("y", d => yScaleFocus(d[1]))
                         .attr("width", xScaleFocus.bandwidth())
                         .attr("height", d => focusHeight - yScaleFocus(d[1]))
@@ -176,7 +189,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         // Tooltip event handlers
                         .on("mouseover", function () { tooltip.style("opacity", 1); })
                         .on("mousemove", function (event, d) {
-                            tooltip.html(`Date: ${d3.timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`)
+                            tooltip.html(`Date: ${timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`)
                                 .style("left", event.pageX + 10 + "px")
                                 .style("top", event.pageY + 10 + "px");
                         })
@@ -189,7 +202,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         const labelGroup = chartFocus.append("g").attr("class", "selection-label");
 
                         // Get start and end date
-                        const dateFormat = d3.timeFormat("%B %Y");
+                        const dateFormat = timeFormat("%B %Y");
                         const startOfSelection = selectedDates[0]?.[0];
 
                         const endOfSelection =
@@ -235,7 +248,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         chartContext.append("g")
             .attr("transform", `translate(0, ${contextHeight})`)
             .call(
-                d3.axisBottom(xScaleContext)
+                axisBottom(xScaleContext)
                     .tickValues(formattedDates.filter((_, i) => i % skip === 0))
                     .tickFormat(d => d)
             )
@@ -257,7 +270,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .call(brush.move, [0, contextWidth / 5]);
 
         // Tooltip setup
-        const tooltip = d3.select("body").append("div")
+        const tooltip = select("body").append("div")
             .attr("class", "tooltip")
             .style("position", "absolute")
             .style("padding", "6px")

@@ -33,7 +33,7 @@ function DataComponents() {
 
     const configurationPane = useMemo(() => {
         return (
-            <SplitPageLayout.Pane width="medium">
+            <SplitPageLayout.Pane aria-label="Pane" width="medium">
                 <ConfigurationPane filterChangeHandler={onFiltersChange} />
             </SplitPageLayout.Pane>
         );
@@ -49,7 +49,7 @@ function DataComponents() {
 
 // TODO: Change preprocessor to actually calculate commit type.
 function preprocessor(commits: UnprocessedCommitExtended[],
-    forks: UnprocessedRepository[]): { forks: Repository[], commits: Commit[] } {
+    forks: UnprocessedRepository[]): { forks: Repository[], commits: Commit[]; } {
     const processedForks: Repository[] = forks.map(fork => ({
         id: fork.id,
         name: `${fork.owner.login}/${fork.name}`,

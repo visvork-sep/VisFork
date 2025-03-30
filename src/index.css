@@ -8,3 +8,13 @@
   color: var(--fgColor-default);
   background-color: var(--bgColor-default);
 }
+
+html, body, #root, .split-page-layout {
+    height: 100vh; /* Make sure the layout takes full height */
+    display: flex;
+    flex-direction: column;
+}
+
+.split-page-layout > div {
+    flex: 1; /* Push footer down */
+}

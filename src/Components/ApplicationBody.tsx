@@ -1,4 +1,4 @@
-import { Box, Heading, Stack } from "@primer/react";
+import { Box, Stack } from "@primer/react";
 import { useMeasure } from "@uidotdev/usehooks";
 
 import Histogram from "./Plots/Histogram/Histogram.tsx";
@@ -42,6 +42,20 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
   return (
     <Stack>
       <Dropdown
+        open={true}
+        summaryText="Fork List"
+        infoButton={
+          <InfoButton
+            title="Fork List"
+            shortDescription={visualizationDescriptions.forkList.short}
+            fullDescription={visualizationDescriptions.forkList.full}
+          />
+        }
+      >
+        <ForkList {...forkListData} />
+      </Dropdown>
+      <Dropdown
+        open={true}
         summaryText="Histogram"
         infoButton={
           <InfoButton
@@ -58,18 +72,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
       </Dropdown>
 
       <Dropdown
-        summaryText="Fork List"
-        infoButton={
-          <InfoButton
-            title="Fork List"
-            shortDescription={visualizationDescriptions.forkList.short}
-            fullDescription={visualizationDescriptions.forkList.full}
-          />
-        }
-      >
-        <ForkList {...forkListData} />
-      </Dropdown>
-      <Dropdown
+        open={true}
         summaryText="Commit Timeline"
         infoButton={
           <InfoButton
@@ -87,9 +90,6 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
             minHeight: "200px", // Set an initial height
           }}
         >
-          <Heading variant="medium" style={{ textAlign: "center" }}>
-            Commit Timeline
-          </Heading>
           <CommitTimeline
             commitData={timelineData.commitData}
             handleTimelineSelection={handleTimelineSelection}

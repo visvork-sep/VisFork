@@ -115,7 +115,10 @@ function CommitTable({ commitData }: CommitTableData) {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     aria-label="Search commit messages"
-                    sx={{ width: "30%" }}
+                    sx={{
+                        width: "30%",
+                        minWidth: "200px",
+                    }}
                 />
             </Box>
 

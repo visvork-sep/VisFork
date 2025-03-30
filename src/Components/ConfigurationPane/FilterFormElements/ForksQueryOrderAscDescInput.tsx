@@ -12,6 +12,10 @@ const options = Object.values(SORT_DIRECTION).map((option) =>
     (<Select.Option value={option.value} key={option.label}>{option.label}</Select.Option>)
 );
 
+/**
+* Temporarily unused because the REST API does not support ascending/descending selection.
+* Activate in future if a swap to GraphQL is made.
+*/
 function ForksQueryOrderAscDescInput({ onChangeHandler, selected, error }: ForksQueryOrderAscDescInputProps) {
     return (
         <FormControl>

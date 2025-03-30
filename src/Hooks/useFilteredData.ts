@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import { UnprocessedCommitExtended,
+import {
+    UnprocessedCommitExtended,
     ForkFilter,
     RepositoryInfoWithCommits,
     ForkQueryState,
@@ -27,7 +28,7 @@ export function useFilteredData() {
         setFilters(filters);
     };
 
-    const {data: forkData, isLoading: isLoadingFork, error: forkError} = useFetchForks(forkQueryState);
+    const { data: forkData, isLoading: isLoadingFork, error: forkError } = useFetchForks(forkQueryState);
 
     const simplifiedForkData = useMemo(() => forkData?.data ?
         forkData.data.map(fork => toForkInfo(fork)) : [], [forkData]);
@@ -38,14 +39,14 @@ export function useFilteredData() {
             ?
             simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters))
             :
-            [];},
-    [simplifiedForkData, filters]);
+            [];
+    }, [simplifiedForkData, filters]);
 
 
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
 
     const { commitData, isLoading: isLoadingCommits, error: commitError } = commitResponses
-        .reduce<{commitData?: GitHubAPICommit[][], isLoading: boolean, error: Error | null}>((acc, response) => {
+        .reduce<{ commitData?: GitHubAPICommit[][], isLoading: boolean, error: Error | null }>((acc, response) => {
             if ((acc.commitData && response.data?.data)) {
                 acc.commitData.push(response.data.data);
             }
@@ -66,18 +67,19 @@ export function useFilteredData() {
 
     const simplifiedCommitData: UnprocessedCommitExtended[][] = useMemo(() => {
         return commitData ?
-            commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];}
+            commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
+    }
     , [commitData]);
 
-    let mainRepositoryInfo: MainRepositoryInfo| undefined = undefined;
+    let mainRepositoryInfo: MainRepositoryInfo | undefined = undefined;
     if (!forkError
-        && !commitError
-        && !isLoadingFork
-        && !isLoadingCommits
-        && simplifiedForkData.length > 0
-        && simplifiedCommitData.length == simplifiedForkData.length
-        && forkQueryState?.owner
-        && forkQueryState?.repo
+      && !commitError
+      && !isLoadingFork
+      && !isLoadingCommits
+      && simplifiedForkData.length > 0
+      && simplifiedCommitData.length == simplifiedForkData.length
+      && forkQueryState?.owner
+      && forkQueryState?.repo
     ) {
         const completeForkData: RepositoryInfoWithCommits[] = simplifiedForkData.map((fork, index) =>
             ({
@@ -104,21 +106,21 @@ export function useFilteredData() {
     }
 
     const flattenedCommits: UnprocessedCommitExtended[] =
-        mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
-            const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
-                ...commit,
-                repo: `${fork.owner.login}/${fork.name}`,
-                branch: fork.defaultBranch,
+      mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
+          const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
+              ...commit,
+              repo: `${fork.owner.login}/${fork.name}`,
+              branch: fork.defaultBranch,
 
-            }));
+          }));
 
-            acc = acc.concat(commits);
-            return acc;
-        }, []) : [];
+          acc = acc.concat(commits);
+          return acc;
+      }, []) : [];
 
     // Add final update only if all data has been loaded
     useEffect(() => {
-        if(!isLoadingFork && !isLoadingCommits && filteredForks.length > 0 && flattenedCommits.length > 0) {
+        if (!isLoadingFork && !isLoadingCommits && filteredForks.length > 0 && flattenedCommits.length > 0) {
             setFinalForkData(filteredForks);
             setFinalCommitData(flattenedCommits);
         }

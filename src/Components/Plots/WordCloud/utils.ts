@@ -22,12 +22,30 @@ export const lemmatizationFunction = (token: string) => {
     if (typeof token !== "string") {
         return token;
     }
-    const lemmatized = lemmatizer(token);
-    if (typeof lemmatized !== "string") {
-        console.error(`Lemmatizer returned non-string value for token "${token}":`, lemmatized);
-        return token;
+
+    // List of known prototype properties to exclude
+    const prototypeProperties = [
+        "constructor", "__proto__", "hasownproperty", 
+        "isprototypeof", "propertyisenumerable", 
+        "tolocalestring", "tostring", "valueof"
+    ];
+
+    // Check if the token is a prototype property, which would cause an internal error
+    if (prototypeProperties.includes(token)) {
+        return token; // Return token as-is (could be changed for something better)
     }
-    return lemmatized;
+
+    try {
+        const lemmatized = lemmatizer(token);
+        if (typeof lemmatized !== "string") {
+            console.error(`Lemmatizer returned non-string value for token "${token}":`, lemmatized);
+            return token;
+        }
+        return lemmatized;
+    } catch (error) {
+        console.error(`Error in lemmatizer for token "${token}":`, error);
+        return token; // Fallback to the original token
+    }
 };
 
 

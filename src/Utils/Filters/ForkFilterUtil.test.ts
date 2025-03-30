@@ -109,7 +109,6 @@ describe("Regular functionality", () => {
 
         it("should return an array containing the same fork(s) - fork last update was within last n months", () => {
             filter.updatedInLastMonths = 240; // 20 years
-            console.log(`last pushed ${fork.last_pushed}`);
             expect(
                 [fork].filter((fork => isValidForkByFilter(fork, filter)))
             ).toStrictEqual([fork]);

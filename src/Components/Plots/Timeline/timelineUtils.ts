@@ -1,5 +1,16 @@
-import * as d3 from "d3";
-import * as d3dag from "d3-dag";
+import { interpolateRainbow } from "d3-scale-chromatic";
+import { min, max } from "d3-array";
+import { Selection, BaseType } from "d3-selection";
+import { timeFormat } from "d3-time-format";
+import { symbol, symbolCircle, symbolSquare, symbolTriangle } from "d3-shape";
+
+import {
+    GraphNode,
+    MutGraphNode,
+    MutGraphLink,
+    Rank,
+} from "d3-dag";
+
 import type { TimelineDetails as Commit } from "@VisInterfaces/TimelineData";
 import * as c from "./timelineConstants"; 
 
@@ -15,9 +26,9 @@ export interface GroupedNode extends Commit {
 /**
  * Type used for brushing selection
  */
-export type NodeSelection = d3.Selection<
+export type NodeSelection = Selection<
     SVGCircleElement | SVGPolygonElement,
-    d3dag.MutGraphNode<Commit | GroupedNode, undefined>,
+    MutGraphNode<Commit | GroupedNode, undefined>,
     SVGGElement,
     unknown
 >;
@@ -31,7 +42,7 @@ export function buildRepoColorMap(commits: Commit[]): Map<string, string> {
     const map = new Map<string, string>();
   
     repos.forEach((repo, i) => {
-        map.set(repo, d3.interpolateRainbow(i / repos.length));
+        map.set(repo, interpolateRainbow(i / repos.length));
     });
   
     return map;
@@ -42,8 +53,8 @@ export function buildRepoColorMap(commits: Commit[]): Map<string, string> {
  * Custom d3-dag Rank acessor, orders commits by date
  * (earlier commits come first) 
  */
-export const dateRankOperator: d3dag.Rank<Commit | GroupedNode, unknown> = (
-    node: d3dag.GraphNode<Commit, unknown>
+export const dateRankOperator: Rank<Commit | GroupedNode, unknown> = (
+    node: GraphNode<Commit, unknown>
 ): number => {
     const date = new Date(node.data.date);
     return date.getTime();
@@ -69,7 +80,7 @@ export function groupBy<T, K>(items: T[], keyFn: (item: T) => K): Map<K, T[]> {
  * 
  */
 export function assignUniqueLanes(
-    nodes: Iterable<d3dag.GraphNode<Commit | GroupedNode, unknown>>
+    nodes: Iterable<GraphNode<Commit | GroupedNode, unknown>>
 ) {
     // group nodes by repo.
     const repoGroups = groupBy(Array.from(nodes), (node) => node.data.repo);
@@ -77,9 +88,9 @@ export function assignUniqueLanes(
     // sort repos by the date of their earliest commit.
     const repoOrder = Array.from(repoGroups.entries()).sort((a, b) => {
         const earliestA =
-                d3.min(a[1].map((n) => new Date(n.data.date).getTime())) || 0;
+                min(a[1].map((n) => new Date(n.data.date).getTime())) || 0;
         const earliestB =
-                d3.min(b[1].map((n) => new Date(n.data.date).getTime())) || 0;
+                min(b[1].map((n) => new Date(n.data.date).getTime())) || 0;
         return earliestA - earliestB;
     });
 
@@ -88,8 +99,8 @@ export function assignUniqueLanes(
 
     // shift nodes for each repo
     repoOrder.forEach(([repo, repoNodes]) => {
-        const minX = d3.min(repoNodes, (n) => n.y) || 0;
-        const maxX = d3.max(repoNodes, (n) => n.y) || 0;
+        const minX = min(repoNodes, (n) => n.y) || 0;
+        const maxX = max(repoNodes, (n) => n.y) || 0;
         const height = maxX - minX;
         repoNodes.forEach((node) => {
             node.y = cumulativeOffset + (node.y - minX);
@@ -101,10 +112,40 @@ export function assignUniqueLanes(
     return { lanes, totalHeight: cumulativeOffset };
 }
 
-export function groupNodes(data: Commit[]): GroupedNode[] {
-    const sortedCommits = data.slice().sort(
+function topologicalSort(commits: Commit[]): Commit[] {
+    const sortedCommits: Commit[] = [];
+    const visited = new Set<string>();
+
+    const commitMap = new Map(commits.map(commit => [commit.id, commit]));
+
+    function visit(commit: Commit) {
+        if (!visited.has(commit.id)) {
+            visited.add(commit.id);
+            for (const parentId of commit.parentIds) {
+                const parentCommit = commitMap.get(parentId);
+                if (parentCommit) { // if a parent commit exists
+                    visit(parentCommit);
+                }
+            }
+            sortedCommits.push(commit);
+        }
+    }
+
+    // sort commits initially by date
+    const dateSortedCommits = commits.slice().sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );;
+    );
+
+    // topological sorting
+    for (const commit of dateSortedCommits) {
+        visit(commit);
+    }
+
+    return sortedCommits;
+}
+
+export function groupNodes(data: Commit[]): GroupedNode[] {
+    const sortedCommits = topologicalSort(data);
 
     const groupedNodes: GroupedNode[] = [];
     const commitLookup = new Map<string, Commit>();
@@ -215,14 +256,15 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
         findParent(mnode);
     }
 
+    console.log(groupedNodes);
+
     return groupedNodes;
 }
 
 export function drawLanes(
-    g: d3.Selection<SVGGElement, unknown, null, undefined>,
+    g: Selection<SVGGElement, unknown, null, undefined>,
     lanes: Record<string, { minX: number; maxX: number }>,
-    width: number,
-    c_width: number | undefined,
+    svgWidth: number
 ) {
     const backgrounds = g.append("g").attr("class", "repo-backgrounds");
   
@@ -232,7 +274,7 @@ export function drawLanes(
         backgrounds.append("rect")
             .attr("x", -c.MARGIN.left)
             .attr("y", minX - c.NODE_RADIUS)
-            .attr("width", Math.max(width + c.MARGIN.left * 2, c_width ?? 0))
+            .attr("width", svgWidth)
             .attr("height", maxX - minX + c.NODE_RADIUS * 2)
             .attr("fill", laneColor)
             .attr("stroke", "#dde")
@@ -250,12 +292,12 @@ export function drawLanes(
 }
 
 export function drawTimelineMarkers(
-    g: d3.Selection<SVGGElement, unknown, null, undefined>,
-    sortedNodes: d3dag.GraphNode<Commit | GroupedNode, unknown>[],
+    g: Selection<SVGGElement, unknown, null, undefined>,
+    sortedNodes: GraphNode<Commit | GroupedNode, unknown>[],
     totalHeight: number,
 ) {
-    const formatMonth = d3.timeFormat("%b");
-    const formatYear = d3.timeFormat("%Y");
+    const formatMonth = timeFormat("%b");
+    const formatYear = timeFormat("%Y");
     let lastMonth = "";
     let lastYear = "";
     
@@ -287,7 +329,7 @@ export function drawTimelineMarkers(
     
                 monthGroup.append("text")
                     .attr("x", labelX)
-                    .attr("y", totalHeight + c.MARGIN.bottom - 10)
+                    .attr("y", totalHeight + c.MARGIN.bottom)
                     .attr("font-size", 12)
                     .style("text-anchor", "middle")
                     .style("fill", "black")
@@ -302,7 +344,7 @@ export function drawTimelineMarkers(
     }
 }
 
-export function drawEdgeCurve(d: d3dag.MutGraphLink<Commit | GroupedNode, undefined>) {
+export function drawEdgeCurve(d: MutGraphLink<Commit | GroupedNode, undefined>) {
     if (d.source.y < d.target.y) {
         return `
                 M${d.source.x},${d.source.y}
@@ -330,9 +372,9 @@ export function drawEdgeCurve(d: d3dag.MutGraphLink<Commit | GroupedNode, undefi
 }
 
 export function drawMergedNodes(
-    g: d3.Selection<SVGGElement, unknown, null, undefined>,
+    g: Selection<SVGGElement, unknown, null, undefined>,
     colorMap: Map<string, string>,
-    mergedNodes: d3dag.MutGraphNode<GroupedNode, undefined>[]) {
+    mergedNodes: MutGraphNode<GroupedNode, undefined>[]) {
     
     const mergedCircles = mergedNodes.filter(node => node.data.branch === "forkParent");
     const circles = g.append("g")
@@ -375,45 +417,27 @@ export function drawMergedNodes(
 }
 
 export function drawNormalNodes(
-    g: d3.Selection<SVGGElement, unknown, null, undefined>,
+    g: Selection<SVGGElement, unknown, null, undefined>,
     colorMap: Map<string, string>,
-    sortedNodes: d3dag.MutGraphNode<Commit | GroupedNode, undefined>[],
-    defaultBranches: Record<string, string>
+    sortedNodes: MutGraphNode<Commit | GroupedNode, undefined>[],
 ) {
-    const branchCircles = sortedNodes.filter(node =>
-        node.data.branch !== defaultBranches[node.data.repo]);
-    const defaultTriangles = sortedNodes.filter(node =>
-        node.data.branch === defaultBranches[node.data.repo]);
     
     const circles = g.append("g")
         .selectAll("circle")
-        .data(branchCircles as d3dag.MutGraphNode<Commit, undefined>[])
+        .data(sortedNodes)
         .enter()
         .append("circle")
         .attr("cx", d => d.x ?? 0)
         .attr("cy", d => d.y ?? 0)
         .attr("r", c.NODE_RADIUS)
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
-    
-    const triangles = g.append("g")
-        .selectAll("polygon")
-        .data(defaultTriangles as d3dag.MutGraphNode<Commit, undefined>[])
-        .enter()
-        .append("polygon")
-        .attr("points", `0,-${c.NODE_RADIUS} ${c.NODE_RADIUS},${c.NODE_RADIUS} -${c.NODE_RADIUS},${c.NODE_RADIUS}`)
-        .attr("transform", d => {
-            const x = d.x ?? 0;
-            const y = d.y ?? 0;
-            return `translate(${x},${y})`;
-        })
-        .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
-    return {circles, triangles};
+    return {circles};
 }
 
 export function drawLegends( 
     merged : boolean, 
-    legend: d3.Selection<d3.BaseType, unknown, HTMLElement, undefined>, 
+    legend: Selection<BaseType, unknown, HTMLElement, undefined>, 
     colorMap: Map<string, string>) {
         
     const colorLegend = legend.append("div").attr("id", "color-legend");
@@ -442,43 +466,45 @@ export function drawLegends(
             .style("margin-left", c.LEGEND_TEXT_MARGIN);
     });
 
-    const shapeLegend = legend
-        .append("div")
-        .attr("id", "shape-legend")
-        .style("margin-left", c.LEGENDS_SPACING); // spacing to the right of color legend
-
-    // node shape meaning changes depending on type of view 
-    const shapeLegendData = [
-        { label: `${merged ? "Fork parent" : "Non-default branch"}`, shape: d3.symbolCircle },
-        merged ? { label: "Default commits", shape: d3.symbolSquare } : null,
-        { label: `${merged ? "Merge commit" : "Default branch"}`, shape: d3.symbolTriangle },
-    ].filter((d): d is { label: string; shape: d3.SymbolType; } => d !== null);
-
-    shapeLegendData.forEach(({ label, shape }) => {
-        const item = shapeLegend
+    if (merged) {
+        const shapeLegend = legend
             .append("div")
-            .style("display", "flex")
-            .style("align-items", "center")
-            .style("margin-right", "8px")
-            .style("margin-bottom", "4px");
+            .attr("id", "shape-legend")
+            .style("margin-left", c.LEGENDS_SPACING); // spacing to the right of color legend
 
-        item
-            .append("svg")
-            .attr("width", c.LEGEND_SIZE)
-            .attr("height", c.LEGEND_SIZE)
-            .append("path")
-            .attr("transform", `translate(${c.LEGEND_SIZE / 2}, ${c.LEGEND_SIZE / 2})`)
-            .attr(
-                "d",
-                d3.symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE)
-            )
-            .attr("fill", "#555");
+        const shapeLegendData = [
+            { label: "Fork parent", shape: symbolCircle },
+            { label: "Commit(s) without deviations", shape: symbolSquare },
+            { label: "Merge commit" , shape: symbolTriangle },
+        ];
 
-        item
-            .append("text")
-            .text(label)
-            .style("margin-left", c.LEGEND_TEXT_MARGIN);
-    });
+        shapeLegendData.forEach(({ label, shape }) => {
+            const item = shapeLegend
+                .append("div")
+                .style("display", "flex")
+                .style("align-items", "center")
+                .style("margin-right", "8px")
+                .style("margin-bottom", "4px");
+
+            item
+                .append("svg")
+                .attr("width", c.LEGEND_SIZE)
+                .attr("height", c.LEGEND_SIZE)
+                .style("flex-shrink", "0")
+                .append("path")
+                .attr("transform", `translate(${c.LEGEND_SIZE / 2}, ${c.LEGEND_SIZE / 2})`)
+                .attr(
+                    "d",
+                    symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE)
+                )
+                .attr("fill", "#555");
+
+            item
+                .append("text")
+                .text(label)
+                .style("margin-left", c.LEGEND_TEXT_MARGIN);
+        });
+    }
 }
 
 export const onHover = (e: React.MouseEvent<HTMLButtonElement>) => 

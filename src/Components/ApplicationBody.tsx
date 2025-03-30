@@ -1,6 +1,4 @@
-import { Box, Heading, Stack } from "@primer/react";
-import { useMeasure } from "@uidotdev/usehooks";
-
+import { Stack } from "@primer/react";
 import Histogram from "./Plots/Histogram.tsx";
 import ForkList from "@Components/Plots/ForkList";
 import CommitTimeline from "./Plots/Timeline/CommitTimeline.tsx";
@@ -13,6 +11,7 @@ import { useVisualizationData } from "@Hooks/useVisualizationData";
 import { Commit, Repository } from "@Types/LogicLayerTypes.ts";
 import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
 import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
+import exampleData from "./Plots/dummy_data2.json";
 
 
 interface ApplicationBodyProps {
@@ -21,7 +20,7 @@ interface ApplicationBodyProps {
 }
 function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
 
-    const { visData, handlers, defaultBranches } =
+    const { visData, handlers} =
         useVisualizationData(forks, commits);
 
     const {
@@ -35,9 +34,6 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
     } = visData;
 
     const { handleHistogramSelection, handleTimelineSelection } = handlers;
-
-    const [measureRefCommitTimeline, { width }] = useMeasure();
-    const heightCommitTimelineSVG = 600;
 
     return (
         <Stack>
@@ -75,21 +71,10 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
                     />
                 }
             >
-                <Box ref={measureRefCommitTimeline}
-                    style={{
-                        resize: "vertical",
-                        overflow: "hidden", // Ensure resizing works
-                        minHeight: "200px", // Set an initial height
-                    }}>
-
-                    <Heading variant="medium" style={{ textAlign: "center" }}>Commit Timeline</Heading>
-                    <CommitTimeline
-                        commitData={timelineData.commitData}
-                        handleTimelineSelection={handleTimelineSelection}
-                        c_width={width ?? 0}
-                        c_height={heightCommitTimelineSVG}
-                        defaultBranches={defaultBranches}/>
-                </Box>
+                <CommitTimeline
+                    commitData={exampleData}
+                    //commitData={timelineData.commitData}
+                    handleTimelineSelection={handleTimelineSelection}/>
             </Dropdown>
             <Dropdown summaryText="Commit Table"
                 infoButton={

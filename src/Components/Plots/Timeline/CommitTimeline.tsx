@@ -1,6 +1,15 @@
-import {useRef, useEffect, useState, useMemo} from "react";
-import * as d3 from "d3";
-import * as d3dag from "d3-dag";
+import {useRef, useEffect, useState, useMemo, useCallback} from "react";
+import { select } from "d3-selection";
+import { brush } from "d3-brush";
+import type { D3BrushEvent } from "d3-brush";
+import {
+    graphStratify,
+    grid,
+    tweakFlip,
+    laneGreedy,
+    MutGraph,
+    MutGraphNode,
+} from "d3-dag";
 
 import { TimelineProps, TimelineDetails as Commit } from "@VisInterfaces/TimelineData";
 import { GroupedNode, NodeSelection } from "./timelineUtils";
@@ -8,18 +17,17 @@ import * as utils from "./timelineUtils";
 import * as c from "./timelineConstants"; 
 
 
-function CommitTimeline({ commitData,
-    c_width, c_height,
-    defaultBranches,
-    handleTimelineSelection }: TimelineProps) {
-
-    const svgRef = useRef<SVGSVGElement>(null);
+function CommitTimeline({ commitData, handleTimelineSelection }: TimelineProps) {
     const [merged, setMerged] = useState(false); // state for merged view
     const [selectAll, setSelectAll] = useState(false); // state for selection
+
+    const svgRef = useRef<SVGSVGElement | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null); // parent container
+
     const colorMap = utils.buildRepoColorMap(commitData);
 
     // precompute both views, update only when data changes
-    const builder = d3dag.graphStratify();
+    const builder = graphStratify();
     const dagMerged = useMemo(() => {
         try {
             return builder(utils.groupNodes(commitData) as GroupedNode[]);
@@ -37,33 +45,34 @@ function CommitTimeline({ commitData,
             return null;
         }
     }, [commitData]);
-  
 
-    useEffect(() => {
-        if (!svgRef.current || !commitData.length) return;
+    const drawGraph = useCallback(() => {
+        if (!svgRef.current || !commitData.length || !dagMerged || !dagFull) return;
 
         // clear previous visualization
-        d3.select(svgRef.current).selectAll("*").remove();
-        d3.select("#dag-legends").selectAll("*").remove();
+        select(svgRef.current).selectAll("*").remove();
+        select("#dag-legends").selectAll("*").remove();
 
-        let dag: d3dag.MutGraph<Commit | GroupedNode, undefined> | null = null;
-        dag = merged ? dagMerged as d3dag.MutGraph<Commit | GroupedNode, undefined>: 
-        dagFull as d3dag.MutGraph<Commit | GroupedNode, undefined>; 
+        let dag: MutGraph<Commit | GroupedNode, undefined> | null = null;
+        dag = merged ? dagMerged as MutGraph<Commit | GroupedNode, undefined>: 
+        dagFull as MutGraph<Commit | GroupedNode, undefined>; 
 
-        const layout = d3dag.grid()
+        const layout = grid()
             .nodeSize([c.NODE_RADIUS * 2, c.NODE_RADIUS * 2])
             .gap([5, 5])
-            .tweaks([d3dag.tweakFlip("diagonal")])
+            .tweaks([tweakFlip("diagonal")])
             .rank(utils.dateRankOperator)
-            .lane(d3dag.laneGreedy().topDown(true).compressed(false));
+            .lane(laneGreedy().topDown(true).compressed(false));
 
         // initial dimensions, height will be overwritten
-        const { width, height } = layout(dag);
+        let { width, height } = layout(dag);
 
-        const svgWidth = Math.max(width + c.MARGIN.left + c.MARGIN.right, c_width ?? 0);
-        const svg = d3.select(svgRef.current)
-            .attr("width", svgWidth)
-            .attr("height", height + c.MARGIN.top + c.MARGIN.bottom);
+        width = Math.max(width + c.MARGIN.left + c.MARGIN.right, 
+            containerRef.current?.clientWidth ?? 0);
+        const svg = select(svgRef.current)
+            .attr("width", width)
+            .attr("height", height + c.MARGIN.top + c.MARGIN.bottom)
+            .attr("viewBox", `0 0 ${width} ${height + c.MARGIN.top + c.MARGIN.bottom}`);
         const g = svg.append("g")
             .attr("transform", `translate(${c.MARGIN.left},${c.MARGIN.top})`);
 
@@ -74,11 +83,14 @@ function CommitTimeline({ commitData,
 
         // apply custom layout 
         const { lanes, totalHeight } = utils.assignUniqueLanes(sortedNodes);
+        height = totalHeight + c.MARGIN.top + c.MARGIN.bottom;
         // adjust height to custom layout
-        d3.select(svgRef.current).attr("height", totalHeight + c.MARGIN.top + c.MARGIN.bottom);
+        select(svgRef.current).attr("height", height)
+            .attr("viewBox", `0 0 ${width} ${height}`);
+        
 
         // lane shading and author labels
-        utils.drawLanes(g, lanes, width, c_width);
+        utils.drawLanes(g, lanes, width);
 
         // month/year labels
         if (!merged) {
@@ -90,7 +102,7 @@ function CommitTimeline({ commitData,
             g.append("rect")
                 .attr("class", "selection-overlay")
                 .attr("x", 0).attr("y", c.MARGIN.top)
-                .attr("width", svgWidth).attr("height", totalHeight - c.MARGIN.bottom - c.MARGIN.top)
+                .attr("width", width).attr("height", totalHeight - c.MARGIN.bottom - c.MARGIN.top)
                 .style("fill", "#777")
                 .style("fill-opacity", "0.3");
         } else {
@@ -99,14 +111,14 @@ function CommitTimeline({ commitData,
 
         let brushSelection: [[number, number], [number, number]] = [[0, 0], [0, 0]];
 
-        const brushStart = (event: d3.D3BrushEvent<unknown>) => {
+        const brushStart = (event: D3BrushEvent<unknown>) => {
             setSelectAll(false);
             if (event.sourceEvent && event.sourceEvent.type !== "end") {
                 brushSelection = [[0, 0], [0, 0]];
             } 
         };
 
-        function brushEnd(event: d3.D3BrushEvent<unknown>) {
+        function brushEnd(event: D3BrushEvent<unknown>) {
             if (event.selection === null || !event.sourceEvent) return; // exit if no selection
 
             brushSelection = event.selection as [[number, number], [number, number]];
@@ -119,17 +131,16 @@ function CommitTimeline({ commitData,
                 return x >= x0 && x <= x1 && y >= y0 && y <= y1;
             })
                 .flatMap(node =>
-                    merged ? (node as d3dag.MutGraphNode<GroupedNode, unknown>).data.nodes : [node.data.id]);
+                    merged ? (node as MutGraphNode<GroupedNode, unknown>).data.nodes : [node.data.id]);
 
             console.log("Selected Commits:", selectedCommits);
             handleTimelineSelection(selectedCommits);
         }
 
-        const brush = d3
-            .brush()
+        const timelineBrush = brush<unknown>()
             .extent([
-                [-c.MARGIN.left, 0],                      
-                [svgWidth - c.MARGIN.left, totalHeight]   
+                [-c.MARGIN.left, 0],
+                [width - c.MARGIN.left, totalHeight],
             ])
             .on("start", brushStart)
             .on("end", brushEnd);
@@ -145,10 +156,10 @@ function CommitTimeline({ commitData,
             .attr("stroke-width", c.EDGE_WIDTH)
             .attr("d", utils.drawEdgeCurve);
 
-        g.call(brush);
+        g.call(timelineBrush);
 
         // create tooltip
-        const tooltip = d3.select("body")
+        const tooltip = select("body")
             .append("div")
             .attr("class", "tooltip")
             .style("position", "absolute")
@@ -162,7 +173,7 @@ function CommitTimeline({ commitData,
 
         // draw nodes depending on view
         if (merged) {
-            const mergedNodes = sortedNodes as unknown as d3dag.MutGraphNode<GroupedNode, undefined>[];
+            const mergedNodes = sortedNodes as unknown as MutGraphNode<GroupedNode, undefined>[];
             const {circles, squares, triangles} = utils.drawMergedNodes(g, colorMap, mergedNodes);
 
             applyToolTip(circles as NodeSelection);
@@ -170,14 +181,12 @@ function CommitTimeline({ commitData,
             applyToolTip(squares as unknown as NodeSelection);
 
         } else {
-            const {circles, triangles} = utils.drawNormalNodes(g, colorMap, sortedNodes, defaultBranches);
+            const {circles} = utils.drawNormalNodes(g, colorMap, sortedNodes);
 
             // apply tooltips
             applyToolTip(circles as NodeSelection);
-            applyToolTip(triangles as NodeSelection);
         }
 
-          
         function applyToolTip(selection: NodeSelection) {
             selection
                 .on("mouseover", (event, d) => {
@@ -223,8 +232,7 @@ function CommitTimeline({ commitData,
 
         
         // display legends for the colors in #dag-legends
-        const legend = d3
-            .select("#dag-legends")
+        const legend = select("#dag-legends")
             .style("display", "flex")
             .style("align-items", "flex-start");
 
@@ -233,11 +241,16 @@ function CommitTimeline({ commitData,
         return () => {
             tooltip.remove();
         };
+    }, [commitData, merged, selectAll]);
 
-    }, [commitData, merged, c_width, selectAll]);
+    useEffect(() => {
+        drawGraph();
+        window.addEventListener("resize", drawGraph);
+        return () => window.removeEventListener("resize", drawGraph);
+    }, [drawGraph]);
 
     return (
-        <div style={{ width: c_width }}>
+        <div ref={containerRef} style={{width: "100%", height: "100%"}}>
             {/* button at the top */}
             <div
                 style={{
@@ -246,6 +259,7 @@ function CommitTimeline({ commitData,
                     borderBottom: "1px solid #ccc",
                     textAlign: "left",
                 }}
+                
             >
                 <div style={{ display: "flex", gap: "10px" }}>
                     <button
@@ -275,10 +289,6 @@ function CommitTimeline({ commitData,
             {/* scrollable container for the SVG */}
             <div
                 style={{
-                    height: Math.min(
-                        c_height,
-                        (svgRef.current?.getBoundingClientRect().height ?? 0) +c.DATE_LABEL_HEIGHT
-                    ),
                     overflow: "auto",
                 }}
             >

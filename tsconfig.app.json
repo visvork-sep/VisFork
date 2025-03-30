@@ -48,6 +48,9 @@
       "@Queries/*": [
         "./src/Queries/*"
       ],
+      "@FormElements/*" : [
+       "./src/Components/ConfigurationPane/FilterFormElements/*"
+      ]
     }
   },
   "include": [

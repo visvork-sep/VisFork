@@ -34,7 +34,7 @@ const mapCommitDataToCommitTable = (commitData: Commit[]): CommitTableData => ({
         id: commit.sha,
         repo: commit.repo,
         author: commit.author,
-        login: commit.author,
+        login: commit.login,
         date: commit.date.toISOString(),
         message: commit.message,
     })),

@@ -68,8 +68,7 @@ export function useFilteredData() {
     const simplifiedCommitData: UnprocessedCommitExtended[][] = useMemo(() => {
         return commitData ?
             commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
-    }
-    , [commitData]);
+    }, [commitData]);
 
     let mainRepositoryInfo: MainRepositoryInfo | undefined = undefined;
     if (!forkError

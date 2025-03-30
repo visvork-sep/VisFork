@@ -13,7 +13,7 @@ import { useVisualizationData } from "@Hooks/useVisualizationData";
 import { Commit, Repository } from "@Types/LogicLayerTypes.ts";
 import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
 import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 
 interface ApplicationBodyProps {
@@ -21,21 +21,23 @@ interface ApplicationBodyProps {
     commits: Commit[];
 }
 function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
-
-    const timerRef = useRef<number>(null);
-    const renderTimeRef = useRef<number>(0);
-    // Start the timer when forkData updates
+    const [startTime, setStartTime] = useState(0);
+    const renderTimeRef = useRef(0);
+    // Capture the start time when the prop changes
     useEffect(() => {
-        timerRef.current = performance.now();
+        console.log("Started", Date.now());
+        setStartTime(performance.now());
     }, [forks, commits]);
 
-    // Measure the time on render completion
+    // Measure the time taken when the component re-renders
     useEffect(() => {
-        if (timerRef.current !== null) {
-            const renderTime = performance.now() - timerRef.current;
+        if (startTime) {
+            console.log("Finished", Date.now());
+
+            const renderTime = performance.now() - startTime;
             renderTimeRef.current = renderTime;
             console.log(`Render time: ${renderTime.toFixed(2)} ms`);
-
+            setStartTime(0); // Reset start time
         }
     });
 

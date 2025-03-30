@@ -21,12 +21,12 @@ interface ApplicationBodyProps {
     commits: Commit[];
 }
 function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
-    const [startTime, setStartTime] = useState(0);
+    const [startTime, setStartTime] = useState(Date.now());
     const renderTimeRef = useRef(0);
     // Capture the start time when the prop changes
     useEffect(() => {
         console.log("Started", Date.now());
-        setStartTime(performance.now());
+        setStartTime(Date.now());
     }, [forks, commits]);
 
     // Measure the time taken when the component re-renders
@@ -34,7 +34,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
         if (startTime) {
             console.log("Finished", Date.now());
 
-            const renderTime = performance.now() - startTime;
+            const renderTime = Date.now() - startTime;
             renderTimeRef.current = renderTime;
             console.log(`Render time: ${renderTime.toFixed(2)} ms`);
             setStartTime(0); // Reset start time

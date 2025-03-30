@@ -36,7 +36,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
 
             const renderTime = Date.now() - startTime;
             renderTimeRef.current = renderTime;
-            console.log(`Render time: ${renderTime.toFixed(2)} ms`);
+            console.log(`Render time: ${renderTime}.toFixed(2)} ms`);
             setStartTime(0); // Reset start time
         }
     });
@@ -62,7 +62,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
     return (
         <>
             <Label>
-                {`Render time: ${renderTimeRef.current.toFixed(2)} ms`}
+                {`Render time: ${(renderTimeRef.current / 1000).toFixed(2)} seconds`}
             </Label>
             <Stack>
                 <Dropdown

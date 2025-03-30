@@ -1,14 +1,15 @@
 import { useState, useCallback } from "react";
 import { FilterFormState } from "../Types/UIFormTypes";
-import { COMMIT_TYPES, 
-    FORKS_COUNT_INPUT_INITIAL, 
-    FORKS_SORTING_ORDERS, 
-    OWNER_TYPES, 
-    SORT_DIRECTION, 
-    ForksSortingOrder, 
-    SortDirection, 
-    CommitType, 
-    OwnerType 
+import {
+    COMMIT_TYPES,
+    FORKS_COUNT_INPUT_INITIAL,
+    FORKS_SORTING_ORDERS,
+    OWNER_TYPES,
+    SORT_DIRECTION,
+    ForksSortingOrder,
+    SortDirection,
+    CommitType,
+    OwnerType
 }
     from "@Utils/Constants";
 import { assert } from "@Utils/Assert";
@@ -62,9 +63,9 @@ function useFilterForm() {
             value === FORKS_SORTING_ORDERS.WATCHERS.value ||
             value === FORKS_SORTING_ORDERS.STARGAZERS.value ||
             value === FORKS_SORTING_ORDERS.NEWEST.value ||
-            value === FORKS_SORTING_ORDERS.OLDEST.value, 
+            value === FORKS_SORTING_ORDERS.OLDEST.value,
             "Developer error: Invalid sorting order selected");
-       
+
         setForm((prev) => ({ ...prev, forksOrder: value as ForksSortingOrder }));
     }, []);
 
@@ -102,11 +103,14 @@ function useFilterForm() {
      * An array of selected commit type values. Each value must be present in the predefined COMMIT_TYPES.
      */
     const handleCommitsTypeFilterChange = useCallback((selected: string[]) => {
-        assert(selected.every(s => 
+        assert(selected.every(s =>
             (s === COMMIT_TYPES.ADAPTIVE.value ||
             s === COMMIT_TYPES.CORRECTIVE.value ||
-            s === COMMIT_TYPES.PERFECTIVE.value)
+            s === COMMIT_TYPES.PERFECTIVE.value ||
+            s === COMMIT_TYPES.UNKNOWN.value)
+
         ), "Developer error: Invalid commit type selected");
+
         setForm((prev) => ({ ...prev, commitTypeFilter: selected as CommitType[] }));
     }, []);
 

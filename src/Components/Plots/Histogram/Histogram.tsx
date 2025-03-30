@@ -53,8 +53,8 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
     const focusWidth = width - focusMargin.left - focusMargin.right;
 
     // Define scales for context chart
-    const formattedDates = Array.from(frequency.keys()).map((d) =>
-      d3.timeFormat("%b %Y")(d)
+    const formattedDates = Array.from(frequency.keys()).map((dateStr) =>
+      d3.timeFormat("%b %Y")(new Date(dateStr))
     );
     const xScaleContext = d3
       .scaleBand()
@@ -106,7 +106,10 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
       .enter()
       .append("rect")
       .attr("class", "bar-bg")
-      .attr("x", (d) => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
+      .attr(
+        "x",
+        (d) => xScaleContext(d3.timeFormat("%b %Y")(new Date(d[0]))) || 0
+      )
       .attr("y", 0)
       .attr("width", xScaleContext.bandwidth())
       .attr("height", contextHeight)
@@ -119,7 +122,10 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", (d) => xScaleContext(d3.timeFormat("%b %Y")(d[0])) || 0)
+      .attr(
+        "x",
+        (d) => xScaleContext(d3.timeFormat("%b %Y")(new Date(d[0]))) || 0
+      )
       .attr("y", (d) => yScaleContext(d[1]))
       .attr("width", xScaleContext.bandwidth())
       .attr("height", (d) => contextHeight - yScaleContext(d[1]))
@@ -137,32 +143,36 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
           const [x0, x1] = selection;
           // Update background bar colors based on selection
           chartContext.selectAll(".bar-bg").style("fill", (d: unknown) => {
-            const data = d as [Date, number];
+            const data = d as [string, number];
             const pos = xScaleContext(
-              d3.timeFormat("%b %Y")(data[0])
+              d3.timeFormat("%b %Y")(new Date(data[0]))
             ) as number;
             return pos >= x0 && pos <= x1 ? bgColorSelected : bgColor;
           });
 
           // Update bar colors based on selection
           chartContext.selectAll(".bar").style("fill", (d: unknown) => {
-            const data = d as [Date, number];
+            const data = d as [string, number];
             const pos = xScaleContext(
-              d3.timeFormat("%b %Y")(data[0])
+              d3.timeFormat("%b %Y")(new Date(data[0]))
             ) as number;
             return pos >= x0 && pos <= x1 ? barColorSelected : barColor;
           });
 
           // Store selected date range
           const selectedDates = Array.from(frequency).filter((d) => {
-            const pos = xScaleContext(d3.timeFormat("%b %Y")(d[0])) as number;
+            const pos = xScaleContext(
+              d3.timeFormat("%b %Y")(new Date(d[0]))
+            ) as number;
             return pos >= x0 && pos <= x1;
           });
 
           // Update focus chart
           xScaleFocus = d3
             .scaleBand()
-            .domain(selectedDates.map((d) => d3.timeFormat("%b %Y")(d[0])))
+            .domain(
+              selectedDates.map((d) => d3.timeFormat("%b %Y")(new Date(d[0])))
+            )
             .range([0, focusWidth])
             .padding(0.1);
           chartFocus.selectAll("*").remove();
@@ -174,7 +184,10 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .enter()
             .append("rect")
             .attr("class", "bar-bg")
-            .attr("x", (d) => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr(
+              "x",
+              (d) => xScaleFocus(d3.timeFormat("%b %Y")(new Date(d[0]))) || 0
+            )
             .attr("y", 0)
             .attr("width", xScaleFocus.bandwidth())
             .attr("height", focusHeight)
@@ -187,7 +200,10 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", (d) => xScaleFocus(d3.timeFormat("%b %Y")(d[0])) || 0)
+            .attr(
+              "x",
+              (d) => xScaleFocus(d3.timeFormat("%b %Y")(new Date(d[0]))) || 0
+            )
             .attr("y", (d) => yScaleFocus(d[1]))
             .attr("width", xScaleFocus.bandwidth())
             .attr("height", (d) => focusHeight - yScaleFocus(d[1]))
@@ -199,7 +215,9 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .on("mousemove", function (event, d) {
               tooltip
                 .html(
-                  `Date: ${d3.timeFormat("%b %Y")(d[0])}<br/>Commits: ${d[1]}`
+                  `Date: ${d3.timeFormat("%b %Y")(
+                    new Date(d[0])
+                  )}<br/>Commits: ${d[1]}`
                 )
                 .style("left", event.pageX + 10 + "px")
                 .style("top", event.pageY + 10 + "px");
@@ -213,19 +231,19 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
           if (selectedDates.length > 0) {
             // Get start and end date
             const dateFormat = d3.timeFormat("%B %Y");
-            const startOfSelection = selectedDates[0]?.[0];
+            const startOfSelection = new Date(selectedDates[0]?.[0]);
 
+            const endDateStr = selectedDates[selectedDates.length - 1][0];
+            const endDateObj = new Date(endDateStr);
             const endOfSelection = new Date(
-              selectedDates[selectedDates.length - 1][0].getFullYear(),
-              selectedDates[selectedDates.length - 1][0].getMonth() + 1,
+              endDateObj.getFullYear(),
+              endDateObj.getMonth() + 1,
               0, // Last day of the month
               23,
               59,
               59,
               999 // Set to the latest possible time
             );
-            // console.log("Start Date:", startOfSelection);
-            // console.log("End Date:", endOfSelection);
 
             if (startOfSelection && endOfSelection) {
               setStartLabel(dateFormat(startOfSelection));

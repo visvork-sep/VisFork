@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CommitTableData, CommitTableDetails } from "@VisInterfaces/CommitTableData";
 
 function CommitTable({ commitData }: CommitTableData) {
+    if (commitData.length) console.log(commitData[0].login);
 
     // Fetch current color mode (light or dark)
     const { colorMode } = useTheme();
@@ -46,7 +47,6 @@ function CommitTable({ commitData }: CommitTableData) {
             field: "author",
             rowHeader: true,
             width: "auto",
-            // Note: Doesn't work perfectly if author's name doesn't match GitHub username
             renderCell: (row: CommitTableDetails) => (
                 <Link
                     // This is the link to the author's GitHub profile using the username

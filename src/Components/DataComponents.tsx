@@ -49,7 +49,7 @@ function DataComponents() {
 
 // TODO: Change preprocessor to actually calculate commit type.
 function preprocessor(commits: UnprocessedCommitExtended[],
-    forks: UnprocessedRepository[]): { forks: Repository[], commits: Commit[] } {
+    forks: UnprocessedRepository[]): { forks: Repository[], commits: Commit[]; } {
     const processedForks: Repository[] = forks.map(fork => ({
         id: fork.id,
         name: `${fork.owner.login}/${fork.name}`,
@@ -70,11 +70,11 @@ function preprocessor(commits: UnprocessedCommitExtended[],
         date: commit.date === "Unknown" ? new Date() : commit.date,
         url: commit.url,
         author: commit.author,
+        login: commit.login,
         message: commit.message,
         commitType: "adaptive",
         branch: commit.branch ?? "",
         repo: commit.repo ?? "",
-
     }));
 
     return { forks: processedForks, commits: processedCommits };

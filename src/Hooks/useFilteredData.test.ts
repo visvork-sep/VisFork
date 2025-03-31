@@ -38,6 +38,7 @@ const mockCommits: UnprocessedCommitExtended[] = [
         parentIds: ["parent1"],
         node_id: "node1",
         author: "user1",
+        login: "user1",
         date: new Date("2023-03-01T00::00Z"),
         url: "https://github.com/user1/repo-1/commit/abc123",
         message: "Initial commit",

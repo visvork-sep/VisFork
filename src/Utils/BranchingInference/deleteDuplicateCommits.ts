@@ -16,9 +16,6 @@ import { CommitLocation,
  * is almost always "Because that's how they decided Git/GitHub should work".
  *
  * @param rawCommits array of all commits to be analyzed and processed.
- * @param defaultBranches a map of key-value pairs where the keys are every repo name and the values are
- * the default branches of those repos. Example (with only 1 element): { "torvalds/linux": "main" }
- * @param mainRepo the name of the queried repository. Example: torvalds/linux
  * @returns array of commits with only unique hashes. If there was a commit with a certain hash
  * in the input, a commit with the same hash will always be present in the output.
  */
@@ -102,7 +99,7 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]):
  *
  * @param commit the commit to make unique
  */
-function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
+export function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
     let locations = commitLocationMap.get(commit.sha);
     if (locations === undefined) {
         console.error("Commit locations not found!");
@@ -220,7 +217,7 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
  * @param branch branch where commit is located
  * @param mergeBaseCommit the commit where this repo/branch combination started deviating
  */
-function deleteFromBranch(commit: UnprocessedCommitExtended,
+export function deleteFromBranch(commit: UnprocessedCommitExtended,
     {repo, branch}: CommitLocation,
     mergeBaseCommit: string | undefined) {
     if (mergeBaseCommit === undefined) {
@@ -295,7 +292,7 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
  * @param parent2 sha of second parent commit of merge commit, by convention the last commit on branch that got merged
  * @returns sha of merge-base commit
  */
-function findMergeBaseCommit(parent1: string, parent2: string): string | undefined {
+export function findMergeBaseCommit(parent1: string, parent2: string): string | undefined {
 
     // Simple BFS algorithm to return all ancestors
     function getAncestors(startNode: string): Set<string> {

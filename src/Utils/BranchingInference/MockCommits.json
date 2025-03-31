@@ -2,7 +2,7 @@
     {
         "sha": "fresh",
         "id": "fresh",
-        "parentIds": [],
+        "parentIds": ["nonexistentcommit"],
         "node_id": "fresh",
         "author": "me",
         "date": "2025-02-26T00:00:00Z",

@@ -24,6 +24,11 @@ export function processCommits(rawCommits: UnprocessedCommitExtended[],
     defaultBranches: Record<string, string>,
     mainRepo: string): UnprocessedCommitExtended[] {
     // Initialize data structures
+    commitLocationMap.clear();
+    ownerRepoMap.clear();
+    commitMap.clear();
+    locationHeadCommitMap.clear();
+    locationHeadCommitMapReversed.clear();
     initializeBranchData(defaultBranches, mainRepo);
     for (const rawCommit of rawCommits) {
         const locationArray: CommitLocation[] = commitLocationMap.get(rawCommit.sha) ?? [];

@@ -36,7 +36,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
 
             const renderTime = Date.now() - startTime;
             renderTimeRef.current = renderTime;
-            console.log(`Render time: ${renderTime}.toFixed(2)} ms`);
+            console.log(`Render time: ${renderTime.toFixed(2)} ms`);
             setStartTime(0); // Reset start time
         }
     });

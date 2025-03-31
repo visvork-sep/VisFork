@@ -227,7 +227,6 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                         d.fy = null;
                     })
             );
-        console.log(nodes.filter((d) => d.group === "author"));
 
         // Add labels above nodes
         const label = svg

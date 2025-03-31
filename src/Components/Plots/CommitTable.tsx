@@ -96,8 +96,6 @@ function CommitTable({ commitData }: CommitTableData) {
         },
     ], [linkColor]);
 
-    console.log(commitData); // Ensure commitData is used to avoid unused variable warning.
-
     return (
         <Box>
             {/* Container for search input */}

@@ -1,5 +1,4 @@
-import { Box, Label, Stack } from "@primer/react";
-import { useMeasure } from "@uidotdev/usehooks";
+import { Label, Stack } from "@primer/react";
 import Histogram from "./Plots/Histogram/Histogram.tsx";
 import ForkList from "@Components/Plots/ForkList";
 import CommitTimeline from "./Plots/Timeline/CommitTimeline.tsx";
@@ -15,8 +14,8 @@ import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { useRef, useEffect, useState } from "react";
 
 interface ApplicationBodyProps {
-  forks: Repository[];
-  commits: Commit[];
+    forks: Repository[];
+    commits: Commit[];
 }
 
 function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
@@ -40,7 +39,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
         }
     });
 
-    const { visData, handlers} =
+    const { visData, handlers } =
         useVisualizationData(forks, commits);
 
     const {
@@ -89,67 +88,67 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
                         commitData={histogramData.commitData}
                         handleHistogramSelection={handleHistogramSelection} />
                 </Dropdown>
-            <Dropdown
-                open={true}
-                summaryText="Commit Timeline"
-                infoButton={
-                    <InfoButton
-                        title="Commit Timeline"
-                        shortDescription={visualizationDescriptions.commitTimeline.short}
-                        fullDescription={visualizationDescriptions.commitTimeline.full}
-                    />
-                }
-            >
-                <CommitTimeline
-                    commitData={timelineData.commitData}
-                    handleTimelineSelection={handleTimelineSelection}/>
-            </Dropdown>
-            <Dropdown summaryText="Commit Table"
-                infoButton={
-                    <InfoButton
-                        title="Commit Table"
-                        shortDescription={visualizationDescriptions.commitTable.short}
-                        fullDescription={visualizationDescriptions.commitTable.full}
-                    />
-                }
-            >
-                <CommitTable {...commitTableData} />
-            </Dropdown>
-            <Dropdown summaryText="Word Cloud"
-                infoButton={
-                    <InfoButton
-                        title="Word Cloud"
-                        shortDescription={visualizationDescriptions.wordCloud.short}
-                        fullDescription={visualizationDescriptions.wordCloud.full}
-                    />
-                }
-            >
-                <WordCloud {...wordCloudData} />
-            </Dropdown>
-            <Dropdown summaryText="Sankey Diagram"
-                infoButton={
-                    <InfoButton
-                        title="Sankey Diagram"
-                        shortDescription={visualizationDescriptions.sankeyDiagram.short}
-                        fullDescription={visualizationDescriptions.sankeyDiagram.full}
-                    />
-                }
-            >
-                <SankeyDiagram {...sankeyData} />
-            </Dropdown>
-            <Dropdown summaryText="Collaboration Graph"
-                infoButton={
-                    <InfoButton
-                        title="Collaboration Graph"
-                        shortDescription={visualizationDescriptions.collaborationGraph.short}
-                        fullDescription={visualizationDescriptions.collaborationGraph.full}
-                    />
-                }
-            >
-                <CollaborationGraph {...collabGraphData} />
-            </Dropdown>
-        </Stack>
-      </>
+                <Dropdown
+                    open={true}
+                    summaryText="Commit Timeline"
+                    infoButton={
+                        <InfoButton
+                            title="Commit Timeline"
+                            shortDescription={visualizationDescriptions.commitTimeline.short}
+                            fullDescription={visualizationDescriptions.commitTimeline.full}
+                        />
+                    }
+                >
+                    <CommitTimeline
+                        commitData={timelineData.commitData}
+                        handleTimelineSelection={handleTimelineSelection} />
+                </Dropdown>
+                <Dropdown summaryText="Commit Table"
+                    infoButton={
+                        <InfoButton
+                            title="Commit Table"
+                            shortDescription={visualizationDescriptions.commitTable.short}
+                            fullDescription={visualizationDescriptions.commitTable.full}
+                        />
+                    }
+                >
+                    <CommitTable {...commitTableData} />
+                </Dropdown>
+                <Dropdown summaryText="Word Cloud"
+                    infoButton={
+                        <InfoButton
+                            title="Word Cloud"
+                            shortDescription={visualizationDescriptions.wordCloud.short}
+                            fullDescription={visualizationDescriptions.wordCloud.full}
+                        />
+                    }
+                >
+                    <WordCloud {...wordCloudData} />
+                </Dropdown>
+                <Dropdown summaryText="Sankey Diagram"
+                    infoButton={
+                        <InfoButton
+                            title="Sankey Diagram"
+                            shortDescription={visualizationDescriptions.sankeyDiagram.short}
+                            fullDescription={visualizationDescriptions.sankeyDiagram.full}
+                        />
+                    }
+                >
+                    <SankeyDiagram {...sankeyData} />
+                </Dropdown>
+                <Dropdown summaryText="Collaboration Graph"
+                    infoButton={
+                        <InfoButton
+                            title="Collaboration Graph"
+                            shortDescription={visualizationDescriptions.collaborationGraph.short}
+                            fullDescription={visualizationDescriptions.collaborationGraph.full}
+                        />
+                    }
+                >
+                    <CollaborationGraph {...collabGraphData} />
+                </Dropdown>
+            </Stack>
+        </>
     );
 }
 

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3Sankey from "d3-sankey";
-import * as d3 from "d3";
 import { useEffect } from "react";
 import { SankeyData } from "@VisInterfaces/SankeyData";
+import { map, format } from "d3";
 interface ParsedDataItem {
     name: string;
     type: string;

@@ -20,7 +20,4 @@ export interface TimelineData {
 export interface TimelineProps {
     commitData: TimelineDetails[];
     handleTimelineSelection: (commitIds: string[]) => void;
-    c_width: number;
-    c_height: number;
-    defaultBranches: Record<string, string>;
 }

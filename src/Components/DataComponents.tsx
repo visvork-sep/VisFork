@@ -4,18 +4,19 @@ import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
 import { useMemo } from "react";
-import { processCommits } from "@Utils/BranchingInference";
+import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
+import { classify } from "@Utils/Classify";
 
 function DataComponents() {
     const { onFiltersChange, forks, commits } = useFilteredData();
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {
-        return `${forks[0]?.owner}/${forks[0]?.name}`;
+        return `${forks[0]?.owner.login}/${forks[0]?.name}`;
     }, [forks]);
 
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);
-    const removedCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepoName), [
+    const filteredCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepoName), [
         commits,
         defaultBranchesMap,
         mainRepoName,
@@ -23,12 +24,12 @@ function DataComponents() {
 
     const applicationBody = useMemo(
         () => {
-            const { commits: processedCommits, forks: processedForks } = preprocessor(removedCommits, forks);
+            const { commits: processedCommits, forks: processedForks } = preprocessor(filteredCommits, forks);
             return <SplitPageLayout.Content aria-label="Content" width="xlarge">
                 <ApplicationBody forks={processedForks} commits={processedCommits} />
             </SplitPageLayout.Content>;
         },
-        [removedCommits, forks]
+        [filteredCommits, forks]
     );
 
     const configurationPane = useMemo(() => {
@@ -47,7 +48,6 @@ function DataComponents() {
     );
 }
 
-// TODO: Change preprocessor to actually calculate commit type.
 function preprocessor(commits: UnprocessedCommitExtended[],
     forks: UnprocessedRepository[]): { forks: Repository[], commits: Commit[]; } {
     const processedForks: Repository[] = forks.map(fork => ({
@@ -70,11 +70,11 @@ function preprocessor(commits: UnprocessedCommitExtended[],
         date: commit.date === "Unknown" ? new Date() : commit.date,
         url: commit.url,
         author: commit.author,
+        login: commit.login,
         message: commit.message,
-        commitType: "adaptive",
+        commitType: classify(commit.message),
         branch: commit.branch ?? "",
         repo: commit.repo ?? "",
-
     }));
 
     return { forks: processedForks, commits: processedCommits };

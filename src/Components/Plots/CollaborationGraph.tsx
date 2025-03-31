@@ -16,6 +16,7 @@ import {
 // Graph node type: author or repo
 interface Node extends SimulationNodeDatum {
     id: string;
+    displayText: string;
     group: "author" | "repo";
     // Radius for node size
     radius?: number;
@@ -87,18 +88,20 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
 
         const authorCommitCounts: Record<string, number> = {};
         const repoCommitCounts: Record<string, number> = {};
-
+        const authorNames: Record<string, string> = {};
         // Make sure each set of authors and repos is unique
         visibleCommits.forEach((entry) => {
-            authors.add(entry.author);
+            authors.add(entry.login); // logins are unique, but author names are not
             repos.add(entry.repo);
             links.push({
-                source: entry.author,
+                source: entry.login,
                 target: entry.repo,
             });
 
+            authorNames[entry.login] = entry.author; // Store author names for display
+
             // Keep track of commit counts for scaling nodes
-            authorCommitCounts[entry.author] = (authorCommitCounts[entry.author] || 0) + 1;
+            authorCommitCounts[entry.login] = (authorCommitCounts[entry.login] || 0) + 1;
             repoCommitCounts[entry.repo] = (repoCommitCounts[entry.repo] || 0) + 1;
         });
 
@@ -106,6 +109,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
         const nodes: Node[] = [
             ...Array.from(authors).map((author) => ({
                 id: author,
+                displayText: authorNames[author],
                 group: "author" as const,
                 // Scale nodes based on commit count
                 radius: 4 + Math.log(authorCommitCounts[author] || 1) * 2,
@@ -113,6 +117,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             })),
             ...Array.from(repos).map((repo) => ({
                 id: repo,
+                displayText: repo,
                 group: "repo" as const,
                 // Scale nodes based on commit count
                 radius: 4 + Math.log(repoCommitCounts[repo] || 1) * 2,
@@ -222,6 +227,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                         d.fy = null;
                     })
             );
+        console.log(nodes.filter((d) => d.group === "author"));
 
         // Add labels above nodes
         const label = svg
@@ -230,9 +236,8 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .data(nodes)
             .enter()
             .append("text")
-            .text((d) => d.id)
             // Shorten long names
-            .text((d) => d.id.length > 12 ? d.id.slice(0, 12) + "…" : d.id)
+            .text((d) => d.displayText.length > 16 ? d.displayText.slice(0, 16) + "…" : d.displayText)
             .attr("font-size", "10px")
             // Position text slightly above the node
             .attr("dy", (d) => `-${(d.radius ?? 8) + 4}px`)

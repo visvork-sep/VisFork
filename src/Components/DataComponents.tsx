@@ -4,7 +4,7 @@ import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
 import { useMemo } from "react";
-import { processCommits } from "@Utils/BranchingInference";
+import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
 import { classify } from "@Utils/Classify";
 
 function DataComponents() {
@@ -12,7 +12,7 @@ function DataComponents() {
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {
-        return `${forks[0]?.owner}/${forks[0]?.name}`;
+        return `${forks[0]?.owner.login}/${forks[0]?.name}`;
     }, [forks]);
 
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);

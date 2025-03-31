@@ -51,12 +51,12 @@ const perfectiveTerms = [
 ];
 
 const adaptiveRegex   = new RegExp(adaptiveTerms.join("|"), "i");
-const bugRegex        = new RegExp(correctiveTerms.join("|"), "i");
+const correctiveRegex = new RegExp(correctiveTerms.join("|"), "i");
 const perfectiveRegex = new RegExp(perfectiveTerms.join("|"), "i");
 
 export function classify(text: string): CommitType {
     if (adaptiveRegex.test(text))   return "adaptive";
-    if (bugRegex.test(text))        return "corrective";
+    if (correctiveRegex.test(text)) return "corrective";
     if (perfectiveRegex.test(text)) return "perfective";
     return "unknown";
 }

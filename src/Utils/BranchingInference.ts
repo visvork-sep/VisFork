@@ -127,8 +127,19 @@ function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]): Unproc
             const nextCommit = commitMap.get(headCommit.parentIds[0]);
             if (nextCommit === undefined) {
                 console.error("Commit data not found!");
-                headCommit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: new Date(),url: "",message: ""
-                    ,repo: "",branch: ""};
+                headCommit = {
+                    sha: "",
+                    id: "",
+                    parentIds: [],
+                    node_id: "",
+                    author: "",
+                    login:"", 
+                    date: new Date(),
+                    url: "",
+                    message: "",
+                    repo: "",
+                    branch: ""
+                };
             } else {
                 headCommit = nextCommit;
             }
@@ -327,7 +338,16 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
             console.error("Commit data not found!");
-            commit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: new Date(),url: "",message: "",
+            commit = {
+                sha: "",
+                id: "",
+                parentIds: [],
+                node_id: "",
+                author: "",
+                login: "",
+                date: new Date(),
+                url: "",
+                message: "",
                 repo: "",branch: ""};
         } else {
             commit = nextCommit;
@@ -366,8 +386,19 @@ function deleteFromBranch(commit: UnprocessedCommitExtended,
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
             console.error("Commit data not found!");
-            commit = {sha: "",id: "",parentIds: [],node_id: "",author: "",date: new Date(),url: "",message: "",
-                repo: "",branch: ""};
+            commit = {
+                sha: "", 
+                id: "", 
+                parentIds: [], 
+                node_id: "", 
+                author: "", 
+                login: "", 
+                date: new Date(), 
+                url: "", 
+                message: "",
+                repo: "", 
+                branch: ""
+            };
         } else {
             commit = nextCommit;
         }

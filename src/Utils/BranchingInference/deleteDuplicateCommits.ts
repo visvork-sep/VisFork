@@ -46,19 +46,7 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]):
             const nextCommit = commitMap.get(headCommit.parentIds[0]);
             if (nextCommit === undefined) {
                 console.error("Commit data not found!");
-                headCommit = {
-                    sha: "",
-                    id: "",
-                    parentIds: [],
-                    node_id: "",
-                    author: "",
-                    login:"", 
-                    date: new Date(),
-                    url: "",
-                    message: "",
-                    repo: "",
-                    branch: ""
-                };
+                break;
             } else {
                 headCommit = nextCommit;
             }
@@ -248,17 +236,7 @@ export function deleteFromBranch(commit: UnprocessedCommitExtended,
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
             console.error("Commit data not found!");
-            commit = {
-                sha: "",
-                id: "",
-                parentIds: [],
-                node_id: "",
-                author: "",
-                login: "",
-                date: new Date(),
-                url: "",
-                message: "",
-                repo: "",branch: ""};
+            break;
         } else {
             commit = nextCommit;
         }
@@ -296,19 +274,7 @@ export function deleteFromBranch(commit: UnprocessedCommitExtended,
         const nextCommit = commitMap.get(commit.parentIds[0]);
         if (nextCommit === undefined) {
             console.error("Commit data not found!");
-            commit = {
-                sha: "", 
-                id: "", 
-                parentIds: [], 
-                node_id: "", 
-                author: "", 
-                login: "", 
-                date: new Date(), 
-                url: "", 
-                message: "",
-                repo: "", 
-                branch: ""
-            };
+            break;
         } else {
             commit = nextCommit;
         }

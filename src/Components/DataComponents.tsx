@@ -5,9 +5,10 @@ import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
 import { useMemo } from "react";
 import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
+import { classify } from "@Utils/Classify";
 
 function DataComponents() {
-    const { onFiltersChange, forks, commits }= useFilteredData();
+    const { onFiltersChange, forks, commits } = useFilteredData();
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {
@@ -15,36 +16,44 @@ function DataComponents() {
     }, [forks]);
 
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);
-    const removedCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepoName), [
+    const filteredCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepoName), [
         commits,
         defaultBranchesMap,
         mainRepoName,
     ]);
 
-    const { forks: processedForks, commits: processedCommits } = useMemo(
-        () => preprocessor(removedCommits, forks),
-        [removedCommits, forks]
+    const applicationBody = useMemo(
+        () => {
+            const { commits: processedCommits, forks: processedForks } = preprocessor(filteredCommits, forks);
+            return <SplitPageLayout.Content aria-label="Content" width="xlarge">
+                <ApplicationBody forks={processedForks} commits={processedCommits} />
+            </SplitPageLayout.Content>;
+        },
+        [filteredCommits, forks]
     );
+
+    const configurationPane = useMemo(() => {
+        return (
+            <SplitPageLayout.Pane width="medium">
+                <ConfigurationPane filterChangeHandler={onFiltersChange} />
+            </SplitPageLayout.Pane>
+        );
+    }, []);
 
     return (
         <>
-            <SplitPageLayout.Pane resizable aria-label="Configuration Pane">
-                <ConfigurationPane filterChangeHandler={onFiltersChange}/>
-            </SplitPageLayout.Pane >
-            <SplitPageLayout.Content aria-label="Content" width="xlarge">
-                <ApplicationBody forks={processedForks} commits={processedCommits} />
-            </SplitPageLayout.Content>
+            {configurationPane}
+            {applicationBody}
         </>
     );
 }
 
-// TODO: Change preprocessor to actually calculate commit type.
 function preprocessor(commits: UnprocessedCommitExtended[],
-    forks: UnprocessedRepository[]): {forks: Repository[], commits: Commit[]} {
+    forks: UnprocessedRepository[]): { forks: Repository[], commits: Commit[]; } {
     const processedForks: Repository[] = forks.map(fork => ({
         id: fork.id,
         name: `${fork.owner.login}/${fork.name}`,
-        owner: {login: fork.owner.login},
+        owner: { login: fork.owner.login },
         description: fork.description ?? "",
         created_at: fork.created_at ?? new Date(),
         last_pushed: fork.last_pushed ?? new Date(),
@@ -61,14 +70,14 @@ function preprocessor(commits: UnprocessedCommitExtended[],
         date: commit.date === "Unknown" ? new Date() : commit.date,
         url: commit.url,
         author: commit.author,
+        login: commit.login,
         message: commit.message,
-        commitType: "adaptive",
+        commitType: classify(commit.message),
         branch: commit.branch ?? "",
         repo: commit.repo ?? "",
-
     }));
 
-    return {forks: processedForks, commits: processedCommits};
+    return { forks: processedForks, commits: processedCommits };
 }
 
 function createDefaultBranchesMap(repos: UnprocessedRepository[]): Record<string, string> {

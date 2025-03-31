@@ -17,26 +17,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Get GraphQL resources
       - name: Get resources
         run: |
-          curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
+              curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
+              curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
 
-      # Get openapi Resources
-      - name: Get resources
-        run: |
-          curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
-
-      # Step 6: Build Docker image
-      - name: Remove existing Docker container if exists
-        run: |
-              if [ "$(docker ps -aq -f name=visfork)" != "" ]; then
-                docker stop visfork
-                docker rm visfork
-              fi
+      - name: Build Docker image
+        run: docker build -t visfork-ci -f Dockerfile.build .
 
       - name: Run Docker container
-        run: docker run -dit --name visfork visfork-ci bash
+        run: |
+              if [ "$(docker ps -aq -f name=visfork-ci)" != "" ]; then
+                docker stop visfork-ci
+                docker rm visfork-ci
+              fi
+              docker run -dit --name visfork-ci visfork-ci bash
 
 
   test-build-deploy:
@@ -45,17 +40,24 @@ jobs:
 
     steps:
       - name: Run ESLint
-        run: docker exec visfork npm run lint
+        run: docker exec visfork-ci npm run lint
 
       - name: Run tests
-        run: docker exec visfork npm run test 
+        run: docker exec visfork-ci npm run test
+
+      # - name: Authentication
+      #   if: github.ref == 'refs/heads/main'
+      #   run: |
+      #         docker cp ~/auth/.env visfork-ci:/workspace/.contrib
+      #         docker cp ~/auth/backend/.env visfork-ci:/workspace/.contrib/backend
+      #         docker cp ~/auth/backend/index.js visfork-ci:/workspace/.contrib/backend
 
       - name: Build
-        run: docker exec visfork npm run build
+        run: docker exec visfork-ci npm run build
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
-        run: docker cp visfork:/workspace/dist/. /var/www/html/react-app
+        run: docker cp visfork-ci:/workspace/dist/. /var/www/html/react-app
 
   cleanup:
     runs-on: self-hosted
@@ -64,9 +66,9 @@ jobs:
     steps:
       - name: Stop and Remove Docker Image
         run: |
-              if [ "$(docker ps -aq -f name=visfork)" = "" ]; then
-                echo "visfork container is not running"
+              if [ "$(docker ps -aq -f name=visfork-ci)" = "" ]; then
+                echo "visfork-ci container is not running"
               else
-                docker stop visfork
-                docker rm visfork
+                docker stop visfork-ci
+                docker rm visfork-ci
               fi

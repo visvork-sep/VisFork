@@ -11,6 +11,7 @@ export interface UnprocessedCommitExtended {
     parentIds: string[];
     node_id: string;
     author: string;
+    login: string;
     date: Date | "Unknown";
     url: string;
     message: string;

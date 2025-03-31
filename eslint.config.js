@@ -16,6 +16,7 @@ export default [
     pluginReact.configs.flat.recommended,
     {
         rules: {
+            "complexity": ["warn", { "max": 10 }],
             "eol-last": ["warn", "always"],
             "quotes": ["warn", "double", {}],
             "no-irregular-whitespace": ["warn"],

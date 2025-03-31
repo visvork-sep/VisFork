@@ -21,10 +21,11 @@ export function toCommitInfo(commit: GitHubAPICommit): UnprocessedCommitExtended
         parentIds: commit.parents?.map(parent => parent.sha) ?? [],
         node_id: commit.node_id,
         author: commit.commit?.author?.name ?? "Unknown",
+        login: commit.author?.login ?? "Unknown",
         date: commit.commit?.committer?.date ? new Date(commit.commit.committer.date) : "Unknown",
         url: commit.html_url,
         message: commit.commit?.message ?? "",
         branch: "",
-        repo: ""
+        repo: "",
     };
 }

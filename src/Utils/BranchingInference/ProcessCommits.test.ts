@@ -3,7 +3,10 @@ import { processCommits } from "./ProcessCommits.ts";
 import { UnprocessedCommitExtended } from "@Types/LogicLayerTypes";
 import rawMockCommits from "./MockCommits.json";
 import { commitLocationMap, commitMap, initializeBranchData } from "./InferenceData.ts";
-import { deleteDuplicateCommits, deleteFromBranch, findMergeBaseCommit, makeUniqueHierarchical } from "./deleteDuplicateCommits.ts";
+import { deleteDuplicateCommits, 
+    deleteFromBranch, 
+    findMergeBaseCommit, 
+    makeUniqueHierarchical } from "./deleteDuplicateCommits.ts";
 
 const mockCommits: UnprocessedCommitExtended[] = rawMockCommits.map(commit => ({
     ...commit,

@@ -1,19 +1,19 @@
 import { FormEvent, useState } from "react";
 import { FilterFormState, preparedForm, preparedFormComplete } from "../Types/UIFormTypes";
 import { CommitsDateRangeFromInputErrors, InputError } from "../Types/UIFormErrors";
-import { 
+import {
     prepareRepository,
-    prepareForksCount, 
-    prepareForksOrder, 
-    prepareForksSortDirection, 
-    prepareCommitsDateRangeFrom, 
-    prepareCommitsDateRangeUntil, 
-    prepareCommitsTypeFilter, 
-    prepareOwnerTypeFilter, 
-    prepareRecentlyUpdated 
+    prepareForksCount,
+    prepareForksOrder,
+    prepareForksSortDirection,
+    prepareCommitsDateRangeFrom,
+    prepareCommitsDateRangeUntil,
+    prepareCommitsTypeFilter,
+    prepareOwnerTypeFilter,
+    prepareRecentlyUpdated
 } from "@Utils/Sanitize";
 import { FilterChangeHandler } from "./useFilteredData";
-import { setInputError, filterFactory, forkQueryStateFactory } from "@Utils/FormSubmissionUtils";
+import { setInputError, filterFactory, forkQueryStateFactory, safePrepare } from "@Utils/FormSubmissionUtils";
 import { ForksSortingOrder, CommitType, OwnerType, SortDirection } from "@Utils/Constants";
 
 
@@ -40,83 +40,29 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
      * 
      * @returns {preparedForm} The prepared form state.
      */
-    const prepareForm = (): preparedForm =>{
-        let owner: string | null = null;
-        let repositoryName: string | null = null;
-        let forksCount: number | null = null;
-        let forksOrder: ForksSortingOrder | null = null;
-        let forksSortDirection: SortDirection | null = null;
-        let commitsDateRangeFrom: Date | null = null;
-        let commitsDateRangeUntil: Date | null = null;
-        let commitsTypeFilter: CommitType[] | null = null;
-        let ownerTypeFilter: OwnerType[] | null = null;
-        let recentlyUpdated: number | null = null; // non required
+    const prepareForm = (): preparedForm => {
 
-        try {
-            const output = prepareRepository(form.repository);
-            owner = output.owner;
-            repositoryName = output.repositoryName;
-            setRepositoryInputError(null);
-        } catch (e) {
-            setInputError(e, setRepositoryInputError);
-        };
+        const output = safePrepare(prepareRepository, form.repository, setRepositoryInputError);
+        const { owner, repositoryName } = output ?? { owner: null, repositoryName: null };
 
-        try {
-            forksCount = prepareForksCount(form.forksCount);
-            setForksCountInputError(null);
-        } catch (e) {
-            setInputError(e, setForksCountInputError);
-        }
+        const forksCount = safePrepare(prepareForksCount, form.forksCount, setForksCountInputError);
 
-        try {
-            forksOrder = prepareForksOrder(form.forksOrder);
-            setForksOrderInputError(null);
-        } catch (e) {
-            setInputError(e, setForksOrderInputError);
-        }
+        const forksOrder = safePrepare(prepareForksOrder, form.forksOrder, setForksOrderInputError);
 
-        try {
-            forksSortDirection = prepareForksSortDirection(form.forksAscDesc);
-            setForksAscDescInputError(null);
-        } catch (e) {
-            setInputError(e, setForksAscDescInputError);
-        }
+        const forksSortDirection = safePrepare(prepareForksSortDirection, form.forksAscDesc, setForksAscDescInputError);
 
-        try {
-            commitsDateRangeFrom = prepareCommitsDateRangeFrom(form.commitsDateRangeFrom);
-            setCommitsDateRangeFromInputError(null);
-        } catch (e) {
-            setInputError(e, setCommitsDateRangeFromInputError);
-        }
+        let commitsDateRangeFrom =
+            safePrepare(prepareCommitsDateRangeFrom, form.commitsDateRangeFrom, setCommitsDateRangeFromInputError);
 
-        try {
-            commitsDateRangeUntil = prepareCommitsDateRangeUntil(form.commitsDateRangeUntil);
-            setCommitsDateRangeUntilInputError(null);
-        } catch (e) {
-            setInputError(e, setCommitsDateRangeUntilInputError);
-        }
+        let commitsDateRangeUntil =
+            safePrepare(prepareCommitsDateRangeUntil, form.commitsDateRangeUntil, setCommitsDateRangeUntilInputError);
 
-        try {
-            commitsTypeFilter = prepareCommitsTypeFilter(form.commitTypeFilter);
-            setCommitsTypeFilterInputError(null);
-        } catch (e) {
-            setInputError(e, setCommitsTypeFilterInputError);
-        }
+        const commitsTypeFilter =
+            safePrepare(prepareCommitsTypeFilter, form.commitTypeFilter, setCommitsTypeFilterInputError);
 
-        try {
-            ownerTypeFilter = prepareOwnerTypeFilter(form.ownerTypeFilter);
-            setOwnerTypeFilterInputError(null);
-        } catch (e) {
-            setInputError(e, setOwnerTypeFilterInputError);
-        }
+        const ownerTypeFilter = safePrepare(prepareOwnerTypeFilter, form.ownerTypeFilter, setOwnerTypeFilterInputError);
 
-        try {
-            recentlyUpdated = prepareRecentlyUpdated(form.recentlyUpdated);
-            setRecentlyUpdatedInputError(null);
-        } catch (e) {
-            setInputError(e, setRecentlyUpdatedInputError);
-        }
-
+        const recentlyUpdated = safePrepare(prepareRecentlyUpdated, form.recentlyUpdated, setRecentlyUpdatedInputError);
         if (commitsDateRangeFrom && commitsDateRangeUntil && commitsDateRangeFrom > commitsDateRangeUntil) {
             setCommitsDateRangeFromInputError(new CommitsDateRangeFromInputErrors.LaterFromDateError());
             setCommitsDateRangeUntilInputError(new CommitsDateRangeFromInputErrors.LaterFromDateError());
@@ -141,9 +87,9 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
     const onSubmit = (event: FormEvent) => {
         // Prevents the page from refreshing on submission
         event.preventDefault();
-        
+
         const preparedForm = prepareForm();
-        
+
         // If any of the required fields are null, the form is not ready for submission
         if (
             !preparedForm.owner
@@ -160,7 +106,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         }
 
         const completeForm = preparedForm as preparedFormComplete;
-        
+
         // Type assertion because we know that the form is complete
         onFiltersChange(filterFactory(completeForm), forkQueryStateFactory(completeForm));
     };

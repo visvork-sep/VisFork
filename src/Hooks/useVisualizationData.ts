@@ -34,7 +34,7 @@ const mapCommitDataToCommitTable = (commitData: Commit[]): CommitTableData => ({
         id: commit.sha,
         repo: commit.repo,
         author: commit.author,
-        login: commit.author,
+        login: commit.login,
         date: commit.date.toISOString(),
         message: commit.message,
     })),
@@ -54,6 +54,7 @@ const mapCommitDataToSankey = (commitData: Commit[]): SankeyData => ({
 const mapCommitDataToCollabGraph = (commitData: Commit[]): CollabGraphData => ({
     commitData: commitData.map((commit) => ({
         author: commit.author,
+        login: commit.login,
         repo: commit.repo,
         date: commit.date.toISOString()
     })),

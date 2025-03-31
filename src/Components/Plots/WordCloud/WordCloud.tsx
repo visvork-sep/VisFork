@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, memo } from "react";
 import { schemeCategory10, select, } from "d3";
 import cloud from "d3-cloud";
 import { Word, processCommitMessages, lemmatizationFunction } from "./utils";
@@ -6,7 +6,7 @@ import { createTooltip } from "./Tooltip";
 import { WordCloudData } from "@VisInterfaces/WordCloudData";
 
 
-const WordCloud = ({ commitData }: WordCloudData) => {
+function WordCloud({ commitData }: WordCloudData) {
 
     const svgRef = useRef<SVGSVGElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -107,4 +107,4 @@ const WordCloud = ({ commitData }: WordCloudData) => {
     return <svg ref={svgRef} style={{ width: "100%", height: "100%" }}></svg>;
 };
 
-export default WordCloud;
+export default memo(WordCloud);

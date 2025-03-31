@@ -148,7 +148,8 @@ describe("processCommits", () => {
             url: "",
             message: "",
             branch: "main",
-            repo: "my/repo"
+            repo: "my/repo",
+            login: ""
         };
 
         const fakeCommits = [fakeCommit];
@@ -180,7 +181,8 @@ describe("processCommits", () => {
             url: "",
             message: "",
             branch: "",
-            repo: ""
+            repo: "",
+            login: ""
         };
 
         commitMap.clear();
@@ -201,7 +203,8 @@ describe("processCommits", () => {
             url: "",
             message: "",
             branch: "default",
-            repo: "diff/repo"
+            repo: "diff/repo",
+            login: ""
         };
 
         commitLocationMap.set("sha1", [{branch: "default", repo: "diff/repo"}, {branch: "blah", repo:"aa/aaa"}]);

@@ -1,0 +1,32 @@
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 240px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  
+  /* Position tooltip slightly to the left */
+  right: 110%; /* Move it left of the element */
+  top: 50%; /* Center it vertically */
+  transform: translateY(-50%); /* Adjust centering */
+  
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* Show tooltip on hover */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 0.8;
+}

@@ -1,7 +1,7 @@
 import { Box, Label, Stack } from "@primer/react";
 import { useMeasure } from "@uidotdev/usehooks";
 
-import Histogram from "./Plots/Histogram.tsx";
+import Histogram from "./Plots/Histogram/Histogram.tsx";
 import ForkList from "@Components/Plots/ForkList";
 import CommitTimeline from "./Plots/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable";
@@ -15,10 +15,9 @@ import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
 import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { useRef, useEffect, useState } from "react";
 
-
 interface ApplicationBodyProps {
-    forks: Repository[],
-    commits: Commit[];
+  forks: Repository[];
+  commits: Commit[];
 }
 function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
     const [startTime, setStartTime] = useState(Date.now());
@@ -51,7 +50,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
         histogramData,
         sankeyData,
         collabGraphData,
-        wordCloudData
+        wordCloudData,
     } = visData;
 
     const { handleHistogramSelection, handleTimelineSelection } = handlers;

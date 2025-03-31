@@ -124,7 +124,7 @@ export function useFilteredData() {
             setFinalForkData(filteredForks);
             setFinalCommitData(flattenedCommits);
         }
-    }, [isLoadingFork, isLoadingCommits]);
+    }, [isLoadingFork, isLoadingCommits, filters]);
 
 
     return {

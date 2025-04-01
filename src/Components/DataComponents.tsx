@@ -2,13 +2,14 @@ import { SplitPageLayout } from "@primer/react";
 import ConfigurationPane from "@Components/ConfigurationPane/ConfigurationPane";
 import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
-import { Commit, Repository, UnprocessedCommitExtended, UnprocessedRepository } from "@Types/LogicLayerTypes";
+import { Commit, ForkFilter, Repository, UnprocessedCommitExtended, UnprocessedRepository }
+    from "@Types/LogicLayerTypes";
 import { useMemo } from "react";
 import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
 import { classify } from "@Utils/Classify";
 
 function DataComponents() {
-    const { onFiltersChange, forks, commits } = useFilteredData();
+    const { onFiltersChange, forks, commits, filters } = useFilteredData();
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {
@@ -24,7 +25,7 @@ function DataComponents() {
 
     const applicationBody = useMemo(
         () => {
-            const { commits: processedCommits, forks: processedForks } = preprocessor(filteredCommits, forks);
+            const { commits: processedCommits, forks: processedForks } = preprocessor(filteredCommits, forks, filters);
             return <SplitPageLayout.Content aria-label="Content" width="xlarge">
                 <ApplicationBody forks={processedForks} commits={processedCommits} />
             </SplitPageLayout.Content>;
@@ -49,7 +50,7 @@ function DataComponents() {
 }
 
 function preprocessor(commits: UnprocessedCommitExtended[],
-    forks: UnprocessedRepository[]): { forks: Repository[], commits: Commit[]; } {
+    forks: UnprocessedRepository[], filter?: ForkFilter): { forks: Repository[], commits: Commit[]; } {
     const processedForks: Repository[] = forks.map(fork => ({
         id: fork.id,
         name: `${fork.owner.login}/${fork.name}`,
@@ -75,7 +76,9 @@ function preprocessor(commits: UnprocessedCommitExtended[],
         commitType: classify(commit.message),
         branch: commit.branch ?? "",
         repo: commit.repo ?? "",
-    }));
+    })).filter(commit => {
+        return filter ? filter.commitTypes.includes(commit.commitType) : true;
+    });
 
     return { forks: processedForks, commits: processedCommits };
 }

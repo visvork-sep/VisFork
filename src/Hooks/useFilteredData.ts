@@ -106,8 +106,6 @@ export function useFilteredData() {
         mainRepositoryInfo = completeData;
     }
 
-
-
     const flattenedCommits: UnprocessedCommitExtended[] =
         mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
             const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
@@ -141,7 +139,7 @@ export function useFilteredData() {
         forkQuery: forkQueryState,
         forkError,
         commitError,
-
+        filters,
         isLoadingFork,
         isLoadingCommits
     };

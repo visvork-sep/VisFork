@@ -28,18 +28,20 @@ function CommitTimeline({
     const svgRef = useRef<SVGSVGElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null); // Parent container
 
+    // Color controls
     const { colorMode, theme } = useTheme();
     const isDarkMode = useMemo(() => {
         return colorMode === "dark";
     }, [colorMode]);
     const colorScheme = useMemo(() => {
         return { 
-            darkLaneColor : themeGet("colors.neutral.muted")({ theme }),
-            lightLaneColor : themeGet("colors.accent.muted")({ theme }),
+            neutralLaneColor : themeGet("colors.neutral.muted")({ theme }),
+            accentedLaneColor : themeGet("colors.accent.muted")({ theme }),
             markerColor : themeGet("colors.fg.subtle")({ theme }),
             overlayColor : themeGet("colors.fg.muted")({ theme })};
     }, [theme]);
 
+    // Buttons style and hover/leave design
     const BUTTON_STYLE: React.CSSProperties = {
         width: "120px", height: "40px", padding: "5px 10px",
         color: `${isDarkMode ? "white" : "black"}`,
@@ -50,7 +52,7 @@ function CommitTimeline({
     };
 
     const onHover = (e: React.MouseEvent<HTMLButtonElement>) => 
-        e.currentTarget.style.backgroundColor = colorScheme.lightLaneColor;
+        e.currentTarget.style.backgroundColor = colorScheme.accentedLaneColor;
     const onLeave = (e: React.MouseEvent<HTMLButtonElement>) => 
         e.currentTarget.style.backgroundColor = "transparent";
     
@@ -58,7 +60,7 @@ function CommitTimeline({
     const colorMap = useMemo(() => utils.buildRepoColorMap(commitData), [commitData]);
 
     // Precompute both views, update only when data changes
-    const builder = useMemo(() => graphStratify(), []);
+    const builder = graphStratify();
     const dagMerged = useMemo(() => {
         try {
             return builder(utils.groupNodes(commitData) as GroupedNode[]);
@@ -66,7 +68,7 @@ function CommitTimeline({
             console.error("Error building merged DAG:", error);
             return null;
         }
-    }, [commitData, builder]);
+    }, [commitData]);
 
     const dagFull = useMemo(() => {
         try {
@@ -75,7 +77,7 @@ function CommitTimeline({
             console.error("Error building full DAG:", error);
             return null;
         }
-    }, [commitData, builder]);
+    }, [commitData]);
 
     // Draw the graph
     const drawGraph = useCallback(() => {
@@ -96,13 +98,14 @@ function CommitTimeline({
             .rank(utils.dateRankOperator)
             .lane(laneGreedy().topDown(true).compressed(false));
 
-        // Initial dimensions, height will be overwritten
+        // Initial dimensions, will be overwritten
         let { width, height } = layout(dag);
 
         width = Math.max(
             width + c.MARGIN.left + c.MARGIN.right,
             containerRef.current?.clientWidth ?? 0
         );
+
         const svg = select(svgRef.current)
             .attr("width", width)
             .attr("height", height + c.MARGIN.top + c.MARGIN.bottom)
@@ -126,11 +129,11 @@ function CommitTimeline({
             .attr("viewBox", `0 0 ${width} ${height}`);
 
         // Lane shading and author labels
-        graphics.drawLanes(g, lanes, width, isDarkMode, colorScheme.darkLaneColor, colorScheme.lightLaneColor);
+        graphics.drawLanes(g, lanes, width, isDarkMode, colorScheme.neutralLaneColor, colorScheme.accentedLaneColor);
 
         // Month/year labels
         if (!merged) {
-            graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, colorScheme.markerColor);
+            graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor);
         }
 
         // Selection overlay for selectAll
@@ -341,7 +344,7 @@ function CommitTimeline({
                 style={{
                     padding: "10px",
                     background: "transparent",
-                    borderTop: "1px solid #ccc",
+                    borderTop: `1px solid ${colorScheme.markerColor}`,
                 }}
             ></div>
         </div>

@@ -47,7 +47,7 @@ export function drawLanes(
             .attr("text-anchor", "start")
             .attr("alignment-baseline", "middle")
             .text(repo.split("/")[0])
-            .attr("fill", `${isDarkMode ? "#fff" : "#000"}`);
+            .attr("fill", `${isDarkMode ? "white" : "black"}`);
     });
 }
 
@@ -55,6 +55,7 @@ export function drawTimelineMarkers(
     g: Selection<SVGGElement, unknown, null, undefined>,
     sortedNodes: GraphNode<Commit | GroupedNode, unknown>[],
     totalHeight: number,
+    isDarkMode: boolean,
     colorMarker: string
 ) {
     const formatMonth = timeFormat("%b");
@@ -93,7 +94,7 @@ export function drawTimelineMarkers(
                     .attr("y", totalHeight + c.MARGIN.bottom - 5)
                     .attr("font-size", 12)
                     .style("text-anchor", "middle")
-                    .style("fill", "black")
+                    .style("fill", `${isDarkMode? "white" : "black"}`)
                     .text(labelText);
     
                 lastLabelX = labelX;

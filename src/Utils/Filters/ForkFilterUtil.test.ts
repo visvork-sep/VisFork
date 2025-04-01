@@ -15,10 +15,7 @@ const example_fork: UnprocessedRepository = {
 };
 
 const example_filter: ForkFilter = {
-    dateRange: {
-        start: new Date("2022-09-14T06:51:16Z"),
-        end: new Date("2022-09-14T06:51:16Z")
-    },
+
     commitTypes: ["adaptive"],
     ownerTypes: ["User", "Organization"]
 };
@@ -30,48 +27,14 @@ describe("Regular functionality", () => {
     beforeEach(() => {
         /* structuredClone() the original state of the example instances
          * are kept for a fresh start before every test */
-        fork = structuredClone(example_fork); 
+        fork = structuredClone(example_fork);
         filter = structuredClone(example_filter);
         // if (fork.created_at != null) {
         //     fork.created_at = new Date(fork.created_at.toString());
         // }
         // the base is that we include all forks based on date:
-        filter.dateRange.start = new Date("1970-01-01T19:01:12Z");
     });
 
-    describe("Fork activity", () => {
-        it("should return an array containing the same fork(s) - " +
-            "undefined activeForksOnly param even though fork is inactive", () => {
-            filter.activeForksOnly = undefined;
-            expect(
-                [fork].filter((fork => isValidForkByFilter(fork, filter)))
-            ).toStrictEqual([fork]);
-        });
-    
-        it("should return an array containing the same fork(s) - " + 
-            "activeForksOnly param set to true and fork is active", () => {
-            filter.activeForksOnly = true;
-            expect(
-                [fork].filter((fork => isValidForkByFilter(fork, filter)))
-            ).toStrictEqual([fork]);
-        });
-
-        it("should return empty array - activeForksOnly param set to true and fork is inactive", () => {
-            filter.activeForksOnly = true;
-            fork.last_pushed = new Date("2022-09-14T06:51:16Z");
-            expect(
-                [fork].filter((fork => isValidForkByFilter(fork, filter)))
-            ).toStrictEqual([]);
-        });
-
-        it("should return an array containing the same fork(s) - " +
-            "activeForksOnly param set to false even though fork is inactive", () => {
-            filter.activeForksOnly = false;
-            expect(
-                [fork].filter((fork => isValidForkByFilter(fork, filter)))
-            ).toStrictEqual([fork]);
-        });
-    });
 
     describe("Owner type", () => {
         it("should return an array containing the same fork(s) - ownerType is valid", () => {

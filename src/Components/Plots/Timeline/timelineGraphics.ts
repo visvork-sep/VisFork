@@ -201,7 +201,9 @@ export function drawLegends(
     merged : boolean, 
     legend: Selection<BaseType, unknown, HTMLElement, undefined>, 
     colorMap: Map<string, string>,
-    shapeColor: string) {
+    shapeColor: string,
+    sortedNodes: MutGraphNode<Commit | GroupedNode, undefined>[],
+    handle: (commitIds: string[]) => void) {
         
     const colorLegend = legend.append("div").attr("id", "color-legend");
 
@@ -221,6 +223,16 @@ export function drawLegends(
             .attr("cx", c.LEGEND_SIZE / 2)
             .attr("cy", c.LEGEND_SIZE / 2)
             .attr("r", c.LEGEND_SIZE / 2)
+            .on("click", function() {
+                const selected = sortedNodes.filter(node => node.data.repo === repoName)
+                    .flatMap((node) =>
+                        merged
+                            ? (node as MutGraphNode<GroupedNode, unknown>).data.nodes
+                            : [node.data.id]
+                    );
+                console.log(selected);
+                handle(selected);
+            }) 
             .attr("fill", colorValue);
 
         div
@@ -260,6 +272,17 @@ export function drawLegends(
                     "d",
                     symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE)
                 )
+                .on("click", function() {
+                    const selected = (sortedNodes as MutGraphNode<GroupedNode, undefined>[])
+                        .filter(node => node.data.branch === 
+                            (label === "Fork parent" ? "forkParent" :
+                                label === "Merge commit" ? "merge" : "default"
+                            )
+                        )
+                        .flatMap(node => node.data.nodes);
+                    console.log(selected);
+                    handle(selected);
+                }) 
                 .attr("fill", shapeColor);
 
             item

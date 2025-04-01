@@ -230,7 +230,7 @@ export function drawLegends(
                             ? (node as MutGraphNode<GroupedNode, unknown>).data.nodes
                             : [node.data.id]
                     );
-                console.log(selected);
+
                 handle(selected);
             }) 
             .attr("fill", colorValue);
@@ -280,7 +280,6 @@ export function drawLegends(
                             )
                         )
                         .flatMap(node => node.data.nodes);
-                    console.log(selected);
                     handle(selected);
                 }) 
                 .attr("fill", shapeColor);

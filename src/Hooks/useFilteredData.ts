@@ -43,6 +43,7 @@ export function useFilteredData() {
     }, [simplifiedForkData, filters]);
 
 
+
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
 
     const { commitData, isLoading: isLoadingCommits, error: commitError } = commitResponses
@@ -70,17 +71,18 @@ export function useFilteredData() {
             commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
     }, [commitData]);
 
+
     let mainRepositoryInfo: MainRepositoryInfo | undefined = undefined;
     if (!forkError
-      && !commitError
-      && !isLoadingFork
-      && !isLoadingCommits
-      && simplifiedForkData.length > 0
-      && simplifiedCommitData.length == simplifiedForkData.length
-      && forkQueryState?.owner
-      && forkQueryState?.repo
+        && !commitError
+        && !isLoadingFork
+        && !isLoadingCommits
+        && simplifiedForkData.length > 0
+        && simplifiedCommitData.length == filteredForks.length
+        && forkQueryState?.owner
+        && forkQueryState?.repo
     ) {
-        const completeForkData: RepositoryInfoWithCommits[] = simplifiedForkData.map((fork, index) =>
+        const completeForkData: RepositoryInfoWithCommits[] = filteredForks.map((fork, index) =>
             ({
                 ...fork,
                 commits: simplifiedCommitData[index]
@@ -105,17 +107,18 @@ export function useFilteredData() {
     }
 
     const flattenedCommits: UnprocessedCommitExtended[] =
-      mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
-          const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
-              ...commit,
-              repo: `${fork.owner.login}/${fork.name}`,
-              branch: fork.defaultBranch,
+        mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
+            const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
+                ...commit,
+                repo: `${fork.owner.login}/${fork.name}`,
+                branch: fork.defaultBranch,
 
-          }));
+            }));
 
-          acc = acc.concat(commits);
-          return acc;
-      }, []) : [];
+            acc = acc.concat(commits);
+            return acc;
+        }, []) : [];
+
 
     // Add final update only if all data has been loaded
     useEffect(() => {
@@ -124,6 +127,7 @@ export function useFilteredData() {
             setFinalCommitData(flattenedCommits);
         }
     }, [isLoadingFork, isLoadingCommits, filters]);
+
 
 
     return {
@@ -135,7 +139,7 @@ export function useFilteredData() {
         forkQuery: forkQueryState,
         forkError,
         commitError,
-
+        filters,
         isLoadingFork,
         isLoadingCommits
     };

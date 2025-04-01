@@ -23,18 +23,15 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
     const renderTimeRef = useRef(0);
     // Capture the start time when the prop changes
     useEffect(() => {
-        console.log("Started", Date.now());
         setStartTime(Date.now());
     }, [forks, commits]);
 
     // Measure the time taken when the component re-renders
     useEffect(() => {
         if (startTime) {
-            console.log("Finished", Date.now());
 
             const renderTime = Date.now() - startTime;
             renderTimeRef.current = renderTime;
-            console.log(`Render time: ${renderTime.toFixed(2)} ms`);
             setStartTime(0); // Reset start time
         }
     });

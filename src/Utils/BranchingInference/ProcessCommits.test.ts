@@ -3,10 +3,12 @@ import { processCommits } from "./ProcessCommits.ts";
 import { UnprocessedCommitExtended } from "@Types/LogicLayerTypes";
 import rawMockCommits from "./MockCommits.json";
 import { commitLocationMap, commitMap, initializeBranchData } from "./InferenceData.ts";
-import { deleteDuplicateCommits, 
-    deleteFromBranch, 
-    findMergeBaseCommit, 
-    makeUniqueHierarchical } from "./deleteDuplicateCommits.ts";
+import {
+    deleteDuplicateCommits,
+    deleteFromBranch,
+    findMergeBaseCommit,
+    makeUniqueHierarchical
+} from "./deleteDuplicateCommits.ts";
 
 const mockCommits: UnprocessedCommitExtended[] = rawMockCommits.map(commit => ({
     ...commit,
@@ -160,7 +162,7 @@ describe("processCommits", () => {
 
         deleteDuplicateCommits(fakeCommits);
 
-        expect(consoleLogSpy).toHaveBeenCalledWith("Found a commit with more than 2 parentIds");
+        expect(consoleErrorSpy).toHaveBeenCalledWith("Found a commit with more than 2 parentIds");
 
         makeUniqueHierarchical(fakeCommit);
 
@@ -207,22 +209,22 @@ describe("processCommits", () => {
             login: ""
         };
 
-        commitLocationMap.set("sha1", [{branch: "default", repo: "diff/repo"}, {branch: "blah", repo:"aa/aaa"}]);
+        commitLocationMap.set("sha1", [{ branch: "default", repo: "diff/repo" }, { branch: "blah", repo: "aa/aaa" }]);
 
-        initializeBranchData({"my/repo": "main", "diff/repo": "default"}, "my/repo");
-
-        makeUniqueHierarchical(fakeCommit);
-
-        expect(commitLocationMap.get("sha1")).toStrictEqual([{branch: "default", repo: "diff/repo"}]);
-
-        commitLocationMap.set("sha1", [{branch: "default", repo: "diff/repo"}, {branch: "blah", repo:"aa/aaa"}]);
-
-        initializeBranchData({"my/repo": "main", "diff/repo": "notDefault"}, "my/repo");
+        initializeBranchData({ "my/repo": "main", "diff/repo": "default" }, "my/repo");
 
         makeUniqueHierarchical(fakeCommit);
 
-        expect(commitLocationMap.get("sha1")).toStrictEqual([{branch: "blah", repo: "aa/aaa"}]);
-        
+        expect(commitLocationMap.get("sha1")).toStrictEqual([{ branch: "default", repo: "diff/repo" }]);
+
+        commitLocationMap.set("sha1", [{ branch: "default", repo: "diff/repo" }, { branch: "blah", repo: "aa/aaa" }]);
+
+        initializeBranchData({ "my/repo": "main", "diff/repo": "notDefault" }, "my/repo");
+
+        makeUniqueHierarchical(fakeCommit);
+
+        expect(commitLocationMap.get("sha1")).toStrictEqual([{ branch: "blah", repo: "aa/aaa" }]);
+
     });
 
 });

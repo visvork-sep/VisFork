@@ -14,89 +14,61 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # Step 1
-      # Clone the repository to the CI runner
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2
-      # Check cache for schema.graphql file. Use it if it exists, otherwise execute Step 3
-      - name: Cache graphql schema
-        # Variable used for referring to this step in subsequent steps
-        id: cache-schema-gql
-        uses: actions/cache@v4
-        env: 
-          cache-name: cache-schema-gql
-        with:
-          # Since the schema file should be located in the root directory of the project, we define this as the path
-          path: ./
-          # The key(s) used for finding back the cache once the cache has been generated
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('./schema.graphql') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
-            ${{ runner.os }}-
-
-
-      # Step 3
-      # If schema.graphql has not been cached before (or the cache has expired), it will download it again
-      - if: ${{ steps.cache-schema-gql.outputs.cache-hit != 'true' }}
-        name: Get resources
+      - name: Get resources
         run: |
-          curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
+              curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
+              curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
 
-      # Step 4: Cache openapi schema
-      # Check cache for schema.graphql file. Use it if it exists, otherwise execute Step 3
-      - name: Cache openapi schema
-        # Variable used for referring to this step in subsequent steps
-        id: cache-schema-openapi
-        uses: actions/cache@v4
-        env: 
-          cache-name: cache-schema-openapi
-        with:
-          # Since the schema file should be located in the root directory of the project, we define this as the path
-          path: ./
-          # The key(s) used for finding back the cache once the cache has been generated
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('./openapi-schema.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
-            ${{ runner.os }}-
-
-
-      # Step 5: Get openapi Resources
-      # If openapi schema has not been cached before (or the cache has expired), it will download it again
-      - if: ${{ steps.cache-schema-openapi.outputs.cache-hit != 'true' }}
-        name: Get resources
-        run: |
-          curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
-
-
-      # Step 6: Build Docker image
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
-      
-      # Run 7 inside a docker container for consistency
+
+      - name: Run Docker container
+        run: |
+              if [ "$(docker ps -aq -f name=visfork-ci)" != "" ]; then
+                docker stop visfork-ci
+                docker rm visfork-ci
+              fi
+              docker run -dit --name visfork-ci visfork-ci bash
+
+
+  test-build-deploy:
+    runs-on: self-hosted
+    needs: setup
+
+    steps:
       - name: Run ESLint
-        run: docker run --rm visfork-ci npm run lint
+        run: docker exec visfork-ci npm run lint
 
-      # Step 8
       - name: Run tests
-        run: docker run --rm visfork-ci npm run test 
+        run: docker exec visfork-ci npm run test
 
-      # Step 9
+      # - name: Authentication
+      #   if: github.ref == 'refs/heads/main'
+      #   run: |
+      #         docker cp ~/auth/.env visfork-ci:/workspace/.contrib
+      #         docker cp ~/auth/backend/.env visfork-ci:/workspace/.contrib/backend
+      #         docker cp ~/auth/backend/index.js visfork-ci:/workspace/.contrib/backend
+
       - name: Build
-        run: docker run --rm visfork-ci npm run build
+        run: docker exec visfork-ci npm run build
 
-      # Step 7
-      # This is so we can use cached files to build faster next time
-      # - name: Store Build Artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-output
-      #     path: dist/
+      - name: Deploy
+        if: github.ref == 'refs/heads/main'
+        run: docker cp visfork-ci:/workspace/dist/. /var/www/html/react-app
 
-  # deploy:
-  #   runs-on: ubuntu-latest
+  cleanup:
+    runs-on: self-hosted
+    needs: test-build-deploy
 
-    # push the build artifact generated in build@step7 to the VM
-    # NOTE: also either run a script on the server remotely as a step here,
-    # or add a trigger to the server to automatically publish the new build
+    steps:
+      - name: Stop and Remove Docker Image
+        run: |
+              if [ "$(docker ps -aq -f name=visfork-ci)" = "" ]; then
+                echo "visfork-ci container is not running"
+              else
+                docker stop visfork-ci
+                docker rm visfork-ci
+              fi

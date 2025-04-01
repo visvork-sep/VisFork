@@ -1,7 +1,7 @@
-import * as d3 from "d3";
+import { select } from "d3";
 
 export const createTooltip = () => {
-    return d3.select("body")
+    return select("body")
         .append("div")
         .attr("class", "tooltip")
         .style("position", "absolute")

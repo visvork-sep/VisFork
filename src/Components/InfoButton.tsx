@@ -1,11 +1,11 @@
 import { InfoIcon } from "@primer/octicons-react";
-import { Tooltip, Dialog, Button } from "@primer/react";
+import { Dialog, Button } from "@primer/react";
 import { useState } from "react";
-
+import Tooltip from "@Components/Tooltip.tsx";
 interface InfoButtonProps {
-  title: string; //Name of the visualization
-  shortDescription: string; //Quick hover over description
-  fullDescription: string; // Extended description for clicking
+    title: string; //Name of the visualization
+    shortDescription: string; //Quick hover over description
+    fullDescription: string; // Extended description for clicking
 }
 export function InfoButton({ title, shortDescription, fullDescription }: InfoButtonProps) {
     const [isOpen, setIsOpen] = useState(false);

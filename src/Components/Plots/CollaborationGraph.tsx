@@ -1,10 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
+import {
+    SimulationNodeDatum,
+    SimulationLinkDatum,
+    select,
+    forceLink,
+    forceManyBody,
+    forceCenter,
+    drag,
+    symbol,
+    symbolSquare,
+    forceSimulation
+} from "d3";
 
 // Graph node type: author or repo
-interface Node extends d3.SimulationNodeDatum {
+interface Node extends SimulationNodeDatum {
     id: string;
+    displayText: string;
     group: "author" | "repo";
     // Radius for node size
     radius?: number;
@@ -13,7 +25,7 @@ interface Node extends d3.SimulationNodeDatum {
 }
 
 // Graph link type: connects author to repo
-interface Link extends d3.SimulationLinkDatum<Node> {
+interface Link extends SimulationLinkDatum<Node> {
     source: string | Node;
     target: string | Node;
 }
@@ -25,6 +37,11 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const playInterval = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        setCurrentDateIndex(0);
+        setIsPlaying(false);
+    }, [commitData]);
 
     // Get all unique commit dates
     const allDates = Array.from(
@@ -71,18 +88,20 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
 
         const authorCommitCounts: Record<string, number> = {};
         const repoCommitCounts: Record<string, number> = {};
-
+        const authorNames: Record<string, string> = {};
         // Make sure each set of authors and repos is unique
         visibleCommits.forEach((entry) => {
-            authors.add(entry.author);
+            authors.add(entry.login); // logins are unique, but author names are not
             repos.add(entry.repo);
             links.push({
-                source: entry.author,
+                source: entry.login,
                 target: entry.repo,
             });
 
+            authorNames[entry.login] = entry.author; // Store author names for display
+
             // Keep track of commit counts for scaling nodes
-            authorCommitCounts[entry.author] = (authorCommitCounts[entry.author] || 0) + 1;
+            authorCommitCounts[entry.login] = (authorCommitCounts[entry.login] || 0) + 1;
             repoCommitCounts[entry.repo] = (repoCommitCounts[entry.repo] || 0) + 1;
         });
 
@@ -90,6 +109,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
         const nodes: Node[] = [
             ...Array.from(authors).map((author) => ({
                 id: author,
+                displayText: authorNames[author],
                 group: "author" as const,
                 // Scale nodes based on commit count
                 radius: 4 + Math.log(authorCommitCounts[author] || 1) * 2,
@@ -97,6 +117,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             })),
             ...Array.from(repos).map((repo) => ({
                 id: repo,
+                displayText: repo,
                 group: "repo" as const,
                 // Scale nodes based on commit count
                 radius: 4 + Math.log(repoCommitCounts[repo] || 1) * 2,
@@ -104,8 +125,8 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             })),
         ];
 
-        // D3 force graph setup
-        const svg = d3.select(svgRef.current);
+        //  force graph setup
+        const svg = select(svgRef.current);
         const container = svg.node()?.parentElement as HTMLElement;
         const width = container.clientWidth;
         const height = 600;
@@ -113,14 +134,13 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
         svg.selectAll("*").remove();
 
         // Force simulation to position nodes nicely
-        const simulation = d3
-            .forceSimulation<Node>(nodes)
+        const simulation = forceSimulation<Node>(nodes)
             // Connected nodes are attracted to each other
-            .force("link", d3.forceLink<Node, Link>(links).id((d) => d.id).distance(120))
+            .force("link", forceLink<Node, Link>(links).id((d) => d.id).distance(120))
             // Makes nodes repel
-            .force("charge", d3.forceManyBody().strength(-20))
+            .force("charge", forceManyBody().strength(-20))
             // Centers the graph
-            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("center", forceCenter(width / 2, height / 2))
             // Determines how quickly the simulation slows down (default is 0.0228)
             .alphaDecay(0.025);
 
@@ -152,7 +172,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             })
             // Makes nodes draggable
             .call(
-                d3.drag<SVGCircleElement, Node>()
+                drag<SVGCircleElement, Node>()
                     .on("start", (event, d) => {
                         if (!event.active) simulation.alphaTarget(0.3).restart();
                         d.fx = d.x;
@@ -180,7 +200,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .append("path")
             .attr("d", (d) => {
                 const r = d.radius ?? 8;
-                const path = d3.symbol().type(d3.symbolSquare).size(Math.PI * r * r);
+                const path = symbol().type(symbolSquare).size(Math.PI * r * r);
                 return path();
             })
             .attr("fill", "#ff7f0e")
@@ -191,7 +211,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             })
             // Makes nodes draggable        
             .call(
-                d3.drag<SVGPathElement, Node>()
+                drag<SVGPathElement, Node>()
                     .on("start", (event, d) => {
                         if (!event.active) simulation.alphaTarget(0.3).restart();
                         d.fx = d.x;
@@ -215,9 +235,8 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .data(nodes)
             .enter()
             .append("text")
-            .text((d) => d.id)
             // Shorten long names
-            .text((d) => d.id.length > 12 ? d.id.slice(0, 12) + "…" : d.id)
+            .text((d) => d.displayText.length > 16 ? d.displayText.slice(0, 16) + "…" : d.displayText)
             .attr("font-size", "10px")
             // Position text slightly above the node
             .attr("dy", (d) => `-${(d.radius ?? 8) + 4}px`)
@@ -232,7 +251,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
         // Add toolttip to show full name and number of commits on hover
         [...authorNodes.nodes(), ...repoNodes.nodes()].forEach((el, i) => {
             const d = nodes[i];
-            d3.select(el).append("title").text(`${d.id}\nCommits: ${d.commits ?? 0}`);
+            select(el).append("title").text(`${d.id}\nCommits: ${d.commits ?? 0}`);
         });
 
         // Tick function: updates positions of links, nodes, and labels every tick
@@ -289,7 +308,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
         // Repository (orange square)
         legend
             .append("path")
-            .attr("d", d3.symbol().type(d3.symbolSquare).size(120)())
+            .attr("d", symbol().type(symbolSquare).size(120)())
             .attr("transform", "translate(0, 20)")
             .attr("fill", "#ff7f0e");
 

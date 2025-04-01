@@ -3,6 +3,7 @@
  */
 interface CollabGraphDetails{
     author: string,
+    login: string,
     repo: string,
     date: string
 }

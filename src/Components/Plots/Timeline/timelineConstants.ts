@@ -1,7 +1,6 @@
 //nodes
 export const NODE_RADIUS = 8;
 // edges
-export const EDGE_STROKE_COLOR = "#999";
 export const CURVE_SIZE = 15;
 export const EDGE_WIDTH = 2;
 // tooltip
@@ -22,11 +21,4 @@ export const DATE_LABEL_HEIGHT = 21;
 export const MARGIN = { top: 10, right: 0, bottom: 10, left: 150 };
 export const MIN_LABEL_SPACING = 40; 
 
-// buttons
-export const BUTTON_STYLE: React.CSSProperties = {
-    width: "120px", height: "40px", padding: "5px 10px",
-    cursor: "pointer", backgroundColor: "transparent",
-    border: "2px solid #eef", display: "flex",
-    alignItems: "center", justifyContent: "center",
-    transition: "background-color 0.3s",
-};
+

@@ -14,18 +14,46 @@ import {
 import { TimelineProps, TimelineDetails as Commit } from "@VisInterfaces/TimelineData";
 import { GroupedNode, NodeSelection } from "./timelineUtils";
 import * as utils from "./timelineUtils";
+import * as graphics from "./timelineGraphics";
 import * as c from "./timelineConstants";
+import { themeGet, useTheme } from "@primer/react";
 
 function CommitTimeline({
     commitData,
     handleTimelineSelection,
 }: TimelineProps) {
-    const [merged, setMerged] = useState(false); // state for merged view
-    const [selectAll, setSelectAll] = useState(false); // state for selection
+    const [merged, setMerged] = useState(false); // State for merged view
+    const [selectAll, setSelectAll] = useState(false); // State for selection
 
     const svgRef = useRef<SVGSVGElement | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null); // parent container
+    const containerRef = useRef<HTMLDivElement>(null); // Parent container
 
+    const { colorMode, theme } = useTheme();
+    const isDarkMode = useMemo(() => {
+        return colorMode === "dark";
+    }, [colorMode]);
+    const colorScheme = useMemo(() => {
+        return { 
+            darkLaneColor : themeGet("colors.neutral.muted")({ theme }),
+            lightLaneColor : themeGet("colors.accent.muted")({ theme }),
+            markerColor : themeGet("colors.fg.subtle")({ theme }),
+            overlayColor : themeGet("colors.fg.muted")({ theme })};
+    }, [theme]);
+
+    const BUTTON_STYLE: React.CSSProperties = {
+        width: "120px", height: "40px", padding: "5px 10px",
+        color: `${isDarkMode ? "white" : "black"}`,
+        cursor: "pointer", backgroundColor: "transparent",
+        border: `2px solid ${colorScheme.markerColor}`, display: "flex",
+        alignItems: "center", justifyContent: "center",
+        transition: "background-color 0.3s",
+    };
+
+    const onHover = (e: React.MouseEvent<HTMLButtonElement>) => 
+        e.currentTarget.style.backgroundColor = colorScheme.lightLaneColor;
+    const onLeave = (e: React.MouseEvent<HTMLButtonElement>) => 
+        e.currentTarget.style.backgroundColor = "transparent";
+    
     // Memoize the color map
     const colorMap = useMemo(() => utils.buildRepoColorMap(commitData), [commitData]);
 
@@ -98,11 +126,11 @@ function CommitTimeline({
             .attr("viewBox", `0 0 ${width} ${height}`);
 
         // Lane shading and author labels
-        utils.drawLanes(g, lanes, width);
+        graphics.drawLanes(g, lanes, width, isDarkMode, colorScheme.darkLaneColor, colorScheme.lightLaneColor);
 
         // Month/year labels
         if (!merged) {
-            utils.drawTimelineMarkers(g, sortedNodes, totalHeight);
+            graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, colorScheme.markerColor);
         }
 
         // Selection overlay for selectAll
@@ -113,7 +141,7 @@ function CommitTimeline({
                 .attr("y", c.MARGIN.top)
                 .attr("width", width)
                 .attr("height", totalHeight - c.MARGIN.bottom - c.MARGIN.top)
-                .style("fill", "#777")
+                .style("fill", colorScheme.overlayColor)
                 .style("fill-opacity", "0.3");
         } else {
             g.select(".selection-overlay").remove();
@@ -166,13 +194,13 @@ function CommitTimeline({
             .enter()
             .append("path")
             .attr("fill", "none")
-            .attr("stroke", c.EDGE_STROKE_COLOR)
+            .attr("stroke", colorScheme.markerColor)
             .attr("stroke-width", c.EDGE_WIDTH)
-            .attr("d", utils.drawEdgeCurve);
+            .attr("d", graphics.drawEdgeCurve);
 
         g.call(timelineBrush);
 
-        // create tooltip
+        // Create tooltip
         const tooltip = select("body")
             .append("div")
             .attr("class", "tooltip")
@@ -185,19 +213,19 @@ function CommitTimeline({
             .style("opacity", 0)
             .style("font", c.TOOLTIP_FONT);
 
-        // draw nodes depending on view
+        // Draw nodes depending on view
         if (merged) {
             const mergedNodes = sortedNodes as unknown as MutGraphNode<GroupedNode, undefined>[];
-            const { circles, squares, triangles } = utils.drawMergedNodes(g, colorMap, mergedNodes);
+            const { circles, squares, triangles } = graphics.drawMergedNodes(g, colorMap, mergedNodes);
 
             applyToolTip(circles as NodeSelection);
             applyToolTip(triangles as NodeSelection);
             applyToolTip(squares as unknown as NodeSelection);
 
         } else {
-            const { circles } = utils.drawNormalNodes(g, colorMap, sortedNodes);
+            const { circles } = graphics.drawNormalNodes(g, colorMap, sortedNodes);
 
-            // apply tooltips
+            // Apply tooltips
             applyToolTip(circles as NodeSelection);
         }
 
@@ -207,7 +235,7 @@ function CommitTimeline({
                     tooltip.transition().duration(c.TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
                     let content = "";
                     if (!merged) {
-                        // full view
+                        // Full view
                         const commitData = d.data as Commit;
                         content = `
                         <strong>Commit</strong>: ${commitData.id}<br>
@@ -215,7 +243,7 @@ function CommitTimeline({
                         <strong>Branch</strong>: ${commitData.branch}<br>
                         <strong>Date</strong>: ${commitData.date}`;
                     } else {
-                        // merged view (linter issues for indenting)
+                        // Merged view 
                         const mergedData = d.data as GroupedNode;
                         content = `
                         <strong>Type of Commit</strong>: ${mergedData.branch}<br>
@@ -242,12 +270,12 @@ function CommitTimeline({
                 });
         }
 
-        // display legends for the colors in #dag-legends
+        // Display legends for the colors in #dag-legends
         const legend = select("#dag-legends")
             .style("display", "flex")
             .style("align-items", "flex-start");
 
-        utils.drawLegends(merged, legend, colorMap);
+        graphics.drawLegends(merged, legend, colorMap, colorScheme.markerColor);
 
         return () => {
             tooltip.remove(); // Remove tooltip on cleanup
@@ -266,17 +294,17 @@ function CommitTimeline({
             <div
                 style={{
                     padding: "10px",
-                    background: "#fff",
-                    borderBottom: "1px solid #ccc",
+                    background: "transparent",
+                    borderBottom: `1px solid ${colorScheme.markerColor}`,
                     textAlign: "left",
                 }}
             >
                 <div style={{ display: "flex", gap: "10px" }}>
                     <button
                         onClick={() => setMerged(!merged)}
-                        style={c.BUTTON_STYLE}
-                        onMouseEnter={utils.onHover}
-                        onMouseLeave={utils.onLeave}
+                        style={BUTTON_STYLE}
+                        onMouseEnter={onHover}
+                        onMouseLeave={onLeave}
                     >
                         {merged ? "Full View" : "Merged View"}
                     </button>
@@ -289,9 +317,9 @@ function CommitTimeline({
                             handleTimelineSelection(!selectAll ? selectedCommits : []);
                             setSelectAll(!selectAll);
                         }}
-                        style={c.BUTTON_STYLE}
-                        onMouseEnter={utils.onHover}
-                        onMouseLeave={utils.onLeave}
+                        style={BUTTON_STYLE}
+                        onMouseEnter={onHover}
+                        onMouseLeave={onLeave}
                     >
                         {selectAll ? "Deselect All" : "Select All"}
                     </button>

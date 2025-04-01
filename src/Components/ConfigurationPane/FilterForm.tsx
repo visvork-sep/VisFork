@@ -1,23 +1,23 @@
 import { Box, Button, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 
-import { RepositoryInput } from "@Components/ConfigurationPane/FilterFormElements/RepositoryInput";
-import { ForksCountInput } from "@Components/ConfigurationPane/FilterFormElements/ForksCountInput";
-import { RecentlyUpdatedInput } from "@Components/ConfigurationPane/FilterFormElements/RecentlyUpdatedInput";
-import { CommitsDateRangeFromInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeFromInput";
-import { ForksQueryOrderInput } from "@Components/ConfigurationPane/FilterFormElements/ForksQueryOrderInput";
-import { CommitTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/CommitsTypeFilterInput";
-import { OwnerTypeFilterInput } from "@Components/ConfigurationPane/FilterFormElements/OwnerTypeFilterInput";
-import { CommitsDateRangeUntilInput }
-    from "@Components/ConfigurationPane/FilterFormElements/CommitsDateRangeUntilInput";
+import { RepositoryInput } from "@FormElements/RepositoryInput";
+import { ForksCountInput } from "@FormElements/ForksCountInput";
+import { RecentlyUpdatedInput } from "@FormElements/RecentlyUpdatedInput";
+import { CommitsDateRangeFromInput } from "@FormElements/CommitsDateRangeFromInput";
+import { ForksQueryOrderInput } from "@FormElements/ForksQueryOrderInput";
+import { CommitTypeFilterInput } from "@FormElements/CommitsTypeFilterInput";
+import { OwnerTypeFilterInput } from "@FormElements/OwnerTypeFilterInput";
+import { CommitsDateRangeUntilInput } from "@FormElements/CommitsDateRangeUntilInput";
 import { useFilterForm } from "@Hooks/useFilterForm";
 import { useFormSubmission } from "@Hooks/useFormSubmission";
 import { FilterChangeHandler } from "@Hooks/useFilteredData";
 import { useAuth } from "@Providers/AuthProvider";
+import { memo, useMemo } from "react";
 
 interface FilterFormProps {
     filterChangeHandler: FilterChangeHandler;
-};
+}
 
 function FilterForm({ filterChangeHandler }: FilterFormProps) {
     const {
@@ -29,7 +29,7 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
         handleCommitsDateRangeUntilChange,
         handleCommitsTypeFilterChange,
         handleOwnerTypeFilterChange,
-        handleRecentlyUpdatedChange
+        handleRecentlyUpdatedChange,
     } = useFilterForm();
 
     const {
@@ -46,78 +46,129 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
 
     const { isAuthenticated } = useAuth();
 
-    return <Box as="form" onSubmit={onSubmit}>
-        <Stack direction={"vertical"}>
-            <Stack.Item>
-                <RepositoryInput error={repositoryInputError}
-                    onChangeHandler={handleRepositoryChange} value={form.repository} />
-            </Stack.Item>
+    // Memoize the form inputs to avoid unnecessary re-renders
+    const repositoryInput = useMemo(
+        () => (
+            <RepositoryInput
+                error={repositoryInputError}
+                onChangeHandler={handleRepositoryChange}
+                value={form.repository}
+            />
+        ),
+        [repositoryInputError, handleRepositoryChange, form.repository]
+    );
 
-            <Pagehead>Choose main filters</Pagehead>
+    const forksCountInput = useMemo(
+        () => (
+            <ForksCountInput
+                error={forksCountInputError}
+                onChangeHandler={handleForksCountChange}
+                value={form.forksCount}
+            />
+        ),
+        [forksCountInputError, handleForksCountChange, form.forksCount]
+    );
 
-            <Stack.Item>
-                <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
-                    <Stack.Item>
-                        <ForksCountInput error={forksCountInputError}
-                            onChangeHandler={handleForksCountChange} value={form.forksCount} />
-                    </Stack.Item>
+    const forksOrderInput = useMemo(
+        () => (
+            <ForksQueryOrderInput
+                onChangeHandler={handleForksOrderChange}
+                selected={form.forksOrder}
+                error={forksOrderInputError}
+            />
+        ),
+        [forksOrderInputError, handleForksOrderChange, form.forksOrder]
+    );
 
-                    <Stack.Item>
-                        <ForksQueryOrderInput
-                            onChangeHandler={handleForksOrderChange}
-                            selected={form.forksOrder}
-                            error={forksOrderInputError} />
-                    </Stack.Item>
+    const commitsDateRangeFromInput = useMemo(
+        () => (
+            <CommitsDateRangeFromInput
+                error={commitsDateRangeFromInputError}
+                onChangeHandler={handleCommitsDateRangeFromChange}
+                value={form.commitsDateRangeFrom}
+            />
+        ),
+        [commitsDateRangeFromInputError, handleCommitsDateRangeFromChange, form.commitsDateRangeFrom]
+    );
 
-                    {/* <Stack.Item>
-                        <ForksQueryOrderAscDescInput
-                            onChangeHandler={handleForksOrderAscDescChange} 
-                            selected={form.forksAscDesc} 
-                            error={forksOrderInputError}/>
-                    </Stack.Item> */}
+    const commitsDateRangeUntilInput = useMemo(
+        () => (
+            <CommitsDateRangeUntilInput
+                error={commitsDateRangeUntilInputError}
+                onChangeHandler={handleCommitsDateRangeUntilChange}
+                value={form.commitsDateRangeUntil}
+            />
+        ),
+        [commitsDateRangeUntilInputError, handleCommitsDateRangeUntilChange, form.commitsDateRangeUntil]
+    );
 
-                    <Stack.Item>
-                        <CommitsDateRangeFromInput error={commitsDateRangeFromInputError}
-                            onChangeHandler={handleCommitsDateRangeFromChange} value={form.commitsDateRangeFrom} />
-                    </Stack.Item>
+    const commitTypeFilterInput = useMemo(
+        () => (
+            <CommitTypeFilterInput
+                onChangeHandler={handleCommitsTypeFilterChange}
+                checked={form.commitTypeFilter}
+                error={commitsTypeFilterInputError}
+            />
+        ),
+        [commitsTypeFilterInputError, handleCommitsTypeFilterChange, form.commitTypeFilter]
+    );
 
-                    <Stack.Item>
-                        <CommitsDateRangeUntilInput error={commitsDateRangeUntilInputError}
-                            onChangeHandler={handleCommitsDateRangeUntilChange} value={form.commitsDateRangeUntil} />
-                    </Stack.Item>
-                </Stack>
-            </Stack.Item>
+    const ownerTypeFilterInput = useMemo(
+        () => (
+            <OwnerTypeFilterInput
+                onChangeHandler={handleOwnerTypeFilterChange}
+                checked={form.ownerTypeFilter}
+                error={ownerTypeFilterInputError}
+            />
+        ),
+        [ownerTypeFilterInputError, handleOwnerTypeFilterChange, form.ownerTypeFilter]
+    );
 
-            <Pagehead>Additional filters</Pagehead>
+    const recentlyUpdatedInput = useMemo(
+        () => (
+            <RecentlyUpdatedInput
+                error={recentlyUpdatedInputError}
+                onChangeHandler={handleRecentlyUpdatedChange}
+                value={form.recentlyUpdated}
+            />
+        ),
+        [recentlyUpdatedInputError, handleRecentlyUpdatedChange, form.recentlyUpdated]
+    );
 
-            <Stack.Item>
-                <Stack direction="horizontal" wrap="wrap" gap="spacious">
-                    <Stack.Item>
-                        <CommitTypeFilterInput
-                            onChangeHandler={handleCommitsTypeFilterChange}
-                            checked={form.commitTypeFilter}
-                            error={commitsTypeFilterInputError} />
-                    </Stack.Item>
+    return (
+        <Box as="form" onSubmit={onSubmit}>
+            <Stack direction={"vertical"}>
+                <Stack.Item>{repositoryInput}</Stack.Item>
 
-                    <Stack.Item>
-                        <OwnerTypeFilterInput
-                            onChangeHandler={handleOwnerTypeFilterChange}
-                            checked={form.ownerTypeFilter}
-                            error={ownerTypeFilterInputError} />
-                    </Stack.Item>
+                <Pagehead>Choose main filters</Pagehead>
 
-                    <Stack.Item>
-                        <RecentlyUpdatedInput error={recentlyUpdatedInputError}
-                            onChangeHandler={handleRecentlyUpdatedChange} value={form.recentlyUpdated} />
-                    </Stack.Item>
-                </Stack>
-            </Stack.Item>
+                <Stack.Item>
+                    <Stack direction={"horizontal"} wrap="wrap" gap="spacious">
+                        <Stack.Item>{forksCountInput}</Stack.Item>
+                        <Stack.Item>{forksOrderInput}</Stack.Item>
+                        <Stack.Item>{commitsDateRangeFromInput}</Stack.Item>
+                        <Stack.Item>{commitsDateRangeUntilInput}</Stack.Item>
+                    </Stack>
+                </Stack.Item>
 
-            <Stack.Item>
-                <Button type="submit" disabled={ !isAuthenticated }>Submit</Button>
-            </Stack.Item>
-        </Stack>
-    </Box>;
-}
+                <Pagehead>Additional filters</Pagehead>
 
-export default FilterForm;
+                <Stack.Item>
+                    <Stack direction="horizontal" wrap="wrap" gap="spacious">
+                        <Stack.Item>{commitTypeFilterInput}</Stack.Item>
+                        <Stack.Item>{ownerTypeFilterInput}</Stack.Item>
+                        <Stack.Item>{recentlyUpdatedInput}</Stack.Item>
+                    </Stack>
+                </Stack.Item>
+
+                <Stack.Item>
+                    <Button type="submit" disabled={!isAuthenticated}>
+                        Submit
+                    </Button>
+                </Stack.Item>
+            </Stack>
+        </Box>
+    );
+};
+
+export default memo(FilterForm);

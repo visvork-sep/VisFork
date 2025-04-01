@@ -22,7 +22,7 @@ function App() {
                         </SplitPageLayout.Header>
                         <DataComponents />
                         <SplitPageLayout.Footer aria-label="Footer">
-                            <div>Footer</div>
+                            <footer>Footer</footer>
                         </SplitPageLayout.Footer>
                     </SplitPageLayout>
                 } />

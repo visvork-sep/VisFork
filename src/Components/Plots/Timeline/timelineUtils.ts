@@ -256,8 +256,6 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
         findParent(mnode);
     }
 
-    console.log(groupedNodes);
-
     return groupedNodes;
 }
 

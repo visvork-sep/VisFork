@@ -1,12 +1,14 @@
 import { UnprocessedCommitExtended } from "@Types/LogicLayerTypes";
-import { CommitLocation, 
+import {
+    CommitLocation,
     ownerRepoMap,
     commitLocationMap,
     commitMap,
     locationHeadCommitMap,
     locationHeadCommitMapReversed,
     globalDefaultBranches,
-    globalMainRepo} from "./InferenceData";
+    globalMainRepo
+} from "./InferenceData";
 
 /**
  * Deletes commits that have the same hashes, leaving a single unique commit.
@@ -24,7 +26,7 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]):
     for (const rawCommit of rawCommits) {
         if (rawCommit.parentIds.length > 1) {
             if (rawCommit.parentIds.length > 2) {
-                console.log("Found a commit with more than 2 parentIds");
+                console.error("Found a commit with more than 2 parentIds");
             } else {
                 // recursivity yippee
                 recursiveMergeCheck(rawCommit);
@@ -106,14 +108,15 @@ export function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
     }
     // If there are multiple of this commit, take action
     if (locations.length >= 2) {
-        const defaultBranchLocations = locations.filter(({branch, repo}) => {
+        const defaultBranchLocations = locations.filter(({ branch, repo }) => {
             return branch === globalDefaultBranches[repo];
         });
-        if (defaultBranchLocations.some(({repo}) => {
+        if (defaultBranchLocations.some(({ repo }) => {
             return repo === globalMainRepo;
         })) {
             // Delete everywhere else but main repo and default branch of main repo
-            commitLocationMap.set(commit.sha, [{repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo]}]);
+            commitLocationMap
+                .set(commit.sha, [{ repo: globalMainRepo, branch: globalDefaultBranches[globalMainRepo] }]);
         } else if (defaultBranchLocations.length >= 1) {
             // Delete everywhere else but a random branch where this commit is on its default branch
             commitLocationMap.set(commit.sha, [getMinimumCommitLocation(defaultBranchLocations)]);
@@ -171,15 +174,15 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
             if (!repo_name) {
                 repo_name = "";
             }
-            if (commitLocations.some(({repo, branch}) => {
+            if (commitLocations.some(({ repo, branch }) => {
                 return repo === repo_name && branch === branch_name;
             })) {
-                deleteFromBranch(secondParent, {repo: repo_name, branch: branch_name}, mergeBaseCommit);
+                deleteFromBranch(secondParent, { repo: repo_name, branch: branch_name }, mergeBaseCommit);
                 return;
             }
         }
         // No inference could be made: apply priority rules and gamble
-        const nonMainRepoCommitLocations = commitLocations.filter(({repo}) => {
+        const nonMainRepoCommitLocations = commitLocations.filter(({ repo }) => {
             return repo !== globalMainRepo;
         });
         if (nonMainRepoCommitLocations.length >= 1) {
@@ -202,7 +205,7 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
 function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
     return locations.reduce((min, curr) =>
         curr.repo.localeCompare(min.repo) < 0 ||
-        (curr.repo === min.repo && curr.branch.localeCompare(min.branch) < 0)
+            (curr.repo === min.repo && curr.branch.localeCompare(min.branch) < 0)
             ? curr
             : min
     );
@@ -217,16 +220,16 @@ function getMinimumCommitLocation(locations: CommitLocation[]): CommitLocation {
  * @param mergeBaseCommit the commit where this repo/branch combination started deviating
  */
 export function deleteFromBranch(commit: UnprocessedCommitExtended,
-    {repo, branch}: CommitLocation,
+    { repo, branch }: CommitLocation,
     mergeBaseCommit: string | undefined) {
     if (mergeBaseCommit === undefined) {
         return;
     }
     // Do not delete this line. In edge cases, it is necessary, such as when the called commit has no parents
-    commitLocationMap.set(commit.sha, [{repo, branch}]);
+    commitLocationMap.set(commit.sha, [{ repo, branch }]);
     while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
         // Set the current commit to the given repo and branch, since we have determined it's from there.
-        commitLocationMap.set(commit.sha, [{repo, branch}]);
+        commitLocationMap.set(commit.sha, [{ repo, branch }]);
         // If the current commit is also a merge commit, handle that one too
         if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])?.length !== 1) {
             recursiveMergeCheck(commit);
@@ -256,12 +259,13 @@ export function deleteFromBranch(commit: UnprocessedCommitExtended,
         } else {
             // Delete the branch itself from this commit's hash
             // First check whether we are not making a commit disappear
-            if (!currentLocations.every(({branch: branch_name, repo: repo_name}) => {
+            if (!currentLocations.every(({ branch: branch_name, repo: repo_name }) => {
                 return branch_name === branch && repo_name === repo;
             })) {
-                commitLocationMap.set(commit.sha, currentLocations.filter(({branch: branch_name, repo: repo_name}) => {
-                    return !(branch_name === branch && repo_name === repo);
-                }));
+                commitLocationMap
+                    .set(commit.sha, currentLocations.filter(({ branch: branch_name, repo: repo_name }) => {
+                        return !(branch_name === branch && repo_name === repo);
+                    }));
             }
         }
 

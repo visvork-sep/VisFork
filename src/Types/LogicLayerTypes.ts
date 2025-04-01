@@ -42,7 +42,7 @@ export interface UnprocessedRepository {
 }
 
 // TEMPORARY
-export interface Repository extends UnprocessedRepository{
+export interface Repository extends UnprocessedRepository {
     description: string;
     created_at: Date;
     last_pushed: Date;
@@ -74,10 +74,7 @@ export interface ForkQueryState {
 // Define the filter state structure
 /** See URD Section 3.1.3. "Filtering and Sorting Options". */
 export interface ForkFilter {
-    dateRange: DateRange;
-    activeForksOnly?: boolean;
     commitTypes: CommitType[];
-    // sortByLastCommit?: boolean; -> moved to SortingCriterionExtra "latestCommit"
     ownerTypes: OwnerType[];
     updatedInLastMonths?: number;
 }

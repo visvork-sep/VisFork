@@ -1,6 +1,6 @@
-import {  UnprocessedRepository } from "@Types/LogicLayerTypes";
+import { UnprocessedRepository } from "@Types/LogicLayerTypes";
 import { ForkFilter } from "@Types/LogicLayerTypes";
-import { ACTIVE_FORK_NROF_MONTHS, OwnerType } from "@Utils/Constants";
+import { OwnerType } from "@Utils/Constants";
 
 /**
      * Determines whether {@param fork} is valid or not.
@@ -15,28 +15,13 @@ function isValidForkByFilter(fork: UnprocessedRepository, filter: ForkFilter): b
     }
 
     if (fork.last_pushed &&
-        filter.updatedInLastMonths && 
+        filter.updatedInLastMonths &&
         !isForkUpdatedInLastMonths(fork, filter.updatedInLastMonths)
-    ) {
-        return false;
-    } else if (fork.last_pushed && 
-        filter.activeForksOnly && 
-        !isForkActive(fork)
     ) {
         return false;
     }
 
     return true;
-}
-
-/**
- * If {@param activeForksOnly} is not undefined, null or false, this function determines
- * whether {@param fork} is active or not.
- * 
- * @returns {@link isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS)}
- */
-function isForkActive(fork: UnprocessedRepository): boolean {
-    return isForkUpdatedInLastMonths(fork, ACTIVE_FORK_NROF_MONTHS);
 }
 
 /**

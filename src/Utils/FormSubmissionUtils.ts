@@ -11,14 +11,24 @@ function setInputError(e: unknown, setter: Dispatch<SetStateAction<InputError | 
     }
 }
 
+function safePrepare<T, U>(
+    prepareFunction: (input: T) => U,
+    input: T,
+    errorSetter: Dispatch<SetStateAction<InputError | null>>
+) {
+    try {
+        const output = prepareFunction(input);
+        errorSetter(null);
+        return output;
+    } catch (e) {
+        setInputError(e, errorSetter);
+        return null;
+    }
+}
+
 function filterFactory(form: preparedFormComplete): ForkFilter {
     const filter: ForkFilter = {
-        dateRange: {
-            start: form.commitsDateRangeFrom,
-            end: form.commitsDateRangeUntil
-        },
         ownerTypes: form.ownerTypeFilter,
-        activeForksOnly: false,
         commitTypes: form.commitsTypeFilter,
         updatedInLastMonths: form.recentlyUpdated ?? undefined
     };
@@ -43,7 +53,8 @@ function forkQueryStateFactory(form: preparedFormComplete): ForkQueryState {
 }
 
 export {
-    setInputError,
     filterFactory,
-    forkQueryStateFactory
+    forkQueryStateFactory,
+    safePrepare,
+    setInputError
 };

@@ -60,18 +60,22 @@ describe("useFilteredData Hook", () => {
     });
 
     it("should fetch forks and filter them correctly", async () => {
-        (useFetchForks as Mock).mockReturnValue({ data: {data: mockForks}, isLoading: false, error: null });
-        (useFetchCommitsBatch as Mock).mockReturnValue([{ data: {data: mockCommits}, isLoading: false, error: null }]);
+        (useFetchForks as Mock).mockReturnValue({ data: { data: mockForks }, isLoading: false, error: null });
+        (useFetchCommitsBatch as Mock)
+            .mockReturnValue([{ data: { data: mockCommits }, isLoading: false, error: null }]);
         (toForkInfo as Mock).mockReturnValue(mockForks[0]);
         (toCommitInfo as Mock).mockReturnValue(mockCommits[0]);
 
         const { result } = renderHook(() => useFilteredData());
         act(() => {
             result.current.onFiltersChange(
-                { dateRange: { start: new Date("1999-01-01"), end: new Date() },
-                    commitTypes: ["adaptive"], ownerTypes: ["User"] },
-                { owner: "user1", repo: "repo-1", forksCount: 1,
-                    range: { start: new Date("1999-01-01"), end: new Date() }, sort: "watchers", direction: "asc" }
+                {
+                    commitTypes: ["adaptive"], ownerTypes: ["User"]
+                },
+                {
+                    owner: "user1", repo: "repo-1", forksCount: 1,
+                    range: { start: new Date("1999-01-01"), end: new Date() }, sort: "watchers", direction: "asc"
+                }
             );
         });
 

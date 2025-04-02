@@ -6,7 +6,7 @@ import { GetAvatarUrlQueryVariables}
     from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";
 import { createCommitQueryParams, createForkQueryParams } from "@Utils/queryHelpers";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 /**
  *  Gets to avatar url

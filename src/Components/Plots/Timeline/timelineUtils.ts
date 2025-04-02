@@ -295,51 +295,54 @@ export function drawTimelineMarkers(
     g: Selection<SVGGElement, unknown, null, undefined>,
     sortedNodes: GraphNode<Commit | GroupedNode, unknown>[],
     totalHeight: number,
+    merged: boolean
 ) {
-    const formatMonth = timeFormat("%b");
-    const formatYear = timeFormat("%Y");
-    let lastMonth = "";
-    let lastYear = "";
-    
-    const monthGroup = g.append("g").attr("class", "month-lines");
-    let lastLabelX = -Infinity;
-    
-    for (const node of sortedNodes) {
-        const currentDate = new Date(node.data.date);
-        const currentMonth = formatMonth(currentDate);
-        const currentYear = formatYear(currentDate);
-        const labelX = node.x;
-    
-        if (currentMonth !== lastMonth) {
-            // always draw the vertical line
-            monthGroup.append("line")
-                .attr("x1", labelX)
-                .attr("x2", labelX)
-                .attr("y1", 0)
-                .attr("y2", totalHeight - 10)
-                .attr("stroke", "gray")
-                .attr("stroke-dasharray", "3,3");
-    
-            // only add text label if we have enough space
-            if (Math.abs(labelX - lastLabelX) > c.MIN_LABEL_SPACING) {
-                const isNewYear = currentYear !== lastYear;
-                const labelText = isNewYear 
-                    ? `${currentMonth} ${currentYear}`
-                    : currentMonth;
-    
-                monthGroup.append("text")
-                    .attr("x", labelX)
-                    .attr("y", totalHeight + c.MARGIN.bottom)
-                    .attr("font-size", 12)
-                    .style("text-anchor", "middle")
-                    .style("fill", "black")
-                    .text(labelText);
-    
-                lastLabelX = labelX;
+    if (!merged) {
+        const formatMonth = timeFormat("%b");
+        const formatYear = timeFormat("%Y");
+        let lastMonth = "";
+        let lastYear = "";
+        
+        const monthGroup = g.append("g").attr("class", "month-lines");
+        let lastLabelX = -Infinity;
+        
+        for (const node of sortedNodes) {
+            const currentDate = new Date(node.data.date);
+            const currentMonth = formatMonth(currentDate);
+            const currentYear = formatYear(currentDate);
+            const labelX = node.x;
+        
+            if (currentMonth !== lastMonth) {
+                // always draw the vertical line
+                monthGroup.append("line")
+                    .attr("x1", labelX)
+                    .attr("x2", labelX)
+                    .attr("y1", 0)
+                    .attr("y2", totalHeight - 10)
+                    .attr("stroke", "gray")
+                    .attr("stroke-dasharray", "3,3");
+        
+                // only add text label if we have enough space
+                if (Math.abs(labelX - lastLabelX) > c.MIN_LABEL_SPACING) {
+                    const isNewYear = currentYear !== lastYear;
+                    const labelText = isNewYear 
+                        ? `${currentMonth} ${currentYear}`
+                        : currentMonth;
+        
+                    monthGroup.append("text")
+                        .attr("x", labelX)
+                        .attr("y", totalHeight + c.MARGIN.bottom)
+                        .attr("font-size", 12)
+                        .style("text-anchor", "middle")
+                        .style("fill", "black")
+                        .text(labelText);
+        
+                    lastLabelX = labelX;
+                }
+        
+                lastMonth = currentMonth;
+                lastYear = currentYear;
             }
-    
-            lastMonth = currentMonth;
-            lastYear = currentYear;
         }
     }
 }

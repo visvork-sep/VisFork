@@ -93,9 +93,7 @@ function CommitTimeline({ commitData, handleTimelineSelection }: TimelineProps) 
         utils.drawLanes(g, lanes, width);
 
         // month/year labels
-        if (!merged) {
-            utils.drawTimelineMarkers(g, sortedNodes, totalHeight);
-        }
+        utils.drawTimelineMarkers(g, sortedNodes, totalHeight, merged);
 
         // selection overlay for selectAll
         if (selectAll) {

@@ -54,6 +54,43 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
     };
 }
 
+async function fetchForksPage(parameters: ForkQueryParams, 
+    accessToken: string, 
+    forksNumber: number, 
+    allForks: GitHubAPIFork[], 
+    page: number) {
+    let pagesRemaining = true;
+    let response;
+    
+    while (pagesRemaining && allForks.length < forksNumber) {
+        response = await fetchClient.GET("/repos/{owner}/{repo}/forks", {
+            params: {
+                ...parameters,
+                query: {
+                    ...parameters.query,
+                    per_page: 100,
+                    page
+                }
+            },
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        if (response?.data) {
+            allForks.push(...response.data);
+        }
+
+        if (allForks.length >= forksNumber) break;
+
+        const linkHeader = response.response.headers.get("link");
+        pagesRemaining = linkHeader?.includes("rel=\"next\"") ?? false;
+        page++;
+    }
+    
+    return { response, allForks };
+}
+
 /**
  * Fetch forks using REST API.
  */
@@ -75,36 +112,8 @@ export async function fetchForks(parameters: ForkQueryParams, accessToken: strin
         allForks.push(mainRepoResponse.data as GitHubAPIFork);
     }
 
-    let response;
-    let page = 1;
-    let pagesRemaining = true;
-
     // Fetch all fork repositories
-    while (pagesRemaining && allForks.length < forksNumber) {
-        response = await fetchClient.GET("/repos/{owner}/{repo}/forks", {
-            params: {
-                ...parameters,
-                query: {
-                    ...parameters.query, // Keep existing query params
-                    per_page: 100, // Prevent exceeding limit
-                    page
-                }
-            },
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
-        if (response?.data) {
-            allForks.push(...response.data);
-        }
-
-        if (allForks.length >= forksNumber) break;
-
-        const linkHeader = response.response.headers.get("link");
-        pagesRemaining = linkHeader?.includes("rel=\"next\"") ?? false;
-        page++;
-    }
+    const { response } = await fetchForksPage(parameters, accessToken, forksNumber, allForks, 1);
 
     // Return a combined response
     return {

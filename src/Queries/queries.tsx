@@ -73,10 +73,8 @@ export function useFetchCommitsBatch(forks: UnprocessedRepository[], forkQuerySt
 
     // Check if main repository has a lot of commits
     useEffect(() => {
-        console.log("Params:", commitQueryParameters);
         if (commitQueryParameters.length > 0) {
             fetchCommitCount(commitQueryParameters[0], accessToken).then((commitsCount) => {
-                console.log("Commit count: ", commitsCount);
                 if (commitsCount > 2000) {
                     alert("Repository contains a lot of commits for this time range. This might take a while");
                 }});

@@ -4,12 +4,19 @@ import ApplicationBody from "@Components/ApplicationBody";
 import { useFilteredData } from "@Hooks/useFilteredData";
 import { Commit, ForkFilter, Repository, UnprocessedCommitExtended, UnprocessedRepository }
     from "@Types/LogicLayerTypes";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
 import { classify } from "@Utils/Classify";
+import { useDataContext } from "@Providers/DataProvider";
 
 function DataComponents() {
     const { onFiltersChange, forks, commits, filters } = useFilteredData();
+
+    const { setData } = useDataContext();
+
+    useEffect(() => {
+        setData({ forks, commits });
+    }, [forks, commits, setData]);
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {

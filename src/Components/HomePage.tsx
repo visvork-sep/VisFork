@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AppHeader from "@Components/AppHeader";
 import DataComponents from "@Components/DataComponents";
+import { DataProvider } from "@Providers/DataProvider";
 
 /**
  * HomePage Component
@@ -24,7 +25,7 @@ export default function HomePage() {
     const [isErrorPopupOpen, setIsErrorPopupOpen] = useState(() => {
         return location.state?.fromError ?? false;
     });
-    
+
     //Holds the error text we want to display in the dialog, if any.
     //Copied from location.state, ensuring we keep the message after clearing router state.
     const [errorText] = useState(() => {
@@ -40,7 +41,7 @@ export default function HomePage() {
     }, [location, navigate]);
 
     return (
-        <>
+        <DataProvider>
             {/* 
                 Primary layout container using Primer’s SplitPageLayout component.
                 Includes a header, main section, and a footer. 
@@ -54,7 +55,7 @@ export default function HomePage() {
                     <div>Footer</div>
                 </SplitPageLayout.Footer>
             </SplitPageLayout>
-            
+
             {/**
                 Conditionally render the Dialog if an error was detected.
             */}
@@ -63,7 +64,7 @@ export default function HomePage() {
                     title="Authentication Error"
                     onClose={() => setIsErrorPopupOpen(false)}
                     position="center"
-                >   
+                >
                     <Dialog.Body>
                         <p>Authentication ran into an error:  <br />{errorText || "No error message provided."} </p>
                         <Button onClick={() => setIsErrorPopupOpen(false)}>
@@ -72,6 +73,6 @@ export default function HomePage() {
                     </Dialog.Body>
                 </Dialog>
             )}
-        </>
+        </DataProvider >
     );
 }

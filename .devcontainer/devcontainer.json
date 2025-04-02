@@ -7,15 +7,15 @@
 		"dockerfile": "../Dockerfile.build"
 	},
 
+
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000],
+	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// download schmea and put in root
-	"postCreateCommand": "npm install && curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql && curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml",
+	"postCreateCommand": "npm install",
 
 	// Run in priviliged mode.
 	"runArgs": ["--privileged"],
@@ -24,9 +24,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"GraphQL.vscode-graphql",
-				"dbaeumer.vscode-eslint",
-				"vitest.explorer"
+				"esbenp.prettier-vscode",
+				"dbaeumer.vscode-eslint"
 			]
 		}
 	}

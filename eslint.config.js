@@ -16,6 +16,7 @@ export default [
     pluginReact.configs.flat.recommended,
     {
         rules: {
+            "max-lines": ["error", {"max": 400, "skipBlankLines": true, "skipComments": true}],
             "complexity": ["warn", { "max": 10 }],
             "eol-last": ["warn", "always"],
             "quotes": ["warn", "double", {}],

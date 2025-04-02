@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "@primer/react";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 import {
     SimulationNodeDatum,
@@ -32,6 +33,8 @@ interface Link extends SimulationLinkDatum<Node> {
 
 function CollaborationGraph({ commitData }: CollabGraphData) {
     const svgRef = useRef<SVGSVGElement | null>(null);
+    const { colorMode } = useTheme();
+    const textColor = colorMode === "dark" ? "white" : "black";
 
     // Timeline bar
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
@@ -243,7 +246,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .attr("text-anchor", "middle")
             // Allow clicks to pass through
             .attr("pointer-events", "none")
-            .attr("fill", "#333")
+            .attr("fill", textColor)
             // Make labels non-selectable
             .attr("pointer-events", "none")
             .style("user-select", "none");
@@ -287,7 +290,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .append("g")
             .attr("class", "legend")
             // Top-right corner
-            .attr("transform", `translate(${width - 85}, 20)`);
+            .attr("transform", `translate(20, 20)`);
 
         // Author (blue circle)
         legend
@@ -303,7 +306,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .attr("y", 4)
             .text("Author")
             .style("font-size", "12px")
-            .attr("fill", "#333");
+            .attr("fill", textColor);
 
         // Repository (orange square)
         legend
@@ -318,7 +321,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .attr("y", 24)
             .text("Repository")
             .style("font-size", "12px")
-            .attr("fill", "#333");
+            .attr("fill", textColor);
     }, [currentDateIndex, allDates]);
 
 
@@ -331,7 +334,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             }}>
 
                 {/* Displays date in a readable format */}
-                <span style={{ fontWeight: "normal", color: "black" }}>
+                <span style={{ fontWeight: "normal", color: textColor }}>
                     {allDates.length === 0
                         ? "No data selected"
                         : new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {

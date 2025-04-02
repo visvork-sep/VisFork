@@ -290,7 +290,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .append("g")
             .attr("class", "legend")
             // Top-right corner
-            .attr("transform", `translate(20, 20)`);
+            .attr("transform", "translate(20, 20)");
 
         // Author (blue circle)
         legend

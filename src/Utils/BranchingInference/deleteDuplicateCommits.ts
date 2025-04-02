@@ -31,28 +31,6 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]):
             }
         }
     }
-    /**
-     * Scheme:
-     * for the headCommit of each branch, check if duplicate
-     * go to parentId (if 2, pick the first one)
-     * if duplicates are found, delete the ones that arent on default branch
-     * if there are no duplicates on default branch, randomly select a branch to not delete duplicates from
-     * recursively delete duplicates of everything except the chosen branch until parentIds is empty
-     */
-    const headCommits = [...locationHeadCommitMap.values()];
-    for (let headCommit of headCommits) {
-        makeUniqueHierarchical(headCommit);
-        while (headCommit.parentIds.length !== 0) {
-            const nextCommit = commitMap.get(headCommit.parentIds[0]);
-            if (nextCommit === undefined) {
-                console.error("Commit data not found!");
-                break;
-            } else {
-                headCommit = nextCommit;
-            }
-            makeUniqueHierarchical(headCommit);
-        }
-    }
     // Find all duplicate commits and get rid of them with priority given to main repo and default branches
     const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
         return locations.length >= 2;

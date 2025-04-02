@@ -35,7 +35,7 @@ function DataComponents() {
 
     const configurationPane = useMemo(() => {
         return (
-            <SplitPageLayout.Pane aria-label="Pane" width="medium">
+            <SplitPageLayout.Pane aria-label="Pane" width="medium" resizable>
                 <ConfigurationPane filterChangeHandler={onFiltersChange} />
             </SplitPageLayout.Pane>
         );

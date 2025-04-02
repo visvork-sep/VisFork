@@ -1,33 +1,25 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { SplitPageLayout } from "@primer/react";
-import AppHeader from "@Components/AppHeader";
-import DataComponents from "@Components/DataComponents";
+import { Route, BrowserRouter  as Router, Routes } from "react-router-dom";
 import GitHubCallback from "@Components/GitHubCallback";
+import HomePage from "@Components/HomePage";
 
 /**
- * Root Application Component
- * 
- * This component initializes the router and renders all application routes.
+ * The main application file responsible for defining top-level routes.
+ * It uses React Router's BrowserRouter to manage navigation.
  */
 function App() {
-    //Sending data to AppHeader below
     return (
+        /**
+        * Sets up the root router, enabling navigation between pages.
+        */
         <Router>
             <Routes>
-                {/* Default route */}
-                <Route path="/" element={
-                    <SplitPageLayout>
-                        <SplitPageLayout.Header aria-label="Header">
-                            <AppHeader />
-                        </SplitPageLayout.Header>
-                        <DataComponents />
-                        <SplitPageLayout.Footer aria-label="Footer">
-                            <div>Footer</div>
-                        </SplitPageLayout.Footer>
-                    </SplitPageLayout>
-                } />
-
-                {/* GitHub OAuth callback handler */}
+                {/*
+                    The HomePage component renders by default at the root path "/".
+                */}
+                <Route path="/" element={<HomePage />} />
+                {/*
+                    The GitHubCallback route handles OAuth redirects from GitHub.
+                */}
                 <Route path="/github/callback" element={<GitHubCallback />} />
             </Routes>
         </Router>

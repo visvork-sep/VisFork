@@ -24,6 +24,7 @@ function canCreateMainRepositoryInfo(
     isLoadingFork: boolean, 
     isLoadingCommits: boolean, 
     simplifiedForkData: UnprocessedRepository[], 
+    filteredForks: UnprocessedRepository[],
     simplifiedCommitData: UnprocessedCommitExtended[][], 
     forkQueryState?: ForkQueryState
 ): boolean {
@@ -32,17 +33,17 @@ function canCreateMainRepositoryInfo(
       && !isLoadingFork
       && !isLoadingCommits
       && simplifiedForkData.length > 0
-      && simplifiedCommitData.length === simplifiedForkData.length
+      && simplifiedCommitData.length === filteredForks.length
       && !!forkQueryState?.owner
       && !!forkQueryState?.repo;
 }
 
 function createMainRepositoryInfo(
-    simplifiedForkData: UnprocessedRepository[], 
+    filteredForks: UnprocessedRepository[], 
     simplifiedCommitData: UnprocessedCommitExtended[][], 
     forkQueryState: ForkQueryState
 ): MainRepositoryInfo {
-    const completeForkData: RepositoryInfoWithCommits[] = simplifiedForkData.map((fork, index) => ({
+    const completeForkData: RepositoryInfoWithCommits[] = filteredForks.map((fork, index) => ({
         ...fork,
         commits: simplifiedCommitData[index]
     }));
@@ -86,6 +87,7 @@ export function useFilteredData() {
     }, [simplifiedForkData, filters]);
 
 
+
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
 
     const { commitData, isLoading: isLoadingCommits, error: commitError } = commitResponses
@@ -115,11 +117,11 @@ export function useFilteredData() {
     const mainRepositoryInfo = useMemo(() => {
         const shouldCreate = canCreateMainRepositoryInfo(
             forkError, commitError, isLoadingFork, isLoadingCommits,
-            simplifiedForkData, simplifiedCommitData, forkQueryState
+            simplifiedForkData, filteredForks, simplifiedCommitData, forkQueryState
         );
         
         return (shouldCreate && forkQueryState)
-            ? createMainRepositoryInfo(simplifiedForkData, simplifiedCommitData, forkQueryState) : undefined;
+            ? createMainRepositoryInfo(filteredForks, simplifiedCommitData, forkQueryState) : undefined;
     }, [forkError, 
         commitError, 
         isLoadingFork, 
@@ -129,17 +131,18 @@ export function useFilteredData() {
         forkQueryState]);
 
     const flattenedCommits: UnprocessedCommitExtended[] =
-      mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
-          const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
-              ...commit,
-              repo: `${fork.owner.login}/${fork.name}`,
-              branch: fork.defaultBranch,
+        mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
+            const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({
+                ...commit,
+                repo: `${fork.owner.login}/${fork.name}`,
+                branch: fork.defaultBranch,
 
-          }));
+            }));
 
-          acc = acc.concat(commits);
-          return acc;
-      }, []) : [];
+            acc = acc.concat(commits);
+            return acc;
+        }, []) : [];
+
 
     // Add final update only if all data has been loaded
     useEffect(() => {
@@ -148,6 +151,7 @@ export function useFilteredData() {
             setFinalCommitData(flattenedCommits);
         }
     }, [isLoadingFork, isLoadingCommits, filters]);
+
 
 
     return {
@@ -159,7 +163,7 @@ export function useFilteredData() {
         forkQuery: forkQueryState,
         forkError,
         commitError,
-
+        filters,
         isLoadingFork,
         isLoadingCommits
     };

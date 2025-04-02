@@ -1,28 +1,29 @@
 import { Column, DataTable, Table } from "@primer/react/experimental";
 import { Box, Link, TextInput, useTheme } from "@primer/react";
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import { CommitTableData, CommitTableDetails } from "@VisInterfaces/CommitTableData";
 
 function CommitTable({ commitData }: CommitTableData) {
-    if (commitData.length) console.log(commitData[0].login);
-
     // Fetch current color mode (light or dark)
     const { colorMode } = useTheme();
 
-    // To track text input for filtering
+    // Track text input for filtering
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Filter data based on current search term
-    const filteredData = commitData.filter((commit) =>
-        commit.message.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Memoize hyperlink color based on color mode
+    const linkColor = useMemo(() => {
+        return colorMode === "dark" || colorMode === "night" ? "white" : "black";
+    }, [colorMode]);
 
-    // Determine hyperlink color based on color mode
-    const isDarkMode = colorMode === "dark" || colorMode === "night";
-    const linkColor = isDarkMode ? "white" : "black";
+    // Memoize filtered data to prevent unnecessary recalculations
+    const filteredData = useMemo(() => {
+        return commitData.filter((commit) =>
+            commit.message.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [commitData, searchTerm]);
 
-    // Define how each column will be displayed
-    const columns: Column<CommitTableDetails>[] = [
+    // Memoize column definitions
+    const columns: Column<CommitTableDetails>[] = useMemo(() => [
         {
             header: "Owner/Repo",
             field: "repo",
@@ -33,10 +34,7 @@ function CommitTable({ commitData }: CommitTableData) {
                     href={`https://github.com/${row.repo}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    sx={{
-                        color: linkColor,
-                        textDecoration: "none",
-                    }}
+                    sx={{ color: linkColor, textDecoration: "none" }}
                 >
                     {row.repo}
                 </Link>
@@ -53,12 +51,8 @@ function CommitTable({ commitData }: CommitTableData) {
                     href={`https://github.com/${row.login}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    sx={{
-                        color: linkColor,
-                        textDecoration: "none",
-                    }}
+                    sx={{ color: linkColor, textDecoration: "none" }}
                 >
-                    {/* This is the author's name, which is not the username */}
                     {row.author}
                 </Link>
             ),
@@ -93,18 +87,14 @@ function CommitTable({ commitData }: CommitTableData) {
                         href={`https://github.com/${row.repo}/commit/${row.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        sx={{
-                            color: linkColor,
-                            textDecoration: "none",
-                        }}
+                        sx={{ color: linkColor, textDecoration: "none" }}
                     >
-                        {/* Short version of the commit hash */}
                         {row.id.substring(0, 7)}
                     </Link>
                 </Box>
             ),
         },
-    ];
+    ], [linkColor]);
 
     return (
         <Box>
@@ -115,26 +105,17 @@ function CommitTable({ commitData }: CommitTableData) {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     aria-label="Search commit messages"
-                    sx={{ width: "30%" }}
+                    sx={{ width: "30%", minWidth: "200px" }}
                 />
             </Box>
 
-            <Box
-                sx={{
-                    maxHeight: "510px",
-                    overflowY: "auto",
-                }}>
-
+            <Box sx={{ maxHeight: "510px", overflowY: "auto" }}>
                 <Table.Container>
-                    <DataTable
-                        // Table will be populated with filtered data
-                        data={filteredData}
-                        columns={columns}
-                    />
+                    <DataTable data={filteredData} columns={columns} />
                 </Table.Container>
             </Box>
         </Box>
     );
 };
 
-export default CommitTable;
+export default memo(CommitTable);

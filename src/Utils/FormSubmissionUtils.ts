@@ -28,12 +28,7 @@ function safePrepare<T, U>(
 
 function filterFactory(form: preparedFormComplete): ForkFilter {
     const filter: ForkFilter = {
-        dateRange: {
-            start: form.commitsDateRangeFrom,
-            end: form.commitsDateRangeUntil
-        },
         ownerTypes: form.ownerTypeFilter,
-        activeForksOnly: false,
         commitTypes: form.commitsTypeFilter,
         updatedInLastMonths: form.recentlyUpdated ?? undefined
     };
@@ -61,4 +56,5 @@ export {
     filterFactory,
     forkQueryStateFactory,
     safePrepare,
+    setInputError
 };

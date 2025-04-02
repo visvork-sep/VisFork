@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useCallback, useState } from "react";
+import { useEffect, useRef, useMemo, useCallback, useState, memo } from "react";
 import { select } from "d3-selection";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { max } from "d3-array";
@@ -18,23 +18,39 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
     const [startLabel, setStartLabel] = useState("");
     const [endLabel, setEndLabel] = useState("");
 
-    // Bar colors
-    const bgColor = themeGet("colors.neutral.subtle")({ theme });
-    const bgColorSelected = themeGet("colors.neutral.emphasis")({ theme });
-    const barColor = themeGet("colors.accent.muted")({ theme });
-    const barColorSelected = themeGet("colors.accent.emphasis")({ theme });
+    // Memoize bar colors
+    const barColors = useMemo(() => {
+        return {
+            bgColor: themeGet("colors.neutral.subtle")({ theme }),
+            bgColorSelected: themeGet("colors.neutral.emphasis")({ theme }),
+            barColor: themeGet("colors.accent.muted")({ theme }),
+            barColorSelected: themeGet("colors.accent.emphasis")({ theme }),
+        };
+    }, [theme]);
 
     // Extract and sort commit dates
     const dates = useMemo(() => sortDates(commitData), [commitData]);
 
-    /**
-   * Processes date data into a frequency map for visualization.
-   */
+    // Compute frequency of dates
     const frequency = useMemo(() => computeFrequency(dates), [dates]);
 
-    /**
-   * Draws the bar chart.
-   */
+    // Memoize chart dimensions
+    const chartDimensions = useMemo(() => {
+        const height = 300;
+        const focusContextRatio = 0.7;
+
+        const contextMargin = { top: 0, right: 10, bottom: 45, left: 10 };
+        const contextHeight =
+            (1 - focusContextRatio) * height - contextMargin.top - contextMargin.bottom;
+
+        const focusMargin = { top: 0, right: 10, bottom: 10, left: 10 };
+        const focusHeight =
+            focusContextRatio * height - focusMargin.top - focusMargin.bottom;
+
+        return { height, focusContextRatio, contextMargin, contextHeight, focusMargin, focusHeight };
+    }, []);
+
+    // Draw the chart
     const drawChart = useCallback(() => {
         if (!svgRef.current) return;
 
@@ -42,25 +58,23 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         const svg = select(svgRef.current);
         const container = svg.node()?.parentElement as HTMLElement;
         const width = container.clientWidth;
-        const height = 300;
-        const focusContextRatio = 0.7; // percentage of focus chart height, rest is context chart
 
-        const contextMargin = { top: 0, right: 10, bottom: 45, left: 10 };
-        const contextHeight =
-      (1 - focusContextRatio) * height -
-      contextMargin.top -
-      contextMargin.bottom;
+        const {
+            height,
+            contextMargin,
+            contextHeight,
+            focusMargin,
+            focusHeight,
+        } = chartDimensions;
+
         const contextWidth = width - contextMargin.left - contextMargin.right;
-
-        const focusMargin = { top: 0, right: 10, bottom: 10, left: 10 };
-        const focusHeight =
-      focusContextRatio * height - focusMargin.top - focusMargin.bottom;
         const focusWidth = width - focusMargin.left - focusMargin.right;
 
         // Define scales for context chart
         const formattedDates = Array.from(frequency.keys()).map((dateStr) =>
             timeFormat("%b %Y")(new Date(dateStr))
         );
+
         const xScaleContext = scaleBand()
             .domain(formattedDates)
             .range([0, contextWidth])
@@ -92,12 +106,10 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .attr(
                 "transform",
                 `translate(${contextMargin.left},
-            ${
-    focusHeight +
-              focusMargin.top +
-              focusMargin.bottom +
-              contextMargin.top
-})`
+            ${focusHeight +
+                focusMargin.top +
+                focusMargin.bottom +
+                contextMargin.top})`
             );
 
         // Draw background bars for context chart
@@ -111,7 +123,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .attr("y", 0)
             .attr("width", xScaleContext.bandwidth())
             .attr("height", contextHeight)
-            .style("fill", bgColor);
+            .style("fill", barColors.bgColor);
 
         // Draw bars for context chart
         chartContext
@@ -124,7 +136,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .attr("y", (d) => yScaleContext(d[1]))
             .attr("width", xScaleContext.bandwidth())
             .attr("height", (d) => contextHeight - yScaleContext(d[1]))
-            .style("fill", barColor);
+            .style("fill", barColors.barColor);
 
         // Brush setup
         const brush = brushX()
@@ -141,7 +153,9 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         const pos = xScaleContext(
                             timeFormat("%b %Y")(new Date(data[0]))
                         ) as number;
-                        return pos >= x0 && pos <= x1 ? bgColorSelected : bgColor;
+                        return pos >= x0 && pos <= x1
+                            ? barColors.bgColorSelected
+                            : barColors.bgColor;
                     });
 
                     // Update bar colors based on selection
@@ -150,7 +164,9 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         const pos = xScaleContext(
                             timeFormat("%b %Y")(new Date(data[0]))
                         ) as number;
-                        return pos >= x0 && pos <= x1 ? barColorSelected : barColor;
+                        return pos >= x0 && pos <= x1
+                            ? barColors.barColorSelected
+                            : barColors.barColor;
                     });
 
                     // Store selected date range
@@ -184,7 +200,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         .attr("y", 0)
                         .attr("width", xScaleFocus.bandwidth())
                         .attr("height", focusHeight)
-                        .style("fill", bgColor);
+                        .style("fill", barColors.bgColor);
 
                     // Draw bars for focus chart
                     chartFocus
@@ -200,17 +216,16 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         .attr("y", (d) => yScaleFocus(d[1]))
                         .attr("width", xScaleFocus.bandwidth())
                         .attr("height", (d) => focusHeight - yScaleFocus(d[1]))
-                        .style("fill", barColorSelected)
-                    // Tooltip event handlers
+                        .style("fill", barColors.barColorSelected)
+                        // Tooltip event handlers
                         .on("mouseover", function () {
                             tooltip.style("opacity", 1);
                         })
                         .on("mousemove", function (event, d) {
                             tooltip
                                 .html(
-                                    `Date: ${timeFormat("%b %Y")(new Date(d[0]))}<br/>Commits: ${
-                                        d[1]
-                                    }`
+                                    `Date: ${timeFormat("%b %Y")(new Date(d[0]))}
+                                    <br/>Commits: ${d[1]}`
                                 )
                                 .style("left", event.pageX + 10 + "px")
                                 .style("top", event.pageY + 10 + "px");
@@ -298,7 +313,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         drawChart();
         window.addEventListener("resize", drawChart);
         return () => window.removeEventListener("resize", drawChart);
-    }, [drawChart]);
+    }, [drawChart, barColors, handleHistogramSelection, chartDimensions]);
 
     return (
         <div style={{ borderRadius: "10px" }}>
@@ -330,6 +345,6 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             ></svg>
         </div>
     );
-}
+};
 
-export default Histogram;
+export default memo(Histogram);

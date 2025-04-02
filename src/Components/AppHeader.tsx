@@ -56,7 +56,7 @@ function AppHeader() {
         )
         :
         (
-            <Button onClick={redirectLogin}>Login</Button>
+            <Button onClick={redirectLogin}>Sign in</Button>
         );
 
     const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";

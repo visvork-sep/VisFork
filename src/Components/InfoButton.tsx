@@ -24,7 +24,11 @@ export function InfoButton({ title, shortDescription, fullDescription }: InfoBut
 
             {isOpen && (
                 <Dialog title={title} onClose={() => setIsOpen(false)}>
-                    <p>{fullDescription}</p>
+                    <div>
+                        {fullDescription.split("\n").map((line, index) => (
+                            <p key={index}>{line}</p>
+                        ))}
+                    </div>
                 </Dialog>
             )}
         </>

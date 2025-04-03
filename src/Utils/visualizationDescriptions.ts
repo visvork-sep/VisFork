@@ -52,6 +52,6 @@ export const visualizationDescriptions = {
         short: "Visualizes contributor interactions and commit activity.",
         full: "See how contributors and repositories are connected. " +
               "Nodes represent contributors (circles) and repositories (squares), with size based on activity. " +
-              "Use the time slider (On the top) to animate commit activity by pressing play or clicking on the slider."
+              "Use the time slider (on the top) to animate commit activity by pressing play or clicking on the slider."
     }
 };

@@ -4,8 +4,7 @@ info:
   description: API for handling GitHub OAuth authentication.
   version: 1.0.0
 servers:
-  - url: http://localhost:5000
-    description: Local development server
+    description: auth server
 paths:
   /auth/github:
     get:

@@ -3,9 +3,8 @@ import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, Get
 import { paths, components } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-
-import { CommitQueryParams, ForkQueryParams, GitHubAPIFork} from "../Types/DataLayerTypes";
-import { API_URL, MAX_QUERIABLE_COMMIT_PAGES, PAGE_SIZE } from "@Utils/Constants";
+import { CommitQueryParams, ForkQueryParams, GitHubAPIFork } from "../Types/DataLayerTypes";
+import { API_URL } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;
 const fetchClient = createClient<paths>({ baseUrl: API_URL });
@@ -27,7 +26,7 @@ export async function fetchCommitCount(parameters: CommitQueryParams, accessToke
             ...parameters,
             query: {
                 ...parameters.query, // Keep existing query params
-                per_page: PAGE_SIZE,
+                per_page: 100,
                 page
             }
         },
@@ -42,13 +41,11 @@ export async function fetchCommitCount(parameters: CommitQueryParams, accessToke
         if (lastPageMatch) {
             const lastPage = parseInt(lastPageMatch[1]);
             // Each page contains a hundred commits
-            
-            return lastPage * PAGE_SIZE;
+            return lastPage * 100;
         }
     }
 
-    // If no link header or no match, the repository only has 1 page worth of commits
-    return PAGE_SIZE; 
+    return Number.MAX_SAFE_INTEGER;
 }
 
 export async function fetchCommits(parameters: CommitQueryParams, accessToken: string, page = 1) {
@@ -62,7 +59,7 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
                 ...parameters,
                 query: {
                     ...parameters.query, // Keep existing query params
-                    per_page: PAGE_SIZE,
+                    per_page: 100,
                     page
                 }
             },
@@ -121,7 +118,7 @@ export async function fetchForks(parameters: ForkQueryParams, accessToken: strin
                 ...parameters,
                 query: {
                     ...parameters.query, // Keep existing query params
-                    per_page: PAGE_SIZE, // Prevent exceeding limit
+                    per_page: 100, // Prevent exceeding limit
                     page
                 }
             },

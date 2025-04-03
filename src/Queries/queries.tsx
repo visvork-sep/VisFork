@@ -16,9 +16,8 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
     const accessToken = getAccessToken() ?? "";
 
     return useQuery({
-        queryKey: ["avatarUrl"],
+        queryKey: ["avatarUrl", accessToken],
         queryFn: () => fetchAvatarUrlGql(parameters, accessToken),
-        gcTime: 0, // dont store
         enabled: isAuthenticated
     });
 }
@@ -75,7 +74,6 @@ export function useFetchCommitsBatch(forks: UnprocessedRepository[], forkQuerySt
         if (commitQueryParameters.length > 0) {
             fetchCommitCount(commitQueryParameters[0], accessToken).then((commitsCount) => {
                 if (commitsCount > 2000) {
-
                     alert("Repository contains a lot of commits for this time range. This might take a while.");
                 }
             });

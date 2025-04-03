@@ -17,9 +17,14 @@ export const visualizationDescriptions = {
     },
     commitTimeline: {
         short: "Chronological view of commits with branching and merging.",
-        full: "Explore the sequence of commits across multiple forks. " +
-              "Switch between Full View (detailed commit history) and Merged View (condensed view). " +
-              "Hover for tooltips, click commits to open them on GitHub, and use brushing to filter selections."
+        full: "Explore the sequence of commits across multiple forks: \n" +
+        "• Switch between Full View (detailed commit history) and Merged View (only deviations).\n" +
+        "• Hover over a node to see extensive information about the respective commit.\n" +
+        "• Click on a node to open its page on GitHub. \n" +
+        "• Brush (click and drag) over the graph to create a selection window." +
+        " Subsequent visualizations will only use the commits within the selection. \n" +
+        "• Click on the color marker in the legend to select only commits from the corresponding repository." +
+       " In Merged View, click on the shape marker in the legend to select only commits from the corresponding type."
     },
     commitTable: {
         short: "A searchable table of commits with key details.",

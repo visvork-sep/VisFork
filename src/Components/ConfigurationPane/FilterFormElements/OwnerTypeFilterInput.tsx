@@ -19,6 +19,7 @@ function OwnerTypeFilterInput({ onChangeHandler, checked, error }: OwnerTypeFilt
     return (
         <CheckboxGroup onChange={onChangeHandler}>
             <CheckboxGroup.Label>Included owners</CheckboxGroup.Label>
+            <CheckboxGroup.Caption>Filter forks based on their owner type</CheckboxGroup.Caption>
             {checkBoxes}
             {error && <CheckboxGroup.Validation variant="error">Error message</CheckboxGroup.Validation>}
         </CheckboxGroup>

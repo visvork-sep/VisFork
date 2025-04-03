@@ -56,7 +56,7 @@ function AppHeader() {
         )
         :
         (
-            <Button onClick={redirectLogin}>Sign in</Button>
+            <Button onClick={redirectLogin}>Log in</Button>
         );
 
     const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";
@@ -107,8 +107,8 @@ function AppHeader() {
 
                             <ActionList.Divider />
 
-                            <ActionList.Item onClick={handleLogout} variant="danger" aria-label="Sign out button">
-                                Sign out
+                            <ActionList.Item onClick={handleLogout} variant="danger" aria-label="Log out button">
+                                Log out
                             </ActionList.Item>
                         </ActionList>
                     </ActionMenu>

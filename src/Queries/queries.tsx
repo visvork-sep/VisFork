@@ -2,7 +2,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql, fetchCommitCount } from "@Queries/rawQueries";
 import { CommitQueryParams, ForkQueryParams } from "@Types/DataLayerTypes";
 import { UnprocessedRepository, ForkQueryState } from "@Types/LogicLayerTypes";
-import { GetAvatarUrlQueryVariables}
+import { GetAvatarUrlQueryVariables }
     from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";
 import { createCommitQueryParams, createForkQueryParams } from "@Utils/queryHelpers";
@@ -17,9 +17,8 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
     const accessToken = getAccessToken() ?? "";
 
     return useQuery({
-        queryKey: ["avatarUrl"],
+        queryKey: ["avatarUrl", accessToken],
         queryFn: () => fetchAvatarUrlGql(parameters, accessToken),
-        gcTime: 0, // dont store
         enabled: isAuthenticated
     });
 }
@@ -77,7 +76,8 @@ export function useFetchCommitsBatch(forks: UnprocessedRepository[], forkQuerySt
             fetchCommitCount(commitQueryParameters[0], accessToken).then((commitsCount) => {
                 if (commitsCount > 2000) {
                     alert("Repository contains a lot of commits for this time range. This might take a while");
-                }});
+                }
+            });
         }
     }, [commitQueryParameters]);
 

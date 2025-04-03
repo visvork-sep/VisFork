@@ -4,7 +4,7 @@ import { paths, components } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
 import { CommitQueryParams, ForkQueryParams, GitHubAPIFork } from "../Types/DataLayerTypes";
-import { API_URL } from "@Utils/Constants";
+import { API_URL, PAGE_SIZE } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;
 const fetchClient = createClient<paths>({ baseUrl: API_URL });
@@ -26,7 +26,7 @@ export async function fetchCommitCount(parameters: CommitQueryParams, accessToke
             ...parameters,
             query: {
                 ...parameters.query, // Keep existing query params
-                per_page: 100,
+                per_page: PAGE_SIZE,
                 page
             }
         },
@@ -41,7 +41,7 @@ export async function fetchCommitCount(parameters: CommitQueryParams, accessToke
         if (lastPageMatch) {
             const lastPage = parseInt(lastPageMatch[1]);
             // Each page contains a hundred commits
-            return lastPage * 100;
+            return lastPage * PAGE_SIZE;
         }
     }
 
@@ -59,7 +59,7 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
                 ...parameters,
                 query: {
                     ...parameters.query, // Keep existing query params
-                    per_page: 100,
+                    per_page: PAGE_SIZE,
                     page
                 }
             },
@@ -118,7 +118,7 @@ export async function fetchForks(parameters: ForkQueryParams, accessToken: strin
                 ...parameters,
                 query: {
                     ...parameters.query, // Keep existing query params
-                    per_page: 100, // Prevent exceeding limit
+                    per_page: PAGE_SIZE, // Prevent exceeding limit
                     page
                 }
             },

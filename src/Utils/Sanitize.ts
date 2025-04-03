@@ -174,7 +174,6 @@ function prepareForksSortDirection(input: SortDirection): SortDirection {
  */
 function prepareCommitsDateRangeFrom(input: string): Date {
     const { output, conflicts } = sanitizeString(input);
-    console.log(output, conflicts);
     
     if (conflicts) {
         throw new CommitsDateRangeFromInputErrors.ForbiddenCharactersError(conflicts);
@@ -197,7 +196,6 @@ function prepareCommitsDateRangeFrom(input: string): Date {
  */
 function prepareCommitsDateRangeUntil(input: string): Date {
     const { output, conflicts } = sanitizeString(input);
-    console.log(output, conflicts);
     if (conflicts) {
         throw new CommitsDateRangeUntilInputErrors.ForbiddenCharactersError(conflicts);
     }

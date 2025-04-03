@@ -17,9 +17,10 @@ import { memo, useMemo } from "react";
 
 interface FilterFormProps {
     filterChangeHandler: FilterChangeHandler;
+    isDataLoading: boolean;
 }
 
-function FilterForm({ filterChangeHandler }: FilterFormProps) {
+function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
     const {
         form,
         handleRepositoryChange,
@@ -162,7 +163,12 @@ function FilterForm({ filterChangeHandler }: FilterFormProps) {
                 </Stack.Item>
 
                 <Stack.Item>
-                    <Button type="submit" disabled={!isAuthenticated}>
+                    <Button
+                        type="submit"
+                        disabled={!isAuthenticated || isDataLoading}
+                        loading={isDataLoading}
+                        size="large"
+                        block>
                         Submit
                     </Button>
                 </Stack.Item>

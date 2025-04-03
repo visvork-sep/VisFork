@@ -9,7 +9,8 @@ import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
 import { classify } from "@Utils/Classify";
 
 function DataComponents() {
-    const { onFiltersChange, forks, commits, filters } = useFilteredData();
+    const { onFiltersChange, forks, commits, filters, isLoading } = useFilteredData();
+    console.log("DataComponents", isLoading);
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {
@@ -36,10 +37,10 @@ function DataComponents() {
     const configurationPane = useMemo(() => {
         return (
             <SplitPageLayout.Pane aria-label="Pane" width="medium" resizable>
-                <ConfigurationPane filterChangeHandler={onFiltersChange} />
+                <ConfigurationPane filterChangeHandler={onFiltersChange} isDataLoading={isLoading} />
             </SplitPageLayout.Pane>
         );
-    }, []);
+    }, [isLoading]);
 
     return (
         <>

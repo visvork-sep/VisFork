@@ -24,7 +24,7 @@ import {
  * @returns conflicts - The forbidden characters found in the input
  */
 function sanitizeString(str: string): {output: string, conflicts: RegExpMatchArray | null} {
-    const pattern = /[^a-z0-9áéíóúñü /-]/gi;
+    const pattern = /[^a-z0-9 /_.-]/gi;
 
     const output = str.replace(pattern, "").trim();
     const conflicts = str.match(pattern);
@@ -174,6 +174,7 @@ function prepareForksSortDirection(input: SortDirection): SortDirection {
  */
 function prepareCommitsDateRangeFrom(input: string): Date {
     const { output, conflicts } = sanitizeString(input);
+    
     if (conflicts) {
         throw new CommitsDateRangeFromInputErrors.ForbiddenCharactersError(conflicts);
     }
@@ -199,7 +200,7 @@ function prepareCommitsDateRangeUntil(input: string): Date {
         throw new CommitsDateRangeUntilInputErrors.ForbiddenCharactersError(conflicts);
     }
 
-    if (!isValidDate) {
+    if (!isValidDate(output)) {
         throw new CommitsDateRangeUntilInputErrors.InvalidDateError();
     }
 

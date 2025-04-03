@@ -14,15 +14,28 @@ export function toForkInfo(fork: GitHubAPIFork): UnprocessedRepository {
     };
 }
 
+
+function getAuthorName(commit: GitHubAPICommit): string | "Unknown" {
+    return commit.commit?.author?.name ?? "Unknown";
+}
+
+function getLogin(commit: GitHubAPICommit): string | "Unknown" {
+    return commit.author?.login ?? "Unknown";
+}
+
+function getCommitDate(commit: GitHubAPICommit) {
+    return commit.commit?.committer?.date ? new Date(commit.commit.committer.date) : "Unknown";
+}
+
 export function toCommitInfo(commit: GitHubAPICommit): UnprocessedCommitExtended {
     return {
         sha: commit.sha,
-        id: commit.node_id, // Assuming `node_id` is unique and works as an ID
+        id: commit.node_id,
         parentIds: commit.parents?.map(parent => parent.sha) ?? [],
         node_id: commit.node_id,
-        author: commit.commit?.author?.name ?? "Unknown",
-        login: commit.author?.login ?? "Unknown",
-        date: commit.commit?.committer?.date ? new Date(commit.commit.committer.date) : "Unknown",
+        author: getAuthorName(commit),
+        login: getLogin(commit),
+        date: getCommitDate(commit),
         url: commit.html_url,
         message: commit.commit?.message ?? "",
         branch: "",

@@ -131,10 +131,8 @@ function CommitTimeline({
         // Lane shading and author labels
         graphics.drawLanes(g, lanes, width, isDarkMode, colorScheme.neutralLaneColor, colorScheme.accentedLaneColor);
 
-        // Month/year labels
-        if (!merged) {
-            graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor);
-        }
+        // month/year labels
+        graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor, merged);
 
         // Selection overlay for selectAll
         if (selectAll) {

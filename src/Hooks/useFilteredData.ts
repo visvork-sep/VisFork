@@ -14,6 +14,55 @@ import { isValidForkByFilter } from "@Utils/Filters/ForkFilterUtil";
 
 export type FilterChangeHandler = (filters: ForkFilter, forkQueryState: ForkQueryState) => void;
 
+function unwrap<T>(data: T | undefined) {
+    return data || [];
+}
+
+function canCreateMainRepositoryInfo(
+    forkError: Error | null, 
+    commitError: Error | null, 
+    isLoadingFork: boolean, 
+    isLoadingCommits: boolean, 
+    simplifiedForkData: UnprocessedRepository[], 
+    filteredForks: UnprocessedRepository[],
+    simplifiedCommitData: UnprocessedCommitExtended[][], 
+    forkQueryState?: ForkQueryState
+): boolean {
+    return !forkError
+      && !commitError
+      && !isLoadingFork
+      && !isLoadingCommits
+      && simplifiedForkData.length > 0
+      && simplifiedCommitData.length === filteredForks.length
+      && !!forkQueryState?.owner
+      && !!forkQueryState?.repo;
+}
+
+function createMainRepositoryInfo(
+    filteredForks: UnprocessedRepository[], 
+    simplifiedCommitData: UnprocessedCommitExtended[][], 
+    forkQueryState: ForkQueryState
+): MainRepositoryInfo {
+    const completeForkData: RepositoryInfoWithCommits[] = filteredForks.map((fork, index) => ({
+        ...fork,
+        commits: simplifiedCommitData[index]
+    }));
+
+    return {
+        owner: { login: forkQueryState.owner },
+        forks: completeForkData,
+        commits: [],
+        id: 0,
+        name: "",
+        description: null,
+        created_at: null,
+        last_pushed: null,
+        ownerType: "User",
+        defaultBranch: "main"
+    };
+}
+
+
 export function useFilteredData() {
     // Create the state for the query parameters
     const [forkQueryState, setForkQueryState] = useState<ForkQueryState | undefined>(undefined);
@@ -30,16 +79,11 @@ export function useFilteredData() {
 
     const { data: forkData, isLoading: isLoadingFork, error: forkError } = useFetchForks(forkQueryState);
 
-    const simplifiedForkData = useMemo(() => forkData?.data ?
-        forkData.data.map(fork => toForkInfo(fork)) : [], [forkData]);
+    const simplifiedForkData = useMemo(() => unwrap(forkData?.data).map(fork => toForkInfo(fork)), [forkData]);
 
 
     const filteredForks = useMemo(() => {
-        return (filters)
-            ?
-            simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters))
-            :
-            [];
+        return (filters) ? simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters)) : [];
     }, [simplifiedForkData, filters]);
 
 
@@ -67,44 +111,24 @@ export function useFilteredData() {
         });
 
     const simplifiedCommitData: UnprocessedCommitExtended[][] = useMemo(() => {
-        return commitData ?
-            commitData.map(commits => commits.map(commit => toCommitInfo(commit))) : [];
+        return unwrap(commitData).map(commits => commits.map(commit => toCommitInfo(commit)));
     }, [commitData]);
 
-
-    let mainRepositoryInfo: MainRepositoryInfo | undefined = undefined;
-    if (!forkError
-        && !commitError
-        && !isLoadingFork
-        && !isLoadingCommits
-        && simplifiedForkData.length > 0
-        && simplifiedCommitData.length == filteredForks.length
-        && forkQueryState?.owner
-        && forkQueryState?.repo
-    ) {
-        const completeForkData: RepositoryInfoWithCommits[] = filteredForks.map((fork, index) =>
-            ({
-                ...fork,
-                commits: simplifiedCommitData[index]
-            })
+    const mainRepositoryInfo = useMemo(() => {
+        const shouldCreate = canCreateMainRepositoryInfo(
+            forkError, commitError, isLoadingFork, isLoadingCommits,
+            simplifiedForkData, filteredForks, simplifiedCommitData, forkQueryState
         );
-
-        // temporary get data on main repository
-        const completeData: MainRepositoryInfo = {
-            owner: { login: forkQueryState.owner }, // get from query instead
-            forks: completeForkData, // get form query instead
-            commits: [], // temporary
-            id: 0, // id
-            name: "", //
-            description: null,
-            created_at: null,
-            last_pushed: null,
-            ownerType: "User", // get from query instead
-            defaultBranch: "main"
-        };
-
-        mainRepositoryInfo = completeData;
-    }
+        
+        return (shouldCreate && forkQueryState)
+            ? createMainRepositoryInfo(filteredForks, simplifiedCommitData, forkQueryState) : undefined;
+    }, [forkError, 
+        commitError, 
+        isLoadingFork, 
+        isLoadingCommits, 
+        simplifiedForkData, 
+        simplifiedCommitData, 
+        forkQueryState]);
 
     const flattenedCommits: UnprocessedCommitExtended[] =
         mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {

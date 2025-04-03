@@ -2,8 +2,12 @@
 export const MIN_QUERIABLE_FORKS = 1;
 /// For numforks input: Maximum amount of forks to query for
 export const MAX_QUERIABLE_FORKS = 200;
-// For querying of commits, each page is 100
+/// Max queriable forks/commits per page
+export const PAGE_SIZE = 100;
+/// For querying of commits
 export const MAX_QUERIABLE_COMMIT_PAGES = 20;
+/// Threshold for displaying an increased waiting time warning
+export const WARNING_COMMIT_THRESHOLD = 2000; 
 /// Lower bound for recent activity filtering (most recent updates)
 export const RECENT_ACTIVITY_MIN_MONTHS = 1;
 /// Upper bound for recent activity filtering (least recent updates)

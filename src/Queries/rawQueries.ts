@@ -3,7 +3,7 @@ import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, Get
 import { paths, components } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-import { CommitQueryParams, ForkQueryParams, GitHubAPIFork} from "../Types/DataLayerTypes";
+import { CommitQueryParams, ForkQueryParams, GitHubAPIFork } from "../Types/DataLayerTypes";
 import { API_URL, MAX_QUERIABLE_COMMIT_PAGES } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;
@@ -22,7 +22,8 @@ export async function fetchForksGql(parameters: GetForksQueryVariables, accessTo
 export async function fetchCommitCount(parameters: CommitQueryParams, accessToken: string, page = 1) {
 
     const response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
-        params: { ...parameters,
+        params: {
+            ...parameters,
             query: {
                 ...parameters.query, // Keep existing query params
                 per_page: 100,
@@ -42,21 +43,20 @@ export async function fetchCommitCount(parameters: CommitQueryParams, accessToke
             // Each page contains a hundred commits
             return lastPage * 100;
         }
-
     }
 
     return Number.MAX_SAFE_INTEGER;
 }
 
 export async function fetchCommits(parameters: CommitQueryParams, accessToken: string, page = 1) {
-    const allCommits:  components["schemas"]["commit"][] = [];
+    const allCommits: components["schemas"]["commit"][] = [];
     let response;
     let pagesRemaining = true;
 
-    // Hard limit page count so we only fetch maximum 2000 commits
-    while (pagesRemaining && page <= MAX_QUERIABLE_COMMIT_PAGES) {
+    while (pagesRemaining) {
         response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
-            params: { ...parameters,
+            params: {
+                ...parameters,
                 query: {
                     ...parameters.query, // Keep existing query params
                     per_page: 100,

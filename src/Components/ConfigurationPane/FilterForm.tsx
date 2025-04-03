@@ -163,7 +163,12 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
                 </Stack.Item>
 
                 <Stack.Item>
-                    <Button type="submit" disabled={!isAuthenticated || isDataLoading} loading={isDataLoading}>
+                    <Button
+                        type="submit"
+                        disabled={!isAuthenticated || isDataLoading}
+                        loading={isDataLoading}
+                        size="large"
+                        block>
                         Submit
                     </Button>
                 </Stack.Item>

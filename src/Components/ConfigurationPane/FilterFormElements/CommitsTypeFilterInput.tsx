@@ -19,7 +19,7 @@ function CommitTypeFilterInput({ onChangeHandler, checked, error }: CommitTypeFi
     return (
         <CheckboxGroup onChange={onChangeHandler} >
             <CheckboxGroup.Label>Included commits</CheckboxGroup.Label>
-            <CheckboxGroup.Caption>Commit types to include into visualizations</CheckboxGroup.Caption>
+            <CheckboxGroup.Caption>Commit types to include in the visualizations</CheckboxGroup.Caption>
             {checkBoxes}
             {error && <CheckboxGroup.Validation variant="error">{error.message}</CheckboxGroup.Validation>}
         </CheckboxGroup>

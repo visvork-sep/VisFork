@@ -8,8 +8,6 @@ interface ConfigurationPaneProps {
 };
 
 function ConfigurationPane({ filterChangeHandler, isDataLoading }: ConfigurationPaneProps) {
-    console.log("Config pane", isDataLoading);
-
     return (
         <Stack gap="condensed">
             <Stack.Item>

@@ -21,7 +21,6 @@ function CommitTable({ commitData }: CommitTableData) {
         if (searchTerm !== debouncedSearch) {
             const handler = setTimeout(() => {
                 setDebouncedSearch(searchTerm);
-                console.log("Search term updated:", searchTerm);
             }, 300); // 300ms delay
 
             return () => clearTimeout(handler);
@@ -38,7 +37,6 @@ function CommitTable({ commitData }: CommitTableData) {
 
     // Memoize filtered data to prevent unnecessary recalculations
     const filteredData = useMemo(() => {
-        console.log("Filtering data with search term:", debouncedSearch); // Debugging log
         const lowerSearch = debouncedSearch.toLowerCase(); // Convert search term to lowercase once
 
         return preprocessedData.filter(commit =>

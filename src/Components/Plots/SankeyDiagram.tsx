@@ -73,80 +73,51 @@ export function parseData({ commitData }: SankeyData): ParsedDataItem[] {
 // Main function to render the Sankey chart
 export function SankeyChart(
     {   // nodes and links defining the graph
-        nodes, // an iterable of node objects (typically [{id}, …]); implied by links if missing
         links, // an iterable of link objects (typically [{source, target}, …])
-    }: { nodes?: SankeyNodeMinimal<{ id: string; }, any>[]; links: SankeyLinkMinimal<any, any>[]; },
+    }: { links: SankeyLinkMinimal<any, any>[]; },
     {   // configuration options with defaults
-        format = d3Format(","), // a function or format specifier for values in titles
-        align = "justify", // convenience shorthand for nodeAlign
         nodeGroup, // given n in nodes, returns an (ordinal) value for color
-        nodeGroups = [], // an array of ordinal values representing the node groups
-        nodeLabel, // given n in (computed) nodes, text to label the associated rect
-        nodeAlign = getNodeAlignFunction(align), // Sankey node alignment strategy: left, right, justify, center
-        nodeWidth = 15, // width of node rects
-        nodePadding = 10, // vertical separation between adjacent nodes
-        nodeLabelPadding = 6, // horizontal separation between node and label
-        nodeStroke = "currentColor", // stroke around node rects
-        nodeStrokeWidth = 1, // width of stroke around node rects, in pixels
-        nodeStrokeOpacity = 1, // opacity of stroke around node rects
-        nodeStrokeLinejoin = 1, // line join for stroke around node rects
-        linkSource = (l) => l.source, // given l in links, returns a node identifier string
-        linkTarget = (l) => l.target, // given l in links, returns a node identifier string
-        linkValue = (l) => l.value, // given l in links, returns the quantitative value
-        linkPath = sankeyLinkHorizontal(), // given d in (computed) links, returns the SVG path
-        linkTitle = (l) =>
-            `${l.source.id} => ${l.target.id}\n${format(l.value)} commits`, // given d in (computed) links
-        linkColor = "source-target", // source, target, source-target, or static color
-        linkStrokeOpacity = 0.5, // link stroke opacity
-        linkMixBlendMode = "normal", // link blending mode
-        colors = schemeTableau10, // array of colors
-        width = 640, // outer width, in pixels
-        height = 400, // outer height, in pixels
-        marginTop = 5, // top margin, in pixels
-        marginRight = 1, // right margin, in pixels
-        marginBottom = 5, // bottom margin, in pixels
-        marginLeft = 1, // left margin, in pixels
     }: {
-        format?: (n: number) => string;
-        align?: AlignType;
-        nodeId?: (n: SankeyNodeMinimal<{ id: string; }, any>) => number | undefined;
         nodeGroup?: (n: SankeyNodeMinimal<any, any>) => number;
-        nodeGroups: Iterable<number>;
-        nodeLabel?: (n: SankeyNodeMinimal<any, any>) => string;
-        nodeAlign?: (node: SankeyNodeMinimal<any, any>, n: number) => number;
-        nodeWidth?: number;
-        nodePadding?: number;
-        nodeLabelPadding?: number;
-        nodeStroke?: string;
-        nodeStrokeWidth: number;
-        nodeStrokeOpacity: number;
-        nodeStrokeLinejoin: number;
-        linkSource?: (l: SankeyLinkMinimal<any, any>) => string;
-        linkTarget?: (l: SankeyLinkMinimal<any, any>) => string;
-        linkValue?: (l: SankeyLinkMinimal<any, any>) => number;
-        linkPath?: Link<any, SankeyLinkMinimal<any, any>, [number, number]>;
-        linkTitle?: (l: SankeyLinkMinimal<any, any>) => string;
-        linkColor?: string;
-        linkStrokeOpacity?: number;
-        linkMixBlendMode?: string;
-        colors: readonly string[];
-        width?: number;
-        height?: number;
-        marginTop?: number;
-        marginRight?: number;
-        marginBottom?: number;
-        marginLeft?: number;
     }
 ) {
+    let format = d3Format(","); // a function or format specifier for values in titles
+    const align = "justify"; // convenience shorthand for nodeAlign
+    let nodeGroups: Iterable<number> = []; // an array of ordinal values representing the node groups
+    const nodeAlign = getNodeAlignFunction(align); // Sankey node alignment strategy: left, right, justify, center
+    const nodeWidth = 15; // width of node rects
+    const nodePadding = 10; // vertical separation between adjacent nodes
+    let nodeLabel = undefined;
+    const nodeLabelPadding = 6; // horizontal separation between node and label
+    const nodeStroke = "currentColor"; // stroke around node rects
+    const nodeStrokeWidth = 1; // width of stroke around node rects, in pixels
+    const nodeStrokeOpacity = 1; // opacity of stroke around node rects
+    const nodeStrokeLinejoin = 1; // line join for stroke around node rects
+    const linkSource = (l: SankeyLinkMinimal<any, any>) => l.source; // given l in links, returns a node identifier string
+    const linkTarget = (l: SankeyLinkMinimal<any, any>) => l.target; // given l in links, returns a node identifier string
+    const linkValue = (l: SankeyLinkMinimal<any, any>) => l.value; // given l in links, returns the quantitative value
+    const linkPath = sankeyLinkHorizontal(); // given d in (computed) links, returns the SVG path
+    const linkTitle = (l: SankeyLinkMinimal<any, any>) =>
+        `${l.source.id} => ${l.target.id}\n${format(l.value)} commits`; // given d in (computed) links
+    let linkColor = "source-target"; // source, target, source-target, or static color
+    const linkStrokeOpacity = 0.5; // link stroke opacity
+    const linkMixBlendMode = "normal"; // link blending mode
+    const colors = schemeTableau10; // array of colors
+    const width = 640; // outer width, in pixels
+    const height = 400; // outer height, in pixels
+    const marginTop = 5; // top margin, in pixels
+    const marginRight = 1; // right margin, in pixels
+    const marginBottom = 5; // bottom margin, in pixels
+    const marginLeft = 1; // left margin, in pixels
+
+
     //Mapping the soruce, target and value of the links
     const LS = map(links, linkSource).map(intern);
     const LT = map(links, linkTarget).map(intern);
     const LV = map(links, linkValue);
 
     // If nodes is not defined, create a new array of nodes
-    if (nodes === undefined) {
-        nodes = Array.from(union(LS, LT), (id, index) => ({ id, index, x0: 0, x1: 0, y0: 0, y1: 0 }));
-    }
+    const nodes = Array.from(union(LS, LT), (id, index) => ({ id, index, x0: 0, x1: 0, y0: 0, y1: 0 }));
 
     // Mapping the nodes to their id
     const N = map(nodes as SankeyNode<{ id: string; }, any>[], (n) => n.id).map(intern);
@@ -367,11 +338,6 @@ export function SankeyDiagram(data: SankeyData) {
             { links },
             {
                 nodeGroup: (d) => parseInt((d.index ? d.index.toString() : "").split(/\W/)[0]),
-                nodeGroups: [],
-                nodeStrokeWidth: 1,
-                nodeStrokeOpacity: 1,
-                nodeStrokeLinejoin: 1,
-                colors: schemeTableau10,
             }
         );
 
@@ -382,4 +348,3 @@ export function SankeyDiagram(data: SankeyData) {
 
     return <div id="sankey-diagram" style={{ width: "100%", height: "400px" }}></div>;
 };
-

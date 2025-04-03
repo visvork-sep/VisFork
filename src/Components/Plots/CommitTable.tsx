@@ -1,6 +1,6 @@
 import { Column, DataTable, Table } from "@primer/react/experimental";
 import { Box, Link, TextInput, useTheme } from "@primer/react";
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, memo, useEffect } from "react";
 import { CommitTableData, CommitTableDetails } from "@VisInterfaces/CommitTableData";
 
 function CommitTable({ commitData }: CommitTableData) {
@@ -9,18 +9,43 @@ function CommitTable({ commitData }: CommitTableData) {
 
     // Track text input for filtering
     const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
 
     // Memoize hyperlink color based on color mode
     const linkColor = useMemo(() => {
         return colorMode === "dark" || colorMode === "night" ? "white" : "black";
     }, [colorMode]);
 
+    // Setup a bit of delay for the search input to avoid excessive re-renders
+    useEffect(() => {
+        if (searchTerm !== debouncedSearch) {
+            const handler = setTimeout(() => {
+                setDebouncedSearch(searchTerm);
+                console.log("Search term updated:", searchTerm);
+            }, 3000); // 300ms delay
+
+            return () => clearTimeout(handler);
+        }
+    }, [searchTerm, debouncedSearch]); // Prevent unnecessary updates
+
+
+    const preprocessedData = useMemo(() => {
+        return commitData.map(commit => ({
+            ...commit,
+            lowerMessage: commit.message.toLowerCase() // Store lowercase message
+        }));
+    }, [commitData]);
+
     // Memoize filtered data to prevent unnecessary recalculations
     const filteredData = useMemo(() => {
-        return commitData.filter((commit) =>
-            commit.message.toLowerCase().includes(searchTerm.toLowerCase())
+        console.log("Filtering data with search term:", debouncedSearch); // Debugging log
+        const lowerSearch = debouncedSearch.toLowerCase(); // Convert search term to lowercase once
+
+        return preprocessedData.filter(commit =>
+            commit.lowerMessage.includes(lowerSearch) // Use precomputed lowercase message
         );
-    }, [commitData, searchTerm]);
+    }, [preprocessedData, debouncedSearch]);
+
 
     // Memoize column definitions
     const columns: Column<CommitTableDetails>[] = useMemo(() => [

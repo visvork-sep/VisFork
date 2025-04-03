@@ -2,8 +2,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchForks, fetchCommits, fetchAvatarUrlGql, fetchCommitCount } from "@Queries/rawQueries";
 import { CommitQueryParams, ForkQueryParams } from "@Types/DataLayerTypes";
 import { UnprocessedRepository, ForkQueryState } from "@Types/LogicLayerTypes";
-import { GetAvatarUrlQueryVariables }
-    from "@generated/graphql";
+import { GetAvatarUrlQueryVariables } from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";
 import { createCommitQueryParams, createForkQueryParams } from "@Utils/queryHelpers";
 import { useEffect, useMemo } from "react";
@@ -75,7 +74,7 @@ export function useFetchCommitsBatch(forks: UnprocessedRepository[], forkQuerySt
         if (commitQueryParameters.length > 0) {
             fetchCommitCount(commitQueryParameters[0], accessToken).then((commitsCount) => {
                 if (commitsCount > 2000) {
-                    alert("Repository contains a lot of commits for this time range. This might take a while");
+                    alert("Repository contains a lot of commits for this time range. This might take a while.");
                 }
             });
         }

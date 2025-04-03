@@ -10,7 +10,6 @@ import { classify } from "@Utils/Classify";
 
 function DataComponents() {
     const { onFiltersChange, forks, commits, filters, isLoading } = useFilteredData();
-    console.log("DataComponents", isLoading);
 
     // Main repo is the first member of the forks list
     const mainRepoName = useMemo(() => {

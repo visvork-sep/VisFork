@@ -3,8 +3,8 @@ import { GetAvatarUrlDocument, GetAvatarUrlQueryVariables, GetForksDocument, Get
 import { paths, components } from "@generated/rest-schema";
 import request from "graphql-request";
 import createClient from "openapi-fetch";
-import { CommitQueryParams, ForkQueryParams, GitHubAPIFork} from "../Types/DataLayerTypes";
-import { API_URL, MAX_QUERIABLE_COMMIT_PAGES, PAGE_SIZE } from "@Utils/Constants";
+import { CommitQueryParams, ForkQueryParams, GitHubAPIFork } from "../Types/DataLayerTypes";
+import { API_URL, PAGE_SIZE } from "@Utils/Constants";
 
 const GRAPHQL_URL = `${API_URL}/graphql`;
 const fetchClient = createClient<paths>({ baseUrl: API_URL });
@@ -22,7 +22,8 @@ export async function fetchForksGql(parameters: GetForksQueryVariables, accessTo
 export async function fetchCommitCount(parameters: CommitQueryParams, accessToken: string, page = 1) {
 
     const response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
-        params: { ...parameters,
+        params: {
+            ...parameters,
             query: {
                 ...parameters.query, // Keep existing query params
                 per_page: PAGE_SIZE,
@@ -40,25 +41,22 @@ export async function fetchCommitCount(parameters: CommitQueryParams, accessToke
         if (lastPageMatch) {
             const lastPage = parseInt(lastPageMatch[1]);
             // Each page contains a hundred commits
-            
             return lastPage * PAGE_SIZE;
         }
-
     }
 
-    // If no link header or no match, the repository only has 1 page worth of commits
-    return PAGE_SIZE; 
+    return Number.MAX_SAFE_INTEGER;
 }
 
 export async function fetchCommits(parameters: CommitQueryParams, accessToken: string, page = 1) {
-    const allCommits:  components["schemas"]["commit"][] = [];
+    const allCommits: components["schemas"]["commit"][] = [];
     let response;
     let pagesRemaining = true;
 
-    // Hard limit page count so we only fetch maximum 2000 commits
-    while (pagesRemaining && page <= MAX_QUERIABLE_COMMIT_PAGES) {
+    while (pagesRemaining) {
         response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
-            params: { ...parameters,
+            params: {
+                ...parameters,
                 query: {
                     ...parameters.query, // Keep existing query params
                     per_page: PAGE_SIZE,

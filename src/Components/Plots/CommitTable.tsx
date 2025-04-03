@@ -22,7 +22,7 @@ function CommitTable({ commitData }: CommitTableData) {
             const handler = setTimeout(() => {
                 setDebouncedSearch(searchTerm);
                 console.log("Search term updated:", searchTerm);
-            }, 3000); // 300ms delay
+            }, 300); // 300ms delay
 
             return () => clearTimeout(handler);
         }

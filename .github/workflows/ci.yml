@@ -33,7 +33,7 @@ jobs:
               fi
               docker run -dit --name visfork-ci \
                 -e VITE_AUTH_URL=${{ secrets.AUTH_URL }} \
-                -e VITE_API_URL=https://api.github.com/ \
+                -e VITE_API_URL=https://api.github.com \
                 visfork-ci bash
 
 

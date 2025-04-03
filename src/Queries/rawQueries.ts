@@ -16,6 +16,38 @@ export async function fetchForksGql(parameters: GetForksQueryVariables, accessTo
     return request(GRAPHQL_URL, GetForksDocument, parameters, [["Authorization", "bearer" + accessToken]]);
 }
 
+/**
+* Fetch the amount of commits in a certain repository
+*/
+export async function fetchCommitCount(parameters: CommitQueryParams, accessToken: string, page = 1) {
+
+    const response = await fetchClient.GET("/repos/{owner}/{repo}/commits", {
+        params: { ...parameters,
+            query: {
+                ...parameters.query, // Keep existing query params
+                per_page: 100,
+                page
+            }
+        },
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const linkHeader = response.response.headers.get("link");
+    if (linkHeader) {
+        const lastPageMatch = linkHeader.match(/&page=(\d+)>; rel="last"/);
+        if (lastPageMatch) {
+            const lastPage = parseInt(lastPageMatch[1]);
+            // Each page contains a hundred commits
+            return lastPage * 100;
+        }
+
+    }
+
+    return Number.MAX_SAFE_INTEGER;
+}
+
 export async function fetchCommits(parameters: CommitQueryParams, accessToken: string, page = 1) {
     const allCommits:  components["schemas"]["commit"][] = [];
     let response;

@@ -223,6 +223,7 @@ export function drawLegends(
             .attr("cx", c.LEGEND_SIZE / 2)
             .attr("cy", c.LEGEND_SIZE / 2)
             .attr("r", c.LEGEND_SIZE / 2)
+            .style("cursor", "pointer")
             .on("click", function() {
                 const selected = sortedNodes.filter(node => node.data.repo === repoName)
                     .flatMap((node) =>
@@ -266,12 +267,10 @@ export function drawLegends(
                 .attr("width", c.LEGEND_SIZE)
                 .attr("height", c.LEGEND_SIZE)
                 .style("flex-shrink", "0")
+                .style("cursor", "pointer")
                 .append("path")
                 .attr("transform", `translate(${c.LEGEND_SIZE / 2}, ${c.LEGEND_SIZE / 2})`)
-                .attr(
-                    "d",
-                    symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE)
-                )
+                .attr("d",symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE))
                 .on("click", function() {
                     const selected = (sortedNodes as MutGraphNode<GroupedNode, undefined>[])
                         .filter(node => node.data.branch === 

@@ -92,17 +92,17 @@ export function assignUniqueLanes(
     });
 
     let cumulativeOffset = c.MARGIN.top; // leaves space on top
-    const lanes: Record<string, { minX: number; maxX: number; }> = {};
+    const lanes: Record<string, { minY: number; maxY: number; }> = {};
 
     // shift nodes for each repo
     repoOrder.forEach(([repo, repoNodes]) => {
-        const minX = min(repoNodes, (n) => n.y) || 0;
-        const maxX = max(repoNodes, (n) => n.y) || 0;
-        const height = maxX - minX;
+        const minY = min(repoNodes, (n) => n.y) || 0;
+        const maxY = max(repoNodes, (n) => n.y) || 0;
+        const height = maxY - minY;
         repoNodes.forEach((node) => {
-            node.y = cumulativeOffset + (node.y - minX);
+            node.y = cumulativeOffset + (node.y - minY);
         });
-        lanes[repo] = { minX: cumulativeOffset, maxX: cumulativeOffset + height };
+        lanes[repo] = { minY: cumulativeOffset, maxY: cumulativeOffset + height };
         cumulativeOffset += height + c.NODE_RADIUS * 2;
     });
 

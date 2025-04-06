@@ -22,7 +22,7 @@ export interface GroupedNode extends Commit {
 
 export function drawLanes(
     g: Selection<SVGGElement, unknown, null, undefined>,
-    lanes: Record<string, { minX: number; maxX: number }>,
+    lanes: Record<string, { minY: number; maxY: number }>,
     svgWidth: number,
     isDarkMode: boolean,
     darkColor: string,
@@ -30,7 +30,7 @@ export function drawLanes(
 ) {
     const backgrounds = g.append("g").attr("class", "repo-backgrounds");
   
-    Object.entries(lanes).forEach(([repo, { minX, maxX }], i) => {
+    Object.entries(lanes).forEach(([repo, { minY: minX, maxY: maxX }], i) => {
         const laneColor = i % 2 === 0 ? darkColor : lightColor;
   
         backgrounds.append("rect")
@@ -147,6 +147,7 @@ export function drawMergedNodes(
         .attr("cx", d => d.x ?? 0)
         .attr("cy", d => d.y ?? 0)
         .attr("r", c.NODE_RADIUS)
+        .style("cursor", "pointer")
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
     const mergedSquares = mergedNodes.filter(node => node.data.branch === "default");
@@ -173,6 +174,7 @@ export function drawMergedNodes(
             const y = d.y ?? 0;
             return `translate(${x},${y})`;
         })
+        .style("cursor", "pointer")
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
     return {circles, squares, triangles};
@@ -192,6 +194,7 @@ export function drawNormalNodes(
         .attr("cx", d => d.x ?? 0)
         .attr("cy", d => d.y ?? 0)
         .attr("r", c.NODE_RADIUS)
+        .style("cursor", "pointer")
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
     return {circles};

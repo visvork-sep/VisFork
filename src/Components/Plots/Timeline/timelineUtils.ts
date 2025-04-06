@@ -148,9 +148,11 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
     const commitLookup = new Map<string, Commit>();
 
     const forkParentIds = new Set<string>();
+    const forkParentChildren = new Set<string>(); // commits consisting of pulling from another repo
     const mergeNodes = new Set<string>();
+    let counter = 0; // used for setting IDs
 
-    // find from which commits a fork pulls (fork parents) and which are merge nodes
+    // Find fork parents and merge nodes
     sortedCommits.forEach(commit => {
         commitLookup.set(commit.id, commit);
         // fork parents have a child within a different repo
@@ -158,22 +160,83 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
             const parentCommit = commitLookup.get(parentId);
             if (parentCommit && parentCommit.repo !== commit.repo) {
                 forkParentIds.add(parentId);
+                forkParentChildren.add(commit.id);
             }
         });
         if (
-        // merge nodes have at least two parents, one from different repo
+            // merge nodes have at least two parents, one from different repo
             commit.parentIds.length >= 2 &&
-                commit.parentIds.some(parentId => {
-                    const parentCommit = commitLookup.get(parentId);
-                    return parentCommit !== undefined && parentCommit.repo !== commit.repo;
-                })
+            commit.parentIds.some(parentId => {
+                const parentCommit = commitLookup.get(parentId);
+                return parentCommit !== undefined && parentCommit.repo !== commit.repo;
+            })
         ) {
             mergeNodes.add(commit.id);
         }
     });
 
     const repoGroups = groupBy(Array.from(sortedCommits), (commit) => commit.repo);
-    let counter = 0; // used for setting IDs
+
+    // Helper function to create a grouped node
+    function createGroupedNode(
+        nodes: Commit[], 
+        startIdx: number, 
+        endIdx: number,
+        branchType = "default", 
+        isSpecial = false): GroupedNode {
+        const nodeIds = nodes.slice(startIdx, endIdx).map(node => node.id);
+        const prefix = isSpecial ? "Special " : "";
+        return {
+            id: `${prefix}${counter++}`,
+            parentIds: [],
+            repo: nodes[startIdx].repo,
+            branch: branchType,
+            date: nodes[startIdx].date,
+            url: branchType === "default" ? "" : nodes[startIdx].url, // Only special nodes are clickable
+            nodes: nodeIds,
+            end_date: nodes[endIdx - 1].date,
+        };
+    }
+
+    // Process each repo group
+    repoGroups.forEach((nodes) => {
+        let lastBreak = 0;
+        
+        for (let i = 0; i < nodes.length; i++) {
+            const nodeId = nodes[i].id;
+            const isSpecialNode = mergeNodes.has(nodeId) || forkParentIds.has(nodeId);
+            const isForkChild = forkParentChildren.has(nodeId);
+            
+            if (isSpecialNode || isForkChild) {
+                // create a group for any nodes between the last break and current special node
+                if (lastBreak < i) {
+                    groupedNodes.push(createGroupedNode(nodes, lastBreak, i));
+                }
+                
+                // create appropriate node based on type
+                if (isSpecialNode) {
+                    const type = mergeNodes.has(nodeId) ? "merge" : "forkParent";
+                    groupedNodes.push(createGroupedNode(nodes, i, i + 1, type, true));
+                } else if (isForkChild) {
+                    // create a default node for pulling from different repo
+                    groupedNodes.push(createGroupedNode(nodes, i, i + 1));
+                }
+                
+                lastBreak = i + 1;
+            }
+        }
+        
+        // Handle any remaining nodes
+        if (lastBreak < nodes.length) {
+            groupedNodes.push(createGroupedNode(nodes, lastBreak, nodes.length));
+        }
+    });
+
+    // Create mapping from commit ID to group ID for parent lookup
+    const commitIdToGroupId = new Map<string, string>();
+    groupedNodes.forEach(group => {
+        group.nodes.forEach(commitId => commitIdToGroupId.set(commitId, group.id));
+    });
 
     function findParent(node: GroupedNode) {
         const firstCommit = commitLookup.get(node.nodes[0]);
@@ -187,76 +250,10 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
         }
     }
 
-    function createGroup(nodes: Commit[], i: number, lastBreak: number) {
-        if (lastBreak < i) {
-            const mergedGroup: GroupedNode = {
-                id: `${counter}`,
-                parentIds: [],
-                repo: nodes[lastBreak].repo,
-                branch: "default",
-                date: nodes[lastBreak].date,
-                url: "", // default nodes are not clickable
-                nodes: nodes.slice(lastBreak, i).map(node => node.id) || [],
-                end_date: nodes[i - 1].date,
-            };
-            groupedNodes.push(mergedGroup);
-        }
-
-        const type = mergeNodes.has(nodes[i].id) ? "merge" : "forkParent";
-        const specialNode: GroupedNode = {
-            id: `Special ${counter}`,
-            parentIds: [],
-            repo: nodes[i].repo,
-            branch: type,
-            date: nodes[i].date,
-            url: nodes[i].url,
-            nodes: [nodes[i].id],
-            end_date: nodes[i].date,
-        };
-        groupedNodes.push(specialNode);
-        counter++;
-    }
-
-    repoGroups.forEach((nodes, repo) => {
-        let lastBreak = 0;
-        for (let i = 0; i < nodes.length; i++) {
-            if (mergeNodes.has(nodes[i].id) || forkParentIds.has(nodes[i].id)) {
-                createGroup(nodes, i, lastBreak);
-                lastBreak = i + 1;
-            }
-        }
-        if (lastBreak < nodes.length) {
-            const finalGroupNodeIds = nodes.slice(lastBreak).map(node => node.id);
-            const finalGroup: GroupedNode = {
-                id: `${counter}`,
-                parentIds: [],
-                repo: repo,
-                branch: "default",
-                date: nodes[lastBreak].date,
-                url: "", // default nodes are not clickable
-                nodes: finalGroupNodeIds,
-                end_date: nodes[nodes.length - 1].date,
-            };
-            counter++;
-            groupedNodes.push(finalGroup);
-        }
-    });
-
-    // used to find parents
-    const commitIdToGroupId = new Map<string, string>();
-    groupedNodes.forEach(group => {
-        group.nodes.forEach(commitId => commitIdToGroupId.set(commitId, group.id));
-    });
-
-    // assign parents to groups
-    for (const mnode of groupedNodes) {
-        findParent(mnode);
+    // Assign parents to all groups
+    for (const node of groupedNodes) {
+        findParent(node);
     }
 
     return groupedNodes;
-}
-
-
-
-
-    
+}   

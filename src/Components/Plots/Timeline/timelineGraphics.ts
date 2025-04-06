@@ -249,7 +249,7 @@ export function drawLegends(
             .style("margin-left", c.LEGENDS_SPACING); // spacing to the right of color legend
 
         const shapeLegendData = [
-            { label: "Fork parent", shape: symbolCircle },
+            { label: "Fork/Merge parent", shape: symbolCircle },
             { label: "Commit(s) without deviations", shape: symbolSquare },
             { label: "Merge commit" , shape: symbolTriangle },
         ];

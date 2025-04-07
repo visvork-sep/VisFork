@@ -255,8 +255,3 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
 
     return groupedNodes;
 }
-
-
-
-
-    

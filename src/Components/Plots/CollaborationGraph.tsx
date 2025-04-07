@@ -62,7 +62,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                         return prev + 1;
                     } else {
                         setIsPlaying(!isPlaying);
-                        return 0;
+                        return allDates.length - 1;
                     }
                 }
                 );

@@ -33,28 +33,6 @@ export function deleteDuplicateCommits(rawCommits: UnprocessedCommitExtended[]):
             }
         }
     }
-    /**
-     * Scheme:
-     * for the headCommit of each branch, check if duplicate
-     * go to parentId (if 2, pick the first one)
-     * if duplicates are found, delete the ones that arent on default branch
-     * if there are no duplicates on default branch, randomly select a branch to not delete duplicates from
-     * recursively delete duplicates of everything except the chosen branch until parentIds is empty
-     */
-    const headCommits = [...locationHeadCommitMap.values()];
-    for (let headCommit of headCommits) {
-        makeUniqueHierarchical(headCommit);
-        while (headCommit.parentIds.length !== 0) {
-            const nextCommit = commitMap.get(headCommit.parentIds[0]);
-            if (nextCommit === undefined) {
-                console.error("Commit data not found!");
-                break;
-            } else {
-                headCommit = nextCommit;
-            }
-            makeUniqueHierarchical(headCommit);
-        }
-    }
     // Find all duplicate commits and get rid of them with priority given to main repo and default branches
     const duplicateCommits = [...commitLocationMap.entries()].filter(([, locations]) => {
         return locations.length >= 2;
@@ -144,43 +122,24 @@ export function makeUniqueHierarchical(commit: UnprocessedCommitExtended) {
  */
 function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
     // If this merge commit already got handled before, don't handle it again
-    if ((commitLocationMap.get(mergeCommit.parentIds[1])?.length ?? []) === 1) {
+    if (isHandledBefore(mergeCommit)) {
         return;
     }
     // Get relevant data
-    const mergeBaseCommit = findMergeBaseCommit(mergeCommit.parentIds[0], mergeCommit.parentIds[1]);
+    const mergeBaseCommit = findMergeBaseCommit(mergeCommit.parentIds[0], mergeCommit.parentIds[1]) ?? "";
     const secondParent = commitMap.get(mergeCommit.parentIds[1]);
-    const commitLocations = commitLocationMap.get(mergeCommit.parentIds[1]);
+    const commitLocations = commitLocationMap.get(mergeCommit.parentIds[1]) ?? [];
     if (secondParent === undefined) {
         console.error("Second parent not found!");
         return;
     }
     // Get all perfect branches
     const allBranchesWithRelevantHeadCommit = locationHeadCommitMapReversed.get(secondParent.sha);
-    if (allBranchesWithRelevantHeadCommit !== undefined) {
-        if (allBranchesWithRelevantHeadCommit.length === 0) {
-            console.error("Found no relevant head commits due to mistake in data structure!");
-        } else if (allBranchesWithRelevantHeadCommit.length >= 1) { // found a perfect branch!
-            deleteFromBranch(secondParent, allBranchesWithRelevantHeadCommit[0], mergeBaseCommit);
-        }
-    } else if (commitLocations !== undefined
-        && commitLocations.length > 1) { // parentId in fetched data and has duplicates
+    if (allBranchesWithRelevantHeadCommit?.length) { // found a perfect branch!
+        deleteFromBranch(secondParent, allBranchesWithRelevantHeadCommit[0], mergeBaseCommit);
+    } else if (hasDuplicates(commitLocations)) { // parentId in fetched data and has duplicates
         // Try inferring whether this commit is from a PR and has a default message and get its branch from it
-        const regex = /^merge pull request .* from ([^\s]+).*/i;
-        const match = mergeCommit.message.match(regex);
-        if (match !== null) {
-            const [owner, branch_name] = match[1].split("/", 2);
-            let repo_name = ownerRepoMap.get(owner);
-            if (!repo_name) {
-                repo_name = "";
-            }
-            if (commitLocations.some(({ repo, branch }) => {
-                return repo === repo_name && branch === branch_name;
-            })) {
-                deleteFromBranch(secondParent, { repo: repo_name, branch: branch_name }, mergeBaseCommit);
-                return;
-            }
-        }
+        deleteFromPRBranch(mergeCommit, commitLocations, secondParent, mergeBaseCommit);
         // No inference could be made: apply priority rules and gamble
         const nonMainRepoCommitLocations = commitLocations.filter(({ repo }) => {
             return repo !== globalMainRepo;
@@ -193,6 +152,33 @@ function recursiveMergeCheck(mergeCommit: UnprocessedCommitExtended) {
 
     }
     // Remaining conditions only include situations with no duplicates
+}
+
+function isHandledBefore(mergeCommit: UnprocessedCommitExtended): boolean {
+    return (commitLocationMap.get(mergeCommit.parentIds[1])?.length ?? 0) === 1;
+}
+
+function hasDuplicates(commitLocations: CommitLocation[]): boolean {
+    return commitLocations.length > 1;
+}
+
+function deleteFromPRBranch(
+    mergeCommit: UnprocessedCommitExtended,
+    commitLocations: CommitLocation[],
+    secondParent: UnprocessedCommitExtended,
+    mergeBaseCommit: string
+): boolean {
+    const match = mergeCommit.message.match(/^merge pull request .* from ([^\s]+).*/i);
+    if (!match) return false;
+
+    const [owner, branch_name] = match[1].split("/", 2);
+    const repo_name = ownerRepoMap.get(owner) ?? "";
+
+    if (commitLocations.some(({ repo, branch }) => repo === repo_name && branch === branch_name)) {
+        deleteFromBranch(secondParent, { repo: repo_name, branch: branch_name }, mergeBaseCommit);
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -226,24 +212,8 @@ export function deleteFromBranch(commit: UnprocessedCommitExtended,
         return;
     }
     // Do not delete this line. In edge cases, it is necessary, such as when the called commit has no parents
-    commitLocationMap.set(commit.sha, [{ repo, branch }]);
-    while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
-        // Set the current commit to the given repo and branch, since we have determined it's from there.
-        commitLocationMap.set(commit.sha, [{ repo, branch }]);
-        // If the current commit is also a merge commit, handle that one too
-        if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])?.length !== 1) {
-            recursiveMergeCheck(commit);
-        }
-
-        // Go to parent commit and keep assigning it to the given commit location
-        const nextCommit = commitMap.get(commit.parentIds[0]);
-        if (nextCommit === undefined) {
-            console.error("Commit data not found!");
-            break;
-        } else {
-            commit = nextCommit;
-        }
-    }
+    commitLocationMap.set(commit.sha, [{repo, branch}]);
+    commit = deleteFromBranchRecentHistory(commit, mergeBaseCommit, repo, branch);
 
     // In case this is the only branch containing this history, we do not delete the history
     if ((commitLocationMap.get(mergeBaseCommit)?.length ?? []) === 1) {
@@ -252,6 +222,10 @@ export function deleteFromBranch(commit: UnprocessedCommitExtended,
 
     // We have now arrived at duplicated history from the branch, so we delete itself from
     // the commit locations associated with the commit's hash
+    commit = deleteBranchFromOldHistory(commit, branch, repo);
+}
+
+function deleteBranchFromOldHistory(commit: UnprocessedCommitExtended, branch: string, repo: string) {
     while (true) {
         const currentLocations = commitLocationMap.get(commit.sha);
         if (currentLocations === undefined) {
@@ -262,8 +236,8 @@ export function deleteFromBranch(commit: UnprocessedCommitExtended,
             if (!currentLocations.every(({ branch: branch_name, repo: repo_name }) => {
                 return branch_name === branch && repo_name === repo;
             })) {
-                commitLocationMap
-                    .set(commit.sha, currentLocations.filter(({ branch: branch_name, repo: repo_name }) => {
+                commitLocationMap.set(commit.sha, 
+                    currentLocations.filter(({ branch: branch_name, repo: repo_name }) => {
                         return !(branch_name === branch && repo_name === repo);
                     }));
             }
@@ -283,6 +257,31 @@ export function deleteFromBranch(commit: UnprocessedCommitExtended,
             commit = nextCommit;
         }
     }
+    return commit;
+}
+
+function deleteFromBranchRecentHistory(commit: UnprocessedCommitExtended, 
+    mergeBaseCommit: string, 
+    repo: string, 
+    branch: string) {
+    while (commit.parentIds.length !== 0 && commit.sha !== mergeBaseCommit) {
+        // Set the current commit to the given repo and branch, since we have determined it's from there.
+        commitLocationMap.set(commit.sha, [{ repo, branch }]);
+        // If the current commit is also a merge commit, handle that one too
+        if (commit.parentIds.length === 2 && commitLocationMap.get(commit.parentIds[1])?.length !== 1) {
+            recursiveMergeCheck(commit);
+        }
+
+        // Go to parent commit and keep assigning it to the given commit location
+        const nextCommit = commitMap.get(commit.parentIds[0]);
+        if (nextCommit === undefined) {
+            console.error("Commit data not found!");
+            break;
+        } else {
+            commit = nextCommit;
+        }
+    }
+    return commit;
 }
 
 /**

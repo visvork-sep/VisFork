@@ -14,7 +14,6 @@ import {
 } from "d3-sankey";
 import {
     schemeTableau10,
-    Link,
     map,
     union,
     scaleOrdinal,
@@ -73,80 +72,54 @@ export function parseData({ commitData }: SankeyData): ParsedDataItem[] {
 // Main function to render the Sankey chart
 export function SankeyChart(
     {   // nodes and links defining the graph
-        nodes, // an iterable of node objects (typically [{id}, …]); implied by links if missing
         links, // an iterable of link objects (typically [{source, target}, …])
-    }: { nodes?: SankeyNodeMinimal<{ id: string; }, any>[]; links: SankeyLinkMinimal<any, any>[]; },
+    }: { links: SankeyLinkMinimal<any, any>[]; },
     {   // configuration options with defaults
-        format = d3Format(","), // a function or format specifier for values in titles
-        align = "justify", // convenience shorthand for nodeAlign
+        width,
         nodeGroup, // given n in nodes, returns an (ordinal) value for color
-        nodeGroups = [], // an array of ordinal values representing the node groups
-        nodeLabel, // given n in (computed) nodes, text to label the associated rect
-        nodeAlign = getNodeAlignFunction(align), // Sankey node alignment strategy: left, right, justify, center
-        nodeWidth = 15, // width of node rects
-        nodePadding = 10, // vertical separation between adjacent nodes
-        nodeLabelPadding = 6, // horizontal separation between node and label
-        nodeStroke = "currentColor", // stroke around node rects
-        nodeStrokeWidth = 1, // width of stroke around node rects, in pixels
-        nodeStrokeOpacity = 1, // opacity of stroke around node rects
-        nodeStrokeLinejoin = 1, // line join for stroke around node rects
-        linkSource = (l) => l.source, // given l in links, returns a node identifier string
-        linkTarget = (l) => l.target, // given l in links, returns a node identifier string
-        linkValue = (l) => l.value, // given l in links, returns the quantitative value
-        linkPath = sankeyLinkHorizontal(), // given d in (computed) links, returns the SVG path
-        linkTitle = (l) =>
-            `${l.source.id} => ${l.target.id}\n${format(l.value)} commits`, // given d in (computed) links
-        linkColor = "source-target", // source, target, source-target, or static color
-        linkStrokeOpacity = 0.5, // link stroke opacity
-        linkMixBlendMode = "normal", // link blending mode
-        colors = schemeTableau10, // array of colors
-        width = 640, // outer width, in pixels
-        height = 400, // outer height, in pixels
-        marginTop = 5, // top margin, in pixels
-        marginRight = 1, // right margin, in pixels
-        marginBottom = 5, // bottom margin, in pixels
-        marginLeft = 1, // left margin, in pixels
     }: {
-        format?: (n: number) => string;
-        align?: AlignType;
-        nodeId?: (n: SankeyNodeMinimal<{ id: string; }, any>) => number | undefined;
+        width: number;
         nodeGroup?: (n: SankeyNodeMinimal<any, any>) => number;
-        nodeGroups: Iterable<number>;
-        nodeLabel?: (n: SankeyNodeMinimal<any, any>) => string;
-        nodeAlign?: (node: SankeyNodeMinimal<any, any>, n: number) => number;
-        nodeWidth?: number;
-        nodePadding?: number;
-        nodeLabelPadding?: number;
-        nodeStroke?: string;
-        nodeStrokeWidth: number;
-        nodeStrokeOpacity: number;
-        nodeStrokeLinejoin: number;
-        linkSource?: (l: SankeyLinkMinimal<any, any>) => string;
-        linkTarget?: (l: SankeyLinkMinimal<any, any>) => string;
-        linkValue?: (l: SankeyLinkMinimal<any, any>) => number;
-        linkPath?: Link<any, SankeyLinkMinimal<any, any>, [number, number]>;
-        linkTitle?: (l: SankeyLinkMinimal<any, any>) => string;
-        linkColor?: string;
-        linkStrokeOpacity?: number;
-        linkMixBlendMode?: string;
-        colors: readonly string[];
-        width?: number;
-        height?: number;
-        marginTop?: number;
-        marginRight?: number;
-        marginBottom?: number;
-        marginLeft?: number;
     }
 ) {
+    let format = d3Format(","); // a function or format specifier for values in titles
+    const align = "justify"; // convenience shorthand for nodeAlign
+    let nodeGroups: Iterable<number> = []; // an array of ordinal values representing the node groups
+    const nodeAlign = getNodeAlignFunction(align); // Sankey node alignment strategy: left, right, justify, center
+    const nodeWidth = 15; // width of node rects
+    const nodePadding = 10; // vertical separation between adjacent nodes
+    const nodeLabel = undefined;
+    const nodeLabelPadding = 6; // horizontal separation between node and label
+    const nodeStroke = "currentColor"; // stroke around node rects
+    const nodeStrokeWidth = 1; // width of stroke around node rects, in pixels
+    const nodeStrokeOpacity = 1; // opacity of stroke around node rects
+    const nodeStrokeLinejoin = 1; // line join for stroke around node rects
+    const linkSource = 
+        (l: SankeyLinkMinimal<any, any>) => l.source; // given l in links, returns a node identifier string
+    const linkTarget = 
+        (l: SankeyLinkMinimal<any, any>) => l.target; // given l in links, returns a node identifier string
+    const linkValue = (l: SankeyLinkMinimal<any, any>) => l.value; // given l in links, returns the quantitative value
+    const linkPath = sankeyLinkHorizontal(); // given d in (computed) links, returns the SVG path
+    const linkTitle = (l: SankeyLinkMinimal<any, any>) =>
+        `${l.source.id} => ${l.target.id}\n${format(l.value)} commits`; // given d in (computed) links
+    let linkColor = "source-target"; // source, target, source-target, or static color
+    const linkStrokeOpacity = 0.5; // link stroke opacity
+    const linkMixBlendMode = "normal"; // link blending mode
+    const colors = schemeTableau10; // array of colors
+    const height = 400; // outer height, in pixels
+    const marginTop = 5; // top margin, in pixels
+    const marginRight = 1; // right margin, in pixels
+    const marginBottom = 5; // bottom margin, in pixels
+    const marginLeft = 1; // left margin, in pixels
+
+
     //Mapping the soruce, target and value of the links
     const LS = map(links, linkSource).map(intern);
     const LT = map(links, linkTarget).map(intern);
     const LV = map(links, linkValue);
 
     // If nodes is not defined, create a new array of nodes
-    if (nodes === undefined) {
-        nodes = Array.from(union(LS, LT), (id, index) => ({ id, index, x0: 0, x1: 0, y0: 0, y1: 0 }));
-    }
+    const nodes = Array.from(union(LS, LT), (id, index) => ({ id, index, x0: 0, x1: 0, y0: 0, y1: 0 }));
 
     // Mapping the nodes to their id
     const N = map(nodes as SankeyNode<{ id: string; }, any>[], (n) => n.id).map(intern);
@@ -182,14 +155,9 @@ export function SankeyChart(
         ])({ nodes: nodes as SankeyNode<{ id: string; }, any>[], links });
 
     // Compute titles and labels using layout nodes, so as to access aggregate values.
-    if (typeof format !== "function") format = d3Format(format);
-    const Tl =
-        nodeLabel === undefined
-            ? N
-            : nodeLabel == null
-                ? null
-                : map(nodes, nodeLabel);
-    const Lt = linkTitle == null ? null : map(links, linkTitle);
+    let Lt, Tl;
+    // eslint-disable-next-line prefer-const
+    ({ Lt, Tl, format } = computeTitlesAndLabels(format, nodeLabel, N, nodes, linkTitle, links));
 
     // A unique identifier for clip paths (to avoid conflicts).
     const uid = `O-${Math.random().toString(16).slice(2)}`;
@@ -251,33 +219,14 @@ export function SankeyChart(
             );
 
     //Creating a gradient between the source and target nodes
-    link
-        .append("path")
-        .attr("d", linkPath)
-        .attr(
-            "stroke",
-            linkColor === "source-target"
-                ? ({ index: i }) => `url(#${uid}-link-${i})`
-                : linkColor === "source"
-                    ? ({ source: { index: i } }) => color(G !== null ? G[i] : undefined)
-                    : linkColor === "target"
-                        ? ({ target: { index: i } }) => color(G !== null ? G[i] : undefined)
-                        : linkColor
-        )
-        .attr("stroke-width", ({ width }) => Math.max(1, width ?? 640))
-        .call(
-            Lt
-                ? (path) => path.append("title").text(({ index: i }) => i !== undefined ? Lt[i] : null)
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                : () => { }
-        );
+    createGradient(link, linkPath, linkColor, uid, color, G, Lt);
 
     //Setting up the label of the nodes
     if (Tl)
         svg
             .append("g")
             .attr("font-family", "sans-serif")
-            .attr("font-size", 10)
+            .attr("font-size", 16)
             .attr("fill", "currentColor")
             .selectAll("text")
             .data(nodes)
@@ -332,6 +281,53 @@ export function SankeyChart(
     return null;
 }
 
+function computeTitlesAndLabels(format: (n: number | { valueOf(): number; }) => string, 
+    nodeLabel: undefined, N: any[], 
+    nodes: { id: any; index: number; x0: number; x1: number; y0: number; y1: number; }[], 
+    linkTitle: (l: SankeyLinkMinimal<any, any>) => string, 
+    links: SankeyLinkMinimal<any, any>[]) {
+    if (typeof format !== "function") format = d3Format(format);
+    const Tl = nodeLabel === undefined
+        ? N
+        : nodeLabel == null
+            ? null
+            : map(nodes, nodeLabel);
+    const Lt = linkTitle == null ? null : map(links, linkTitle);
+    return { Lt, Tl, format };
+}
+
+function createGradient(link: any, 
+    linkPath: any, 
+    linkColor: string, 
+    uid: string, 
+    color: any, 
+    G: any[] | null, 
+    Lt: string[] | null) {
+    link
+        .append("path")
+        .attr("d", linkPath)
+        .attr(
+            "stroke",
+            linkColor === "source-target"
+                ? ({ index: i }: { index: number}) => `url(#${uid}-link-${i})`
+                : linkColor === "source"
+                    ? ({ source: { index: i }}: { source: { index: number } }) => color(G !== null ? G[i] : undefined)
+                    : linkColor === "target"
+                        ? ({ target: { index: i } }: { target: { index: number } }) => 
+                            color(G !== null ? G[i] : undefined)
+                        : linkColor
+        )
+        .attr("stroke-width", ({ width }: { width: number }) => Math.max(1, width ?? 640))
+        .call(
+            Lt
+                ? (path: d3.Selection<SVGPathElement, any, any, any>) => 
+                    path.append("title").text(({ index: i }: { index: number }) => 
+                        i !== undefined ? Lt[i] : null)
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                : () => { }
+        );
+}
+
 // SankeyChartBuild component
 export function SankeyDiagram(data: SankeyData) {
     useEffect(() => {
@@ -339,6 +335,13 @@ export function SankeyDiagram(data: SankeyData) {
         if (!data) {
             return;
         }
+
+        const container = document.getElementById("sankey-diagram");
+        if (!container) {
+            return;
+        }
+
+        const width = container.clientWidth;
 
         // show user when no data is selected
         if (!data?.commitData?.length) {
@@ -366,12 +369,8 @@ export function SankeyDiagram(data: SankeyData) {
         const chart = SankeyChart(
             { links },
             {
+                width,
                 nodeGroup: (d) => parseInt((d.index ? d.index.toString() : "").split(/\W/)[0]),
-                nodeGroups: [],
-                nodeStrokeWidth: 1,
-                nodeStrokeOpacity: 1,
-                nodeStrokeLinejoin: 1,
-                colors: schemeTableau10,
             }
         );
 
@@ -382,4 +381,3 @@ export function SankeyDiagram(data: SankeyData) {
 
     return <div id="sankey-diagram" style={{ width: "100%", height: "400px" }}></div>;
 };
-

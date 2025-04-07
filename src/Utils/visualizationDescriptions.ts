@@ -6,7 +6,7 @@ export const visualizationDescriptions = {
     histogram: {
         short: "Shows commit activity over time with a zoomable Focus Chart.",
         full: "View the number of commits made across selected forks over a time period. " +
-            "The Context Chart is the lower, smaller chart out of the two. Inside the Context Chart," + 
+            "The Context Chart is the lower, smaller chart out of the two. Inside the Context Chart, " + 
             "there is a selection window on the left, set to 20% by default. You can edit it by dragging " +
             "over the Context Chart. The Focus Chart (upper, larger chart) zooms in on the selected range for"+
             "detailed inspection. Hover over bars to see exact commit counts."

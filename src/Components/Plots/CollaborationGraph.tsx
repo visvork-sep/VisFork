@@ -40,6 +40,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const playInterval = useRef<NodeJS.Timeout | null>(null);
+    const [playSpeed, setPlaySpeed] = useState(1);
 
     useEffect(() => {
         setCurrentDateIndex(0);
@@ -65,7 +66,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                     }
                 }
                 );
-            }, 100);
+            }, 500 / playSpeed);
         } else {
             if (playInterval.current) {
                 clearInterval(playInterval.current);
@@ -376,6 +377,18 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                     {/* Updates label based on play state */}
                     {isPlaying ? "Pause" : "Play"}
                 </button>
+
+                <select name="speed-slider" 
+                    id="speed-slider" 
+                    value={playSpeed}
+                    onChange={(e) => setPlaySpeed(parseFloat(e.target.value))}>
+                    <option value="1">Speed 1x</option>
+                    <option value="1.5">Speed 1.5x</option>
+                    <option value="2">Speed 2x</option>
+                    <option value="3">Speed 3x</option>
+                    <option value="5">Speed 5x</option>
+                    <option value="10">Speed 10x</option>
+                </select>
 
             </div>
 

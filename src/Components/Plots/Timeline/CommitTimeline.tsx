@@ -276,7 +276,7 @@ function CommitTimeline({
             .style("display", "flex")
             .style("align-items", "flex-start");
 
-        graphics.drawLegends(merged, legend, colorMap, colorScheme.markerColor);
+        graphics.drawLegends(merged, legend, colorMap, colorScheme.markerColor, sortedNodes, handleTimelineSelection);
 
         return () => {
             tooltip.remove(); // Remove tooltip on cleanup

@@ -19,7 +19,7 @@ const options = Object.values(FORKS_SORTING_ORDERS).map((option) =>
 function ForksQueryOrderInput({ onChangeHandler, selected, error }: ForksQueryOrderInputProps) {
     return (
         <FormControl>
-            <FormControl.Label>Fork selection option metric</FormControl.Label>
+            <FormControl.Label>Top forks by</FormControl.Label>
             <FormControl.Caption>Metric to select the forks by in descending order</FormControl.Caption>
             <Select onChange={e => onChangeHandler(e.target.value)} value={selected}>
                 {options}

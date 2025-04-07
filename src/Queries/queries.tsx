@@ -1,11 +1,11 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { fetchForks, fetchCommits, fetchAvatarUrlGql } from "@Queries/rawQueries";
+import { fetchForks, fetchCommits, fetchAvatarUrlGql, fetchCommitCount } from "@Queries/rawQueries";
 import { CommitQueryParams, ForkQueryParams } from "@Types/DataLayerTypes";
 import { UnprocessedRepository, ForkQueryState } from "@Types/LogicLayerTypes";
-import { GetAvatarUrlQueryVariables}
-    from "@generated/graphql";
+import { GetAvatarUrlQueryVariables } from "@generated/graphql";
 import { useAuth } from "@Providers/AuthProvider";
 import { createCommitQueryParams, createForkQueryParams } from "@Utils/queryHelpers";
+import { useEffect, useMemo } from "react";
 
 /**
  *  Gets to avatar url
@@ -16,9 +16,8 @@ export function useFetchAvatarUrl(parameters: GetAvatarUrlQueryVariables) {
     const accessToken = getAccessToken() ?? "";
 
     return useQuery({
-        queryKey: ["avatarUrl"],
+        queryKey: ["avatarUrl", accessToken],
         queryFn: () => fetchAvatarUrlGql(parameters, accessToken),
-        gcTime: 0, // dont store
         enabled: isAuthenticated
     });
 }
@@ -60,14 +59,26 @@ export function useFetchCommitsBatch(forks: UnprocessedRepository[], forkQuerySt
     const { isAuthenticated, getAccessToken } = useAuth();
     const accessToken = getAccessToken() ?? "";
 
-    const commitQueryParameters: CommitQueryParams[] = forkQueryState ? forks.map(fork =>
+
+    const commitQueryParameters: CommitQueryParams[] = useMemo(() => forkQueryState ? forks.map(fork =>
         createCommitQueryParams(
             fork.owner.login,
             fork.name,
             forkQueryState.range.start.toISOString().split("T")[0],
             forkQueryState.range.end.toISOString().split("T")[0]
         ))
-        : [];
+        : [], [forks]);
+
+    // Check if main repository has a lot of commits
+    useEffect(() => {
+        if (commitQueryParameters.length > 0) {
+            fetchCommitCount(commitQueryParameters[0], accessToken).then((commitsCount) => {
+                if (commitsCount > 2000) {
+                    alert("Repository contains a lot of commits for this time range. This might take a while.");
+                }
+            });
+        }
+    }, [commitQueryParameters]);
 
     return useQueries({
         queries: commitQueryParameters.map((parameters) => {

@@ -1,4 +1,4 @@
-import { MoonIcon, SunIcon } from "@primer/octicons-react";
+import { EyeClosedIcon, EyeIcon, MoonIcon, SunIcon } from "@primer/octicons-react";
 import { ActionMenu, Avatar, Box, Button, Dialog, Stack, useTheme } from "@primer/react";
 import { ActionList } from "@primer/react";
 import { useCallback, useState } from "react";
@@ -91,8 +91,14 @@ function AppHeader() {
                 <Dialog title="Settings" onClose={onDialogClose} position="right" width="small">
                     <ActionMenu>
                         <ActionList>
-                            <ActionList.Item onClick={onToggleColorblindMode} aria-label="Toggle colorblind mode">
-                                Colorblind mode
+                            <ActionList.Item
+                                onClick={onToggleColorblindMode}
+                                aria-label="Toggle colorblind mode"
+                            >
+                                <ActionList.LeadingVisual>
+                                    {currentlyColorblindMode ? <EyeClosedIcon /> : <EyeIcon />}
+                                </ActionList.LeadingVisual>
+                                {currentlyColorblindMode ? "Colorblind mode off" : "Colorblind mode on"}
                             </ActionList.Item>
 
                             <ActionList.Item

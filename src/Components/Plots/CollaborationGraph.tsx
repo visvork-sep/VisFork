@@ -347,7 +347,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                 <span style={{ fontWeight: "normal", color: textColor }}>
                     {allDates.length === 0
                         ? "No data selected"
-                        : new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
+                        : new Date(allDates[0]).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
@@ -363,6 +363,17 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                     onChange={(e) => setCurrentDateIndex(parseInt(e.target.value))}
                     style={{ width: "100%" }}
                 />
+
+                {/* Displays date in a readable format */}
+                <span style={{ fontWeight: "normal", color: textColor }}>
+                    {allDates.length === 0
+                        ? "No data selected"
+                        : new Date(allDates[allDates.length - 1]).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        })}
+                </span>
 
                 {/* Play/Pause button */}
                 <button

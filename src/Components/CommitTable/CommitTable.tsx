@@ -1,32 +1,20 @@
 import { Column, DataTable, Table } from "@primer/react/experimental";
-import { Box, Link, TextInput, useTheme } from "@primer/react";
-import { useState, useMemo, memo, useEffect } from "react";
+import { Box, Link, useTheme } from "@primer/react";
+import { useState, useMemo, memo } from "react";
 import { CommitTableData, CommitTableDetails } from "@VisInterfaces/CommitTableData";
+import SearchBar from "./SearchBar";
 
 function CommitTable({ commitData }: CommitTableData) {
     // Fetch current color mode (light or dark)
     const { colorMode } = useTheme();
 
-    // Track text input for filtering
-    const [searchTerm, setSearchTerm] = useState("");
-    const [debouncedSearch, setDebouncedSearch] = useState("");
 
     // Memoize hyperlink color based on color mode
     const linkColor = useMemo(() => {
         return colorMode === "dark" || colorMode === "night" ? "white" : "black";
     }, [colorMode]);
 
-    // Setup a bit of delay for the search input to avoid excessive re-renders
-    useEffect(() => {
-        if (searchTerm !== debouncedSearch) {
-            const handler = setTimeout(() => {
-                setDebouncedSearch(searchTerm);
-            }, 300); // 300ms delay
-
-            return () => clearTimeout(handler);
-        }
-    }, [searchTerm, debouncedSearch]); // Prevent unnecessary updates
-
+    const [searchTerm, setSearchTerm] = useState("");
 
     const preprocessedData = useMemo(() => {
         return commitData.map(commit => ({
@@ -37,12 +25,11 @@ function CommitTable({ commitData }: CommitTableData) {
 
     // Memoize filtered data to prevent unnecessary recalculations
     const filteredData = useMemo(() => {
-        const lowerSearch = debouncedSearch.toLowerCase(); // Convert search term to lowercase once
-
+        const lowerSearch = searchTerm.toLowerCase();
         return preprocessedData.filter(commit =>
-            commit.lowerMessage.includes(lowerSearch) // Use precomputed lowercase message
+            commit.lowerMessage.includes(lowerSearch)
         );
-    }, [preprocessedData, debouncedSearch]);
+    }, [preprocessedData, searchTerm]);
 
 
     // Memoize column definitions
@@ -121,16 +108,7 @@ function CommitTable({ commitData }: CommitTableData) {
 
     return (
         <Box>
-            {/* Container for search input */}
-            <Box mb={2}>
-                <TextInput
-                    placeholder="Search by commit message..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    aria-label="Search commit messages"
-                    sx={{ width: "30%", minWidth: "200px" }}
-                />
-            </Box>
+            <SearchBar onSearch={setSearchTerm} />
 
             <Box sx={{ maxHeight: "510px", overflowY: "auto" }}>
                 <Table.Container>

@@ -126,6 +126,23 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    const handleSearchBarSubmission = useCallback(
+        (searchTerm: string) => {
+            const filteredCommits = commitData.filter((commit) =>
+                commit.message.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            setVisData((prev) => ({
+                ...prev,
+                commitTableData: mapCommitDataToCommitTable(filteredCommits),
+                wordCloudData: mapCommitDataToWordCloud(filteredCommits),
+                sankeyData: mapCommitDataToSankey(filteredCommits),
+                collabGraphData: mapCommitDataToCollabGraph(filteredCommits),
+            }));
+        },
+        [commitData]
+    );
+
     const defaultBranches = useMemo(() => {
         const branches = forkData.reduce((acc, fork) => {
             if (!acc[fork.name]) {
@@ -142,6 +159,7 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         handlers: {
             handleHistogramSelection,
             handleTimelineSelection,
+            handleSearchBarSubmission
         },
         defaultBranches
     };

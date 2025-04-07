@@ -75,8 +75,10 @@ export function SankeyChart(
         links, // an iterable of link objects (typically [{source, target}, …])
     }: { links: SankeyLinkMinimal<any, any>[]; },
     {   // configuration options with defaults
+        width,
         nodeGroup, // given n in nodes, returns an (ordinal) value for color
     }: {
+        width: number;
         nodeGroup?: (n: SankeyNodeMinimal<any, any>) => number;
     }
 ) {
@@ -104,7 +106,6 @@ export function SankeyChart(
     const linkStrokeOpacity = 0.5; // link stroke opacity
     const linkMixBlendMode = "normal"; // link blending mode
     const colors = schemeTableau10; // array of colors
-    const width = 640; // outer width, in pixels
     const height = 400; // outer height, in pixels
     const marginTop = 5; // top margin, in pixels
     const marginRight = 1; // right margin, in pixels

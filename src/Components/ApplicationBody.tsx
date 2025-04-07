@@ -49,7 +49,7 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
         wordCloudData,
     } = visData;
 
-    const { handleHistogramSelection, handleTimelineSelection } = handlers;
+    const { handleHistogramSelection, handleTimelineSelection, handleSearchBarSubmission } = handlers;
 
     return (
         <>
@@ -109,7 +109,9 @@ function ApplicationBody({ forks, commits }: ApplicationBodyProps) {
                         />
                     }
                 >
-                    <CommitTable {...commitTableData} />
+                    <CommitTable
+                        commitData={commitTableData.commitData}
+                        handleSearchBarSubmission={handleSearchBarSubmission} />
                 </Dropdown>
                 <Dropdown summaryText="Word Cloud"
                     infoButton={

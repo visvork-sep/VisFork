@@ -127,17 +127,16 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
     );
 
     const handleSearchBarSubmission = useCallback(
-        (searchTerm: string) => {
-            const filteredCommits = commitData.filter((commit) =>
-                commit.message.toLowerCase().includes(searchTerm.toLowerCase())
+        (hashes: string[]) => {
+            const constrainedCommits = commitData.filter((commit) =>
+                hashes.includes(commit.sha)
             );
 
             setVisData((prev) => ({
                 ...prev,
-                commitTableData: mapCommitDataToCommitTable(filteredCommits),
-                wordCloudData: mapCommitDataToWordCloud(filteredCommits),
-                sankeyData: mapCommitDataToSankey(filteredCommits),
-                collabGraphData: mapCommitDataToCollabGraph(filteredCommits),
+                wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
+                sankeyData: mapCommitDataToSankey(constrainedCommits),
+                collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
             }));
         },
         [commitData]

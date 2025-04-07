@@ -1,10 +1,10 @@
 import { Column, DataTable, Table } from "@primer/react/experimental";
 import { Box, Link, useTheme } from "@primer/react";
-import { useState, useMemo, memo } from "react";
-import { CommitTableData, CommitTableDetails } from "@VisInterfaces/CommitTableData";
+import { useState, useMemo, memo, useEffect } from "react";
+import { CommitTableDetails, CommitTableProps } from "@VisInterfaces/CommitTableData";
 import SearchBar from "./SearchBar";
 
-function CommitTable({ commitData }: CommitTableData) {
+function CommitTable({ commitData, handleSearchBarSubmission }: CommitTableProps) {
     // Fetch current color mode (light or dark)
     const { colorMode } = useTheme();
 
@@ -15,6 +15,10 @@ function CommitTable({ commitData }: CommitTableData) {
     }, [colorMode]);
 
     const [searchTerm, setSearchTerm] = useState("");
+
+    const onSearch = (term: string) => {
+        setSearchTerm(term); // Update the search term state
+    };
 
     const preprocessedData = useMemo(() => {
         return commitData.map(commit => ({
@@ -31,6 +35,11 @@ function CommitTable({ commitData }: CommitTableData) {
         );
     }, [preprocessedData, searchTerm]);
 
+    useEffect(() => {
+        // Extract hashes from filtered data
+        const hashes = filteredData.map(commit => commit.id);
+        handleSearchBarSubmission(hashes); // Pass the hashes to the parent component
+    }, [filteredData, handleSearchBarSubmission]);
 
     // Memoize column definitions
     const columns: Column<CommitTableDetails>[] = useMemo(() => [
@@ -108,7 +117,7 @@ function CommitTable({ commitData }: CommitTableData) {
 
     return (
         <Box>
-            <SearchBar onSearch={setSearchTerm} />
+            <SearchBar onSearch={onSearch} />
 
             <Box sx={{ maxHeight: "510px", overflowY: "auto" }}>
                 <Table.Container>

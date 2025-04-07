@@ -277,7 +277,7 @@ export function SankeyChart(
         svg
             .append("g")
             .attr("font-family", "sans-serif")
-            .attr("font-size", 10)
+            .attr("font-size", 16)
             .attr("fill", "currentColor")
             .selectAll("text")
             .data(nodes)
@@ -340,6 +340,13 @@ export function SankeyDiagram(data: SankeyData) {
             return;
         }
 
+        const container = document.getElementById("sankey-diagram");
+        if (!container) {
+            return;
+        }
+
+        const width = container.clientWidth;
+
         // show user when no data is selected
         if (!data?.commitData?.length) {
             select("#sankey-diagram").selectAll("*").remove();
@@ -366,6 +373,7 @@ export function SankeyDiagram(data: SankeyData) {
         const chart = SankeyChart(
             { links },
             {
+                width,
                 nodeGroup: (d) => parseInt((d.index ? d.index.toString() : "").split(/\W/)[0]),
                 nodeGroups: [],
                 nodeStrokeWidth: 1,

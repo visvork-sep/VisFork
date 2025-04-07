@@ -21,6 +21,26 @@ function redirectLogin() {
     }, 250);
 }
 
+function getLoginOrAvatar(isAuthenticated: boolean,
+    onDialogOpen: () => void,
+    avatarUrl: string | undefined,
+) {
+    return isAuthenticated ?
+        (
+            <Box onClick={onDialogOpen}>
+                {avatarUrl ?
+                    <Avatar src={avatarUrl} size={32} />
+                    :
+                    <SkeletonAvatar size={32} />
+                }
+            </Box>
+        )
+        :
+        (
+            <Button onClick={redirectLogin}>Sign in</Button>
+        );
+}
+
 /**
  * AppHeader Component
  *
@@ -44,20 +64,7 @@ function AppHeader() {
         setIsOpen(false);
     }, []);
 
-    const loginOrAvatar = isAuthenticated ?
-        (
-            <Box onClick={onDialogOpen}>
-                {avatarUrl ?
-                    <Avatar src={avatarUrl} size={32} />
-                    :
-                    <SkeletonAvatar size={32} />
-                }
-            </Box>
-        )
-        :
-        (
-            <Button onClick={redirectLogin}>Sign in</Button>
-        );
+    const loginOrAvatar = getLoginOrAvatar(isAuthenticated, onDialogOpen, avatarUrl);
 
     const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";
     const onToggleColorblindMode = useCallback(() => {

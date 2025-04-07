@@ -81,7 +81,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                 clearInterval(playInterval.current);
             }
         };
-    }, [isPlaying, allDates.length]);
+    }, [isPlaying, allDates.length, playSpeed]);
 
     // Main visualization
     useEffect(() => {

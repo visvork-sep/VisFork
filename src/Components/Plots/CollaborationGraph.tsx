@@ -56,8 +56,14 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
         // Currently advances on a 100ms interval
         if (isPlaying) {
             playInterval.current = setInterval(() => {
-                setCurrentDateIndex((prev) =>
-                    prev < allDates.length - 1 ? prev + 1 : 0
+                setCurrentDateIndex((prev) => {
+                    if (prev < allDates.length - 1) {
+                        return prev + 1;
+                    } else {
+                        setIsPlaying(!isPlaying);
+                        return 0;
+                    }
+                }
                 );
             }, 100);
         } else {

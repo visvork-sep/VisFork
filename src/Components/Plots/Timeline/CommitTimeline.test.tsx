@@ -25,23 +25,31 @@ const commitData = [
     },
 ];
 
+// quick helper to render the component 
+const renderCommitTimeline = (
+    data = commitData,
+    handler = handleTimelineSelection
+) => {
+    return render(
+        <ThemeProvider>
+            <CommitTimeline commitData={data} handleTimelineSelection={handler} />
+        </ThemeProvider>
+    );
+};
+
 const emptyCommitData: TimelineDetails[] = [];
 
 const handleTimelineSelection = vi.fn();
 
 afterEach(() => {
     vi.restoreAllMocks();
-    // Clear any DOM changes (like tooltip divs appended to body)
+    // clear any DOM changes
     document.body.innerHTML = "";
 });
 
 describe("CommitTimeline component additional tests", () => {
     it("renders without errors when commitData is empty", () => {
-        render(
-            <ThemeProvider>
-                <CommitTimeline commitData={emptyCommitData} handleTimelineSelection={handleTimelineSelection} />
-            </ThemeProvider>
-        );
+        renderCommitTimeline(emptyCommitData, handleTimelineSelection);
         // the SVG should be present, but no graph elements should be drawn.
         const svg = document.querySelector("svg");
         expect(svg).toBeInTheDocument();
@@ -49,11 +57,7 @@ describe("CommitTimeline component additional tests", () => {
     });
 
     it("toggles select all and calls handleTimelineSelection with commit ids", async () => {
-        render(
-            <ThemeProvider>
-                <CommitTimeline commitData={commitData} handleTimelineSelection={handleTimelineSelection} />
-            </ThemeProvider>
-        );
+        renderCommitTimeline(commitData, handleTimelineSelection);
         const selectAllButton = screen.getByRole("button", { name: /Select All/i });
         // click to select all
         fireEvent.click(selectAllButton);
@@ -70,11 +74,7 @@ describe("CommitTimeline component additional tests", () => {
     });
 
     it("renders legends correctly", async () => {
-        render(
-            <ThemeProvider>
-                <CommitTimeline commitData={commitData} handleTimelineSelection={handleTimelineSelection} />
-            </ThemeProvider>
-        );
+        renderCommitTimeline(commitData, handleTimelineSelection);
         // Legends container should be rendered with id "dag-legends"
         const legendContainer = document.getElementById("dag-legends");
         expect(legendContainer).toBeInTheDocument();
@@ -85,27 +85,19 @@ describe("CommitTimeline component additional tests", () => {
     });
 
     it("re-renders on window resize", async () => {
-        render(
-            <ThemeProvider>
-                <CommitTimeline commitData={commitData} handleTimelineSelection={handleTimelineSelection} />
-            </ThemeProvider>
-        );
+        renderCommitTimeline(commitData, handleTimelineSelection);
         const svg = await waitFor(() => document.querySelector("svg"));
         expect(svg).toBeInTheDocument();
-        // Trigger a window resize event.
+        // a window resize event
         fireEvent(window, new Event("resize"));
         await waitFor(() => {
-            // After resize, the SVG should have an updated viewBox attribute.
+            // the SVG should have an updated viewBox attribute
             expect(svg?.getAttribute("viewBox")).toBeTruthy();
         });
     });
 
     it("changes button background on mouse enter and leave", () => {
-        render(
-            <ThemeProvider>
-                <CommitTimeline commitData={commitData} handleTimelineSelection={vi.fn()} />
-            </ThemeProvider>
-        );
+        renderCommitTimeline(commitData, handleTimelineSelection);
         const toggleButton = screen.getByRole("button", { name: /Merged View/i });
         // simulate mouse enter
         fireEvent.mouseEnter(toggleButton);
@@ -117,11 +109,7 @@ describe("CommitTimeline component additional tests", () => {
     });
   
     it("does not draw timeline markers in merged view", async () => {
-        render(
-            <ThemeProvider>
-                <CommitTimeline commitData={commitData} handleTimelineSelection={vi.fn()} />
-            </ThemeProvider>
-        );
+        renderCommitTimeline(commitData, handleTimelineSelection);
         // full view, timeline markers should be drawn.
         await waitFor(() => {
             const markers = document.querySelector("g.month-lines");
@@ -137,15 +125,7 @@ describe("CommitTimeline component additional tests", () => {
     });
 
     it("displays selection overlay when selectAll is active", async () => {
-        render(
-            <ThemeProvider>
-                <CommitTimeline 
-                    commitData={commitData} 
-                    handleTimelineSelection={handleTimelineSelection} 
-                />
-            </ThemeProvider>
-        );
-      
+        renderCommitTimeline(commitData, handleTimelineSelection);
         // initially there should be no selection overlay
         expect(document.querySelector(".selection-overlay")).not.toBeInTheDocument();
       
@@ -186,16 +166,9 @@ describe("CommitTimeline component additional tests", () => {
             }
         ];
       
-        render(
-            <ThemeProvider>
-                <CommitTimeline 
-                    commitData={invalidData} 
-                    handleTimelineSelection={handleTimelineSelection} 
-                />
-            </ThemeProvider>
-        );
+        renderCommitTimeline(invalidData, handleTimelineSelection);
       
-        // Error should be logged for the DAG building
+        // error should be logged for the DAG building
         await waitFor(() => {
             expect(consoleSpy).toHaveBeenCalledWith(
                 expect.stringContaining("Error building"), 
@@ -204,6 +177,38 @@ describe("CommitTimeline component additional tests", () => {
         });
       
         consoleSpy.mockRestore();
+    });
+
+    it("opens a new window on node click", async () => {
+        // spy on window.open to check if it is called
+        const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+        
+        renderCommitTimeline(commitData, handleTimelineSelection);
+        
+        const circle = await waitFor(() => document.querySelector("circle"));
+        expect(circle).toBeInTheDocument();
+        
+        // click
+        fireEvent.click(circle as Element);
+        
+        expect(openSpy).toHaveBeenCalled();
+        openSpy.mockRestore();
+
+        // in Merged View, default nodes (squares) should not be clickable 
+        const toggleButton = screen.getByRole("button", { name: /Merged View/i });
+        fireEvent.click(toggleButton);
+        const square = await waitFor(() => document.querySelector("rect"));
+        expect(square).toBeInTheDocument();
+        
+        // click
+        fireEvent.click(square as Element);
+        expect(openSpy).toHaveBeenCalledTimes(0); // needs to be not called
+
+        openSpy.mockRestore();
+
+
+
+        
     });
 
 });

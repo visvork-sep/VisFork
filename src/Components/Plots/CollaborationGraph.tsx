@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useTheme, FormControl, Select } from "@primer/react";
+import { useTheme, FormControl, Select, Text } from "@primer/react";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 import {
     SimulationNodeDatum,
@@ -338,14 +338,16 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
     return (
         <>
             {/* Centered current date above the slider */}
-            <div style={{ textAlign: "center", marginBottom: "0.5rem", fontWeight: "bold" }}>
-                {allDates.length === 0
-                    ? "No data selected"
-                    : `Current date: ${new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                    })}`}
+            <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
+                <Text weight="semibold">
+                    {allDates.length === 0
+                        ? "No data selected"
+                        : new Date(allDates[0]).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        })}
+                </Text>
             </div>
             {/* UI container for date display, slider, and play/pause button */}
             <div style={{
@@ -354,7 +356,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             }}>
 
                 {/* Displays date in a readable format */}
-                <span style={{ fontWeight: "normal", color: textColor }}>
+                <Text>
                     {allDates.length === 0
                         ? "No data selected"
                         : new Date(allDates[0]).toLocaleDateString("en-US", {
@@ -362,7 +364,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                             month: "short",
                             day: "numeric",
                         })}
-                </span>
+                </Text>
 
                 {/* Range slider to manually scrub through timeline */}
                 <input
@@ -375,7 +377,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                 />
 
                 {/* Displays date in a readable format */}
-                <span style={{ fontWeight: "normal", color: textColor }}>
+                <Text>
                     {allDates.length === 0
                         ? "No data selected"
                         : new Date(allDates[allDates.length - 1]).toLocaleDateString("en-US", {
@@ -383,7 +385,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                             month: "short",
                             day: "numeric",
                         })}
-                </span>
+                </Text>
 
                 {/* Play/Pause button */}
                 <button

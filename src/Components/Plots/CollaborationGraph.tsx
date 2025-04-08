@@ -341,11 +341,11 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             <div style={{ textAlign: "center", marginBottom: "0.5rem", fontWeight: "bold" }}>
                 {allDates.length === 0
                     ? "No data selected"
-                    : new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
+                    : `Current date: ${new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
-                    })}
+                    })}`}
             </div>
             {/* UI container for date display, slider, and play/pause button */}
             <div style={{

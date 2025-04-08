@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useTheme, ActionMenu, ActionList } from "@primer/react";
+import { useTheme, FormControl, Select } from "@primer/react";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 import {
     SimulationNodeDatum,
@@ -402,55 +402,19 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                     {isPlaying ? "Pause" : "Play"}
                 </button>
 
-                <ActionMenu>
-                    <ActionMenu.Button>{`Speed ${playSpeed}x`}</ActionMenu.Button>
-                    <ActionMenu.Overlay side="inside-top">
-                        <ActionList>
-                            <ActionList.Item
-                                onSelect={() => {
-                                    setPlaySpeed(1);
-                                }}
-                            >
-                                Speed 1x
-                            </ActionList.Item>
-                            <ActionList.Item
-                                onSelect={() => {
-                                    setPlaySpeed(1.5);
-                                }}
-                            >
-                                Speed 1.5x
-                            </ActionList.Item>
-                            <ActionList.Item
-                                onSelect={() => {
-                                    setPlaySpeed(2);
-                                }}
-                            >
-                                Speed 2x
-                            </ActionList.Item>
-                            <ActionList.Item
-                                onSelect={() => {
-                                    setPlaySpeed(3);
-                                }}
-                            >
-                                Speed 3x
-                            </ActionList.Item>
-                            <ActionList.Item
-                                onSelect={() => {
-                                    setPlaySpeed(5);
-                                }}
-                            >
-                                Speed 5x
-                            </ActionList.Item>
-                            <ActionList.Item
-                                onSelect={() => {
-                                    setPlaySpeed(10);
-                                }}
-                            >
-                                Speed 10x
-                            </ActionList.Item>
-                        </ActionList>
-                    </ActionMenu.Overlay>
-                </ActionMenu>
+                <FormControl sx={{ flexShrink: 0 }}>
+                    <FormControl.Label>Select speed</FormControl.Label>
+                    <Select onChange={(e) => {
+                        setPlaySpeed(parseFloat(e.target.value));
+                    }}>
+                        <Select.Option value="1">Speed 1x</Select.Option>
+                        <Select.Option value="1.5">Speed 1.5x</Select.Option>
+                        <Select.Option value="2">Speed 2x</Select.Option>
+                        <Select.Option value="3">Speed 3x</Select.Option>
+                        <Select.Option value="5">Speed 5x</Select.Option>
+                        <Select.Option value="10">Speed 10x</Select.Option>
+                    </Select>
+                </FormControl>
 
             </div>
 

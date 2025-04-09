@@ -1,6 +1,6 @@
 import { Label, Stack } from "@primer/react";
 import Histogram from "./Plots/Histogram/Histogram.tsx";
-import ForkList from "@Components/Plots/ForkList";
+import ForkList from "@Components/Plots/ForkList/ForkList.tsx";
 import CommitTimeline from "./Plots/Timeline/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable/CommitTable.tsx";
 import { SankeyDiagram } from "./Plots/SankeyDiagram.tsx";

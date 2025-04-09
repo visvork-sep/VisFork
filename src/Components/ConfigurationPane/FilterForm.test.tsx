@@ -7,7 +7,6 @@ describe("Filterform updates", () => {
     const mockedFunction = vi.fn();
 
     beforeEach(() => {
-        sessionStorage.setItem("access_token", "abc");
         render(
             <FilterForm
                 isDataLoading={false}

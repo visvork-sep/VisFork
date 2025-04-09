@@ -61,10 +61,11 @@ describe("useFormSubmission", () => {
         vi.spyOn(FormUtils, "filterFactory").mockReturnValue(mockReturnedFilter);
         vi.spyOn(FormUtils, "forkQueryStateFactory").mockReturnValue(mockReturnedQueryState);
 
-        vi.restoreAllMocks();
         mockOnFiltersChange.mockReset();
     });
-
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
     it("should not call onFiltersChange if a required field is invalid", () => {
         vi.spyOn(FormSubmissionUtils, "safePrepare").mockReturnValue(null); // Simulate bad input
 

@@ -3,7 +3,7 @@ import Histogram from "./Plots/Histogram/Histogram.tsx";
 import ForkList from "@Components/Plots/ForkList/ForkList.tsx";
 import CommitTimeline from "./Plots/Timeline/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable/CommitTable.tsx";
-import { SankeyDiagram } from "./Plots/SankeyDiagram.tsx";
+import { SankeyDiagram } from "./Plots/SankeyDiagram/SankeyDiagram.tsx";
 import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
 import { Dropdown } from "@Components/Dropdown";
 import { InfoButton } from "./InfoButton.tsx";

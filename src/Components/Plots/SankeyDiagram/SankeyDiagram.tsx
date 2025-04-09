@@ -379,5 +379,5 @@ export function SankeyDiagram(data: SankeyData) {
         select("#sankey-diagram").append(() => chart);
     }, [data]);
 
-    return <div id="sankey-diagram" style={{ width: "100%", height: "400px" }}></div>;
+    return <div id="sankey-diagram" data-testid="sankey-diagram" style={{ width: "100%", height: "400px" }}></div>;
 };

@@ -86,32 +86,14 @@ export async function fetchCommits(parameters: CommitQueryParams, accessToken: s
     };
 }
 
-/**
- * Fetch forks using REST API.
- */
-export async function fetchForks(parameters: ForkQueryParams, accessToken: string, forksNumber = 5) {
-    const allForks: GitHubAPIFork[] = [];
-
-    // Fetch main repository, not just the forks
-    const mainRepoResponse = await fetchClient.GET("/repos/{owner}/{repo}", {
-        params: {
-            // Parameters for main repo only need the repo and ownder info
-            path: parameters.path,
-        },
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-
-    if (mainRepoResponse?.data) {
-        allForks.push(mainRepoResponse.data as GitHubAPIFork);
-    }
-
-    let response;
-    let page = 1;
+async function fetchForksPage(parameters: ForkQueryParams, 
+    accessToken: string, 
+    forksNumber: number, 
+    allForks: GitHubAPIFork[], 
+    page: number) {
     let pagesRemaining = true;
-
-    // Fetch all fork repositories
+    let response;
+    
     while (pagesRemaining && allForks.length < forksNumber) {
         response = await fetchClient.GET("/repos/{owner}/{repo}/forks", {
             params: {
@@ -137,6 +119,33 @@ export async function fetchForks(parameters: ForkQueryParams, accessToken: strin
         pagesRemaining = linkHeader?.includes("rel=\"next\"") ?? false;
         page++;
     }
+    
+    return { response, allForks };
+}
+
+/**
+ * Fetch forks using REST API.
+ */
+export async function fetchForks(parameters: ForkQueryParams, accessToken: string, forksNumber = 5) {
+    const allForks: GitHubAPIFork[] = [];
+
+    // Fetch main repository, not just the forks
+    const mainRepoResponse = await fetchClient.GET("/repos/{owner}/{repo}", {
+        params: {
+            // Parameters for main repo only need the repo and ownder info
+            path: parameters.path,
+        },
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    if (mainRepoResponse?.data) {
+        allForks.push(mainRepoResponse.data as GitHubAPIFork);
+    }
+
+    // Fetch all fork repositories
+    const { response } = await fetchForksPage(parameters, accessToken, forksNumber, allForks, 1);
 
     // Return a combined response
     return {

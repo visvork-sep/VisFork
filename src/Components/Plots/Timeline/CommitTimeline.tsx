@@ -131,10 +131,8 @@ function CommitTimeline({
         // Lane shading and author labels
         graphics.drawLanes(g, lanes, width, isDarkMode, colorScheme.neutralLaneColor, colorScheme.accentedLaneColor);
 
-        // Month/year labels
-        if (!merged) {
-            graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor);
-        }
+        // month/year labels
+        graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor, merged);
 
         // Selection overlay for selectAll
         if (selectAll) {
@@ -201,7 +199,11 @@ function CommitTimeline({
             .attr("stroke-width", c.EDGE_WIDTH)
             .attr("d", graphics.drawEdgeCurve);
 
-        g.call(timelineBrush);
+        const brushLayer = g.append("g")
+            .attr("class", "brush-layer");
+            
+        // Apply brush to this layer only (otherwise conflicts with node clicking)
+        brushLayer.call(timelineBrush);
 
         // Create tooltip
         const tooltip = select("body")
@@ -269,7 +271,10 @@ function CommitTimeline({
                     tooltip.transition().duration(c.TOOLTIP_MOUSEOUT_DUR).style("opacity", 0);
                 })
                 .on("click", (_event, d) => {
-                    window.open(d.data.url);
+                    _event.stopPropagation();
+                    if (!merged || d.data.branch != "default") {
+                        window.open(d.data.url);
+                    }
                 });
         }
 

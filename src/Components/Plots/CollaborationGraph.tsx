@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useTheme } from "@primer/react";
+import { useTheme, FormControl, Select, Text } from "@primer/react";
 import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 import {
     SimulationNodeDatum,
@@ -40,6 +40,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
     const [currentDateIndex, setCurrentDateIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const playInterval = useRef<NodeJS.Timeout | null>(null);
+    const [playSpeed, setPlaySpeed] = useState(1);
 
     useEffect(() => {
         setCurrentDateIndex(0);
@@ -55,11 +56,20 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
     useEffect(() => {
         // Currently advances on a 100ms interval
         if (isPlaying) {
+            if (currentDateIndex === allDates.length - 1) {
+                setCurrentDateIndex(0);
+            }
             playInterval.current = setInterval(() => {
-                setCurrentDateIndex((prev) =>
-                    prev < allDates.length - 1 ? prev + 1 : 0
+                setCurrentDateIndex((prev) => {
+                    if (prev < allDates.length - 1) {
+                        return prev + 1;
+                    } else {
+                        setIsPlaying(!isPlaying);
+                        return allDates.length - 1;
+                    }
+                }
                 );
-            }, 100);
+            }, 500 / playSpeed);
         } else {
             if (playInterval.current) {
                 clearInterval(playInterval.current);
@@ -71,7 +81,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                 clearInterval(playInterval.current);
             }
         };
-    }, [isPlaying, allDates.length]);
+    }, [isPlaying, allDates.length, playSpeed]);
 
     // Main visualization
     useEffect(() => {
@@ -327,14 +337,9 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
 
     return (
         <>
-            {/* UI container for date display, slider, and play/pause button */}
-            <div style={{
-                marginBottom: "1rem", display: "flex", alignItems: "center",
-                gap: "1rem"
-            }}>
-
-                {/* Displays date in a readable format */}
-                <span style={{ fontWeight: "normal", color: textColor }}>
+            {/* Centered current date above the slider */}
+            <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
+                <Text weight="semibold">
                     {allDates.length === 0
                         ? "No data selected"
                         : new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
@@ -342,7 +347,24 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                             month: "short",
                             day: "numeric",
                         })}
-                </span>
+                </Text>
+            </div>
+            {/* UI container for date display, slider, and play/pause button */}
+            <div style={{
+                marginBottom: "1rem", display: "flex", alignItems: "center",
+                gap: "1rem"
+            }}>
+
+                {/* Displays date in a readable format */}
+                <Text>
+                    {allDates.length === 0
+                        ? "No data selected"
+                        : new Date(allDates[0]).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        })}
+                </Text>
 
                 {/* Range slider to manually scrub through timeline */}
                 <input
@@ -353,6 +375,17 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                     onChange={(e) => setCurrentDateIndex(parseInt(e.target.value))}
                     style={{ width: "100%" }}
                 />
+
+                {/* Displays date in a readable format */}
+                <Text>
+                    {allDates.length === 0
+                        ? "No data selected"
+                        : new Date(allDates[allDates.length - 1]).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        })}
+                </Text>
 
                 {/* Play/Pause button */}
                 <button
@@ -370,6 +403,20 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                     {/* Updates label based on play state */}
                     {isPlaying ? "Pause" : "Play"}
                 </button>
+
+                <FormControl sx={{ flexShrink: 0 }}>
+                    <FormControl.Label>Select speed</FormControl.Label>
+                    <Select onChange={(e) => {
+                        setPlaySpeed(parseFloat(e.target.value));
+                    }}>
+                        <Select.Option value="1">Speed 1x</Select.Option>
+                        <Select.Option value="1.5">Speed 1.5x</Select.Option>
+                        <Select.Option value="2">Speed 2x</Select.Option>
+                        <Select.Option value="3">Speed 3x</Select.Option>
+                        <Select.Option value="5">Speed 5x</Select.Option>
+                        <Select.Option value="10">Speed 10x</Select.Option>
+                    </Select>
+                </FormControl>
 
             </div>
 

@@ -13,7 +13,7 @@ function RecentlyUpdatedInput({ error, onChangeHandler, value }: RecentlyUpdated
         <FormControl>
             <FormControl.Label>Recently updated</FormControl.Label>
             <FormControl.Caption>
-                Filter forks that have been updated in the last months (max {RECENT_ACTIVITY_MAX_MONTHS})
+                Display only forks that are updated in recent months (at most {RECENT_ACTIVITY_MAX_MONTHS} ago)
             </FormControl.Caption>
             <TextInput type="number" min={RECENT_ACTIVITY_MIN_MONTHS} max={RECENT_ACTIVITY_MAX_MONTHS}
                 onChange={(e) => onChangeHandler(e.target.value)} value={value} />

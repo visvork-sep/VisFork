@@ -313,7 +313,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         drawChart();
         window.addEventListener("resize", drawChart);
         return () => window.removeEventListener("resize", drawChart);
-    }, [drawChart, barColors, handleHistogramSelection, chartDimensions]);
+    }, [drawChart, handleHistogramSelection, chartDimensions]);
 
     return (
         <div style={{ borderRadius: "10px" }}>

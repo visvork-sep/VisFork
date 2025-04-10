@@ -209,7 +209,9 @@ export function drawLegends(
     colorMap: Map<string, string>,
     shapeColor: string,
     sortedNodes: MutGraphNode<Commit | GroupedNode, undefined>[],
-    handle: (commitIds: string[]) => void) {
+    setSelectAll: React.Dispatch<React.SetStateAction<boolean>>,
+    handle: (commitIds: string[]) => void,
+    resetBrushing: () => void) {
         
     const colorLegend = legend.append("div").attr("id", "color-legend");
 
@@ -237,7 +239,8 @@ export function drawLegends(
                             ? (node as MutGraphNode<GroupedNode, unknown>).data.nodes
                             : [node.data.id]
                     );
-
+                setSelectAll(false);
+                resetBrushing();
                 handle(selected);
             }) 
             .attr("fill", colorValue);
@@ -280,11 +283,13 @@ export function drawLegends(
                 .on("click", function() {
                     const selected = (sortedNodes as MutGraphNode<GroupedNode, undefined>[])
                         .filter(node => node.data.branch === 
-                            (label === "Fork parent" ? "forkParent" :
+                            (label === "Fork/Merge parent" ? "forkParent" :
                                 label === "Merge commit" ? "merge" : "default"
                             )
                         )
                         .flatMap(node => node.data.nodes);
+                    setSelectAll(false);
+                    resetBrushing();
                     handle(selected);
                 }) 
                 .attr("fill", shapeColor);

@@ -178,6 +178,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .append("circle")
             .attr("r", (d) => d.radius ?? 8)
             .attr("fill", "#1f77b4")
+            .attr("data-testid", "author-circle")
             // Open github author page on double click
             .on("dblclick", (_event, d) => {
                 const url = `https://github.com/${d.id}`;
@@ -216,6 +217,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                 const path = symbol().type(symbolSquare).size(Math.PI * r * r);
                 return path();
             })
+            .attr("data-testid", "repo-square")
             .attr("fill", "#ff7f0e")
             // Open github repository page on double click
             .on("dblclick", (_event, d) => {
@@ -422,6 +424,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
 
             {/* SVG element where graph gets rendered */}
             <svg
+                data-testid="collab-graph"
                 ref={svgRef}
                 width="100%"
                 height="600"

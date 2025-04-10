@@ -3,13 +3,13 @@ import Histogram from "./Plots/Histogram/Histogram.tsx";
 import ForkList from "@Components/Plots/ForkList/ForkList.tsx";
 import CommitTimeline from "./Plots/Timeline/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable/CommitTable.tsx";
+import CollaborationGraph from "./Plots/CollaborationGraph/CollaborationGraph.tsx";
 import { SankeyDiagram } from "./Plots/SankeyDiagram/SankeyDiagram.tsx";
-import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
-import { Dropdown } from "@Components/Dropdown";
-import { InfoButton } from "./InfoButton.tsx";
+import { Dropdown } from "@Components/Dropdown/Dropdown.tsx";
+import { InfoButton } from "./InfoButton/InfoButton.tsx";
 import { useVisualizationData } from "@Hooks/useVisualizationData";
 import { Commit, Repository } from "@Types/LogicLayerTypes.ts";
-import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
+import { visualizationDescriptions } from "@Utils/visualizationDescriptions/visualizationDescriptions.ts";
 import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { useRef, useEffect, useState } from "react";
 

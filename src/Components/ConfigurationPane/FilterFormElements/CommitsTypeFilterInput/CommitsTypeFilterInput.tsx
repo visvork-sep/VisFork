@@ -8,6 +8,9 @@ interface CommitTypeFilterInputProps {
     error: InputError | null;
 };
 
+/**
+* Radioboxes for filtering on commit types
+*/
 function CommitTypeFilterInput({ onChangeHandler, checked, error }: CommitTypeFilterInputProps) {
     const checkBoxes = Object.values(COMMIT_TYPES).map(t => (
         <FormControl key={t.value}>

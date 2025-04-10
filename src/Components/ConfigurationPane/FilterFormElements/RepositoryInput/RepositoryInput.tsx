@@ -1,5 +1,5 @@
 import { FormControl, TextInput } from "@primer/react";
-import { InputError } from "../../../Types/UIFormErrors";
+import { InputError } from "@Types/UIFormErrors";
 
 interface RepositoryInputProps {
     error: InputError | null;
@@ -7,6 +7,9 @@ interface RepositoryInputProps {
     value: string;
 };
 
+/**
+* text input to specify repository to target
+*/
 function RepositoryInput({ error, onChangeHandler, value }: RepositoryInputProps) {
     return (
         <FormControl required id="repository">

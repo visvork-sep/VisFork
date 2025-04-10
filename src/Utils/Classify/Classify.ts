@@ -1,4 +1,4 @@
-import { CommitType } from "./Constants";
+import { CommitType } from "../Constants";
 
 const adaptiveTerms = [
     //"\\badd(?:s|ed|ing)?\\b",

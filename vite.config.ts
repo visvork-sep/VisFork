@@ -27,6 +27,7 @@ export default defineConfig({
                 "**/*.scss",
                 "**/*.html",
                 "**/*.md",
+                "main.tsx",
             ],
         },
         root: "./src",

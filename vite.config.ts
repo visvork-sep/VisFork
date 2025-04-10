@@ -16,10 +16,13 @@ export default defineConfig({
         css: true,
         coverage: {
             reporter: ["text", "lcov"],
-            reportsDirectory: "../coverage"
+            reportsDirectory: "../coverage",
+            exclude: ["Types/**", "Queries/**"]
         },
         root: "./src",
         exclude: [
+            "Types/**", // Exclude Types folder,
+            "Queries/**", // Exclude Queries folder,
             "**/*.d.ts", // Exclude TypeScript declaration files
             "**/*.js", // Exclude JavaScript files
             "**/*.json", // Exclude JSON files

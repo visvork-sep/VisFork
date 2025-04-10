@@ -10,7 +10,6 @@ describe("RepositoryInput", () => {
         const mockedFn = vi.fn();
         render(<RepositoryInput value={""} onChangeHandler={mockedFn} error={null}></ RepositoryInput>);
         act(() => {
-            screen.debug();
 
             const input = screen.getByRole("textbox");
 

@@ -8,6 +8,9 @@ interface OwnerTypeFilterInputProps {
     error: InputError | null;
 };
 
+/**
+* radioboxes for owner type filtering of forks
+*/
 function OwnerTypeFilterInput({ onChangeHandler, checked, error }: OwnerTypeFilterInputProps) {
     const checkBoxes = Object.values(OWNER_TYPES).map(t => (
         <FormControl key={t.value}>
@@ -21,7 +24,7 @@ function OwnerTypeFilterInput({ onChangeHandler, checked, error }: OwnerTypeFilt
             <CheckboxGroup.Label>Included owners</CheckboxGroup.Label>
             <CheckboxGroup.Caption>Filter forks based on their owner type</CheckboxGroup.Caption>
             {checkBoxes}
-            {error && <CheckboxGroup.Validation variant="error">Error message</CheckboxGroup.Validation>}
+            {error && <CheckboxGroup.Validation variant="error">{error.message}</CheckboxGroup.Validation>}
         </CheckboxGroup>
 
     );

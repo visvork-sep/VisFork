@@ -1,14 +1,14 @@
 import { Box, Button, Stack } from "@primer/react";
 import { Pagehead } from "@primer/react/deprecated";
 
-import { RepositoryInput } from "@FormElements/RepositoryInput";
-import { ForksCountInput } from "@FormElements/ForksCountInput";
-import { RecentlyUpdatedInput } from "@FormElements/RecentlyUpdatedInput";
-import { CommitsDateRangeFromInput } from "@FormElements/CommitsDateRangeFromInput";
-import { ForksQueryOrderInput } from "@FormElements/ForksQueryOrderInput";
-import { CommitTypeFilterInput } from "@FormElements/CommitsTypeFilterInput";
-import { OwnerTypeFilterInput } from "@FormElements/OwnerTypeFilterInput";
-import { CommitsDateRangeUntilInput } from "@FormElements/CommitsDateRangeUntilInput";
+import { RepositoryInput } from "@FormElements/RepositoryInput/RepositoryInput";
+import { ForksCountInput } from "@FormElements/ForksCountInput/ForksCountInput";
+import { RecentlyUpdatedInput } from "@FormElements/RecentlyUpdatedInput/RecentlyUpdatedInput";
+import { CommitsDateRangeFromInput } from "@FormElements/CommitsDateRangeFromInput/CommitsDateRangeFromInput";
+import { ForksQueryOrderInput } from "@FormElements/ForksQueryOrderInput/ForksQueryOrderInput";
+import { CommitTypeFilterInput } from "@FormElements/CommitsTypeFilterInput/CommitsTypeFilterInput";
+import { OwnerTypeFilterInput } from "@FormElements/OwnerTypeFilterInput/OwnerTypeFilterInput";
+import { CommitsDateRangeUntilInput } from "@FormElements/CommitsDateRangeUntilInput/CommitsDateRangeUntilInput";
 import { useFilterForm } from "@Hooks/useFilterForm";
 import { useFormSubmission } from "@Hooks/useFormSubmission";
 import { FilterChangeHandler } from "@Hooks/useFilteredData";

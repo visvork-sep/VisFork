@@ -2,8 +2,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import GitHubCallback from "./GitHubCallback";
 import { useAuth } from "@Providers/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryResult  } from "@tanstack/react-query";
 import { vi } from "vitest";
+
+const mockedUseQuery = vi.mocked(useQuery);
+const mockedUseAuth = vi.mocked(useAuth);
 
 // Mocks
 vi.mock("@Providers/AuthProvider", () => ({
@@ -13,13 +16,16 @@ vi.mock("@Providers/AuthProvider", () => ({
 vi.mock("@tanstack/react-query", () => ({
     useQuery: vi.fn()
 }));
-(useQuery as any).mockReturnValue({
+mockedUseQuery.mockReturnValue({
     isPending: false,
     isSuccess: false,
     data: null,
-    isError: false
-});
-  
+    isError: false,
+    error: null,
+    isLoading: false,
+    refetch: vi.fn()
+} as unknown as UseQueryResult);
+
 const mockedNavigate = vi.fn();
 let mockedSearchParams = new URLSearchParams({ code: "test-code" });
 
@@ -34,14 +40,13 @@ vi.mock("react-router-dom", async () => {
 
 describe("GitHubCallback", () => {
     beforeEach(() => {
-        (useAuth as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+        mockedUseAuth.mockReturnValue({
             isAuthenticated: false,
             login: vi.fn(),
             logout: vi.fn(),
             getAccessToken: vi.fn(),
         });
     });
-
     afterEach(() => {
         vi.clearAllMocks();
     });
@@ -91,8 +96,7 @@ describe("GitHubCallback", () => {
         );
 
         await waitFor(() => {
-            const loginFn = (useAuth() as any).login;
-            expect(loginFn).toHaveBeenCalledWith("abc123");
+            expect(mockedUseAuth().login).toHaveBeenCalledWith("abc123");
             expect(mockedNavigate).toHaveBeenCalledWith("/");
         });
     });

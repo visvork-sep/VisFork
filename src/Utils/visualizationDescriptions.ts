@@ -25,7 +25,9 @@ export const visualizationDescriptions = {
         "• Brush (click and drag) over the graph to create a selection window." +
         " Subsequent visualizations will only use the commits within the selection. \n" +
         "• Click on the color marker in the legend to select only commits from the corresponding repository." +
-       " In Merged View, click on the shape marker in the legend to select only commits from the corresponding type."
+       " In Merged View, click on the shape marker in the legend to select only commits from the corresponding type." +
+       " Note that a selection window will not appear but subsequent visualizations will be updated appropriately."
+
     },
     commitTable: {
         short: "A searchable table of commits with key details.",

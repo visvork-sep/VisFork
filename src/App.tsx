@@ -1,6 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import GitHubCallback from "@Components/GitHubCallback/GitHubCallback";
-import HomePage from "@Components/HomePage";
+import HomePage from "@Components/HomePage/HomePage";
 
 /**
  * The main application file responsible for defining top-level routes.

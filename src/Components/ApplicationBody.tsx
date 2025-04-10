@@ -9,7 +9,7 @@ import { Dropdown } from "@Components/Dropdown/Dropdown.tsx";
 import { InfoButton } from "./InfoButton/InfoButton.tsx";
 import { useVisualizationData } from "@Hooks/useVisualizationData";
 import { Commit, Repository } from "@Types/LogicLayerTypes.ts";
-import { visualizationDescriptions } from "@Utils/visualizationDescriptions.ts";
+import { visualizationDescriptions } from "@Utils/visualizationDescriptions/visualizationDescriptions.ts";
 import WordCloud from "./Plots/WordCloud/WordCloud.tsx";
 import { useRef, useEffect, useState } from "react";
 

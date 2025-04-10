@@ -342,7 +342,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
                 <Text weight="semibold">
                     {allDates.length === 0
                         ? "No data selected"
-                        : new Date(allDates[0]).toLocaleDateString("en-US", {
+                        : new Date(allDates[currentDateIndex]).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "short",
                             day: "numeric",

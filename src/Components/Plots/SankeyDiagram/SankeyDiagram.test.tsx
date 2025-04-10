@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { SankeyDiagram, parseData } from "./SankeyDiagram";
 import { SankeyData } from "@VisInterfaces/SankeyData";
 import { ThemeProvider } from "@primer/react";
@@ -101,5 +101,54 @@ describe("SankeyDiagram tests", () => {
         
         // Component should render without errors even if container is missing
         expect(() => renderSankeyDiagram()).not.toThrow();
+    });
+
+    it("handles empty commit data gracefully", () => {
+        renderSankeyDiagram({ commitData: [] });
+        const container = screen.getByTestId("sankey-diagram");
+        const textElement = container.querySelector("text");
+        expect(textElement).not.toBeNull();
+        expect(textElement?.textContent).toBe("No data selected");
+    });
+
+    it("applies correct styles on node hover", () => {
+        renderSankeyDiagram();
+    
+        const container = screen.getByTestId("sankey-diagram");
+    
+        // Select the first node (D3 likely renders as <rect>)
+        const maybeNode = container.querySelector("rect");
+        expect(maybeNode).not.toBeNull();
+        
+        const node = maybeNode as SVGElement; // now node is guaranteed non-null
+        fireEvent.mouseOver(node);
+        expect(node).toHaveAttribute("stroke", "black");
+        
+        fireEvent.mouseOut(node);
+        expect(node).toHaveAttribute("stroke", "currentColor");
+    });
+
+    it("applies correct styles on link hover", async () => {
+        renderSankeyDiagram();
+    
+        const container = screen.getByTestId("sankey-diagram");
+        const maybeLink = container.querySelector("path");
+        expect(maybeLink).not.toBeNull();
+    
+        const link = maybeLink as SVGPathElement;
+    
+        const stroke = link.getAttribute("stroke");
+        expect(stroke).toMatch(/^url\(#/); // confirm it starts with a gradient
+    
+        // Trigger mouseover event
+        fireEvent.mouseOver(link);
+    
+        // Trigger mouseout to restore
+        fireEvent.mouseOut(link); // test if it resets properly
+    
+        await waitFor(() => {
+            const stroke = link.getAttribute("stroke");
+            expect(stroke).toMatch(/^url\(#/); // confirm it ends with a gradient
+        });
     });
 });

@@ -4,14 +4,6 @@ import CollaborationGraph from "./CollaborationGraph";
 import { ThemeProvider } from "@primer/react";
 import { CollabGraphData } from "@Types/VisualizationInterfaces/CollabGraphData";
 
-// Mock the DOM methods that d3 uses
-class ResizeObserver {
-    observe() {/** noop */}
-    unobserve() {/** noop */}
-    disconnect() {/** noop */}
-}
-(global).ResizeObserver = ResizeObserver;
-
 const exampleData: CollabGraphData = {
     commitData: [
         {
@@ -54,7 +46,7 @@ describe("Collaboration Graph tests", () => {
     it("handles component unmount and cleanup", () => {
         const { unmount } = renderCollaborationGraph();
         unmount();
-        
+
         // Since useEffect cleanup doesn't do anything explicit in this component,
         // we're just checking that unmounting doesn't throw errors
         expect(true).toBeTruthy();
@@ -63,31 +55,31 @@ describe("Collaboration Graph tests", () => {
     it("handles non-existent container gracefully", () => {
         // Remove the container before rendering
         document.body.innerHTML = "";
-        
+
         // Component should render without errors even if container is missing
         expect(() => renderCollaborationGraph()).not.toThrow();
     });
 
     it("renders two author circles with example data", async () => {
         renderCollaborationGraph();
-    
+
         const circles = await screen.getAllByTestId("author-circle");
-    
+
         expect(circles.length).toBe(2);
     });
-    
+
     it("renders one repo square with example data", async () => {
         renderCollaborationGraph();
-    
+
         const squares = await screen.getAllByTestId("repo-square");
-    
+
         expect(squares.length).toBe(1);
     });
 
     it("Opens a new window when an author is double clicked", async () => {
         const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
         renderCollaborationGraph();
-    
+
         const square = await screen.getByTestId("repo-square");
 
         fireEvent.dblClick(square);
@@ -99,7 +91,7 @@ describe("Collaboration Graph tests", () => {
     it("Opens a new window when a repo is double clicked", async () => {
         const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
         renderCollaborationGraph();
-    
+
         const circles = await screen.getAllByTestId("author-circle");
 
         fireEvent.dblClick(circles[0]);

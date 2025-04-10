@@ -4,14 +4,6 @@ import { ThemeProvider } from "@primer/react";
 import CommitTable from "./CommitTable";
 import { CommitTableDetails } from "@VisInterfaces/CommitTableData";
 
-class ResizeObserver {
-    observe() {/** noop */}
-    unobserve() {/** noop */}
-    disconnect() {/** noop */}
-}
-
-(global).ResizeObserver = ResizeObserver;
-
 // Sample commit data
 const mockCommits: CommitTableDetails[] = [
     {

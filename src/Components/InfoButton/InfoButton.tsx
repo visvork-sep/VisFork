@@ -1,7 +1,7 @@
 import { InfoIcon } from "@primer/octicons-react";
 import { Dialog, Button } from "@primer/react";
 import { useState } from "react";
-import Tooltip from "@Components/Tooltip.tsx";
+import Tooltip from "@Components/Tooltip/Tooltip";
 interface InfoButtonProps {
     title: string; //Name of the visualization
     shortDescription: string; //Quick hover over description

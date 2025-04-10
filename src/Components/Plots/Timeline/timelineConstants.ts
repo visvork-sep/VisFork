@@ -13,7 +13,7 @@ export const TOOLTIP_MOUSEOVER_DUR = 200;
 export const TOOLTIP_MOUSEOUT_DUR = 500;
 // legends
 export const LEGEND_SIZE = 12;
-export const LEGEND_SYMBOL_SIZE = 60;
+export const LEGEND_SYMBOL_SIZE = 90;
 export const LEGENDS_SPACING = "100px";
 export const LEGEND_TEXT_MARGIN = "10px";
 // misc

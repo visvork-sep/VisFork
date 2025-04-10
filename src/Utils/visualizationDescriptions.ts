@@ -17,7 +17,7 @@ export const visualizationDescriptions = {
         "You can also select the number of rows per page on the right."
     },
     commitTimeline: {
-        short: "Chronological view of commits with branching and merging.",
+        short: "Chronological view of commits with pulling and merging.",
         full: "Explore the sequence of commits across multiple forks: \n" +
         "• Switch between Full View (detailed commit history) and Merged View (only deviations).\n" +
         "• Hover over a node to see extensive information about the respective commit.\n" +

@@ -6,7 +6,7 @@ import { Commit, ForkFilter, Repository, UnprocessedCommitExtended, UnprocessedR
     from "@Types/LogicLayerTypes";
 import { useMemo } from "react";
 import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
-import { classify } from "@Utils/Classify";
+import { classify } from "@Utils/Classify/Classify";
 
 function DataComponents() {
     const { onFiltersChange, forks, commits, filters, isLoading } = useFilteredData();

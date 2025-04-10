@@ -1,5 +1,5 @@
-import { Route, BrowserRouter  as Router, Routes } from "react-router-dom";
-import GitHubCallback from "@Components/GitHubCallback";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import GitHubCallback from "@Components/GitHubCallback/GitHubCallback";
 import HomePage from "@Components/HomePage";
 
 /**

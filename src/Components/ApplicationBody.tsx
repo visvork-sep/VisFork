@@ -5,7 +5,6 @@ import CommitTimeline from "./Plots/Timeline/CommitTimeline.tsx";
 import CommitTable from "./Plots/CommitTable/CommitTable.tsx";
 import CollaborationGraph from "./Plots/CollaborationGraph/CollaborationGraph.tsx";
 import { SankeyDiagram } from "./Plots/SankeyDiagram/SankeyDiagram.tsx";
-import CollaborationGraph from "./Plots/CollaborationGraph.tsx";
 import { Dropdown } from "@Components/Dropdown";
 import { InfoButton } from "./InfoButton.tsx";
 import { useVisualizationData } from "@Hooks/useVisualizationData";

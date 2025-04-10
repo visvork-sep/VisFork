@@ -1,6 +1,6 @@
 import { FormControl, TextInput } from "@primer/react";
 import { RECENT_ACTIVITY_MIN_MONTHS, RECENT_ACTIVITY_MAX_MONTHS } from "@Utils/Constants";
-import { InputError } from "../../../Types/UIFormErrors";
+import { InputError } from "@Types/UIFormErrors";
 
 interface RecentlyUpdatedInputProps {
     error: InputError | null;
@@ -8,6 +8,9 @@ interface RecentlyUpdatedInputProps {
     value: string;
 };
 
+/**
+* Number input for filtering on recently updated forks
+*/
 function RecentlyUpdatedInput({ error, onChangeHandler, value }: RecentlyUpdatedInputProps) {
     return (
         <FormControl>

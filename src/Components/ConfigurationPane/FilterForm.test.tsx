@@ -1,4 +1,4 @@
-import { act, fireEvent, getByLabelText, render, screen } from "@Utils/test-utils";
+import { fireEvent, render, screen } from "@Utils/test-utils";
 import FilterForm from "./FilterForm";
 import { vi } from "vitest";
 

@@ -205,6 +205,10 @@ function CommitTimeline({
         // Apply brush to this layer only (otherwise conflicts with node clicking)
         brushLayer.call(timelineBrush);
 
+        const resetBrushing = () => {
+            brushLayer.call(timelineBrush.move, [[0,0], [0,0]]);
+        };
+
         // Create tooltip
         const tooltip = select("body")
             .append("div")
@@ -286,12 +290,12 @@ function CommitTimeline({
         graphics.drawLegends(
             merged, legend, colorMap, 
             colorScheme.markerColor, sortedNodes, 
-            setSelectAll, handleTimelineSelection);
+            setSelectAll, handleTimelineSelection, resetBrushing);
 
         return () => {
             tooltip.remove(); // Remove tooltip on cleanup
         };
-    }, [commitData, merged, selectAll, dagMerged, dagFull, colorMap]);
+    }, [commitData, merged, selectAll, theme]);
 
     useEffect(() => {
         drawGraph();

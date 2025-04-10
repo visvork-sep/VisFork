@@ -45,7 +45,9 @@ export async function fetchCommitCount(parameters: CommitQueryParams, accessToke
         }
     }
 
-    return Number.MAX_SAFE_INTEGER;
+    // If no link header is found, it means there is at most one page of results
+    // and we can return the PAGE_SIZE as the maximum number of commits
+    return PAGE_SIZE;
 }
 
 export async function fetchCommits(parameters: CommitQueryParams, accessToken: string, page = 1) {

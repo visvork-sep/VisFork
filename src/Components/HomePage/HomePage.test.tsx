@@ -4,28 +4,16 @@ import { vi } from "vitest";
 import { ThemeProvider } from "@primer/react";
 import HomePage from "./HomePage";
 
-
-
-type LocationState = {
-    fromError?: boolean;
-    errorDescription?: string;
-} | null;
-
 // Mock components
 vi.mock("@Components/AppHeader", () => ({
-    default: function MockAppHeader() {
-        return <div data-testid="header">MockHeader</div>;
-    }
+    default: () => <div data-testid="header">MockHeader</div>,
 }));
 
 vi.mock("@Components/DataComponents", () => ({
-    default: function MockDataComponents() {
-        return <div data-testid="data">MockData</div>;
-    }
+    default: () => <div data-testid="data">MockData</div>,
 }));
 
-// Router hook mocks
-const mockLocationState: LocationState = null;
+const mockLocationState = null;
 
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
@@ -53,16 +41,6 @@ beforeAll(() => {
             removeEventListener: vi.fn(),
             dispatchEvent: vi.fn(),
         }))
-    });
-
-    Object.defineProperty(window, "ResizeObserver", {
-        writable: true,
-        configurable: true,
-        value: vi.fn().mockImplementation(() => ({
-            observe: vi.fn(),
-            unobserve: vi.fn(),
-            disconnect: vi.fn(),
-        })),
     });
 });
 

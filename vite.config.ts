@@ -17,7 +17,18 @@ export default defineConfig({
         coverage: {
             reporter: ["text", "lcov"],
             reportsDirectory: "../coverage",
-            exclude: ["Types/**", "Queries/**"]
+            exclude: [
+                "Types/**",
+                "Queries/**",
+                "**/*.d.ts",
+                "**/*.js",
+                "**/*.json",
+                "**/*.css",
+                "**/*.scss",
+                "**/*.html",
+                "**/*.md",
+                "main.tsx",
+            ],
         },
         root: "./src",
         exclude: [

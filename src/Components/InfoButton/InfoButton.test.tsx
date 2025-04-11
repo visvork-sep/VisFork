@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { InfoButton } from "./InfoButton";
-import "@testing-library/jest-dom";
 
 const title = "Test Title";
 const shortDescription = "Short tooltip description.";

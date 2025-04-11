@@ -4,14 +4,6 @@ import { ThemeProvider } from "@primer/react";
 import ForkList from "./ForkList";
 import { ForkListData, ForkListDetails } from "@VisInterfaces/ForkListData";
 
-class ResizeObserver {
-    observe() {/** noop */}
-    unobserve() {/** noop */}
-    disconnect() {/** noop */}
-}
-
-(global).ResizeObserver = ResizeObserver;
-
 // Sample fork data 
 const forkDetails: ForkListDetails[] = Array.from({ length: 25 }, (_, i) => ({
     id: i + 1,
@@ -42,7 +34,7 @@ afterEach(() => {
 
 describe("ForkList tests", () => {
     it("renders without errors when forkData is empty", () => {
-        renderForkList({forkData: []});
+        renderForkList({ forkData: [] });
         expect(screen.getByText("Forks")).toBeInTheDocument();
         expect(screen.getByText("A list of all the forks of the submitted repository.")).toBeInTheDocument();
         // Table should be empty

@@ -85,7 +85,7 @@ describe("ApplicationBody", () => {
                 handleTimelineSelection: vi.fn(),
                 handleSearchBarSubmission: vi.fn(),
             },
-            defaultBranches: { "repo-1": "main" },
+            defaultBranches: {},
         });
     });
 

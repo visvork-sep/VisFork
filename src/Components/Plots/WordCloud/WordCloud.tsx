@@ -5,13 +5,16 @@ import { Word, processCommitMessages, lemmatizationFunction } from "./utils";
 import { createTooltip } from "./Tooltip";
 import { WordCloudData } from "@VisInterfaces/WordCloudData";
 
-
+/**
+ * Component that renders a word cloud based on commit messages.
+ */
 function WordCloud({ commitData }: WordCloudData) {
 
     const svgRef = useRef<SVGSVGElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
     const [words, setWords] = useState<Word[]>([]);
 
+    // Handle window resize to adjust the SVG dimensions
     useEffect(() => {
         const handleResize = () => {
             if (svgRef.current) {
@@ -39,11 +42,14 @@ function WordCloud({ commitData }: WordCloudData) {
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+    // Process commit messages to generate word frequencies
     useEffect(() => {
         const newWords = processCommitMessages(commitData, lemmatizationFunction, 0, 20);
         setWords(newWords);
     }, [commitData]);
 
+    // Generate the word cloud layout and render it
     useEffect(() => {
         if (!svgRef.current) return;
 
@@ -58,12 +64,14 @@ function WordCloud({ commitData }: WordCloudData) {
 
         layout.start();
 
+        // Draw the word cloud
         function draw(words: Word[]) {
             const svg = select(svgRef.current);
 
             // Clear previous word cloud
             svg.selectAll("*").remove();
 
+            // new SVG group
             const g = svg
                 .attr("width", layout.size()[0])
                 .attr("height", layout.size()[1])
@@ -72,6 +80,7 @@ function WordCloud({ commitData }: WordCloudData) {
 
             const tooltip = createTooltip();
 
+            // Append words to the SVG group
             g.selectAll("text")
                 .data(words)
                 .enter().append("text")
@@ -81,6 +90,7 @@ function WordCloud({ commitData }: WordCloudData) {
                 .attr("text-anchor", "middle")
                 .attr("transform", (d) => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
                 .text((d) => d.text)
+                // Set tooltip functionality
                 .on("mouseover", (event, d) => {
                     tooltip.transition().duration(200).style("opacity", 0.9);
                     tooltip.html(

@@ -1,13 +1,11 @@
 import { Selection, BaseType } from "d3-selection";
 import { timeFormat } from "d3-time-format";
 import { symbol, symbolCircle, symbolSquare, symbolTriangle } from "d3-shape";
-
 import {
     GraphNode,
     MutGraphNode,
     MutGraphLink,
 } from "d3-dag";
-
 import type { TimelineDetails as Commit } from "@VisInterfaces/TimelineData";
 import * as c from "./timelineConstants"; 
 
@@ -20,6 +18,9 @@ export interface GroupedNode extends Commit {
     end_date: string;
 }
 
+/**
+ * Draws the lanes for the timeline chart.
+ */
 export function drawLanes(
     g: Selection<SVGGElement, unknown, null, undefined>,
     lanes: Record<string, { minY: number; maxY: number }>,
@@ -51,6 +52,9 @@ export function drawLanes(
     });
 }
 
+/**
+ * Draws the timeline markers (vertical lines and labels).
+ */
 export function drawTimelineMarkers(
     g: Selection<SVGGElement, unknown, null, undefined>,
     sortedNodes: GraphNode<Commit | GroupedNode, unknown>[],
@@ -109,6 +113,9 @@ export function drawTimelineMarkers(
     }
 }
 
+/**
+ * Draws the edges (links) between nodes.
+ */
 export function drawEdgeCurve(d: MutGraphLink<Commit | GroupedNode, undefined>) {
     if (d.source.y < d.target.y) {
         return `
@@ -136,11 +143,16 @@ export function drawEdgeCurve(d: MutGraphLink<Commit | GroupedNode, undefined>) 
     }
 }
 
+/**
+ * Draws the merged nodes (fork parents, merge commits, and commits without deviations).
+ * The nodes are represented as circles, squares, and triangles respectively.
+ */
 export function drawMergedNodes(
     g: Selection<SVGGElement, unknown, null, undefined>,
     colorMap: Map<string, string>,
     mergedNodes: MutGraphNode<GroupedNode, undefined>[]) {
     
+    // Fork parents
     const mergedCircles = mergedNodes.filter(node => node.data.branch === "forkParent");
     const circles = g.append("g")
         .selectAll("circle")
@@ -153,6 +165,7 @@ export function drawMergedNodes(
         .style("cursor", "pointer")
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
+    // Commits without deviations
     const mergedSquares = mergedNodes.filter(node => node.data.branch === "default");
     const squares = g.append("g")
         .selectAll("rect")
@@ -165,6 +178,7 @@ export function drawMergedNodes(
         .attr("height", c.NODE_RADIUS * 2)
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
+    // Merge commits
     const mergedTriangles = mergedNodes.filter(node => node.data.branch === "merge");
     const triangles = g.append("g")
         .selectAll("polygon")
@@ -183,6 +197,9 @@ export function drawMergedNodes(
     return {circles, squares, triangles};
 }
 
+/**
+ * Draws the normal nodes (commits).
+ */
 export function drawNormalNodes(
     g: Selection<SVGGElement, unknown, null, undefined>,
     colorMap: Map<string, string>,
@@ -203,6 +220,9 @@ export function drawNormalNodes(
     return {circles};
 }
 
+/**
+ * Draws the legends.
+ */
 export function drawLegends( 
     merged : boolean, 
     legend: Selection<BaseType, unknown, HTMLElement, undefined>, 
@@ -232,6 +252,7 @@ export function drawLegends(
             .attr("cy", c.LEGEND_SIZE / 2)
             .attr("r", c.LEGEND_SIZE / 2)
             .style("cursor", "pointer")
+            // Selects all nodes from a fork
             .on("click", function() {
                 const selected = sortedNodes.filter(node => node.data.repo === repoName)
                     .flatMap((node) =>
@@ -255,7 +276,8 @@ export function drawLegends(
         const shapeLegend = legend
             .append("div")
             .attr("id", "shape-legend")
-            .style("margin-left", c.LEGENDS_SPACING); // spacing to the right of color legend
+            // spacing to the right of color legend
+            .style("margin-left", c.LEGENDS_SPACING); 
 
         const shapeLegendData = [
             { label: "Fork/Merge parent", shape: symbolCircle },
@@ -280,6 +302,7 @@ export function drawLegends(
                 .append("path")
                 .attr("transform", `translate(${c.LEGEND_SIZE / 2}, ${c.LEGEND_SIZE / 2})`)
                 .attr("d",symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE))
+                // Selects all nodes from a fork
                 .on("click", function() {
                     const selected = (sortedNodes as MutGraphNode<GroupedNode, undefined>[])
                         .filter(node => node.data.branch === 

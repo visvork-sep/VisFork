@@ -8,7 +8,7 @@ interface RepositoryInputProps {
 };
 
 /**
-* text input to specify repository to target
+* Text input to specify repository to target.
 */
 function RepositoryInput({ error, onChangeHandler, value }: RepositoryInputProps) {
     return (

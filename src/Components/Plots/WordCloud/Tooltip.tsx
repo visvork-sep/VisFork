@@ -1,5 +1,9 @@
 import { select } from "d3";
 
+/**
+ * Creates a tooltip element for displaying information on hover.
+ * Returns the tooltip element.
+ */
 export const createTooltip = () => {
     return select("body")
         .append("div")

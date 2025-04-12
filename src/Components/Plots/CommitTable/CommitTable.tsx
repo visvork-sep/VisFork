@@ -8,7 +8,6 @@ function CommitTable({ commitData, handleSearchBarSubmission }: CommitTableProps
     // Fetch current color mode (light or dark)
     const { colorMode } = useTheme();
 
-
     // Memoize hyperlink color based on color mode
     const linkColor = useMemo(() => {
         return colorMode === "dark" || colorMode === "night" ? "white" : "black";
@@ -16,6 +15,7 @@ function CommitTable({ commitData, handleSearchBarSubmission }: CommitTableProps
 
     const [searchTerm, setSearchTerm] = useState("");
 
+    // Function to handle search term changes
     const onSearch = (term: string) => {
         setSearchTerm(term); // Update the search term state
     };
@@ -42,6 +42,7 @@ function CommitTable({ commitData, handleSearchBarSubmission }: CommitTableProps
     }, [filteredData, handleSearchBarSubmission]);
 
     // Memoize column definitions
+    // For each column, define its header, field, and rendering logic
     const columns: Column<CommitTableDetails>[] = useMemo(() => [
         {
             header: "Owner/Repo",
@@ -115,6 +116,7 @@ function CommitTable({ commitData, handleSearchBarSubmission }: CommitTableProps
         },
     ], [linkColor]);
 
+    // Render commit table and search bar
     return (
         <Box>
             <SearchBar onSearch={onSearch} />

@@ -37,26 +37,19 @@ jobs:
                 visfork-ci bash
 
 
-  test-build-deploy:
+  build-test-deploy:
     runs-on: self-hosted
     needs: setup
 
     steps:
+      - name: Build
+        run: docker exec visfork-ci npm run build
+
       - name: Run ESLint
         run: docker exec visfork-ci npm run lint
 
       - name: Run tests
         run: docker exec visfork-ci npm run test
-
-      # - name: Authentication
-      #   if: github.ref == 'refs/heads/main'
-      #   run: |
-      #         docker cp ~/auth/.env visfork-ci:/workspace/.contrib
-      #         docker cp ~/auth/backend/.env visfork-ci:/workspace/.contrib/backend
-      #         docker cp ~/auth/backend/index.js visfork-ci:/workspace/.contrib/backend
-
-      - name: Build
-        run: docker exec visfork-ci npm run build
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
@@ -64,7 +57,7 @@ jobs:
 
   cleanup:
     runs-on: self-hosted
-    needs: test-build-deploy
+    needs: build-test-deploy
 
     steps:
       - name: Stop and Remove Docker Image

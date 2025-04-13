@@ -6,7 +6,7 @@ import { useAuth } from "@Providers/AuthProvider";
 import { SkeletonAvatar } from "@primer/react/experimental";
 import { AUTH_URL } from "@Utils/Constants";
 import { useFetchAvatarUrl } from "../Queries/queries";
-import visForkIcon from "/visForkIcon.svg";
+import visForkIcon from "../../public/visForkIcon.svg";
 
 /**
  * Redirects the user to GitHub OAuth login.
@@ -29,7 +29,8 @@ function getLoginOrAvatar(isAuthenticated: boolean,
         (
             <Box onClick={onDialogOpen}>
                 {avatarUrl ?
-                    <Avatar src={avatarUrl} size={32} />
+                    <Avatar src={avatarUrl} size={32} alt="user avatar" data-testid="user-avatar" />
+
                     :
                     <SkeletonAvatar size={32} />
                 }
@@ -83,7 +84,7 @@ function AppHeader() {
         <>
             <Stack direction="horizontal" align="center">
                 <Stack.Item>
-                    <Avatar src={visForkIcon} size={32} />
+                    <Avatar src={visForkIcon} size={32} alt="logo avatar" data-testid="logo-avatar" />
                 </Stack.Item>
                 <Stack.Item grow>
                     <span>VisFork</span>

@@ -26,7 +26,9 @@ vi.mock("@primer/react", async (importOriginal) => {
         Box: vi.fn(({ children, ...props }) => {
             return <div {...props}>{children}</div>;
         }),
-        Dialog: ({ children }: never) => <div>{children}</div>,
+        Dialog: ({ children }: { children: React.ReactNode; }) => (
+            <div role="dialog">{children}</div>
+        ),
     };
 });
 
@@ -96,7 +98,7 @@ describe("AppHeader", () => {
         });
 
         render(<AppHeader />);
-        waitFor(() => {
+        await waitFor(() => {
             fireEvent.click(screen.getByAltText("user avatar"));
             expect(screen.getByRole("dialog")).toBeInTheDocument();
         });
@@ -120,7 +122,7 @@ describe("AppHeader", () => {
         });
 
         render(<AppHeader />);
-        waitFor(() => {
+        await waitFor(() => {
             fireEvent.click(screen.getByAltText("user avatar"));
             fireEvent.click(screen.getByLabelText("Toggle colorblind mode"));
             expect(setDayScheme).toHaveBeenCalledWith("light_colorblind");
@@ -145,7 +147,7 @@ describe("AppHeader", () => {
         });
 
         render(<AppHeader />);
-        waitFor(() => {
+        await waitFor(() => {
             fireEvent.click(screen.getByAltText("user avatar"));
             fireEvent.click(screen.getByLabelText("Toggle light mode"));
             expect(setColorMode).toHaveBeenCalledWith("dark");
@@ -170,9 +172,9 @@ describe("AppHeader", () => {
         });
 
         render(<AppHeader />);
-        waitFor(() => {
+        await waitFor(() => {
             fireEvent.click(screen.getByAltText("user avatar"));
-            fireEvent.click(screen.getByRole("button", { name: /sign out button/i }));
+            fireEvent.click(screen.getByText("Sign out"));
             expect(mockLogout).toHaveBeenCalled();
         });
     });

@@ -70,7 +70,7 @@ export function createForkQueryParams(
 export function createForkQueryParamsGql(
     owner: string,
     name: string,
-    numForks: 10,
+    numForks = 10,
     repositoryOrder: RepositoryOrder = { direction : OrderDirection.Desc, field : RepositoryOrderField.Stargazers } ,
     after?: string
 ): GetForksQueryVariables {

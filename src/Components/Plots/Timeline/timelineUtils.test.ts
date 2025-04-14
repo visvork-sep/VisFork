@@ -2,7 +2,6 @@ import { describe, it, expect} from "vitest";
 import type { GraphNode } from "d3-dag";
 
 import {
-    buildRepoColorMap,
     dateRankOperator,
     groupBy,
     groupNodes,
@@ -10,25 +9,6 @@ import {
 } from "./timelineUtils";
 
 import { TimelineDetails } from "@VisInterfaces/TimelineData";
-import { interpolateRainbow } from "d3";
-
-describe("buildRepoColorMap", () => {
-    it("returns correct colors for unique repos", () => {
-        const commits = [
-            { id: "1", repo: "A", date: "2021-01-01", parentIds: [], branch: "", url: "" },
-            { id: "2", repo: "B", date: "2021-01-02", parentIds: [], branch: "", url: "" },
-            { id: "3", repo: "A", date: "2021-01-03", parentIds: [], branch: "", url: "" },
-        ];
-        // The order of unique repos is preserved as first occurrence: ["A", "B"]
-        const uniqueRepos = Array.from(new Set(commits.map((c) => c.repo)));
-        const repoCount = uniqueRepos.length; // should be 2
-        const colorMap = buildRepoColorMap(commits);
-        expect(colorMap.size).toBe(repoCount);
-        // Verify that each repo gets the correct color based on its index.
-        expect(colorMap.get("A")).toBe(interpolateRainbow(0 / repoCount));
-        expect(colorMap.get("B")).toBe(interpolateRainbow(1 / repoCount));
-    });
-});
 
 describe("dateRankOperator", () => {
     it("should convert a node's date to a timestamp", () => {

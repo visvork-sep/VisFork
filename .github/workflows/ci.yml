@@ -17,10 +17,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set Up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Get resources
         run: |
               curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
               curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
+              cp /opt/simian/simian-jar-4.0.0.jar .
 
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
@@ -50,6 +57,24 @@ jobs:
 
       - name: Run tests
         run: docker exec visfork-ci npm run test
+
+      - name: Run Simian Analysis
+        run: |
+          chmod +x .contrib/Simian/simian.sh
+
+          java -jar simian-4.0.0.jar \
+            -includes=src/**.ts \
+            -includes=src/**.tsx \
+            -excludes=src/**test.ts \
+            -excludes=test/**.ts \
+            -excludes=src/**test.tsx \
+            -excludes=test/**.tsx \
+            -balanceParentheses+
+
+          if grep -q "Found [1-9][0-9]* duplicate lines" simian.log; then
+            echo "Duplicate code detected!"
+            exit 1
+          fi
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'

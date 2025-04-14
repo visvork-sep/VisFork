@@ -27,7 +27,7 @@ jobs:
         run: |
               curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
               curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
-              cp /opt/simian/simian-jar-4.0.0.jar .
+              cp /opt/simian/simian-4.0.0.jar .
 
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .

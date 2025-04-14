@@ -6,7 +6,11 @@ import { SankeyData } from "@VisInterfaces/SankeyData";
 import { TimelineData } from "@VisInterfaces/TimelineData";
 import { WordCloudData } from "@VisInterfaces/WordCloudData";
 
-//TODO: expand with other interfaces and separate
+/**
+ * Interface representing the aggregated visualization data.
+ * Each property holds data specific to a particular visualization component.
+ * Extendable by adding more visualization data types as needed.
+ */
 export interface VisualizationData {
     forkListData: ForkListData;
     histogramData: HistogramData;

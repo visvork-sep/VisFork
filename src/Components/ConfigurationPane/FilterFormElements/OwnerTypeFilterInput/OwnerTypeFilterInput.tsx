@@ -9,7 +9,9 @@ interface OwnerTypeFilterInputProps {
 };
 
 /**
-* radioboxes for owner type filtering of forks
+* Component that allows the user to select the owner types of forks to include in the visualization by radioboxes.
+* It takes in a list of owner types and an onChange handler as props.
+* It also takes in an error prop to display validation errors.
 */
 function OwnerTypeFilterInput({ onChangeHandler, checked, error }: OwnerTypeFilterInputProps) {
     const checkBoxes = Object.values(OWNER_TYPES).map(t => (

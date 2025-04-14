@@ -1,0 +1,42 @@
+<html><head><title>test-utils.tsx</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="sourcestyles.css" />
+</head><body link="blue" vlink="blue">
+<h3>File: /Users/jasonfu/Projects/VisFork/src/Utils/test-utils.tsx</h3>
+<SCRIPT>
+defaultStatus = "File: /Users/jasonfu/Projects/VisFork/src/Utils/test-utils.tsx";
+top.document.title  = "test-utils.tsx";
+</SCRIPT>
+<pre><span class="default"></span><a name="1"><font size=-1>1     </font></a><span class="default"></span><span class="keyword">import <a href="dictionary_R.html#5239">React</a></span><span class="default">, { <a href="dictionary_R.html#5240">ReactElement</a> } from </span><span class="string">&quot;react&quot;</span><span class="default">;</span>
+<a name="2"><font size=-1>2     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_R.html#17">render</a>, <a href="dictionary_R.html#5242">RenderOptions</a> } from </span><span class="string">&quot;@testing-library/react&quot;</span><span class="default">;</span>
+<a name="3"><font size=-1>3     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_R.html#4089">QueryClient</a>, <a href="dictionary_R.html#4090">QueryClientProvider</a> } from </span><span class="string">&quot;@tanstack/react-query&quot;</span><span class="default">;</span>
+<a name="4"><font size=-1>4     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_R.html#4088">BaseStyles</a>, <a href="dictionary_R.html#214">Box</a>, <a href="dictionary_R.html#863">ThemeProvider</a> } from </span><span class="string">&quot;@primer/react&quot;</span><span class="default">;</span>
+<a name="5"><font size=-1>5     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_A.html#5237">AuthProvider</a> } from </span><span class="string">&quot;@Providers/AuthProvider&quot;</span><span class="default">;</span>
+<a name="6"><font size=-1>6     </font></a><span class="default"></span>
+<a name="7"><font size=-1>7     </font></a><span class="default"></span><span class="keyword">const <a href="dictionary_Q.html#5249">queryClient</a> </span><span class="default">= </span><span class="keyword">new <a href="dictionary_R.html#4089">QueryClient</a></span><span class="default">();</span>
+<a name="8"><font size=-1>8     </font></a><span class="default"></span>
+<a name="9"><font size=-1>9     </font></a><span class="default"></span><span class="keyword">const <a href="dictionary_A.html#5234">AllTheProviders</a> </span><span class="default">= ({ <a href="dictionary_A.html#5236">children</a> }: { <a href="dictionary_A.html#5235">children</a>: <a href="dictionary_R.html#5239">React</a>.<a href="dictionary_R.html#152">ReactNode</a> }) =&gt; {</span>
+<a name="10"><font size=-1>10     </font></a><span class="default">    </span><span class="keyword">return </span><span class="default">(</span>
+<a name="11"><font size=-1>11     </font></a><span class="default">        &lt;<a href="dictionary_R.html#863">ThemeProvider</a> colorMode=</span><span class="string">&quot;light&quot; </span><span class="default">&gt;</span>
+<a name="12"><font size=-1>12     </font></a><span class="default">            &lt;<a href="dictionary_R.html#4088">BaseStyles</a>&gt;</span>
+<a name="13"><font size=-1>13     </font></a><span class="default">                &lt;<a href="dictionary_R.html#4090">QueryClientProvider</a> client={ <a href="dictionary_Q.html#5249">queryClient</a> }&gt;</span>
+<a name="14"><font size=-1>14     </font></a><span class="default">                    &lt;<a href="dictionary_A.html#5237">AuthProvider</a>&gt;</span>
+<a name="15"><font size=-1>15     </font></a><span class="default">                        &lt;<a href="dictionary_R.html#214">Box</a> className=</span><span class="string">&quot;body&quot; </span><span class="default">&gt;</span>
+<a name="16"><font size=-1>16     </font></a><span class="default">                            {<a href="dictionary_A.html#5236">children</a>}</span>
+<a name="17"><font size=-1>17     </font></a><span class="default">                        &lt;</span><span class="number">/Box&gt;</span>
+<a name="18"><font size=-1>18     </font></a><span class="number">                    </span><span class="default">&lt;</span><span class="number">/AuthProvider&gt;</span>
+<a name="19"><font size=-1>19     </font></a><span class="number">                </span><span class="default">&lt;</span><span class="number">/QueryClientProvider&gt;</span>
+<a name="20"><font size=-1>20     </font></a><span class="number">            </span><span class="default">&lt;</span><span class="number">/BaseStyles&gt;</span>
+<a name="21"><font size=-1>21     </font></a><span class="number">        </span><span class="default">&lt;</span><span class="number">/ThemeProvider&gt;</span>
+<a name="22"><font size=-1>22     </font></a><span class="number">    </span><span class="default">);</span>
+<a name="23"><font size=-1>23     </font></a><span class="default">};</span>
+<a name="24"><font size=-1>24     </font></a><span class="default"></span>
+<a name="25"><font size=-1>25     </font></a><span class="default"></span><span class="keyword">const <a href="dictionary_C.html#5244">customRender</a> </span><span class="default">= (</span>
+<a name="26"><font size=-1>26     </font></a><span class="default">    <a href="dictionary_C.html#5248">ui</a>: <a href="dictionary_R.html#5241">ReactElement</a>,</span>
+<a name="27"><font size=-1>27     </font></a><span class="default">    <a href="dictionary_C.html#5247">options</a>?: Omit&lt;<a href="dictionary_R.html#5243">RenderOptions</a>, </span><span class="string">&quot;wrapper&quot;</span><span class="default">&gt;,</span>
+<a name="28"><font size=-1>28     </font></a><span class="default">) =&gt; <a href="dictionary_R.html#5250">render</a>(<a href="dictionary_C.html#5248">ui</a>, { <a href="dictionary_C.html#5245">wrapper</a>: <a href="dictionary_A.html#5234">AllTheProviders</a>, ...<a href="dictionary_C.html#5247">options</a> });</span>
+<a name="29"><font size=-1>29     </font></a><span class="default"></span>
+<a name="30"><font size=-1>30     </font></a><span class="default"></span><span class="keyword">export </span><span class="default">* from </span><span class="string">&quot;@testing-library/react&quot;</span><span class="default">;</span>
+<a name="31"><font size=-1>31     </font></a><span class="default"></span><span class="keyword">export </span><span class="default">{ customRender as <a href="dictionary_R.html#5250">render</a> };</span>
+<a name="32"><font size=-1>32     </font></a><span class="default"></span>
+</pre></body></html>

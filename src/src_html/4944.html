@@ -1,0 +1,91 @@
+<html><head><title>ForkFilterUtil.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="sourcestyles.css" />
+</head><body link="blue" vlink="blue">
+<h3>File: /Users/jasonfu/Projects/VisFork/src/Utils/Filters/ForkFilterUtil.test.ts</h3>
+<SCRIPT>
+defaultStatus = "File: /Users/jasonfu/Projects/VisFork/src/Utils/Filters/ForkFilterUtil.test.ts";
+top.document.title  = "ForkFilterUtil.test.ts";
+</SCRIPT>
+<pre><span class="default"></span><a name="1"><font size=-1>1     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_V.html#156">describe</a>, <a href="dictionary_V.html#157">expect</a>, <a href="dictionary_V.html#165">it</a>, <a href="dictionary_V.html#153">beforeEach</a> } from </span><span class="string">&quot;vitest&quot;</span><span class="default">;</span>
+<a name="2"><font size=-1>2     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ ForkFilter, UnprocessedRepository } from </span><span class="string">&quot;../../Types/LogicLayerTypes&quot;</span><span class="default">;</span>
+<a name="3"><font size=-1>3     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_I.html#4981">isValidForkByFilter</a> } from </span><span class="string">&quot;./ForkFilterUtil&quot;</span><span class="default">;</span>
+<a name="4"><font size=-1>4     </font></a><span class="default"></span>
+<a name="5"><font size=-1>5     </font></a><span class="default"></span>
+<a name="6"><font size=-1>6     </font></a><span class="default"></span><span class="keyword">const <a href="dictionary_E.html#4967">example_fork</a></span><span class="default">: UnprocessedRepository = {</span>
+<a name="7"><font size=-1>7     </font></a><span class="default">    <a href="dictionary_E.html#4971">id</a>: </span><span class="number">1</span><span class="default">,</span>
+<a name="8"><font size=-1>8     </font></a><span class="default">    <a href="dictionary_E.html#4973">name</a>: </span><span class="string">&quot;a fork&quot;</span><span class="default">,</span>
+<a name="9"><font size=-1>9     </font></a><span class="default">    <a href="dictionary_E.html#4974">owner</a>: { <a href="dictionary_E.html#4975">login</a>: </span><span class="string">&quot;a user&quot; </span><span class="default">},</span>
+<a name="10"><font size=-1>10     </font></a><span class="default">    <a href="dictionary_E.html#4970">description</a>: </span><span class="string">&quot;a fork of a user&quot;</span><span class="default">,</span>
+<a name="11"><font size=-1>11     </font></a><span class="default">    <a href="dictionary_E.html#4968">created_at</a>: </span><span class="keyword">new </span><span class="default">Date(</span><span class="string">&quot;2022-09-14T06:51:16Z&quot;</span><span class="default">),</span>
+<a name="12"><font size=-1>12     </font></a><span class="default">    <a href="dictionary_E.html#4972">last_pushed</a>: </span><span class="keyword">new </span><span class="default">Date(), </span><span class="comment">// today</span>
+<a name="13"><font size=-1>13     </font></a><span class="comment">    <a href="dictionary_E.html#4976">ownerType</a></span><span class="default">: </span><span class="string">&quot;User&quot;</span><span class="default">,</span>
+<a name="14"><font size=-1>14     </font></a><span class="default">    <a href="dictionary_E.html#4969">defaultBranch</a>: </span><span class="string">&quot;main&quot;</span>
+<a name="15"><font size=-1>15     </font></a><span class="string"></span><span class="default">};</span>
+<a name="16"><font size=-1>16     </font></a><span class="default"></span>
+<a name="17"><font size=-1>17     </font></a><span class="default"></span><span class="keyword">const <a href="dictionary_E.html#4964">example_filter</a></span><span class="default">: ForkFilter = {</span>
+<a name="18"><font size=-1>18     </font></a><span class="default"></span>
+<a name="19"><font size=-1>19     </font></a><span class="default">    <a href="dictionary_E.html#4965">commitTypes</a>: [</span><span class="string">&quot;adaptive&quot;</span><span class="default">],</span>
+<a name="20"><font size=-1>20     </font></a><span class="default">    <a href="dictionary_E.html#4966">ownerTypes</a>: [</span><span class="string">&quot;User&quot;</span><span class="default">, </span><span class="string">&quot;Organization&quot;</span><span class="default">]</span>
+<a name="21"><font size=-1>21     </font></a><span class="default">};</span>
+<a name="22"><font size=-1>22     </font></a><span class="default"></span>
+<a name="23"><font size=-1>23     </font></a><span class="default">let <a href="dictionary_F.html#4978">fork</a>: UnprocessedRepository = </span><span class="keyword">null </span><span class="default">as unknown as UnprocessedRepository;</span>
+<a name="24"><font size=-1>24     </font></a><span class="default">let <a href="dictionary_F.html#4977">filter</a>: ForkFilter = </span><span class="keyword">null </span><span class="default">as unknown as ForkFilter;</span>
+<a name="25"><font size=-1>25     </font></a><span class="default"></span>
+<a name="26"><font size=-1>26     </font></a><span class="default"><a href="dictionary_V.html#156">describe</a>(</span><span class="string">&quot;Regular functionality&quot;</span><span class="default">, () =&gt; {</span>
+<a name="27"><font size=-1>27     </font></a><span class="default">    <a href="dictionary_V.html#153">beforeEach</a>(() =&gt; {</span>
+<a name="28"><font size=-1>28     </font></a><span class="default">        </span><span class="comment">/* structuredClone() the original state of the example instances</span>
+<a name="29"><font size=-1>29     </font></a><span class="comment">         * are kept for a fresh start before every test */</span>
+<a name="30"><font size=-1>30     </font></a><span class="comment">        <a href="dictionary_F.html#4978">fork</a> </span><span class="default">= <a href="dictionary_S.html#4979">structuredClone</a>(<a href="dictionary_E.html#4967">example_fork</a>);</span>
+<a name="31"><font size=-1>31     </font></a><span class="default">        <a href="dictionary_F.html#4977">filter</a> = <a href="dictionary_S.html#4979">structuredClone</a>(<a href="dictionary_E.html#4964">example_filter</a>);</span>
+<a name="32"><font size=-1>32     </font></a><span class="default">        </span><span class="comment">// if (fork.created_at != null) {</span>
+<a name="33"><font size=-1>33     </font></a><span class="comment">        //     fork.created_at = new Date(fork.created_at.toString());</span>
+<a name="34"><font size=-1>34     </font></a><span class="comment">        // }</span>
+<a name="35"><font size=-1>35     </font></a><span class="comment">        // the base is that we include all forks based on date:</span>
+<a name="36"><font size=-1>36     </font></a><span class="comment">    </span><span class="default">});</span>
+<a name="37"><font size=-1>37     </font></a><span class="default"></span>
+<a name="38"><font size=-1>38     </font></a><span class="default"></span>
+<a name="39"><font size=-1>39     </font></a><span class="default">    <a href="dictionary_V.html#156">describe</a>(</span><span class="string">&quot;Owner type&quot;</span><span class="default">, () =&gt; {</span>
+<a name="40"><font size=-1>40     </font></a><span class="default">        <a href="dictionary_V.html#165">it</a>(</span><span class="string">&quot;should return an array containing the same fork(s) - ownerType is valid&quot;</span><span class="default">, () =&gt; {</span>
+<a name="41"><font size=-1>41     </font></a><span class="default">            <a href="dictionary_F.html#4977">filter</a>.<a href="dictionary_F.html#4302">ownerTypes</a> = [</span><span class="string">&quot;User&quot;</span><span class="default">];</span>
+<a name="42"><font size=-1>42     </font></a><span class="default">            <a href="dictionary_F.html#4978">fork</a>.<a href="dictionary_U.html#4334">ownerType</a> = </span><span class="string">&quot;User&quot;</span><span class="default">;</span>
+<a name="43"><font size=-1>43     </font></a><span class="default">            <a href="dictionary_V.html#157">expect</a>(</span>
+<a name="44"><font size=-1>44     </font></a><span class="default">                [<a href="dictionary_F.html#4978">fork</a>].filter((<a href="dictionary_&.html#4950">fork</a> =&gt; <a href="dictionary_I.html#4981">isValidForkByFilter</a>(<a href="dictionary_&.html#4950">fork</a>, <a href="dictionary_F.html#4977">filter</a>)))</span>
+<a name="45"><font size=-1>45     </font></a><span class="default">            ).<a href="dictionary_T.html#4776">toStrictEqual</a>([<a href="dictionary_F.html#4978">fork</a>]);</span>
+<a name="46"><font size=-1>46     </font></a><span class="default">        });</span>
+<a name="47"><font size=-1>47     </font></a><span class="default"></span>
+<a name="48"><font size=-1>48     </font></a><span class="default">        <a href="dictionary_V.html#165">it</a>(</span><span class="string">&quot;should return an array containing no forks - ownerType is not valid&quot;</span><span class="default">, () =&gt; {</span>
+<a name="49"><font size=-1>49     </font></a><span class="default">            <a href="dictionary_F.html#4977">filter</a>.<a href="dictionary_F.html#4302">ownerTypes</a> = [</span><span class="string">&quot;User&quot;</span><span class="default">];</span>
+<a name="50"><font size=-1>50     </font></a><span class="default">            <a href="dictionary_F.html#4978">fork</a>.<a href="dictionary_U.html#4334">ownerType</a> = </span><span class="string">&quot;Organization&quot;</span><span class="default">;</span>
+<a name="51"><font size=-1>51     </font></a><span class="default">            <a href="dictionary_V.html#157">expect</a>(</span>
+<a name="52"><font size=-1>52     </font></a><span class="default">                [<a href="dictionary_F.html#4978">fork</a>].filter((<a href="dictionary_&.html#4953">fork</a> =&gt; <a href="dictionary_I.html#4981">isValidForkByFilter</a>(<a href="dictionary_&.html#4953">fork</a>, <a href="dictionary_F.html#4977">filter</a>)))</span>
+<a name="53"><font size=-1>53     </font></a><span class="default">            ).<a href="dictionary_T.html#4776">toStrictEqual</a>([]);</span>
+<a name="54"><font size=-1>54     </font></a><span class="default">        });</span>
+<a name="55"><font size=-1>55     </font></a><span class="default">    });</span>
+<a name="56"><font size=-1>56     </font></a><span class="default"></span>
+<a name="57"><font size=-1>57     </font></a><span class="default">    <a href="dictionary_V.html#156">describe</a>(</span><span class="string">&quot;Updated in last n months&quot;</span><span class="default">, () =&gt; {</span>
+<a name="58"><font size=-1>58     </font></a><span class="default">        <a href="dictionary_V.html#165">it</a>(</span><span class="string">&quot;should return an array containing the same fork(s) - nrOfMonths is undefined&quot;</span><span class="default">, () =&gt; {</span>
+<a name="59"><font size=-1>59     </font></a><span class="default">            <a href="dictionary_F.html#4977">filter</a>.<a href="dictionary_F.html#4303">updatedInLastMonths</a> = undefined;</span>
+<a name="60"><font size=-1>60     </font></a><span class="default">            <a href="dictionary_V.html#157">expect</a>(</span>
+<a name="61"><font size=-1>61     </font></a><span class="default">                [<a href="dictionary_F.html#4978">fork</a>].filter((<a href="dictionary_&.html#4963">fork</a> =&gt; <a href="dictionary_I.html#4981">isValidForkByFilter</a>(<a href="dictionary_&.html#4963">fork</a>, <a href="dictionary_F.html#4977">filter</a>)))</span>
+<a name="62"><font size=-1>62     </font></a><span class="default">            ).<a href="dictionary_T.html#4776">toStrictEqual</a>([<a href="dictionary_F.html#4978">fork</a>]);</span>
+<a name="63"><font size=-1>63     </font></a><span class="default">        });</span>
+<a name="64"><font size=-1>64     </font></a><span class="default"></span>
+<a name="65"><font size=-1>65     </font></a><span class="default">        <a href="dictionary_V.html#165">it</a>(</span><span class="string">&quot;should return empty array - fork last update was NOT within last n months&quot;</span><span class="default">, () =&gt; {</span>
+<a name="66"><font size=-1>66     </font></a><span class="default">            <a href="dictionary_F.html#4977">filter</a>.<a href="dictionary_F.html#4303">updatedInLastMonths</a> = </span><span class="number">1</span><span class="default">; </span><span class="comment">// 20 years</span>
+<a name="67"><font size=-1>67     </font></a><span class="comment">            <a href="dictionary_F.html#4978">fork</a></span><span class="default">.<a href="dictionary_U.html#4330">last_pushed</a> = </span><span class="keyword">new </span><span class="default">Date(</span><span class="string">&quot;2022-09-14T06:51:16Z&quot;</span><span class="default">);</span>
+<a name="68"><font size=-1>68     </font></a><span class="default">            <a href="dictionary_V.html#157">expect</a>(</span>
+<a name="69"><font size=-1>69     </font></a><span class="default">                [<a href="dictionary_F.html#4978">fork</a>].filter((<a href="dictionary_&.html#4957">fork</a> =&gt; <a href="dictionary_I.html#4981">isValidForkByFilter</a>(<a href="dictionary_&.html#4957">fork</a>, <a href="dictionary_F.html#4977">filter</a>)))</span>
+<a name="70"><font size=-1>70     </font></a><span class="default">            ).<a href="dictionary_T.html#4776">toStrictEqual</a>([]);</span>
+<a name="71"><font size=-1>71     </font></a><span class="default">        });</span>
+<a name="72"><font size=-1>72     </font></a><span class="default"></span>
+<a name="73"><font size=-1>73     </font></a><span class="default">        <a href="dictionary_V.html#165">it</a>(</span><span class="string">&quot;should return an array containing the same fork(s) - fork last update was within last n months&quot;</span><span class="default">, () =&gt; {</span>
+<a name="74"><font size=-1>74     </font></a><span class="default">            <a href="dictionary_F.html#4977">filter</a>.<a href="dictionary_F.html#4303">updatedInLastMonths</a> = </span><span class="number">240</span><span class="default">; </span><span class="comment">// 20 years</span>
+<a name="75"><font size=-1>75     </font></a><span class="comment">            <a href="dictionary_V.html#157">expect</a></span><span class="default">(</span>
+<a name="76"><font size=-1>76     </font></a><span class="default">                [<a href="dictionary_F.html#4978">fork</a>].filter((<a href="dictionary_&.html#4960">fork</a> =&gt; <a href="dictionary_I.html#4981">isValidForkByFilter</a>(<a href="dictionary_&.html#4960">fork</a>, <a href="dictionary_F.html#4977">filter</a>)))</span>
+<a name="77"><font size=-1>77     </font></a><span class="default">            ).<a href="dictionary_T.html#4776">toStrictEqual</a>([<a href="dictionary_F.html#4978">fork</a>]);</span>
+<a name="78"><font size=-1>78     </font></a><span class="default">        });</span>
+<a name="79"><font size=-1>79     </font></a><span class="default">    });</span>
+<a name="80"><font size=-1>80     </font></a><span class="default">});</span>
+<a name="81"><font size=-1>81     </font></a><span class="default"></span>
+</pre></body></html>

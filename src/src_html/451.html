@@ -1,0 +1,37 @@
+<html><head><title>FilterForm.test.tsx</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="sourcestyles.css" />
+</head><body link="blue" vlink="blue">
+<h3>File: /Users/jasonfu/Projects/VisFork/src/Components/ConfigurationPane/FilterForm.test.tsx</h3>
+<SCRIPT>
+defaultStatus = "File: /Users/jasonfu/Projects/VisFork/src/Components/ConfigurationPane/FilterForm.test.tsx";
+top.document.title  = "FilterForm.test.tsx";
+</SCRIPT>
+<pre><span class="default"></span><a name="1"><font size=-1>1     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_T.html#462">fireEvent</a>, <a href="dictionary_T.html#466">render</a>, <a href="dictionary_T.html#467">screen</a> } from </span><span class="string">&quot;@Utils/test-utils&quot;</span><span class="default">;</span>
+<a name="2"><font size=-1>2     </font></a><span class="default"></span><span class="keyword">import <a href="dictionary_F.html#461">FilterForm</a> </span><span class="default">from </span><span class="string">&quot;./FilterForm&quot;</span><span class="default">;</span>
+<a name="3"><font size=-1>3     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_V.html#20">vi</a> } from </span><span class="string">&quot;vitest&quot;</span><span class="default">;</span>
+<a name="4"><font size=-1>4     </font></a><span class="default"></span>
+<a name="5"><font size=-1>5     </font></a><span class="default"></span>
+<a name="6"><font size=-1>6     </font></a><span class="default"><a href="dictionary_D.html#12">describe</a>(</span><span class="string">&quot;Filterform updates&quot;</span><span class="default">, () =&gt; {</span>
+<a name="7"><font size=-1>7     </font></a><span class="default">    </span><span class="keyword">const <a href="dictionary_&.html#460">mockedFunction</a> </span><span class="default">= <a href="dictionary_V.html#20">vi</a>.<a href="dictionary_F.html#160">fn</a>();</span>
+<a name="8"><font size=-1>8     </font></a><span class="default"></span>
+<a name="9"><font size=-1>9     </font></a><span class="default">    <a href="dictionary_B.html#327">beforeEach</a>(() =&gt; {</span>
+<a name="10"><font size=-1>10     </font></a><span class="default">        <a href="dictionary_T.html#466">render</a>(</span>
+<a name="11"><font size=-1>11     </font></a><span class="default">            &lt;<a href="dictionary_F.html#461">FilterForm</a></span>
+<a name="12"><font size=-1>12     </font></a><span class="default">                isDataLoading={</span><span class="keyword">false</span><span class="default">}</span>
+<a name="13"><font size=-1>13     </font></a><span class="default">                filterChangeHandler={<a href="dictionary_&.html#460">mockedFunction</a>}</span>
+<a name="14"><font size=-1>14     </font></a><span class="default">            /&gt;</span>
+<a name="15"><font size=-1>15     </font></a><span class="default">        );</span>
+<a name="16"><font size=-1>16     </font></a><span class="default">    });</span>
+<a name="17"><font size=-1>17     </font></a><span class="default"></span>
+<a name="18"><font size=-1>18     </font></a><span class="default">    <a href="dictionary_I.html#15">it</a>(</span><span class="string">&quot;should update when repository is changed&quot;</span><span class="default">, () =&gt; {</span>
+<a name="19"><font size=-1>19     </font></a><span class="default">        </span><span class="keyword">const <a href="dictionary_&.html#459">input</a> </span><span class="default">= <a href="dictionary_T.html#467">screen</a>.<a href="dictionary_G.html#464">getByPlaceholderText</a>(</span><span class="number">/torvalds\/linux/i</span><span class="default">);</span>
+<a name="20"><font size=-1>20     </font></a><span class="default"></span>
+<a name="21"><font size=-1>21     </font></a><span class="default">        <a href="dictionary_T.html#462">fireEvent</a>.<a href="dictionary_I.html#465">input</a>(<a href="dictionary_&.html#459">input</a>, { <a href="dictionary_&.html#455">target</a>: { <a href="dictionary_&.html#457">value</a>: </span><span class="string">&quot;a/b&quot; </span><span class="default">} });</span>
+<a name="22"><font size=-1>22     </font></a><span class="default"></span>
+<a name="23"><font size=-1>23     </font></a><span class="default">        <a href="dictionary_E.html#13">expect</a>(<a href="dictionary_&.html#459">input</a>.<a href="dictionary_G.html#463">getAttribute</a>(</span><span class="string">&quot;value&quot;</span><span class="default">)).<a href="dictionary_T.html#468">toEqual</a>(</span><span class="string">&quot;a/b&quot;</span><span class="default">);</span>
+<a name="24"><font size=-1>24     </font></a><span class="default">    });</span>
+<a name="25"><font size=-1>25     </font></a><span class="default">});</span>
+<a name="26"><font size=-1>26     </font></a><span class="default"></span>
+<a name="27"><font size=-1>27     </font></a><span class="default"></span>
+</pre></body></html>

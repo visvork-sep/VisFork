@@ -1,0 +1,142 @@
+<html><head><title>CommitTable.tsx</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="sourcestyles.css" />
+</head><body link="blue" vlink="blue">
+<h3>File: /Users/jasonfu/Projects/VisFork/src/Components/Plots/CommitTable/CommitTable.tsx</h3>
+<SCRIPT>
+defaultStatus = "File: /Users/jasonfu/Projects/VisFork/src/Components/Plots/CommitTable/CommitTable.tsx";
+top.document.title  = "CommitTable.tsx";
+</SCRIPT>
+<pre><span class="default"></span><a name="1"><font size=-1>1     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_E.html#1649">Column</a>, <a href="dictionary_E.html#1732">DataTable</a>, <a href="dictionary_E.html#1735">Table</a> } from </span><span class="string">&quot;@primer/react/experimental&quot;</span><span class="default">;</span>
+<a name="2"><font size=-1>2     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_R.html#214">Box</a>, <a href="dictionary_R.html#1733">Link</a>, <a href="dictionary_R.html#175">useTheme</a> } from </span><span class="string">&quot;@primer/react&quot;</span><span class="default">;</span>
+<a name="3"><font size=-1>3     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_R.html#239">useState</a>, <a href="dictionary_R.html#532">useMemo</a>, <a href="dictionary_R.html#526">memo</a>, <a href="dictionary_R.html#419">useEffect</a> } from </span><span class="string">&quot;react&quot;</span><span class="default">;</span>
+<a name="4"><font size=-1>4     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_C.html#1620">CommitTableDetails</a>, <a href="dictionary_C.html#1729">CommitTableProps</a> } from </span><span class="string">&quot;@VisInterfaces/CommitTableData&quot;</span><span class="default">;</span>
+<a name="5"><font size=-1>5     </font></a><span class="default"></span><span class="keyword">import <a href="dictionary_S.html#1734">SearchBar</a> </span><span class="default">from </span><span class="string">&quot;./SearchBar&quot;</span><span class="default">;</span>
+<a name="6"><font size=-1>6     </font></a><span class="default"></span>
+<a name="7"><font size=-1>7     </font></a><span class="default"></span><span class="keyword">function <a href="dictionary_C.html#1651">CommitTable</a></span><span class="default">({ <a href="dictionary_C.html#1710">commitData</a>, <a href="dictionary_C.html#1716">handleSearchBarSubmission</a> }: CommitTableProps) {</span>
+<a name="8"><font size=-1>8     </font></a><span class="default">    </span><span class="comment">// Fetch current color mode (light or dark)</span>
+<a name="9"><font size=-1>9     </font></a><span class="comment">    </span><span class="keyword">const </span><span class="default">{ <a href="dictionary_C.html#1660">colorMode</a> } = <a href="dictionary_R.html#175">useTheme</a>();</span>
+<a name="10"><font size=-1>10     </font></a><span class="default"></span>
+<a name="11"><font size=-1>11     </font></a><span class="default"></span>
+<a name="12"><font size=-1>12     </font></a><span class="default">    </span><span class="comment">// Memoize hyperlink color based on color mode</span>
+<a name="13"><font size=-1>13     </font></a><span class="comment">    </span><span class="keyword">const <a href="dictionary_C.html#1717">linkColor</a> </span><span class="default">= <a href="dictionary_R.html#532">useMemo</a>(() =&gt; {</span>
+<a name="14"><font size=-1>14     </font></a><span class="default">        </span><span class="keyword">return <a href="dictionary_C.html#1660">colorMode</a> </span><span class="default">=== </span><span class="string">&quot;dark&quot; </span><span class="default">|| <a href="dictionary_C.html#1660">colorMode</a> === </span><span class="string">&quot;night&quot; </span><span class="default">? </span><span class="string">&quot;white&quot; </span><span class="default">: </span><span class="string">&quot;black&quot;</span><span class="default">;</span>
+<a name="15"><font size=-1>15     </font></a><span class="default">    }, [<a href="dictionary_C.html#1660">colorMode</a>]);</span>
+<a name="16"><font size=-1>16     </font></a><span class="default"></span>
+<a name="17"><font size=-1>17     </font></a><span class="default">    </span><span class="keyword">const </span><span class="default">[<a href="dictionary_C.html#1727">searchTerm</a>, <a href="dictionary_C.html#1728">setSearchTerm</a>] = <a href="dictionary_R.html#239">useState</a>(</span><span class="string">&quot;&quot;</span><span class="default">);</span>
+<a name="18"><font size=-1>18     </font></a><span class="default"></span>
+<a name="19"><font size=-1>19     </font></a><span class="default">    </span><span class="keyword">const <a href="dictionary_C.html#1719">onSearch</a> </span><span class="default">= (<a href="dictionary_C.html#1720">term</a>: string) =&gt; {</span>
+<a name="20"><font size=-1>20     </font></a><span class="default">        <a href="dictionary_C.html#1728">setSearchTerm</a>(<a href="dictionary_C.html#1720">term</a>); </span><span class="comment">// Update the search term state</span>
+<a name="21"><font size=-1>21     </font></a><span class="comment">    </span><span class="default">};</span>
+<a name="22"><font size=-1>22     </font></a><span class="default"></span>
+<a name="23"><font size=-1>23     </font></a><span class="default">    </span><span class="keyword">const <a href="dictionary_C.html#1721">preprocessedData</a> </span><span class="default">= <a href="dictionary_R.html#532">useMemo</a>(() =&gt; {</span>
+<a name="24"><font size=-1>24     </font></a><span class="default">        </span><span class="keyword">return <a href="dictionary_C.html#1710">commitData</a></span><span class="default">.<a href="dictionary_M.html#633">map</a>(<a href="dictionary_C.html#1726">commit</a> =&gt; ({</span>
+<a name="25"><font size=-1>25     </font></a><span class="default">            ...<a href="dictionary_C.html#1726">commit</a>,</span>
+<a name="26"><font size=-1>26     </font></a><span class="default">            <a href="dictionary_C.html#1724">lowerMessage</a>: <a href="dictionary_C.html#1726">commit</a>.<a href="dictionary_M.html#344">message</a>.<a href="dictionary_T.html#1737">toLowerCase</a>() </span><span class="comment">// Store lowercase message</span>
+<a name="27"><font size=-1>27     </font></a><span class="comment">        </span><span class="default">}));</span>
+<a name="28"><font size=-1>28     </font></a><span class="default">    }, [<a href="dictionary_C.html#1710">commitData</a>]);</span>
+<a name="29"><font size=-1>29     </font></a><span class="default"></span>
+<a name="30"><font size=-1>30     </font></a><span class="default">    </span><span class="comment">// Memoize filtered data to prevent unnecessary recalculations</span>
+<a name="31"><font size=-1>31     </font></a><span class="comment">    </span><span class="keyword">const <a href="dictionary_C.html#1711">filteredData</a> </span><span class="default">= <a href="dictionary_R.html#532">useMemo</a>(() =&gt; {</span>
+<a name="32"><font size=-1>32     </font></a><span class="default">        </span><span class="keyword">const <a href="dictionary_C.html#1715">lowerSearch</a> </span><span class="default">= <a href="dictionary_C.html#1727">searchTerm</a>.<a href="dictionary_T.html#1737">toLowerCase</a>();</span>
+<a name="33"><font size=-1>33     </font></a><span class="default">        </span><span class="keyword">return <a href="dictionary_C.html#1721">preprocessedData</a></span><span class="default">.<a href="dictionary_F.html#912">filter</a>(<a href="dictionary_C.html#1714">commit</a> =&gt;</span>
+<a name="34"><font size=-1>34     </font></a><span class="default">            <a href="dictionary_C.html#1714">commit</a>.<a href="dictionary_L.html#1725">lowerMessage</a>.<a href="dictionary_I.html#632">includes</a>(<a href="dictionary_C.html#1715">lowerSearch</a>)</span>
+<a name="35"><font size=-1>35     </font></a><span class="default">        );</span>
+<a name="36"><font size=-1>36     </font></a><span class="default">    }, [<a href="dictionary_C.html#1721">preprocessedData</a>, <a href="dictionary_C.html#1727">searchTerm</a>]);</span>
+<a name="37"><font size=-1>37     </font></a><span class="default"></span>
+<a name="38"><font size=-1>38     </font></a><span class="default">    <a href="dictionary_R.html#419">useEffect</a>(() =&gt; {</span>
+<a name="39"><font size=-1>39     </font></a><span class="default">        </span><span class="comment">// Extract hashes from filtered data</span>
+<a name="40"><font size=-1>40     </font></a><span class="comment">        </span><span class="keyword">const <a href="dictionary_C.html#1657">hashes</a> </span><span class="default">= <a href="dictionary_C.html#1711">filteredData</a>.<a href="dictionary_M.html#633">map</a>(<a href="dictionary_C.html#1659">commit</a> =&gt; <a href="dictionary_C.html#1659">commit</a>.<a href="dictionary_I.html#338">id</a>);</span>
+<a name="41"><font size=-1>41     </font></a><span class="default">        <a href="dictionary_C.html#1716">handleSearchBarSubmission</a>(<a href="dictionary_C.html#1657">hashes</a>); </span><span class="comment">// Pass the hashes to the parent component</span>
+<a name="42"><font size=-1>42     </font></a><span class="comment">    </span><span class="default">}, [<a href="dictionary_C.html#1711">filteredData</a>, <a href="dictionary_C.html#1716">handleSearchBarSubmission</a>]);</span>
+<a name="43"><font size=-1>43     </font></a><span class="default"></span>
+<a name="44"><font size=-1>44     </font></a><span class="default">    </span><span class="comment">// Memoize column definitions</span>
+<a name="45"><font size=-1>45     </font></a><span class="comment">    </span><span class="keyword">const <a href="dictionary_C.html#1661">columns</a></span><span class="default">: <a href="dictionary_C.html#1650">Column</a>&lt;CommitTableDetails&gt;[] = <a href="dictionary_R.html#532">useMemo</a>(() =&gt; [</span>
+<a name="46"><font size=-1>46     </font></a><span class="default">        {</span>
+<a name="47"><font size=-1>47     </font></a><span class="default">            <a href="dictionary_C.html#1665">header</a>: </span><span class="string">&quot;Owner/Repo&quot;</span><span class="default">,</span>
+<a name="48"><font size=-1>48     </font></a><span class="default">            <a href="dictionary_C.html#1663">field</a>: </span><span class="string">&quot;repo&quot;</span><span class="default">,</span>
+<a name="49"><font size=-1>49     </font></a><span class="default">            <a href="dictionary_C.html#1673">rowHeader</a>: </span><span class="keyword">true</span><span class="default">,</span>
+<a name="50"><font size=-1>50     </font></a><span class="default">            <a href="dictionary_C.html#1675">width</a>: </span><span class="string">&quot;auto&quot;</span><span class="default">,</span>
+<a name="51"><font size=-1>51     </font></a><span class="default">            <a href="dictionary_C.html#1666">renderCell</a>: (<a href="dictionary_C.html#1672">row</a>: CommitTableDetails) =&gt; (</span>
+<a name="52"><font size=-1>52     </font></a><span class="default">                &lt;<a href="dictionary_R.html#1733">Link</a></span>
+<a name="53"><font size=-1>53     </font></a><span class="default">                    href={`https:</span><span class="comment">//github.com/${row.repo}`}</span>
+<a name="54"><font size=-1>54     </font></a><span class="comment">                    </span><span class="default">target=</span><span class="string">&quot;_blank&quot;</span>
+<a name="55"><font size=-1>55     </font></a><span class="string">                    </span><span class="default">rel=</span><span class="string">&quot;noopener noreferrer&quot;</span>
+<a name="56"><font size=-1>56     </font></a><span class="string">                    </span><span class="default">sx={{ <a href="dictionary_C.html#1669">color</a>: <a href="dictionary_C.html#1717">linkColor</a>, <a href="dictionary_C.html#1670">textDecoration</a>: </span><span class="string">&quot;none&quot; </span><span class="default">}}</span>
+<a name="57"><font size=-1>57     </font></a><span class="default">                &gt;</span>
+<a name="58"><font size=-1>58     </font></a><span class="default">                    {<a href="dictionary_C.html#1672">row</a>.<a href="dictionary_R.html#350">repo</a>}</span>
+<a name="59"><font size=-1>59     </font></a><span class="default">                &lt;</span><span class="number">/Link&gt;</span>
+<a name="60"><font size=-1>60     </font></a><span class="number">            </span><span class="default">),</span>
+<a name="61"><font size=-1>61     </font></a><span class="default">        },</span>
+<a name="62"><font size=-1>62     </font></a><span class="default">        {</span>
+<a name="63"><font size=-1>63     </font></a><span class="default">            <a href="dictionary_C.html#1677">header</a>: </span><span class="string">&quot;Author&quot;</span><span class="default">,</span>
+<a name="64"><font size=-1>64     </font></a><span class="default">            <a href="dictionary_C.html#1676">field</a>: </span><span class="string">&quot;author&quot;</span><span class="default">,</span>
+<a name="65"><font size=-1>65     </font></a><span class="default">            <a href="dictionary_C.html#1683">rowHeader</a>: </span><span class="keyword">true</span><span class="default">,</span>
+<a name="66"><font size=-1>66     </font></a><span class="default">            <a href="dictionary_C.html#1684">width</a>: </span><span class="string">&quot;auto&quot;</span><span class="default">,</span>
+<a name="67"><font size=-1>67     </font></a><span class="default">            <a href="dictionary_C.html#1678">renderCell</a>: (<a href="dictionary_C.html#1682">row</a>: CommitTableDetails) =&gt; (</span>
+<a name="68"><font size=-1>68     </font></a><span class="default">                &lt;<a href="dictionary_R.html#1733">Link</a></span>
+<a name="69"><font size=-1>69     </font></a><span class="default">                    </span><span class="comment">// This is the link to the author's GitHub profile using the username</span>
+<a name="70"><font size=-1>70     </font></a><span class="comment">                    </span><span class="default">href={`https:</span><span class="comment">//github.com/${row.login}`}</span>
+<a name="71"><font size=-1>71     </font></a><span class="comment">                    </span><span class="default">target=</span><span class="string">&quot;_blank&quot;</span>
+<a name="72"><font size=-1>72     </font></a><span class="string">                    </span><span class="default">rel=</span><span class="string">&quot;noopener noreferrer&quot;</span>
+<a name="73"><font size=-1>73     </font></a><span class="string">                    </span><span class="default">sx={{ <a href="dictionary_C.html#1680">color</a>: <a href="dictionary_C.html#1717">linkColor</a>, <a href="dictionary_C.html#1681">textDecoration</a>: </span><span class="string">&quot;none&quot; </span><span class="default">}}</span>
+<a name="74"><font size=-1>74     </font></a><span class="default">                &gt;</span>
+<a name="75"><font size=-1>75     </font></a><span class="default">                    {<a href="dictionary_C.html#1682">row</a>.<a href="dictionary_A.html#330">author</a>}</span>
+<a name="76"><font size=-1>76     </font></a><span class="default">                &lt;</span><span class="number">/Link&gt;</span>
+<a name="77"><font size=-1>77     </font></a><span class="number">            </span><span class="default">),</span>
+<a name="78"><font size=-1>78     </font></a><span class="default">        },</span>
+<a name="79"><font size=-1>79     </font></a><span class="default">        {</span>
+<a name="80"><font size=-1>80     </font></a><span class="default">            <a href="dictionary_C.html#1686">header</a>: </span><span class="string">&quot;Commit Date&quot;</span><span class="default">,</span>
+<a name="81"><font size=-1>81     </font></a><span class="default">            <a href="dictionary_C.html#1685">field</a>: </span><span class="string">&quot;date&quot;</span><span class="default">,</span>
+<a name="82"><font size=-1>82     </font></a><span class="default">            <a href="dictionary_C.html#1687">rowHeader</a>: </span><span class="keyword">true</span><span class="default">,</span>
+<a name="83"><font size=-1>83     </font></a><span class="default">            <a href="dictionary_C.html#1688">width</a>: </span><span class="string">&quot;auto&quot;</span><span class="default">,</span>
+<a name="84"><font size=-1>84     </font></a><span class="default">        },</span>
+<a name="85"><font size=-1>85     </font></a><span class="default">        {</span>
+<a name="86"><font size=-1>86     </font></a><span class="default">            <a href="dictionary_C.html#1690">header</a>: </span><span class="string">&quot;Commit Message&quot;</span><span class="default">,</span>
+<a name="87"><font size=-1>87     </font></a><span class="default">            <a href="dictionary_C.html#1689">field</a>: </span><span class="string">&quot;message&quot;</span><span class="default">,</span>
+<a name="88"><font size=-1>88     </font></a><span class="default">            <a href="dictionary_C.html#1691">rowHeader</a>: </span><span class="keyword">true</span><span class="default">,</span>
+<a name="89"><font size=-1>89     </font></a><span class="default">            <a href="dictionary_C.html#1692">width</a>: </span><span class="string">&quot;auto&quot;</span><span class="default">,</span>
+<a name="90"><font size=-1>90     </font></a><span class="default">        },</span>
+<a name="91"><font size=-1>91     </font></a><span class="default">        {</span>
+<a name="92"><font size=-1>92     </font></a><span class="default">            <a href="dictionary_C.html#1694">header</a>: </span><span class="string">&quot;Hash&quot;</span><span class="default">,</span>
+<a name="93"><font size=-1>93     </font></a><span class="default">            <a href="dictionary_C.html#1693">field</a>: </span><span class="string">&quot;id&quot;</span><span class="default">,</span>
+<a name="94"><font size=-1>94     </font></a><span class="default">            <a href="dictionary_C.html#1708">rowHeader</a>: </span><span class="keyword">true</span><span class="default">,</span>
+<a name="95"><font size=-1>95     </font></a><span class="default">            <a href="dictionary_C.html#1709">width</a>: </span><span class="string">&quot;auto&quot;</span><span class="default">,</span>
+<a name="96"><font size=-1>96     </font></a><span class="default">            <a href="dictionary_C.html#1695">renderCell</a>: (<a href="dictionary_C.html#1707">row</a>: CommitTableDetails) =&gt; (</span>
+<a name="97"><font size=-1>97     </font></a><span class="default">                &lt;<a href="dictionary_R.html#214">Box</a></span>
+<a name="98"><font size=-1>98     </font></a><span class="default">                    sx={{</span>
+<a name="99"><font size=-1>99     </font></a><span class="default">                        <a href="dictionary_C.html#1701">whiteSpace</a>: </span><span class="string">&quot;normal&quot;</span><span class="default">,</span>
+<a name="100"><font size=-1>100     </font></a><span class="default">                        <a href="dictionary_C.html#1703">wordBreak</a>: </span><span class="string">&quot;break-all&quot;</span><span class="default">,</span>
+<a name="101"><font size=-1>101     </font></a><span class="default">                        <a href="dictionary_C.html#1699">overflowWrap</a>: </span><span class="string">&quot;break-word&quot;</span><span class="default">,</span>
+<a name="102"><font size=-1>102     </font></a><span class="default">                        <a href="dictionary_C.html#1697">minWidth</a>: </span><span class="string">&quot;50px&quot;</span><span class="default">,</span>
+<a name="103"><font size=-1>103     </font></a><span class="default">                    }}</span>
+<a name="104"><font size=-1>104     </font></a><span class="default">                &gt;</span>
+<a name="105"><font size=-1>105     </font></a><span class="default">                    &lt;<a href="dictionary_R.html#1733">Link</a></span>
+<a name="106"><font size=-1>106     </font></a><span class="default">                        href={`https:</span><span class="comment">//github.com/${row.repo}/commit/${row.id}`}</span>
+<a name="107"><font size=-1>107     </font></a><span class="comment">                        </span><span class="default">target=</span><span class="string">&quot;_blank&quot;</span>
+<a name="108"><font size=-1>108     </font></a><span class="string">                        </span><span class="default">rel=</span><span class="string">&quot;noopener noreferrer&quot;</span>
+<a name="109"><font size=-1>109     </font></a><span class="string">                        </span><span class="default">sx={{ <a href="dictionary_C.html#1705">color</a>: <a href="dictionary_C.html#1717">linkColor</a>, <a href="dictionary_C.html#1706">textDecoration</a>: </span><span class="string">&quot;none&quot; </span><span class="default">}}</span>
+<a name="110"><font size=-1>110     </font></a><span class="default">                    &gt;</span>
+<a name="111"><font size=-1>111     </font></a><span class="default">                        {<a href="dictionary_C.html#1707">row</a>.<a href="dictionary_I.html#338">id</a>.<a href="dictionary_S.html#1736">substring</a>(</span><span class="number">0</span><span class="default">, </span><span class="number">7</span><span class="default">)}</span>
+<a name="112"><font size=-1>112     </font></a><span class="default">                    &lt;</span><span class="number">/Link&gt;</span>
+<a name="113"><font size=-1>113     </font></a><span class="number">                </span><span class="default">&lt;</span><span class="number">/Box&gt;</span>
+<a name="114"><font size=-1>114     </font></a><span class="number">            </span><span class="default">),</span>
+<a name="115"><font size=-1>115     </font></a><span class="default">        },</span>
+<a name="116"><font size=-1>116     </font></a><span class="default">    ], [<a href="dictionary_C.html#1717">linkColor</a>]);</span>
+<a name="117"><font size=-1>117     </font></a><span class="default"></span>
+<a name="118"><font size=-1>118     </font></a><span class="default">    </span><span class="keyword">return </span><span class="default">(</span>
+<a name="119"><font size=-1>119     </font></a><span class="default">        &lt;<a href="dictionary_R.html#214">Box</a>&gt;</span>
+<a name="120"><font size=-1>120     </font></a><span class="default">            &lt;<a href="dictionary_S.html#1734">SearchBar</a> onSearch={<a href="dictionary_C.html#1719">onSearch</a>} /&gt;</span>
+<a name="121"><font size=-1>121     </font></a><span class="default"></span>
+<a name="122"><font size=-1>122     </font></a><span class="default">            &lt;<a href="dictionary_R.html#214">Box</a> sx={{ <a href="dictionary_C.html#1652">maxHeight</a>: </span><span class="string">&quot;510px&quot;</span><span class="default">, <a href="dictionary_C.html#1654">overflowY</a>: </span><span class="string">&quot;auto&quot; </span><span class="default">}}&gt;</span>
+<a name="123"><font size=-1>123     </font></a><span class="default">                &lt;<a href="dictionary_E.html#1735">Table</a>.<a href="dictionary_C.html#1731">Container</a>&gt;</span>
+<a name="124"><font size=-1>124     </font></a><span class="default">                    &lt;<a href="dictionary_E.html#1732">DataTable</a> data={<a href="dictionary_C.html#1711">filteredData</a>} columns={<a href="dictionary_C.html#1661">columns</a>} /&gt;</span>
+<a name="125"><font size=-1>125     </font></a><span class="default">                &lt;</span><span class="number">/Table.Container&gt;</span>
+<a name="126"><font size=-1>126     </font></a><span class="number">            </span><span class="default">&lt;</span><span class="number">/Box&gt;</span>
+<a name="127"><font size=-1>127     </font></a><span class="number">        </span><span class="default">&lt;</span><span class="number">/Box&gt;</span>
+<a name="128"><font size=-1>128     </font></a><span class="number">    </span><span class="default">);</span>
+<a name="129"><font size=-1>129     </font></a><span class="default">};</span>
+<a name="130"><font size=-1>130     </font></a><span class="default"></span>
+<a name="131"><font size=-1>131     </font></a><span class="default"></span><span class="keyword">export default <a href="dictionary_R.html#526">memo</a></span><span class="default">(<a href="dictionary_C.html#1651">CommitTable</a>);</span>
+<a name="132"><font size=-1>132     </font></a><span class="default"></span>
+</pre></body></html>

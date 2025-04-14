@@ -1,0 +1,31 @@
+<html><head><title>ConfigurationPane.tsx</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="sourcestyles.css" />
+</head><body link="blue" vlink="blue">
+<h3>File: /Users/jasonfu/Projects/VisFork/src/Components/ConfigurationPane/ConfigurationPane.tsx</h3>
+<SCRIPT>
+defaultStatus = "File: /Users/jasonfu/Projects/VisFork/src/Components/ConfigurationPane/ConfigurationPane.tsx";
+top.document.title  = "ConfigurationPane.tsx";
+</SCRIPT>
+<pre><span class="default"></span><a name="1"><font size=-1>1     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_R.html#224">Stack</a> } from </span><span class="string">&quot;@primer/react&quot;</span><span class="default">;</span>
+<a name="2"><font size=-1>2     </font></a><span class="default"></span><span class="keyword">import <a href="dictionary_F.html#448">FilterForm</a> </span><span class="default">from </span><span class="string">&quot;@Components/ConfigurationPane/FilterForm&quot;</span><span class="default">;</span>
+<a name="3"><font size=-1>3     </font></a><span class="default"></span><span class="keyword">import </span><span class="default">{ <a href="dictionary_U.html#446">FilterChangeHandler</a> } from </span><span class="string">&quot;@Hooks/useFilteredData&quot;</span><span class="default">;</span>
+<a name="4"><font size=-1>4     </font></a><span class="default"></span>
+<a name="5"><font size=-1>5     </font></a><span class="default"></span><span class="keyword">interface </span><span class="default">ConfigurationPaneProps {</span>
+<a name="6"><font size=-1>6     </font></a><span class="default">    <a href="dictionary_C.html#442">filterChangeHandler</a>: <a href="dictionary_F.html#447">FilterChangeHandler</a>;</span>
+<a name="7"><font size=-1>7     </font></a><span class="default">    <a href="dictionary_C.html#444">isDataLoading</a>: </span><span class="keyword">boolean</span><span class="default">;</span>
+<a name="8"><font size=-1>8     </font></a><span class="default">};</span>
+<a name="9"><font size=-1>9     </font></a><span class="default"></span>
+<a name="10"><font size=-1>10     </font></a><span class="default"></span><span class="keyword">function <a href="dictionary_C.html#438">ConfigurationPane</a></span><span class="default">({ <a href="dictionary_C.html#439">filterChangeHandler</a>, <a href="dictionary_C.html#440">isDataLoading</a> }: ConfigurationPaneProps) {</span>
+<a name="11"><font size=-1>11     </font></a><span class="default">    </span><span class="keyword">return </span><span class="default">(</span>
+<a name="12"><font size=-1>12     </font></a><span class="default">        &lt;<a href="dictionary_R.html#224">Stack</a> gap=</span><span class="string">&quot;condensed&quot;</span><span class="default">&gt;</span>
+<a name="13"><font size=-1>13     </font></a><span class="default">            &lt;<a href="dictionary_R.html#224">Stack</a>.<a href="dictionary_I.html#220">Item</a>&gt;</span>
+<a name="14"><font size=-1>14     </font></a><span class="default">                &lt;<a href="dictionary_F.html#448">FilterForm</a> filterChangeHandler={<a href="dictionary_C.html#439">filterChangeHandler</a>} isDataLoading={<a href="dictionary_C.html#440">isDataLoading</a>} /&gt;</span>
+<a name="15"><font size=-1>15     </font></a><span class="default">            &lt;</span><span class="number">/Stack.Item&gt;</span>
+<a name="16"><font size=-1>16     </font></a><span class="number">        </span><span class="default">&lt;</span><span class="number">/Stack&gt;</span>
+<a name="17"><font size=-1>17     </font></a><span class="number">    </span><span class="default">);</span>
+<a name="18"><font size=-1>18     </font></a><span class="default">}</span>
+<a name="19"><font size=-1>19     </font></a><span class="default"></span>
+<a name="20"><font size=-1>20     </font></a><span class="default"></span><span class="keyword">export default <a href="dictionary_C.html#438">ConfigurationPane</a></span><span class="default">;</span>
+<a name="21"><font size=-1>21     </font></a><span class="default"></span>
+</pre></body></html>

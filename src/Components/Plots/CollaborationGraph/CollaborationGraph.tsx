@@ -16,7 +16,7 @@ import {
     getUniqueDates,
     getVisibleCommits,
     Link
-} from "./utils";
+} from "./CollaborationGraphUtils";
 
 
 

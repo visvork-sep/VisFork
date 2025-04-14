@@ -58,6 +58,8 @@ jobs:
       - name: Run tests
         run: docker exec visfork-ci npm run test
 
+        # {balanceParentheses=true, failOnDuplication=true, ignoreCharacterCase=true, ignoreCurlyBraces=true,
+          # ignoreIdentifierCase=true, ignoreModifiers=true, ignoreStringCase=true, language=xxx, threshold=6}
       - name: Run Simian Analysis
         run: |
           chmod +x .contrib/Simian/simian.sh
@@ -69,7 +71,14 @@ jobs:
             -excludes=test/**.ts \
             -excludes=src/**test.tsx \
             -excludes=test/**.tsx \
-            -balanceParentheses+
+            -balanceParentheses+ \
+            failOnDuplication=true \
+            ignoreCharacterCase=true \
+            ignoreCurlyBraces=true \
+            ignoreIdentifierCase=true \
+            ignoreModifiers=true \
+            ignoreStringCase=true \
+            threshold=6
 
           if grep -q "Found [1-9][0-9]* duplicate lines" simian.log; then
             echo "Duplicate code detected!"

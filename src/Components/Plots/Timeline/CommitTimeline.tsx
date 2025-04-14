@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState, useMemo, useCallback, memo } from "react";
 import { select } from "d3-selection";
 import { brush } from "d3-brush";
-import type { D3BrushEvent } from "d3-brush";
 import {
     graphStratify,
     grid,
@@ -17,6 +16,7 @@ import * as utils from "./timelineUtils";
 import * as graphics from "./timelineGraphics";
 import * as c from "./timelineConstants";
 import { themeGet, useTheme } from "@primer/react";
+import { interpolateRainbow } from "d3";
 
 function CommitTimeline({
     commitData,
@@ -30,16 +30,14 @@ function CommitTimeline({
 
     // Color controls
     const { colorMode, theme } = useTheme();
-    const isDarkMode = useMemo(() => {
-        return colorMode === "dark";
-    }, [colorMode]);
-    const colorScheme = useMemo(() => {
-        return { 
-            neutralLaneColor : themeGet("colors.neutral.muted")({ theme }),
-            accentedLaneColor : themeGet("colors.accent.muted")({ theme }),
-            markerColor : themeGet("colors.fg.subtle")({ theme }),
-            overlayColor : themeGet("colors.fg.muted")({ theme })};
-    }, [theme]);
+    const isDarkMode = colorMode === "dark";
+    const colorScheme = {
+        neutralLaneColor: themeGet("colors.neutral.muted")({ theme }),
+        accentedLaneColor: themeGet("colors.accent.muted")({ theme }),
+        markerColor: themeGet("colors.fg.subtle")({ theme }),
+        overlayColor: themeGet("colors.fg.muted")({ theme }),
+    };
+
 
     // Buttons style and hover/leave design
     const BUTTON_STYLE: React.CSSProperties = {
@@ -57,26 +55,32 @@ function CommitTimeline({
         e.currentTarget.style.backgroundColor = "transparent";
     
     // Memoize the color map
-    const colorMap = useMemo(() => utils.buildRepoColorMap(commitData), [commitData]);
+    const colorMap = useMemo(() => {
+        const repos = Array.from(new Set(commitData.map(c => c.repo)));
+        const map = new Map<string, string>();
+          
+        repos.forEach((repo, i) => {
+            map.set(repo, interpolateRainbow(i / repos.length));
+        });
+
+        return map;
+    }, [commitData]);
 
     // Precompute both views, update only when data changes
     const builder = graphStratify();
-    const dagMerged = useMemo(() => {
+    const { dagMerged, dagFull } = useMemo(() => {
+        let dagMerged = null, dagFull = null;
         try {
-            return builder(utils.groupNodes(commitData) as GroupedNode[]);
+            dagMerged = builder(utils.groupNodes(commitData) as GroupedNode[]);
         } catch (error) {
             console.error("Error building merged DAG:", error);
-            return null;
         }
-    }, [commitData]);
-
-    const dagFull = useMemo(() => {
         try {
-            return builder(commitData as Commit[]);
+            dagFull = builder(commitData as Commit[]);
         } catch (error) {
             console.error("Error building full DAG:", error);
-            return null;
         }
+        return { dagMerged, dagFull };
     }, [commitData]);
 
     // Draw the graph
@@ -131,9 +135,6 @@ function CommitTimeline({
         // Lane shading and author labels
         graphics.drawLanes(g, lanes, width, isDarkMode, colorScheme.neutralLaneColor, colorScheme.accentedLaneColor);
 
-        // month/year labels
-        graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor, merged);
-
         // Selection overlay for selectAll
         if (selectAll) {
             g.append("rect")
@@ -150,20 +151,25 @@ function CommitTimeline({
 
         let brushSelection: [[number, number], [number, number]] = [[0, 0], [0, 0]];
 
-        const brushStart = (event: D3BrushEvent<unknown>) => {
-            setSelectAll(false);
-            if (event.sourceEvent && event.sourceEvent.type !== "end") {
-                brushSelection = [[0, 0], [0, 0]];
-            }
-        };
-
-        const brushEnd =
-            (event: D3BrushEvent<unknown>) => {
+        const timelineBrush = brush<unknown>()
+            .extent([
+                [-c.MARGIN.left, 0],
+                [width - c.MARGIN.left, totalHeight],
+            ])
+            .on("start", (event) => {
+                setSelectAll(false);
+                if (event.sourceEvent?.type !== "end") {
+                    brushSelection = [[0, 0], [0, 0]];
+                }
+            })
+            .on("end", (event) => {
                 if (event.selection === null || !event.sourceEvent) return; // Exit if no selection
 
                 brushSelection = event.selection as [[number, number], [number, number]];
                 const [x0, y0] = brushSelection[0];
                 const [x1, y1] = brushSelection[1];
+
+                if (x0 === 0 && y0 === 0 && x1 === 0 && y1 === 0) return;
 
                 const selectedCommits = sortedNodes
                     .filter((node) => {
@@ -178,15 +184,7 @@ function CommitTimeline({
                     );
 
                 handleTimelineSelection(selectedCommits);
-            };
-
-        const timelineBrush = brush<unknown>()
-            .extent([
-                [-c.MARGIN.left, 0],
-                [width - c.MARGIN.left, totalHeight],
-            ])
-            .on("start", brushStart)
-            .on("end", brushEnd);
+            });
 
         // Create edges
         g.append("g")
@@ -232,8 +230,10 @@ function CommitTimeline({
             applyToolTip(squares as unknown as NodeSelection);
 
         } else {
+            // month/year labels
+            graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor);
+            
             const { circles } = graphics.drawNormalNodes(g, colorMap, sortedNodes);
-
             // Apply tooltips
             applyToolTip(circles as NodeSelection);
         }

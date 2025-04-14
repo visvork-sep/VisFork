@@ -1,4 +1,4 @@
-import { Selection, BaseType } from "d3-selection";
+import { Selection, BaseType, select } from "d3-selection";
 import { timeFormat } from "d3-time-format";
 import { symbol, symbolCircle, symbolSquare, symbolTriangle } from "d3-shape";
 
@@ -20,6 +20,17 @@ export interface GroupedNode extends Commit {
     end_date: string;
 }
 
+function filterByBranch(
+    nodes: MutGraphNode<GroupedNode, undefined>[],
+    branch: string
+): MutGraphNode<GroupedNode, undefined>[] {
+    const result = [];
+    for (const node of nodes) {
+        if (node.data.branch === branch) result.push(node);
+    }
+    return result;
+}
+
 export function drawLanes(
     g: Selection<SVGGElement, unknown, null, undefined>,
     lanes: Record<string, { minY: number; maxY: number }>,
@@ -30,7 +41,9 @@ export function drawLanes(
 ) {
     const backgrounds = g.append("g").attr("class", "repo-backgrounds");
   
-    Object.entries(lanes).forEach(([repo, { minY: minX, maxY: maxX }], i) => {
+    const entries = Object.entries(lanes);
+    for (let i = 0; i < entries.length; i++) {
+        const [repo, { minY: minX, maxY: maxX }] = entries[i];
         const laneColor = i % 2 === 0 ? darkColor : lightColor;
   
         backgrounds.append("rect")
@@ -48,7 +61,7 @@ export function drawLanes(
             .attr("alignment-baseline", "middle")
             .text(repo.split("/")[0])
             .attr("fill", `${isDarkMode ? "white" : "black"}`);
-    });
+    };
 }
 
 export function drawTimelineMarkers(
@@ -56,55 +69,51 @@ export function drawTimelineMarkers(
     sortedNodes: GraphNode<Commit | GroupedNode, unknown>[],
     totalHeight: number,
     isDarkMode: boolean,
-    colorMarker: string,
-    merged: boolean
-) {
-    if (!merged) {
-        const formatMonth = timeFormat("%b");
-        const formatYear = timeFormat("%Y");
-        let lastMonth = "";
-        let lastYear = "";
+    colorMarker: string) {
+    const formatMonth = timeFormat("%b");
+    const formatYear = timeFormat("%Y");
+    let lastMonth = "";
+    let lastYear = "";
         
-        const monthGroup = g.append("g").attr("class", "month-lines");
-        let lastLabelX = -Infinity;
+    const monthGroup = g.append("g").attr("class", "month-lines");
+    let lastLabelX = -Infinity;
         
-        for (const node of sortedNodes) {
-            const currentDate = new Date(node.data.date);
-            const currentMonth = formatMonth(currentDate);
-            const currentYear = formatYear(currentDate);
-            const labelX = node.x;
+    for (const node of sortedNodes) {
+        const currentDate = new Date(node.data.date);
+        const currentMonth = formatMonth(currentDate);
+        const currentYear = formatYear(currentDate);
+        const labelX = node.x;
         
-            if (currentMonth !== lastMonth) {
-                // always draw the vertical line
-                monthGroup.append("line")
-                    .attr("x1", labelX)
-                    .attr("x2", labelX)
-                    .attr("y1", 0)
-                    .attr("y2", totalHeight - 10)
-                    .attr("stroke", colorMarker)
-                    .attr("stroke-dasharray", "3,3");
+        if (currentMonth !== lastMonth) {
+            // always draw the vertical line
+            monthGroup.append("line")
+                .attr("x1", labelX)
+                .attr("x2", labelX)
+                .attr("y1", 0)
+                .attr("y2", totalHeight - 10)
+                .attr("stroke", colorMarker)
+                .attr("stroke-dasharray", "3,3");
         
-                // only add text label if we have enough space
-                if (Math.abs(labelX - lastLabelX) > c.MIN_LABEL_SPACING) {
-                    const isNewYear = currentYear !== lastYear;
-                    const labelText = isNewYear 
-                        ? `${currentMonth} ${currentYear}`
-                        : currentMonth;
+            // only add text label if we have enough space
+            if (Math.abs(labelX - lastLabelX) > c.MIN_LABEL_SPACING) {
+                const isNewYear = currentYear !== lastYear;
+                const labelText = isNewYear 
+                    ? `${currentMonth} ${currentYear}`
+                    : currentMonth;
         
-                    monthGroup.append("text")
-                        .attr("x", labelX)
-                        .attr("y", totalHeight + c.MARGIN.bottom - 5)
-                        .attr("font-size", 12)
-                        .style("text-anchor", "middle")
-                        .style("fill", `${isDarkMode? "white" : "black"}`)
-                        .text(labelText);
+                monthGroup.append("text")
+                    .attr("x", labelX)
+                    .attr("y", totalHeight + c.MARGIN.bottom - 5)
+                    .attr("font-size", 12)
+                    .style("text-anchor", "middle")
+                    .style("fill", `${isDarkMode? "white" : "black"}`)
+                    .text(labelText);
         
-                    lastLabelX = labelX;
-                }
-        
-                lastMonth = currentMonth;
-                lastYear = currentYear;
+                lastLabelX = labelX;
             }
+        
+            lastMonth = currentMonth;
+            lastYear = currentYear;
         }
     }
 }
@@ -141,19 +150,23 @@ export function drawMergedNodes(
     colorMap: Map<string, string>,
     mergedNodes: MutGraphNode<GroupedNode, undefined>[]) {
     
-    const mergedCircles = mergedNodes.filter(node => node.data.branch === "forkParent");
+    const mergedCircles = filterByBranch(mergedNodes, "forkParent");
     const circles = g.append("g")
         .selectAll("circle")
         .data(mergedCircles)
         .enter()
         .append("circle")
-        .attr("cx", d => d.x ?? 0)
-        .attr("cy", d => d.y ?? 0)
         .attr("r", c.NODE_RADIUS)
         .style("cursor", "pointer")
-        .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
+        .each(function(d) {
+            const sel = (this as SVGCircleElement);
+            select(sel)
+                .attr("cx", d.x ?? 0)
+                .attr("cy", d.y ?? 0)
+                .attr("fill", colorMap.get(d.data.repo) ?? "999");
+        });
 
-    const mergedSquares = mergedNodes.filter(node => node.data.branch === "default");
+    const mergedSquares = filterByBranch(mergedNodes, "default");
     const squares = g.append("g")
         .selectAll("rect")
         .data(mergedSquares)
@@ -165,7 +178,7 @@ export function drawMergedNodes(
         .attr("height", c.NODE_RADIUS * 2)
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
-    const mergedTriangles = mergedNodes.filter(node => node.data.branch === "merge");
+    const mergedTriangles = filterByBranch(mergedNodes, "merge");
     const triangles = g.append("g")
         .selectAll("polygon")
         .data(mergedTriangles)
@@ -194,11 +207,15 @@ export function drawNormalNodes(
         .data(sortedNodes)
         .enter()
         .append("circle")
-        .attr("cx", d => d.x ?? 0)
-        .attr("cy", d => d.y ?? 0)
         .attr("r", c.NODE_RADIUS)
         .style("cursor", "pointer")
-        .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
+        .each(function(d) {
+            const sel = (this as SVGCircleElement);
+            select(sel)
+                .attr("cx", d.x ?? 0)
+                .attr("cy", d.y ?? 0)
+                .attr("fill", colorMap.get(d.data.repo) ?? "999");
+        });
 
     return {circles};
 }
@@ -215,7 +232,7 @@ export function drawLegends(
         
     const colorLegend = legend.append("div").attr("id", "color-legend");
 
-    colorMap.forEach((colorValue, repoName) => {
+    for (const [repoName, colorValue] of colorMap.entries()) {
         const div = colorLegend
             .append("div")
             .style("display", "flex")
@@ -249,7 +266,7 @@ export function drawLegends(
             .append("text")
             .text(repoName)
             .style("margin-left", c.LEGEND_TEXT_MARGIN);
-    });
+    };
 
     if (merged) {
         const shapeLegend = legend
@@ -263,7 +280,7 @@ export function drawLegends(
             { label: "Merge commit" , shape: symbolTriangle },
         ];
 
-        shapeLegendData.forEach(({ label, shape }) => {
+        for (const {label, shape} of shapeLegendData) {
             const item = shapeLegend
                 .append("div")
                 .style("display", "flex")
@@ -281,13 +298,10 @@ export function drawLegends(
                 .attr("transform", `translate(${c.LEGEND_SIZE / 2}, ${c.LEGEND_SIZE / 2})`)
                 .attr("d",symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE))
                 .on("click", function() {
-                    const selected = (sortedNodes as MutGraphNode<GroupedNode, undefined>[])
-                        .filter(node => node.data.branch === 
-                            (label === "Fork/Merge parent" ? "forkParent" :
-                                label === "Merge commit" ? "merge" : "default"
-                            )
-                        )
-                        .flatMap(node => node.data.nodes);
+                    const branch = (label === "Fork/Merge parent" ? "forkParent" :
+                        label === "Merge commit" ? "merge" : "default");
+                    const nodes = filterByBranch(sortedNodes as MutGraphNode<GroupedNode, undefined>[], branch);
+                    const selected = nodes.flatMap(node => node.data.nodes);
                     setSelectAll(false);
                     resetBrushing();
                     handle(selected);
@@ -298,7 +312,7 @@ export function drawLegends(
                 .append("text")
                 .text(label)
                 .style("margin-left", c.LEGEND_TEXT_MARGIN);
-        });
+        };
     }
 }
 

@@ -7,8 +7,6 @@ import {
     forceManyBody,
     forceCenter,
     forceSimulation,
-    symbol,
-    symbolSquare,
     drag,
     Selection
 } from "d3";
@@ -160,20 +158,14 @@ export function addDragBehavior<T extends SVGGraphicsElement>(
     );
 }
 
-export const addToolTips = (authorNodes: unknown, repoNodes: unknown) => {
+export const addToolTips = (
+    authorNodes: Selection<SVGCircleElement, Node, SVGGElement, unknown>,
+    repoNodes: Selection<SVGPathElement, Node, SVGGElement, unknown>,
+    nodes: Node[]) => {
     // Add toolttip to show full name and number of commits on hover
     [...authorNodes.nodes(), ...repoNodes.nodes()].forEach((el, i) => {
         const d = nodes[i];
         select(el).append("title").text(`${d.id}\nCommits: ${d.commits ?? 0}`);
     });
 };
-
-
-export function addTooltipss(selection: Selection<SVGElement, Node, SVGGElement, unknown>, nodes: Node[]) {
-    selection.each((_, i, group) => {
-        const el = select(group[i]);
-        const d = nodes[i];
-        el.append("title").text(`${d.id}\nCommits: ${d.commits ?? 0}`);
-    });
-}
 

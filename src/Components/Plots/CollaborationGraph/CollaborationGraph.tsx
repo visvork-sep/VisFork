@@ -1,19 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { useTheme, FormControl, Select, Text } from "@primer/react";
-import { CollabGraphData, CollabGraphDetails } from "@VisInterfaces/CollabGraphData";
+import { CollabGraphData } from "@VisInterfaces/CollabGraphData";
 import {
-    SimulationNodeDatum,
-    SimulationLinkDatum,
     select,
-    forceLink,
-    forceManyBody,
-    forceCenter,
-    drag,
     symbol,
-    symbolSquare,
-    forceSimulation
+    symbolSquare
 } from "d3";
-import { addDragBehavior, addTooltips, advanceAutoPlay, createNodes, createSimulation, filterUniques, getUniqueDates, getVisibleCommits, Link, Node } from "./utils";
+import {
+    addDragBehavior,
+    addToolTips,
+    advanceAutoPlay,
+    createNodes,
+    createSimulation,
+    filterUniques,
+    getUniqueDates,
+    getVisibleCommits,
+    Link
+} from "./utils";
 
 
 
@@ -145,8 +148,7 @@ function CollaborationGraph({ commitData }: CollabGraphData) {
             .style("user-select", "none");
 
         // Add tooltips to both author and repo nodes
-        addTooltips(authorNodes, nodes.filter((d) => d.group === "author"));
-        addTooltips(repoNodes, nodes.filter((d) => d.group === "repo"));
+        addToolTips(authorNodes, repoNodes, nodes);
 
         // Tick behavior
         simulation.on("tick", () => {

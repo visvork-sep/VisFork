@@ -1,4 +1,3 @@
-import { interpolateRainbow } from "d3-scale-chromatic";
 import { min, max } from "d3-array";
 import { Selection } from "d3-selection";
 
@@ -29,22 +28,6 @@ export type NodeSelection = Selection<
     SVGGElement,
     unknown
 >;
-
-/**
- * Build a Map<repo, color> using d3.interpolateRainbow.
- * Used to color-code nodes belonging to different forks.
- */
-export function buildRepoColorMap(commits: Commit[]): Map<string, string> {
-    const repos = Array.from(new Set(commits.map(c => c.repo)));
-    const map = new Map<string, string>();
-  
-    repos.forEach((repo, i) => {
-        map.set(repo, interpolateRainbow(i / repos.length));
-    });
-  
-    return map;
-}
-
 
 /**
  * Custom d3-dag Rank acessor, orders commits by date
@@ -93,18 +76,19 @@ export function assignUniqueLanes(
 
     let cumulativeOffset = c.MARGIN.top; // leaves space on top
     const lanes: Record<string, { minY: number; maxY: number; }> = {};
+    const getY = (n: { y: number }) => n.y;
 
     // shift nodes for each repo
-    repoOrder.forEach(([repo, repoNodes]) => {
-        const minY = min(repoNodes, (n) => n.y) || 0;
-        const maxY = max(repoNodes, (n) => n.y) || 0;
+    for (const [repo, repoNodes] of repoOrder) {
+        const minY = min(repoNodes, getY) || 0;
+        const maxY = max(repoNodes, getY) || 0;
         const height = maxY - minY;
-        repoNodes.forEach((node) => {
+        for (const node of repoNodes) {
             node.y = cumulativeOffset + (node.y - minY);
-        });
+        }
         lanes[repo] = { minY: cumulativeOffset, maxY: cumulativeOffset + height };
         cumulativeOffset += height + c.NODE_RADIUS * 2;
-    });
+    }
 
     return { lanes, totalHeight: cumulativeOffset };
 }
@@ -129,9 +113,10 @@ function topologicalSort(commits: Commit[]): Commit[] {
     }
 
     // sort commits initially by date
-    const dateSortedCommits = commits.slice().sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    const dateSortedCommits = commits.slice().sort(function(a, b) {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+
 
     // topological sorting
     for (const commit of dateSortedCommits) {
@@ -153,16 +138,16 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
     let counter = 0; // used for setting IDs
 
     // Find fork parents and merge nodes
-    sortedCommits.forEach(commit => {
+    for (const commit of sortedCommits) {
         commitLookup.set(commit.id, commit);
         // fork parents have a child within a different repo
-        commit.parentIds.forEach(parentId => {
+        for (const parentId of commit.parentIds) {
             const parentCommit = commitLookup.get(parentId);
             if (parentCommit && parentCommit.repo !== commit.repo) {
                 forkParentIds.add(parentId);
                 forkParentChildren.add(commit.id);
             }
-        });
+        };
         if (
             // merge nodes have at least two parents, one from different repo
             commit.parentIds.length >= 2 &&
@@ -173,7 +158,7 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
         ) {
             mergeNodes.add(commit.id);
         }
-    });
+    };
 
     const repoGroups = groupBy(Array.from(sortedCommits), (commit) => commit.repo);
 
@@ -234,19 +219,21 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
 
     // Create mapping from commit ID to group ID for parent lookup
     const commitIdToGroupId = new Map<string, string>();
-    groupedNodes.forEach(group => {
-        group.nodes.forEach(commitId => commitIdToGroupId.set(commitId, group.id));
-    });
+    for (const group of groupedNodes) {
+        for (const commitId of group.nodes) {
+            commitIdToGroupId.set(commitId, group.id);
+        }
+    }
 
     function findParent(node: GroupedNode) {
         const firstCommit = commitLookup.get(node.nodes[0]);
         if (firstCommit) {
-            firstCommit.parentIds.forEach(parentId => {
+            for (const parentId of firstCommit.parentIds) {
                 const parentGroupId = commitIdToGroupId.get(parentId);
                 if (parentGroupId) {
                     node.parentIds.push(parentGroupId);
                 }
-            });
+            }
         }
     }
 

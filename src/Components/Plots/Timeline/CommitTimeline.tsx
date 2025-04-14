@@ -49,10 +49,12 @@ function CommitTimeline({
         transition: "background-color 0.3s",
     };
 
-    const onHover = (e: React.MouseEvent<HTMLButtonElement>) => 
-        e.currentTarget.style.backgroundColor = colorScheme.accentedLaneColor;
-    const onLeave = (e: React.MouseEvent<HTMLButtonElement>) => 
-        e.currentTarget.style.backgroundColor = "transparent";
+    function handleHover(event: React.MouseEvent<HTMLButtonElement>, entering: boolean): void {
+        event.currentTarget.style.backgroundColor = entering
+            ? colorScheme.accentedLaneColor
+            : "transparent";
+    }
+      
     
     // Memoize the color map
     const colorMap = useMemo(() => {
@@ -119,10 +121,9 @@ function CommitTimeline({
             .attr("transform", `translate(${c.MARGIN.left},${c.MARGIN.top})`);
 
         // Sort nodes by date
-        const sortedNodes =
-            Array.from(dag.nodes()).sort((a, b) => {
-                return new Date(a.data.date).getTime() - new Date(b.data.date).getTime();
-            });
+        const sortedNodes = Array.from(dag.nodes()).sort(function(a, b) {
+            return new Date(a.data.date).getTime() - new Date(b.data.date).getTime();
+        });
 
         // Apply custom layout
         const { lanes, totalHeight } = utils.assignUniqueLanes(sortedNodes);
@@ -203,7 +204,7 @@ function CommitTimeline({
         // Apply brush to this layer only (otherwise conflicts with node clicking)
         brushLayer.call(timelineBrush);
 
-        const resetBrushing = () => {
+        function resetBrushing() {
             brushLayer.call(timelineBrush.move, [[0,0], [0,0]]);
         };
 
@@ -232,7 +233,7 @@ function CommitTimeline({
         } else {
             // month/year labels
             graphics.drawTimelineMarkers(g, sortedNodes, totalHeight, isDarkMode, colorScheme.markerColor);
-            
+
             const { circles } = graphics.drawNormalNodes(g, colorMap, sortedNodes);
             // Apply tooltips
             applyToolTip(circles as NodeSelection);
@@ -316,10 +317,10 @@ function CommitTimeline({
             >
                 <div style={{ display: "flex", gap: "10px" }}>
                     <button
-                        onClick={() => setMerged(!merged)}
+                        onClick={function () { setMerged(!merged); }}
                         style={BUTTON_STYLE}
-                        onMouseEnter={onHover}
-                        onMouseLeave={onLeave}
+                        onMouseEnter={function (e) { handleHover(e, true); }}
+                        onMouseLeave={function (e) { handleHover(e, false); }}
                     >
                         {merged ? "Full View" : "Merged View"}
                     </button>
@@ -333,8 +334,8 @@ function CommitTimeline({
                             setSelectAll(!selectAll);
                         }}
                         style={BUTTON_STYLE}
-                        onMouseEnter={onHover}
-                        onMouseLeave={onLeave}
+                        onMouseEnter={function (e) { handleHover(e, true); }}
+                        onMouseLeave={function (e) { handleHover(e, false); }}
                     >
                         {selectAll ? "Deselect All" : "Select All"}
                     </button>

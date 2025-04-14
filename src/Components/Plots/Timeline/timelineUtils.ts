@@ -40,6 +40,9 @@ export const dateRankOperator: Rank<Commit | GroupedNode, unknown> = (
     return date.getTime();
 };
 
+/**
+ * Generic group by function
+ */
 export function groupBy<T, K>(items: T[], keyFn: (item: T) => K): Map<K, T[]> {
     const map = new Map<K, T[]>();
     for (const item of items) {
@@ -54,10 +57,9 @@ export function groupBy<T, K>(items: T[], keyFn: (item: T) => K): Map<K, T[]> {
 
 /**
  * Overwrites y-coordinates to place commits from different
- * forks in their own unique lanes.
- * 
- * @param nodes the data as nodes returned by d3dag builder
- * 
+ * forks in their own unique lanes. Preserves the original distribution
+ * vertical distribution (but not exact position) as returned by d3dag 
+ * to lower edge crossings. 
  */
 export function assignUniqueLanes(
     nodes: Iterable<GraphNode<Commit | GroupedNode, unknown>>
@@ -78,7 +80,7 @@ export function assignUniqueLanes(
     const lanes: Record<string, { minY: number; maxY: number; }> = {};
     const getY = (n: { y: number }) => n.y;
 
-    // shift nodes for each repo
+    // Shift the nodes for each repo
     for (const [repo, repoNodes] of repoOrder) {
         const minY = min(repoNodes, getY) || 0;
         const maxY = max(repoNodes, getY) || 0;
@@ -86,6 +88,7 @@ export function assignUniqueLanes(
         for (const node of repoNodes) {
             node.y = cumulativeOffset + (node.y - minY);
         }
+        // This is needed for drawing the shading behind the lanes afterwards
         lanes[repo] = { minY: cumulativeOffset, maxY: cumulativeOffset + height };
         cumulativeOffset += height + c.NODE_RADIUS * 2;
     }
@@ -93,6 +96,10 @@ export function assignUniqueLanes(
     return { lanes, totalHeight: cumulativeOffset };
 }
 
+/*
+* Ensures that parents come before children
+* (the opposite may happen due to cherry picking, force pushes, etc)
+*/
 function topologicalSort(commits: Commit[]): Commit[] {
     const sortedCommits: Commit[] = [];
     const visited = new Set<string>();
@@ -140,7 +147,7 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
     // Find fork parents and merge nodes
     for (const commit of sortedCommits) {
         commitLookup.set(commit.id, commit);
-        // fork parents have a child within a different repo
+        // Fork parents have a child within a different repo
         for (const parentId of commit.parentIds) {
             const parentCommit = commitLookup.get(parentId);
             if (parentCommit && parentCommit.repo !== commit.repo) {
@@ -149,7 +156,7 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
             }
         };
         if (
-            // merge nodes have at least two parents, one from different repo
+            // Merge nodes have at least two parents, one from different repo
             commit.parentIds.length >= 2 &&
             commit.parentIds.some(parentId => {
                 const parentCommit = commitLookup.get(parentId);
@@ -193,17 +200,17 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
             const isForkChild = forkParentChildren.has(nodeId);
             
             if (isSpecialNode || isForkChild) {
-                // create a group for any nodes between the last break and current special node
+                // Create a group for any nodes between the last break and current special node
                 if (lastBreak < i) {
                     groupedNodes.push(createGroupedNode(nodes, lastBreak, i));
                 }
                 
-                // create appropriate node based on type
+                // Create appropriate node based on type
                 if (isSpecialNode) {
                     const type = mergeNodes.has(nodeId) ? "merge" : "forkParent";
                     groupedNodes.push(createGroupedNode(nodes, i, i + 1, type, true));
                 } else if (isForkChild) {
-                    // create a default node for pulling from different repo
+                    // Create a default node for pulling from different repo
                     groupedNodes.push(createGroupedNode(nodes, i, i + 1));
                 }
                 
@@ -225,6 +232,7 @@ export function groupNodes(data: Commit[]): GroupedNode[] {
         }
     }
 
+    // The parent of a group of commits is/are the parent(s) of its earliest commit
     function findParent(node: GroupedNode) {
         const firstCommit = commitLookup.get(node.nodes[0]);
         if (firstCommit) {

@@ -160,7 +160,16 @@ export function addDragBehavior<T extends SVGGraphicsElement>(
     );
 }
 
-export function addTooltips(selection: Selection<SVGElement, Node, SVGGElement, unknown>, nodes: Node[]) {
+export const addToolTips = (authorNodes: unknown, repoNodes: unknown) => {
+    // Add toolttip to show full name and number of commits on hover
+    [...authorNodes.nodes(), ...repoNodes.nodes()].forEach((el, i) => {
+        const d = nodes[i];
+        select(el).append("title").text(`${d.id}\nCommits: ${d.commits ?? 0}`);
+    });
+};
+
+
+export function addTooltipss(selection: Selection<SVGElement, Node, SVGGElement, unknown>, nodes: Node[]) {
     selection.each((_, i, group) => {
         const el = select(group[i]);
         const d = nodes[i];

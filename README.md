@@ -27,7 +27,7 @@ To make sure the project runs the same way for everyone (e.g. if there is an err
 
 To get Devcontainer set up locally, follow these steps: 
 
-1a. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and follow its install instructions.
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop) and follow its install instructions.
 
 2a. For VSCode, install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
 

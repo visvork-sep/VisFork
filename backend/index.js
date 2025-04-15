@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -35,7 +37,8 @@ app.use(express.json());
  * Redirects users to GitHub OAuth login page.
  */
 app.get("/auth/github", (req, res) => {
-    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${FRONTEND_URL}/github/callback&scope=read:user`;
+    const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}` +
+    `&redirect_uri=${FRONTEND_URL}/github/callback&scope=read:user`;
     res.redirect(redirectUri);
 });
 

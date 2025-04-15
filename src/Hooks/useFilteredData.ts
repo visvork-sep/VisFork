@@ -12,12 +12,14 @@ import { GitHubAPICommit } from "@Types/DataLayerTypes";
 import { useFetchCommitsBatch, useFetchForks } from "@Queries/queries";
 import { isValidForkByFilter } from "@Utils/Filters/ForkFilterUtil";
 
+// Hook to filter the data based on the query parameters and filters set by the user.
 export type FilterChangeHandler = (filters: ForkFilter, forkQueryState: ForkQueryState) => void;
 
 function unwrap<T>(data: T | undefined) {
     return data || [];
 }
 
+// checks if the main repository information can be created based on the provided parameters.
 function canCreateMainRepositoryInfo(
     forkError: Error | null, 
     commitError: Error | null, 
@@ -38,11 +40,14 @@ function canCreateMainRepositoryInfo(
       && !!forkQueryState?.repo;
 }
 
+// Creates the main repository information based on the filtered forks and simplified commit data.
+// Returns an object containing the main repository information, including the owner, forks, commits, and other metadata.
 function createMainRepositoryInfo(
     filteredForks: UnprocessedRepository[], 
     simplifiedCommitData: UnprocessedCommitExtended[][], 
     forkQueryState: ForkQueryState
 ): MainRepositoryInfo {
+    // Map the filtered forks to include the commits data.
     const completeForkData: RepositoryInfoWithCommits[] = filteredForks.map((fork, index) => ({
         ...fork,
         commits: simplifiedCommitData[index]
@@ -62,7 +67,7 @@ function createMainRepositoryInfo(
     };
 }
 
-
+// Hook used to filter the data based on the query parameters and filters set by the user.
 export function useFilteredData() {
     // Create the state for the query parameters
     const [forkQueryState, setForkQueryState] = useState<ForkQueryState | undefined>(undefined);
@@ -72,6 +77,7 @@ export function useFilteredData() {
     const [finalForkData, setFinalForkData] = useState<UnprocessedRepository[]>([]);
     const [finalCommitData, setFinalCommitData] = useState<UnprocessedCommitExtended[]>([]);
 
+    // Fetch the forks data based on the query parameters and filters set by the user.
     const onRequestChange: FilterChangeHandler = (filters, forkQueryState) => {
         setForkQueryState(forkQueryState);
         setFilters(filters);
@@ -79,17 +85,17 @@ export function useFilteredData() {
 
     const { data: forkData, isLoading: isLoadingFork, error: forkError } = useFetchForks(forkQueryState);
 
+    // Simplify the fork data by mapping it to a more usable format.
     const simplifiedForkData = useMemo(() => unwrap(forkData?.data).map(fork => toForkInfo(fork)), [forkData]);
 
-
+    // Filter the fork data based on the filters set by the user.
     const filteredForks = useMemo(() => {
         return (filters) ? simplifiedForkData.filter(fork => isValidForkByFilter(fork, filters)) : [];
     }, [simplifiedForkData, filters]);
 
-
-
     const commitResponses = useFetchCommitsBatch(filteredForks, forkQueryState);
 
+    // Combine the commit data from all the responses into a single array.
     const { commitData, isLoading: isLoadingCommits, error: commitError } = commitResponses
         .reduce<{ commitData?: GitHubAPICommit[][], isLoading: boolean, error: Error | null }>((acc, response) => {
             if ((acc.commitData && response.data?.data)) {
@@ -114,6 +120,7 @@ export function useFilteredData() {
         return unwrap(commitData).map(commits => commits.map(commit => toCommitInfo(commit)));
     }, [commitData]);
 
+    // Create the main repository information based on the filtered forks and simplified commit data.
     const mainRepositoryInfo = useMemo(() => {
         const shouldCreate = canCreateMainRepositoryInfo(
             forkError, commitError, isLoadingFork, isLoadingCommits,
@@ -130,6 +137,7 @@ export function useFilteredData() {
         simplifiedCommitData, 
         forkQueryState]);
 
+    // Flatten the commits data from all forks into a single array.
     const flattenedCommits: UnprocessedCommitExtended[] =
         mainRepositoryInfo ? mainRepositoryInfo.forks.reduce<UnprocessedCommitExtended[]>((acc, fork) => {
             const commits: UnprocessedCommitExtended[] = fork.commits.map(commit => ({

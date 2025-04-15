@@ -1,5 +1,12 @@
 import { CommitType } from "../Constants";
 
+/**
+ * Dictionary used to classify contents of commit messages into commit types.
+ * Sorted in three categories:
+ * - Adaptive: Changes that add new features or functionality to the codebase.
+ * - Corrective: Changes that fix bugs or issues in the codebase.
+ * - Perfective: Changes that improve the codebase without adding new features or fixing bugs.
+ */
 const adaptiveTerms = [
     //"\\badd(?:s|ed|ing)?\\b",
     "creat(?:e|es|ed|ing)",
@@ -54,6 +61,10 @@ const adaptiveRegex   = new RegExp(adaptiveTerms.join("|"), "i");
 const correctiveRegex = new RegExp(correctiveTerms.join("|"), "i");
 const perfectiveRegex = new RegExp(perfectiveTerms.join("|"), "i");
 
+/**
+ * Tries to classify a commit message into the first category it matches, in order.
+ * In the case that no category is matched, it returns "unknown".
+ */
 export function classify(text: string): CommitType {
     if (adaptiveRegex.test(text))   return "adaptive";
     if (correctiveRegex.test(text)) return "corrective";

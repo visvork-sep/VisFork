@@ -11,6 +11,7 @@ import {
     mapCommitDataToCollabGraph
 } from "@Utils/LogicToVisualization";
 
+// Main hook to manage visualization data
 export function useVisualizationData(forkData: Repository[], commitData: Commit[]) {
     // Memoize the initial visualization data
     const initialVisData = useMemo(() => {
@@ -29,9 +30,12 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
 
     const [visData, setVisData] = useState<VisualizationData>(initialVisData);
 
+    // Update visualization data when forkData or commitData changes
     useEffect(() => setVisData(initialVisData), [forkData, commitData]);
 
     // Handlers
+
+    // Handle histogram selection to filter commits based on date range
     const handleHistogramSelection = useCallback(
         (startDate: Date, endDate: Date) => {
             // Filter commits based on date range
@@ -47,7 +51,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
                 ...commit,
                 parentIds: commit.parentIds.filter(parentId => validCommitIds.has(parentId))
             }));
-
+        
+            // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
                 timelineData: mapCommitDataToTimeline(constrainedCommits),
@@ -60,12 +65,14 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    // Handle timeline selection to filter commits based on selected commit hashes
     const handleTimelineSelection = useCallback(
         (hashes: string[]) => {
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
 
+            // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
                 sankeyData: mapCommitDataToSankey(constrainedCommits),
@@ -77,12 +84,14 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    // Handle search bar submission to filter commits based on selected commit hashes
     const handleSearchBarSubmission = useCallback(
         (hashes: string[]) => {
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
 
+            // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
                 wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
@@ -93,6 +102,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    // Memoize default branches for each fork
+    // used to set the default branch for each fork in the visualization
     const defaultBranches = useMemo(() => {
         const branches = forkData.reduce((acc, fork) => {
             if (!acc[fork.name]) {

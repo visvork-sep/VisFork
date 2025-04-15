@@ -16,8 +16,9 @@ import { FilterChangeHandler } from "./useFilteredData";
 import { filterFactory, forkQueryStateFactory, safePrepare } from "@Utils/FormSubmissionUtils";
 
 
-
+// This hook is used to handle the form submission for the filter form.
 function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeHandler) {
+    // States to set input errors per field
     const [repositoryInputError, setRepositoryInputError] = useState<InputError | null>(null);
     const [forksCountInputError, setForksCountInputError] = useState<InputError | null>(null);
     const [recentlyUpdatedInputError, setRecentlyUpdatedInputError] =
@@ -41,6 +42,9 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
      */
     const prepareForm = (): preparedForm => {
 
+        // Prepare each form field using safePrepare, destructuring the repository output into owner and repositoryName.
+        // Each field's sanitized value is stored, and errors are set via corresponding error setters.
+        // This ensures that invalid inputs become null for subsequent form validation.
         const output = safePrepare(prepareRepository, form.repository, setRepositoryInputError);
         const { owner, repositoryName } = output ?? { owner: null, repositoryName: null };
 
@@ -62,6 +66,8 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         const ownerTypeFilter = safePrepare(prepareOwnerTypeFilter, form.ownerTypeFilter, setOwnerTypeFilterInputError);
 
         const recentlyUpdated = safePrepare(prepareRecentlyUpdated, form.recentlyUpdated, setRecentlyUpdatedInputError);
+
+        // If the date range is invalid, set both dates to null and set the error
         if (commitsDateRangeFrom && commitsDateRangeUntil && commitsDateRangeFrom > commitsDateRangeUntil) {
             setCommitsDateRangeFromInputError(new CommitsDateRangeFromInputErrors.LaterFromDateError());
             setCommitsDateRangeUntilInputError(new CommitsDateRangeFromInputErrors.LaterFromDateError());
@@ -83,6 +89,7 @@ function useFormSubmission(form: FilterFormState, onFiltersChange: FilterChangeH
         };
     };
 
+    // handle form submission
     const onSubmit = (event: FormEvent) => {
         // Prevents the page from refreshing on submission
         event.preventDefault();

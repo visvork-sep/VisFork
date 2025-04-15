@@ -14,7 +14,9 @@ const options = Object.values(FORKS_SORTING_ORDERS).map((option) =>
 
 
 /**
- * Select input for the metric to sort the forks by
+ * Component that allows the user to select the sorting order of forks.
+ * It takes in a value and an onChange handler as props.
+ * It also takes in an error prop to display validation errors.
  */
 function ForksQueryOrderInput({ onChangeHandler, selected, error }: ForksQueryOrderInputProps) {
     return (

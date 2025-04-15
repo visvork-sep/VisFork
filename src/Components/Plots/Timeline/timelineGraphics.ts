@@ -19,7 +19,7 @@ export interface GroupedNode extends Commit {
 }
 
 /**
- * Draws the lanes for the timeline chart.
+ * Draws the horizontal shaded regions for each repository in the timeline chart.
  */
 export function drawLanes(
     g: Selection<SVGGElement, unknown, null, undefined>,
@@ -53,7 +53,7 @@ export function drawLanes(
 }
 
 /**
- * Draws the timeline markers (vertical lines and labels).
+ * Draws the timeline markers (vertical dashed lines specifying the date at that point).
  */
 export function drawTimelineMarkers(
     g: Selection<SVGGElement, unknown, null, undefined>,

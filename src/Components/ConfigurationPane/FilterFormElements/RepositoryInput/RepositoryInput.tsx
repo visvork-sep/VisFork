@@ -9,6 +9,8 @@ interface RepositoryInputProps {
 
 /**
 * Component that allows the user to input a repository name.
+* This is the repository that will then get queried and 
+* on which the visualizations will base their data on.
 * It takes in a value and an onChange handler as props.
 * It also takes in an error prop to display validation errors.
 */

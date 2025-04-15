@@ -12,7 +12,8 @@ interface RecentlyUpdatedInputProps {
 * Component that allows the user to input a number of months.
 * It takes in a value and an onChange handler as props.
 * It also takes in an error prop to display validation errors.
-* The number of months is used to filter forks based on their recent activity.
+* The number of months is used to filter forks based on their recent activity,
+* only letting through those updated in the specified amount of months.
 */
 function RecentlyUpdatedInput({ error, onChangeHandler, value }: RecentlyUpdatedInputProps) {
     return (

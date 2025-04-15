@@ -95,7 +95,8 @@ function preprocessor(commits: UnprocessedCommitExtended[],
 }
 
 /**
- * Creates a map of default branches for each repository.
+ * Creates a map of default branches where each repository is mapped to their
+ * respective default branch.
  */
 function createDefaultBranchesMap(repos: UnprocessedRepository[]): Record<string, string> {
     const defaultBranches: Record<string, string> = {};

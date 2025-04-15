@@ -1,6 +1,8 @@
 /**
- * Descriptions used in ApplicationBody.tsx for 
- * the info button hover and click actions
+ * Descriptions used in ApplicationBody to explain the visualizations.
+ * Includes short and full descriptions for each visualization.
+ * Short descriptions are used for hovering over the respective info-button.
+ * Long descriptions are used when the respective info-button is clicked.
  */
 export const visualizationDescriptions = {
     histogram: {

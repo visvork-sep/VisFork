@@ -8,7 +8,10 @@ interface CommitsDateRangeUntilInputProps {
 };
 
 /**
-* Date input for commits range
+* Component that allows the user to input the end date for commits.
+* It takes in a value and an onChange handler as props.
+* It also takes in an error prop to display validation errors.
+* The date is used to filter forks based on their commit history.
 */
 function CommitsDateRangeUntilInput({ error, onChangeHandler, value }: CommitsDateRangeUntilInputProps) {
     return (

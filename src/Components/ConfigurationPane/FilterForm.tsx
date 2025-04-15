@@ -20,7 +20,12 @@ interface FilterFormProps {
     isDataLoading: boolean;
 }
 
+/**
+ * Component that renders the filter form for the configuration pane.
+ * It includes various input fields for filtering repositories based on different criteria.
+ */
 function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
+    // Hook to manage form state and handle changes
     const {
         form,
         handleRepositoryChange,
@@ -33,6 +38,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         handleRecentlyUpdatedChange,
     } = useFilterForm();
 
+    // Hook to handle form submission and validation
     const {
         onSubmit,
         repositoryInputError,
@@ -45,9 +51,12 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         forksOrderInputError,
     } = useFormSubmission(form, filterChangeHandler);
 
+    // Hook to manage authentication state
     const { isAuthenticated } = useAuth();
 
     // Memoize the form inputs to avoid unnecessary re-renders
+
+    // Repository field
     const repositoryInput = useMemo(
         () => (
             <RepositoryInput
@@ -59,6 +68,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [repositoryInputError, handleRepositoryChange, form.repository]
     );
 
+    // Number of forks to select
     const forksCountInput = useMemo(
         () => (
             <ForksCountInput
@@ -70,6 +80,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [forksCountInputError, handleForksCountChange, form.forksCount]
     );
 
+    // Order criteria of forks to select
     const forksOrderInput = useMemo(
         () => (
             <ForksQueryOrderInput
@@ -81,6 +92,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [forksOrderInputError, handleForksOrderChange, form.forksOrder]
     );
 
+    // Start date of commits to select
     const commitsDateRangeFromInput = useMemo(
         () => (
             <CommitsDateRangeFromInput
@@ -92,6 +104,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [commitsDateRangeFromInputError, handleCommitsDateRangeFromChange, form.commitsDateRangeFrom]
     );
 
+    // End date of commits to select
     const commitsDateRangeUntilInput = useMemo(
         () => (
             <CommitsDateRangeUntilInput
@@ -103,6 +116,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [commitsDateRangeUntilInputError, handleCommitsDateRangeUntilChange, form.commitsDateRangeUntil]
     );
 
+    // Commit types to include in the visualization
     const commitTypeFilterInput = useMemo(
         () => (
             <CommitTypeFilterInput
@@ -114,6 +128,8 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [commitsTypeFilterInputError, handleCommitsTypeFilterChange, form.commitTypeFilter]
     );
 
+    // Owner types to include in the visualization
+    // (e.g., user, organization)
     const ownerTypeFilterInput = useMemo(
         () => (
             <OwnerTypeFilterInput
@@ -125,6 +141,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [ownerTypeFilterInputError, handleOwnerTypeFilterChange, form.ownerTypeFilter]
     );
 
+    // How recent the forks should be updated to include
     const recentlyUpdatedInput = useMemo(
         () => (
             <RecentlyUpdatedInput
@@ -136,6 +153,7 @@ function FilterForm({ filterChangeHandler, isDataLoading }: FilterFormProps) {
         [recentlyUpdatedInputError, handleRecentlyUpdatedChange, form.recentlyUpdated]
     );
 
+    // Render the form with all the inputs
     return (
         <Box as="form" onSubmit={onSubmit}>
             <Stack direction={"vertical"}>

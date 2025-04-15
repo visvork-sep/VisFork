@@ -10,7 +10,11 @@ import { VisualizationData } from "@VisInterfaces/VisualizationData";
 import { Commit, Repository } from "@Types/LogicLayerTypes";
 
 
-// Helper function to map commit data
+/* Map commit data to Histogram
+Passes the following data:
+- repo: The name of the repository
+- date: The date of the commit in ISO format
+*/
 const mapCommitDataToHistogram = (commitData: Commit[]): HistogramData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
@@ -18,6 +22,15 @@ const mapCommitDataToHistogram = (commitData: Commit[]): HistogramData => ({
     })),
 });
 
+/* Map commit data to Commit Timeline
+Passes the following data:
+- repo: The name of the repository
+- id: The SHA of the commit
+- parentIds: The SHA of the parent commits
+- branch: The name of the branch
+- date: The date of the commit in ISO format
+- url: The URL of the commit 
+*/
 const mapCommitDataToTimeline = (commitData: Commit[]): TimelineData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
@@ -29,6 +42,15 @@ const mapCommitDataToTimeline = (commitData: Commit[]): TimelineData => ({
     })),
 });
 
+/* Map commit data to Commit Table
+Passes the following data:
+- id: The SHA of the commit
+- repo: The name of the repository
+- author: The author of the commit
+- login: The login of the author
+- date: The date of the commit in ISO format
+- message: The message of the commit
+*/
 const mapCommitDataToCommitTable = (commitData: Commit[]): CommitTableData => ({
     commitData: commitData.map((commit) => ({
         id: commit.sha,
@@ -40,10 +62,19 @@ const mapCommitDataToCommitTable = (commitData: Commit[]): CommitTableData => ({
     })),
 });
 
+/* Map commit data to Word Cloud
+Passes the following data:
+- commitData: The message of the commit
+*/
 const mapCommitDataToWordCloud = (commitData: Commit[]): WordCloudData => ({
     commitData: commitData.map((commit) => commit.message),
 });
 
+/* Map commit data to Sankey
+Passes the following data:
+- repo: The name of the repository
+- commitType: The type of the commit (e.g., "merge", "push", etc.)
+*/
 const mapCommitDataToSankey = (commitData: Commit[]): SankeyData => ({
     commitData: commitData.map((commit) => ({
         repo: commit.repo,
@@ -51,6 +82,13 @@ const mapCommitDataToSankey = (commitData: Commit[]): SankeyData => ({
     })),
 });
 
+/* Map commit data to Collaboration Graph
+Passes the following data:
+- author: The author of the commit
+- login: The login of the author
+- repo: The name of the repository
+- date: The date of the commit in ISO format
+*/
 const mapCommitDataToCollabGraph = (commitData: Commit[]): CollabGraphData => ({
     commitData: commitData.map((commit) => ({
         author: commit.author,
@@ -60,6 +98,7 @@ const mapCommitDataToCollabGraph = (commitData: Commit[]): CollabGraphData => ({
     })),
 });
 
+// Main hook to manage visualization data
 export function useVisualizationData(forkData: Repository[], commitData: Commit[]) {
     // Memoize the initial visualization data
     const initialVisData = useMemo(() => {
@@ -78,9 +117,12 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
 
     const [visData, setVisData] = useState<VisualizationData>(initialVisData);
 
+    // Update visualization data when forkData or commitData changes
     useEffect(() => setVisData(initialVisData), [forkData, commitData]);
 
     // Handlers
+
+    // Handle histogram selection to filter commits based on date range
     const handleHistogramSelection = useCallback(
         (startDate: Date, endDate: Date) => {
             // Filter commits based on date range
@@ -97,6 +139,7 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
                 parentIds: commit.parentIds.filter(parentId => validCommitIds.has(parentId))
             }));
         
+            // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
                 timelineData: mapCommitDataToTimeline(constrainedCommits),
@@ -109,12 +152,14 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    // Handle timeline selection to filter commits based on selected commit hashes
     const handleTimelineSelection = useCallback(
         (hashes: string[]) => {
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
 
+            // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
                 sankeyData: mapCommitDataToSankey(constrainedCommits),
@@ -126,12 +171,14 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    // Handle search bar submission to filter commits based on selected commit hashes
     const handleSearchBarSubmission = useCallback(
         (hashes: string[]) => {
             const constrainedCommits = commitData.filter((commit) =>
                 hashes.includes(commit.sha)
             );
 
+            // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
                 wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
@@ -142,6 +189,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         [commitData]
     );
 
+    // Memoize default branches for each fork
+    // used to set the default branch for each fork in the visualization
     const defaultBranches = useMemo(() => {
         const branches = forkData.reduce((acc, fork) => {
             if (!acc[fork.name]) {

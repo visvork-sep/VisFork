@@ -1,7 +1,7 @@
 # VisFork
-This project aims to visualize the evolution of fork ecosystems in GitHub. It provides severval visualizations for forks of a target repository to help developers understand the system.
 
 ## Description
+This project aims to visualize the evolution of fork ecosystems in GitHub. It provides severval visualizations for forks of a target repository to help developers understand the system.
 
 ### Devcontainer
 To make sure the project runs the same way for everyone (e.g. if there is an error in the code, it will not build for anyone with the same code, no matter whether they are on Windows, Linux, Max, etc.), the project uses a dev container. This is done through the use of the .devcontainer directory, containing the devcontainer.json.
@@ -53,9 +53,6 @@ Good luck contributing!
 run ```npm run test```. All files except test files in the src folder are included. Test files are named ```**/*.test.*```, additionally queries are excluded from testing because they rely on an external service. Understand analysis is performed on all files in the ``src`` folder except test files.
 
 Simian is not usable with VisFork because Simian does not support tsx files and often flags html as duplication.
-## Usage
-
-## Support
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](README.md) file for details.

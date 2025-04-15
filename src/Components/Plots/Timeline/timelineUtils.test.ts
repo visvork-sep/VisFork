@@ -21,6 +21,7 @@ describe("dateRankOperator", () => {
     });
 });
 
+// helper, used either on nodes or commit objects to group them by repo
 describe("groupBy()", () => {
     it("should group items by the provided key function", () => {
         const items = [

@@ -58,6 +58,7 @@ function CommitTimeline({
         const repos = Array.from(new Set(commitData.map(c => c.repo)));
         const map = new Map<string, string>();
           
+        // Note: these colors don't get updated by colorblind mode or theme changes
         for (let i = 0; i < repos.length; i++) {
             const repo = repos[i];
             map.set(repo, interpolateRainbow(i / repos.length));
@@ -92,10 +93,12 @@ function CommitTimeline({
         select(svgRef.current).selectAll("*").remove();
         select("#dag-legends").selectAll("*").remove();
 
+        // The current view
         const dag = merged
             ? (dagMerged as MutGraph<Commit | GroupedNode, undefined>)
             : (dagFull as MutGraph<Commit | GroupedNode, undefined>);
 
+        // Initial layout, will be overwritten 
         const layout = grid()
             .nodeSize([c.NODE_RADIUS * 2, c.NODE_RADIUS * 2])
             .gap([5, 5])
@@ -106,6 +109,7 @@ function CommitTimeline({
         // Initial dimensions, will be overwritten
         let { width, height } = layout(dag);
 
+        // Make sure that the graph covers the container if there isn't much data 
         width = Math.max(
             width + c.MARGIN.left + c.MARGIN.right,
             containerRef.current?.clientWidth ?? 0
@@ -127,7 +131,8 @@ function CommitTimeline({
 
         // Apply custom layout
         const { lanes, totalHeight } = utils.assignUniqueLanes(sortedNodes);
-        height = totalHeight + c.MARGIN.top + c.MARGIN.bottom;
+        height = totalHeight + c.MARGIN.top + c.MARGIN.bottom; // the height is larger due to the lanes
+
         // Adjust height to custom layout
         select(svgRef.current)
             .attr("height", height)
@@ -147,9 +152,11 @@ function CommitTimeline({
                 .style("fill", colorScheme.overlayColor)
                 .style("fill-opacity", "0.3");
         } else {
+            // Clear the overlay if selectAll isn't active
             g.select(".selection-overlay").remove();
         }
 
+        // Brush for click-and-drag selection of commits
         let brushSelection: [[number, number], [number, number]] = [[0, 0], [0, 0]];
 
         const timelineBrush = brush<unknown>()
@@ -174,15 +181,17 @@ function CommitTimeline({
                 if (x0 === 0 && y0 === 0 && x1 === 0 && y1 === 0) return;
 
                 const selectedCommits = sortedNodes
+                    // select those nodes which are entirely inside the selection
                     .filter((node) => {
                         const x = node.x + c.NODE_RADIUS;
                         const y = node.y + c.NODE_RADIUS;
                         return x >= x0 && x <= x1 && y >= y0 && y <= y1;
                     })
+                    // return their ID rather than the node objects themselves
                     .flatMap((node) =>
                         merged
-                            ? (node as MutGraphNode<GroupedNode, unknown>).data.nodes
-                            : [node.data.id]
+                            ? (node as MutGraphNode<GroupedNode, unknown>).data.nodes // allows selection of groups
+                            : [node.data.id] // in full view 
                     );
 
                 handleTimelineSelection(selectedCommits);
@@ -244,15 +253,15 @@ function CommitTimeline({
         }
 
         function applyToolTip(selection: NodeSelection) {
-            // Combined event handler approach
             selection.on("mouseover mouseout mousemove click", function(event, d) {
                 const eventType = event.type;
                 
+                // When the user hovers on a node
                 if (eventType === "mouseover") {
                     tooltip.transition().duration(c.TOOLTIP_MOUSEOVER_DUR).style("opacity", 0.9);
                     
                     // Generate content inline
-                    let content = "";
+                    let content = ""; // the content varies depending on the view
                     if (!merged) {
                         const commitData = d.data;
                         content = `
@@ -280,24 +289,28 @@ function CommitTimeline({
                     tooltip.style("left", (event.pageX) + "px")
                         .style("top", (event.pageY) + "px");
                 }
+                // Hide the tooltip when the user's mouse moves away
                 else if (eventType === "mouseout") {
                     tooltip.transition().duration(c.TOOLTIP_MOUSEOUT_DUR).style("opacity", 0);
                 }
+                // Open the commit's page on GH when clicking on a node
                 else if (eventType === "click") {
                     event.stopPropagation();
+                    // Note that in Merged View default commits cannot be opened
                     if (!merged || d.data.branch != "default") {
                         window.open(d.data.url);
                     }
                 }
             });
         }
-          
 
         // Display legends for the colors in #dag-legends
         const legend = select("#dag-legends")
             .style("display", "flex")
             .style("align-items", "flex-start");
 
+        // Draws two legends if Meged View, one otherwise 
+        // Passing the nodes themselves is necessary for the select-by-fork and select-by-type functionality
         graphics.drawLegends(
             merged, legend, colorMap, 
             colorScheme.markerColor, sortedNodes, 
@@ -316,7 +329,7 @@ function CommitTimeline({
 
     return (
         <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
-            {/* Button at the top */}
+            {/* Buttons at the top */}
             <div
                 style={{
                     padding: "10px",
@@ -326,6 +339,7 @@ function CommitTimeline({
                 }}
             >
                 <div style={{ display: "flex", gap: "10px" }}>
+                    {/* View Toggle */}
                     <button
                         onClick={() => setMerged(!merged)}
                         style={BUTTON_STYLE}
@@ -334,7 +348,7 @@ function CommitTimeline({
                     >
                         {merged ? "Full View" : "Merged View"}
                     </button>
-
+                    {/* Select All Toggle */}
                     <button
                         onClick={() => {
                             const selectedCommits = !selectAll

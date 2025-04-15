@@ -86,7 +86,7 @@ git config --global core.autocrlf true
 ```
 
 #### Whenever I try to reopen the repository in the devcontainer, it just simply states it gave an error and my only option is to retry. What do I do?
-The devcontainer terminal log might say something about Windows permissions. Try deleting the `node_modules` folder and reopening again. This might fix your issue, and if not, God help you.
+The devcontainer terminal log might say something about Windows permissions. Try deleting the `node_modules` folder and reopening again. This might fix your issue, hopefully.
 
 #### npm run generate runs into an error of a missing file
 Execute the following command in the root folder to fix this issue: 

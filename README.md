@@ -48,6 +48,10 @@ To run the project in developer mode, run `npm run dev`.
 
 Good luck contributing!
 
+### Testing
+run ```npm run test```. All files except test files in the src folder are included. Test files are named ```**/*.test.*```, additionally queries are excluded from testing because they rely on an external service. Understand analysis is performed on all files in the ``src`` folder except test files.
+
+Simian is not usable with VisFork because Simian does not support tsx files and often flags html as duplication.
 ## Usage
 
 ## Support

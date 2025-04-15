@@ -64,7 +64,7 @@ For backend authentication and production deployment, refer to the Software Tran
 
 
 ### Common Issues
-#### All of my files appear to be modified according to Git. What do I do?
+#### After opening the devcontainer, ll of my files appear to be modified according to Git. What do I do?
 This is a common issue with Windows machines. Try one or both of the following commands, they should resolve your issue:
 
 ```bash

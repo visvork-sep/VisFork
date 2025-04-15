@@ -3,7 +3,6 @@ This project aims to visualize the evolution of fork ecosystems in GitHub. It pr
 
 ## Description
 
-## Installation
 ### Devcontainer
 To make sure the project runs the same way for everyone (e.g. if there is an error in the code, it will not build for anyone with the same code, no matter whether they are on Windows, Linux, Max, etc.), the project uses a dev container. This is done through the use of the .devcontainer directory, containing the devcontainer.json.
 
@@ -43,6 +42,8 @@ The devcontainer terminal log might say something about Windows permissions. Try
 ### Remaining installation steps
 
 Also be sure to install [NodeJS](https://nodejs.org/en) and run `npm i` in the root directory of the project.
+
+Don't forget to run `npm run generate` to generate the `__generated__` folder. This is necessary to generate the needed types for the queries to work.
 
 To run the project in developer mode, run `npm run dev`.
 

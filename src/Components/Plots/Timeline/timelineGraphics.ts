@@ -1,13 +1,11 @@
 import { Selection, BaseType, select } from "d3-selection";
 import { timeFormat } from "d3-time-format";
 import { symbol, symbolCircle, symbolSquare, symbolTriangle } from "d3-shape";
-
 import {
     GraphNode,
     MutGraphNode,
     MutGraphLink,
 } from "d3-dag";
-
 import type { TimelineDetails as Commit } from "@VisInterfaces/TimelineData";
 import * as c from "./timelineConstants"; 
 
@@ -307,7 +305,8 @@ export function drawLegends(
         const shapeLegend = legend
             .append("div")
             .attr("id", "shape-legend")
-            .style("margin-left", c.LEGENDS_SPACING); // spacing to the right of color legend
+            // spacing to the right of color legend
+            .style("margin-left", c.LEGENDS_SPACING); 
 
         const shapeLegendData = [
             { label: "Fork/Merge parent", shape: symbolCircle },
@@ -332,6 +331,7 @@ export function drawLegends(
                 .append("path")
                 .attr("transform", `translate(${c.LEGEND_SIZE / 2}, ${c.LEGEND_SIZE / 2})`)
                 .attr("d",symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE))
+                // Selects all nodes from a fork
                 .on("click", function() {
                     // Use the branch to distinguish the commit type
                     const branch = (label === "Fork/Merge parent" ? "forkParent" :

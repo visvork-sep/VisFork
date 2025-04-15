@@ -9,7 +9,9 @@ interface CommitTypeFilterInputProps {
 };
 
 /**
-* Radioboxes for filtering on commit types
+* Component that allows the user to select the commit types of forks to include in the visualization by radioboxes.
+* It takes in a list of commit types and an onChange handler as props.
+* It also takes in an error prop to display validation errors.
 */
 function CommitTypeFilterInput({ onChangeHandler, checked, error }: CommitTypeFilterInputProps) {
     const checkBoxes = Object.values(COMMIT_TYPES).map(t => (

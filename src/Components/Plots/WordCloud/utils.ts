@@ -2,6 +2,7 @@
 import { lemmatizer } from "lemmatizer";
 import { removeStopwords } from "stopword";
 
+// Interface that defines the structure of a Word object
 export interface Word {
     text: string;
     size: number;
@@ -48,7 +49,7 @@ export const lemmatizationFunction = (token: string) => {
     }
 };
 
-
+// Function to process commit messages and generate word frequencies
 export const processCommitMessages = (
     data: string [],
     processToken: (token: string) => string,
@@ -59,10 +60,12 @@ export const processCommitMessages = (
 ): Word[] => {
     const wordFreq: Record<string, number> = {};
 
+    // Iterate through each message and tokenize it
     data.forEach( (message: string ) => {
         const tokens = tokenize(message);
         const filteredTokens = removeStopwords(tokens).filter(token => /^[a-zA-Z]+$/.test(token));
 
+        // Process each token and update the frequency count
         filteredTokens.forEach((token: string) => {
             let processedWord;
             try {

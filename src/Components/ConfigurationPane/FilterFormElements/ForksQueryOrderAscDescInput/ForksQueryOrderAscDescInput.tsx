@@ -13,9 +13,13 @@ const options = Object.values(SORT_DIRECTION).map((option) =>
 );
 
 /**
-* Temporarily unused because the REST API does not support ascending/descending selection.
-* Activate in future if a swap to GraphQL is made.
-*/
+ * Component that allows the user to select the sorting order of forks.
+ * It takes in a value and an onChange handler as props.
+ * It also takes in an error prop to display validation errors.
+ * 
+ * Temporarily unused because the REST API does not support ascending/descending selection.
+ * Activate in future if a swap to GraphQL is made.
+ */
 function ForksQueryOrderAscDescInput({ onChangeHandler, selected, error }: ForksQueryOrderAscDescInputProps) {
     return (
         <FormControl>

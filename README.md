@@ -41,7 +41,6 @@ If the prompt doesn't show:
 - Press `Ctrl + Shift + P` and choose `Dev Containers: Open Folder in Container...`
 
 This will open a new VSCode window in which everything will be running in the dev container. Make sure to use the terminal in VSCode to ensure consistent behaviour. 
----
 ## Installation
 ### Prerequisites
 

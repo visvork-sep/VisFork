@@ -63,7 +63,7 @@ describe("Collaboration Graph tests", () => {
     it("renders two author circles with example data", async () => {
         renderCollaborationGraph();
 
-        const circles = await screen.getAllByTestId("author-circle");
+        const circles = screen.getAllByTestId("author-circle");
 
         expect(circles.length).toBe(2);
     });
@@ -71,7 +71,7 @@ describe("Collaboration Graph tests", () => {
     it("renders one repo square with example data", async () => {
         renderCollaborationGraph();
 
-        const squares = await screen.getAllByTestId("repo-square");
+        const squares = screen.getAllByTestId("repo-square");
 
         expect(squares.length).toBe(1);
     });
@@ -80,7 +80,7 @@ describe("Collaboration Graph tests", () => {
         const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
         renderCollaborationGraph();
 
-        const square = await screen.getByTestId("repo-square");
+        const square = screen.getByTestId("repo-square");
 
         fireEvent.dblClick(square);
         expect(openSpy).toHaveBeenCalled();
@@ -92,7 +92,7 @@ describe("Collaboration Graph tests", () => {
         const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
         renderCollaborationGraph();
 
-        const circles = await screen.getAllByTestId("author-circle");
+        const circles = screen.getAllByTestId("author-circle");
 
         fireEvent.dblClick(circles[0]);
         expect(openSpy).toHaveBeenCalled();

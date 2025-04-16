@@ -6,7 +6,7 @@ VisFork is a web-based visualization tool designed to analyze the evolution of f
 
 VisFork connects with GitHub via OAuth 2.0 and utilizes both the GraphQL and REST APIs to dynamically fetch repository and fork data. It is built with React, TypeScript, and D3.js, and is optimized for scalability and extendability.
 
-It provides severval visualizations for forks of a target repository to help developers understand the system.
+It provides several visualizations for forks of a target repository to help developers understand the system.
 
 ### Key Features
 

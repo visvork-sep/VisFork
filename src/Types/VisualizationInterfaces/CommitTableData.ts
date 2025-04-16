@@ -16,3 +16,8 @@ export interface CommitTableDetails {
 export interface CommitTableData {
     commitData: CommitTableDetails[]
 }
+
+export interface CommitTableProps {
+    commitData: CommitTableDetails[]
+    handleSearchBarSubmission: (hashes: string[]) => void
+}

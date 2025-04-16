@@ -15,6 +15,7 @@ import { sortDates, computeFrequency } from "./HistogramUtils";
 function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const { theme } = useTheme();
+    // Store states for selected date range labels
     const [startLabel, setStartLabel] = useState("");
     const [endLabel, setEndLabel] = useState("");
 
@@ -70,11 +71,12 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
         const contextWidth = width - contextMargin.left - contextMargin.right;
         const focusWidth = width - focusMargin.left - focusMargin.right;
 
-        // Define scales for context chart
+        // Converts the dates to a usable format
         const formattedDates = Array.from(frequency.keys()).map((dateStr) =>
             timeFormat("%b %Y")(new Date(dateStr))
         );
 
+        // Define scales for context chart
         const xScaleContext = scaleBand()
             .domain(formattedDates)
             .range([0, contextWidth])
@@ -140,6 +142,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
 
         // Brush setup
         const brush = brushX()
+            // Brush boundaries
             .extent([
                 [0, 0],
                 [contextWidth, contextHeight],
@@ -221,6 +224,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                         .on("mouseover", function () {
                             tooltip.style("opacity", 1);
                         })
+                        // Show number of commits in interval
                         .on("mousemove", function (event, d) {
                             tooltip
                                 .html(
@@ -236,6 +240,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
 
                     chartFocus.selectAll(".selection-label").remove();
 
+                    // Retrieve selected start and end date to use to filter subsequent visualizations
                     if (selectedDates.length > 0) {
                         // Get start and end date
                         const dateFormat = timeFormat("%B %Y");
@@ -309,12 +314,14 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
             .style("opacity", 0);
     }, [frequency]);
 
+    // Re-render on resize or when data changes
     useEffect(() => {
         drawChart();
         window.addEventListener("resize", drawChart);
         return () => window.removeEventListener("resize", drawChart);
-    }, [drawChart, barColors, handleHistogramSelection, chartDimensions]);
+    }, [drawChart, handleHistogramSelection, chartDimensions]);
 
+    // return the chart component
     return (
         <div style={{ borderRadius: "10px" }}>
             <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
@@ -330,6 +337,7 @@ function Histogram({ commitData, handleHistogramSelection }: HistogramData) {
                     marginBottom: "0.5rem",
                 }}
             >
+                {/* Display selected date range labels */}
                 <span style={{ fontWeight: "bold", fontSize: "14px" }}>
                     {startLabel}
                 </span>

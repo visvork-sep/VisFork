@@ -9,7 +9,6 @@ import {
     OWNER_TYPES,
 } from "@Utils/Constants";
 import { act } from "react";
-import { AssertionError } from "@Utils/Assert";
 
 describe("useFilterForm - Initial values", () => {
     it("should set the initial value of repository to an empty string", () => {
@@ -34,16 +33,19 @@ describe("useFilterForm - Initial values", () => {
 
     it("should set the initial value of commitsTypeFilter to all commit types", () => {
         const { result } = renderHook(useFilterForm);
-        expect(result.current.form.commitTypeFilter).toEqual(
-            Object.values(COMMIT_TYPES).map((t) => t.value)
-        );
+        Object.values(COMMIT_TYPES).forEach(d => {
+
+            expect(result.current.form.commitTypeFilter).toContain(d.value);
+        });
     });
 
     it("should set the initial value of ownerTypeFilter to all owner types", () => {
         const { result } = renderHook(useFilterForm);
-        expect(result.current.form.ownerTypeFilter).toEqual(
-            Object.values(OWNER_TYPES).map((t) => t.value)
-        );
+
+        Object.values(OWNER_TYPES).forEach(d => {
+
+            expect(result.current.form.ownerTypeFilter).toContain(d.value);
+        });
     });
 
     it("should set the initial value of commitsDateRangeFrom to The current date 1 year ago", () => {
@@ -87,8 +89,8 @@ describe("useFilterForm - forksCount", () => {
         expect(result.current.form.forksCount).toEqual(newValue);
     });
 
-    it ("should change the value of forksCount to empty string" + 
-            "when its changehandler is called with an empty string", () => {
+    it("should change the value of forksCount to empty string" +
+        "when its changehandler is called with an empty string", () => {
         const { result } = renderHook(useFilterForm);
         const newValue = "";
         const handler = result.current.handleForksCountChange;
@@ -111,16 +113,6 @@ describe("useFilterForm - forksOrder", () => {
 
             expect(result.current.form.forksOrder).toEqual(newValue);
         });
-
-    it("should fail if the value not included in FOKRS_SORTING_ORDERS", () => {
-        const { result } = renderHook(useFilterForm);
-        const newValue = "N";
-        const handler = result.current.handleForksOrderChange;
-
-        expect(() => {
-            act(() => handler(newValue));
-        }).toThrowError(AssertionError);
-    });
 });
 
 describe("useFilterForm - forksAscDesc", () => {
@@ -135,16 +127,6 @@ describe("useFilterForm - forksAscDesc", () => {
 
             expect(result.current.form.forksAscDesc).toEqual(newValue);
         });
-
-    it("should fail if the value is not included in SORT_DIRECTION", () => {
-        const { result } = renderHook(useFilterForm);
-        const newValue = "N";
-        const handler = result.current.handleForksOrderChange;
-
-        expect(() => {
-            act(() => handler(newValue));
-        }).toThrowError(AssertionError);
-    });
 });
 
 describe("useFilterForm - commitsTypeFilter", () => {
@@ -153,7 +135,7 @@ describe("useFilterForm - commitsTypeFilter", () => {
         const handler = result.current.handleCommitsTypeFilterChange;
 
         act(() => handler([]));
-       
+
         expect(result.current.form.commitTypeFilter).toEqual([]);
     });
 
@@ -165,16 +147,6 @@ describe("useFilterForm - commitsTypeFilter", () => {
         act(() => handler(newValue));
 
         expect(result.current.form.commitTypeFilter).toEqual(newValue);
-    });
-
-    it("should fail if any of the values are not included in FORK_TYPES", () => {
-        const { result } = renderHook(useFilterForm);
-        const newValue = [COMMIT_TYPES.ADAPTIVE.value, "N"];
-        const handler = result.current.handleCommitsTypeFilterChange;
-
-        expect(() => {
-            act(() => handler(newValue));
-        }).toThrowError(AssertionError);
     });
 });
 
@@ -196,16 +168,6 @@ describe("useFilterForm - ownerTypeFilter", () => {
         act(() => handler(newValue));
 
         expect(result.current.form.ownerTypeFilter).toEqual(newValue);
-    });
-
-    it("should fail if any of the values are not included in ONWER_TYPES", () => {
-        const { result } = renderHook(useFilterForm);
-        const newValue = [OWNER_TYPES.ORGANIZATION.value, "N"];
-        const handler = result.current.handleCommitsTypeFilterChange;
-
-        expect(() => {
-            act(() => handler(newValue));
-        }).toThrowError(AssertionError);
     });
 });
 

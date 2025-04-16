@@ -1,4 +1,4 @@
-import { Selection, BaseType } from "d3-selection";
+import { Selection, BaseType, select } from "d3-selection";
 import { timeFormat } from "d3-time-format";
 import { symbol, symbolCircle, symbolSquare, symbolTriangle } from "d3-shape";
 import {
@@ -19,7 +19,23 @@ export interface GroupedNode extends Commit {
 }
 
 /**
- * Draws the horizontal shaded regions for each repository in the timeline chart.
+ * Helper to filter nodes by their *type* in Merged View.
+ * Can be easily replaced inline with .filter() 
+ */
+function filterByBranch(
+    nodes: MutGraphNode<GroupedNode, undefined>[],
+    branch: string
+): MutGraphNode<GroupedNode, undefined>[] {
+    const result = [];
+    for (const node of nodes) {
+        if (node.data.branch === branch) result.push(node);
+    }
+    return result;
+}
+
+/**
+ * Draws the alternating shading on the swimlanes. 
+ * Appends the author labels to the beginning of each lane.
  */
 export function drawLanes(
     g: Selection<SVGGElement, unknown, null, undefined>,
@@ -29,11 +45,17 @@ export function drawLanes(
     darkColor: string,
     lightColor: string
 ) {
+    // Shading
     const backgrounds = g.append("g").attr("class", "repo-backgrounds");
   
-    Object.entries(lanes).forEach(([repo, { minY: minX, maxY: maxX }], i) => {
+    const entries = Object.entries(lanes);
+    // For each lane
+    for (let i = 0; i < entries.length; i++) {
+        const [repo, { minY: minX, maxY: maxX }] = entries[i];
+        // The color alternates for visual distinction
         const laneColor = i % 2 === 0 ? darkColor : lightColor;
   
+        // Append the shading
         backgrounds.append("rect")
             .attr("x", -c.MARGIN.left)
             .attr("y", minX - c.NODE_RADIUS)
@@ -42,6 +64,7 @@ export function drawLanes(
             .attr("fill", laneColor)
             .attr("opacity", 0.4);
   
+        // Append the author label
         backgrounds.append("text")
             .attr("x", -c.MARGIN.left + 5)
             .attr("y", (minX - c.NODE_RADIUS) + (maxX - minX + c.NODE_RADIUS * 2) / 2)
@@ -49,72 +72,72 @@ export function drawLanes(
             .attr("alignment-baseline", "middle")
             .text(repo.split("/")[0])
             .attr("fill", `${isDarkMode ? "white" : "black"}`);
-    });
+    };
 }
 
 /**
- * Draws the timeline markers (vertical dashed lines specifying the date at that point).
+ * Draws the timeline markers (vertical dashed lines) whenever the month changes.
+ * Will append a textual label below the marker if there is enough space.
+ * This function will only be called in Full View. 
  */
 export function drawTimelineMarkers(
     g: Selection<SVGGElement, unknown, null, undefined>,
     sortedNodes: GraphNode<Commit | GroupedNode, unknown>[],
     totalHeight: number,
     isDarkMode: boolean,
-    colorMarker: string,
-    merged: boolean
-) {
-    if (!merged) {
-        const formatMonth = timeFormat("%b");
-        const formatYear = timeFormat("%Y");
-        let lastMonth = "";
-        let lastYear = "";
+    colorMarker: string) {
+
+    const formatMonth = timeFormat("%b");
+    const formatYear = timeFormat("%Y");
+    let lastMonth = "";
+    let lastYear = "";
         
-        const monthGroup = g.append("g").attr("class", "month-lines");
-        let lastLabelX = -Infinity;
+    const monthGroup = g.append("g").attr("class", "month-lines");
+    let lastLabelX = -Infinity;
         
-        for (const node of sortedNodes) {
-            const currentDate = new Date(node.data.date);
-            const currentMonth = formatMonth(currentDate);
-            const currentYear = formatYear(currentDate);
-            const labelX = node.x;
+    for (const node of sortedNodes) {
+        const currentDate = new Date(node.data.date);
+        const currentMonth = formatMonth(currentDate);
+        const currentYear = formatYear(currentDate);
+        const labelX = node.x;
         
-            if (currentMonth !== lastMonth) {
-                // always draw the vertical line
-                monthGroup.append("line")
-                    .attr("x1", labelX)
-                    .attr("x2", labelX)
-                    .attr("y1", 0)
-                    .attr("y2", totalHeight - 10)
-                    .attr("stroke", colorMarker)
-                    .attr("stroke-dasharray", "3,3");
+        if (currentMonth !== lastMonth) {
+            // Always draw the vertical line
+            monthGroup.append("line")
+                .attr("x1", labelX)
+                .attr("x2", labelX)
+                .attr("y1", 0)
+                .attr("y2", totalHeight - 10)
+                .attr("stroke", colorMarker)
+                .attr("stroke-dasharray", "3,3");
         
-                // only add text label if we have enough space
-                if (Math.abs(labelX - lastLabelX) > c.MIN_LABEL_SPACING) {
-                    const isNewYear = currentYear !== lastYear;
-                    const labelText = isNewYear 
-                        ? `${currentMonth} ${currentYear}`
-                        : currentMonth;
+            // Only add text label if we have enough space
+            if (Math.abs(labelX - lastLabelX) > c.MIN_LABEL_SPACING) {
+                const isNewYear = currentYear !== lastYear;
+                // The text label includes the year only if it has recently changed
+                const labelText = isNewYear 
+                    ? `${currentMonth} ${currentYear}` 
+                    : currentMonth;
         
-                    monthGroup.append("text")
-                        .attr("x", labelX)
-                        .attr("y", totalHeight + c.MARGIN.bottom - 5)
-                        .attr("font-size", 12)
-                        .style("text-anchor", "middle")
-                        .style("fill", `${isDarkMode? "white" : "black"}`)
-                        .text(labelText);
+                monthGroup.append("text")
+                    .attr("x", labelX)
+                    .attr("y", totalHeight + c.MARGIN.bottom - 5)
+                    .attr("font-size", 12)
+                    .style("text-anchor", "middle")
+                    .style("fill", `${isDarkMode? "white" : "black"}`)
+                    .text(labelText);
         
-                    lastLabelX = labelX;
-                }
-        
-                lastMonth = currentMonth;
-                lastYear = currentYear;
+                lastLabelX = labelX;
             }
+        
+            lastMonth = currentMonth;
+            lastYear = currentYear;
         }
     }
 }
 
 /**
- * Draws the edges (links) between nodes.
+ * Used to draw curved edges.
  */
 export function drawEdgeCurve(d: MutGraphLink<Commit | GroupedNode, undefined>) {
     if (d.source.y < d.target.y) {
@@ -144,29 +167,32 @@ export function drawEdgeCurve(d: MutGraphLink<Commit | GroupedNode, undefined>) 
 }
 
 /**
- * Draws the merged nodes (fork parents, merge commits, and commits without deviations).
- * The nodes are represented as circles, squares, and triangles respectively.
+ * Draws circles, triangles and squares depending on the node type.
  */
 export function drawMergedNodes(
     g: Selection<SVGGElement, unknown, null, undefined>,
     colorMap: Map<string, string>,
     mergedNodes: MutGraphNode<GroupedNode, undefined>[]) {
     
-    // Fork parents
-    const mergedCircles = mergedNodes.filter(node => node.data.branch === "forkParent");
+    // Circles are for fork/merge parents (these have branch = "forkParent")
+    const mergedCircles = filterByBranch(mergedNodes, "forkParent");
     const circles = g.append("g")
         .selectAll("circle")
         .data(mergedCircles)
         .enter()
         .append("circle")
-        .attr("cx", d => d.x ?? 0)
-        .attr("cy", d => d.y ?? 0)
         .attr("r", c.NODE_RADIUS)
         .style("cursor", "pointer")
-        .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
+        .each(function(d) {
+            const sel = (this as SVGCircleElement);
+            select(sel)
+                .attr("cx", d.x ?? 0)
+                .attr("cy", d.y ?? 0)
+                .attr("fill", colorMap.get(d.data.repo) ?? "999");
+        });
 
-    // Commits without deviations
-    const mergedSquares = mergedNodes.filter(node => node.data.branch === "default");
+    // Squares are for (groups of) regular commits (they have branch = "default")
+    const mergedSquares = filterByBranch(mergedNodes, "default");
     const squares = g.append("g")
         .selectAll("rect")
         .data(mergedSquares)
@@ -178,8 +204,8 @@ export function drawMergedNodes(
         .attr("height", c.NODE_RADIUS * 2)
         .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
 
-    // Merge commits
-    const mergedTriangles = mergedNodes.filter(node => node.data.branch === "merge");
+    // Triangles are for merge commits (they have branch = "merge")
+    const mergedTriangles = filterByBranch(mergedNodes, "merge");
     const triangles = g.append("g")
         .selectAll("polygon")
         .data(mergedTriangles)
@@ -197,9 +223,7 @@ export function drawMergedNodes(
     return {circles, squares, triangles};
 }
 
-/**
- * Draws the normal nodes (commits).
- */
+// Draws a circle for each commit in the data, colors it according to the repo it is from
 export function drawNormalNodes(
     g: Selection<SVGGElement, unknown, null, undefined>,
     colorMap: Map<string, string>,
@@ -211,17 +235,23 @@ export function drawNormalNodes(
         .data(sortedNodes)
         .enter()
         .append("circle")
-        .attr("cx", d => d.x ?? 0)
-        .attr("cy", d => d.y ?? 0)
         .attr("r", c.NODE_RADIUS)
         .style("cursor", "pointer")
-        .attr("fill", d => colorMap.get(d.data.repo) ?? "999");
+        .each(function(d) {
+            const sel = (this as SVGCircleElement);
+            select(sel)
+                .attr("cx", d.x ?? 0)
+                .attr("cy", d.y ?? 0)
+                .attr("fill", colorMap.get(d.data.repo) ?? "999");
+        });
 
     return {circles};
 }
 
 /**
- * Draws the legends.
+ * Draws a color legend for both views.
+ * Will also draw a shape legend for Merged View.
+ * The legend can be used to select by fork or select by commit type 
  */
 export function drawLegends( 
     merged : boolean, 
@@ -235,7 +265,7 @@ export function drawLegends(
         
     const colorLegend = legend.append("div").attr("id", "color-legend");
 
-    colorMap.forEach((colorValue, repoName) => {
+    for (const [repoName, colorValue] of colorMap.entries()) {
         const div = colorLegend
             .append("div")
             .style("display", "flex")
@@ -252,17 +282,16 @@ export function drawLegends(
             .attr("cy", c.LEGEND_SIZE / 2)
             .attr("r", c.LEGEND_SIZE / 2)
             .style("cursor", "pointer")
-            // Selects all nodes from a fork
-            .on("click", function() {
+            .on("click", function() { // selection logic on click
                 const selected = sortedNodes.filter(node => node.data.repo === repoName)
                     .flatMap((node) =>
                         merged
                             ? (node as MutGraphNode<GroupedNode, unknown>).data.nodes
                             : [node.data.id]
                     );
-                setSelectAll(false);
-                resetBrushing();
-                handle(selected);
+                setSelectAll(false); // overwrite selectAll if enabled
+                resetBrushing(); // overwrite brushing if enabled
+                handle(selected); // pass the data to the hook
             }) 
             .attr("fill", colorValue);
 
@@ -270,7 +299,7 @@ export function drawLegends(
             .append("text")
             .text(repoName)
             .style("margin-left", c.LEGEND_TEXT_MARGIN);
-    });
+    };
 
     if (merged) {
         const shapeLegend = legend
@@ -285,7 +314,7 @@ export function drawLegends(
             { label: "Merge commit" , shape: symbolTriangle },
         ];
 
-        shapeLegendData.forEach(({ label, shape }) => {
+        for (const {label, shape} of shapeLegendData) {
             const item = shapeLegend
                 .append("div")
                 .style("display", "flex")
@@ -304,16 +333,16 @@ export function drawLegends(
                 .attr("d",symbol().type(shape).size(c.LEGEND_SYMBOL_SIZE))
                 // Selects all nodes from a fork
                 .on("click", function() {
-                    const selected = (sortedNodes as MutGraphNode<GroupedNode, undefined>[])
-                        .filter(node => node.data.branch === 
-                            (label === "Fork/Merge parent" ? "forkParent" :
-                                label === "Merge commit" ? "merge" : "default"
-                            )
-                        )
-                        .flatMap(node => node.data.nodes);
-                    setSelectAll(false);
-                    resetBrushing();
-                    handle(selected);
+                    // Use the branch to distinguish the commit type
+                    const branch = (label === "Fork/Merge parent" ? "forkParent" :
+                        label === "Merge commit" ? "merge" : "default");
+                    // Reuse the filterByBranch function to filter by node type
+                    const nodes = filterByBranch(sortedNodes as MutGraphNode<GroupedNode, undefined>[], branch);
+                    // We need the IDs of the selected nodes rather than the node itself
+                    const selected = nodes.flatMap(node => node.data.nodes);
+                    setSelectAll(false); // overwrite selectAll if enabled
+                    resetBrushing(); // overwrite brushing if enables
+                    handle(selected); // pass the data to the hook
                 }) 
                 .attr("fill", shapeColor);
 
@@ -321,7 +350,7 @@ export function drawLegends(
                 .append("text")
                 .text(label)
                 .style("margin-left", c.LEGEND_TEXT_MARGIN);
-        });
+        };
     }
 }
 

@@ -130,9 +130,6 @@ More details are in the Software Design Document.
 - src/Utils/visualizationDescriptions/visualizationDescriptions.ts
 - src/Utils/Constants.ts
 - Every file in src/Types/
-<!---
-Maybe DataToLogic.ts should be here as well? lmk in PR comments what u think and I'll delete this comment
--->
 
 ## Project Status
  All core visualizations implemented

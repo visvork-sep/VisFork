@@ -145,3 +145,9 @@ This project is licensed under the MIT License - see the [LICENSE](README.md) fi
 
 ## Authors
 Developed by the team 4ks: Quinn Caris, Aleks Chitalov, Nickolay Frissen, Jason Fu, Kasra Gheytuli, Krasimira Kamenska, Kaloyan Konarev, Alva Shudofsky, Carina Ungureanu, Gergely Vész, Gábor Viniczay
+
+## Acknowledgments
+The 4ks team would like to thank the following individuals for their guidance and support throughout the project:
+- Aqiel Oostenbrug, Erik Dekker - Project Managers
+- Alexander Serebrenik - Supervisor
+- Jacob Krüger - Client

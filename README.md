@@ -10,10 +10,10 @@ It provides several visualizations for forks of a target repository to help deve
 
 ### Key Features
 
-- **Commit Histogram** and **Timeline** visualizations
-- **Fork list** and **Collaboration Network Graph**
-- **Commit Classification Sankey Diagram**
-- **Commit Table** and **Word Cloud**
+- Commit Histogram and Timeline visualizations
+- Fork list and Collaboration Network Graph
+- Commit Classification Sankey Diagram
+- Commit Table and Word Cloud
 - Interactive filtering and sorting
 - Exporting visualizations and raw data
 - GitHub OAuth authentication

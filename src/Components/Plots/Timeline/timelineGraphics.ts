@@ -8,15 +8,7 @@ import {
 } from "d3-dag";
 import type { TimelineDetails as Commit } from "@VisInterfaces/TimelineData";
 import * as c from "./timelineConstants"; 
-
-
-/**
- * Custom interface used for Merged View nodes
- */
-export interface GroupedNode extends Commit {
-    nodes: string[];
-    end_date: string;
-}
+import { GroupedNode } from "./timelineUtils";
 
 /**
  * Helper to filter nodes by their *type* in Merged View.

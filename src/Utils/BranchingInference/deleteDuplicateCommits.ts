@@ -248,14 +248,9 @@ function deleteBranchFromOldHistory(commit: UnprocessedCommitExtended, branch: s
             break;
         }
 
-        // We go to the parent commit and continue execution
-        const nextCommit = commitMap.get(commit.parentIds[0]);
-        if (nextCommit === undefined) {
-            console.error("Commit data not found!");
-            break;
-        } else {
-            commit = nextCommit;
-        }
+        const nextCommit = getNextCommit(commit);
+        if (!nextCommit) break;
+        commit = nextCommit;
     }
     return commit;
 }
@@ -272,16 +267,20 @@ function deleteFromBranchRecentHistory(commit: UnprocessedCommitExtended,
             recursiveMergeCheck(commit);
         }
 
-        // Go to parent commit and keep assigning it to the given commit location
-        const nextCommit = commitMap.get(commit.parentIds[0]);
-        if (nextCommit === undefined) {
-            console.error("Commit data not found!");
-            break;
-        } else {
-            commit = nextCommit;
-        }
+        const nextCommit = getNextCommit(commit);
+        if (!nextCommit) break;
+        commit = nextCommit;
     }
     return commit;
+}
+
+function getNextCommit(commit: UnprocessedCommitExtended): UnprocessedCommitExtended | undefined {
+    const nextCommit = commitMap.get(commit.parentIds[0]);
+    if (nextCommit === undefined) {
+        console.error("Commit data not found!");
+        return undefined;
+    }
+    return nextCommit;
 }
 
 /**

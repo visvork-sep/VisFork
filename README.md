@@ -123,6 +123,17 @@ VisFork follows a modular and scalable design:
 
 More details are in the Software Design Document.
 
+## Data files to be excluded for LCOM metrics
+- src/Queries/forks.graphql
+- src/Queries/avatarUrl.graphl
+- src/Utils/BranchingInference/InferenceData.ts
+- src/Utils/visualizationDescriptions/visualizationDescriptions.ts
+- src/Utils/Constants.ts
+- Every file in src/Types/
+<!---
+Maybe DataToLogic.ts should be here as well? lmk in PR comments what u think and I'll delete this comment
+-->
+
 ## Project Status
  All core visualizations implemented
 

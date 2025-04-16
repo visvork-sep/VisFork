@@ -41,7 +41,8 @@ function canCreateMainRepositoryInfo(
 }
 
 // Creates the main repository information based on the filtered forks and simplified commit data.
-// Returns an object containing the main repository information, including the owner, forks, commits, and other metadata.
+// Returns an object containing the main repository information, 
+// including the owner, forks, commits, and other metadata.
 function createMainRepositoryInfo(
     filteredForks: UnprocessedRepository[], 
     simplifiedCommitData: UnprocessedCommitExtended[][], 

@@ -34,12 +34,6 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
     const handleHistogramSelection = useCallback(
         (startDate: Date, endDate: Date) => {
             const constrainedCommits = filterCommitsByDate(commitData, startDate, endDate);
-
-            // Remove parents that are outside the valid set
-            const constrainedCommits = filteredCommits.map(commit => ({
-                ...commit,
-                parentIds: commit.parentIds.filter(parentId => validCommitIds.has(parentId))
-            }));
         
             // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({

@@ -6,6 +6,7 @@ import { SankeyData } from "@VisInterfaces/SankeyData";
 import { TimelineData } from "@VisInterfaces/TimelineData";
 import { WordCloudData } from "@VisInterfaces/WordCloudData";
 
+
 /* Map commit data to Histogram
 Passes the following data:
 - repo: The name of the repository

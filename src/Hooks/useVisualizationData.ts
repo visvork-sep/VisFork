@@ -3,28 +3,25 @@ import { ForkListData } from "@VisInterfaces/ForkListData";
 import { VisualizationData } from "@VisInterfaces/VisualizationData";
 import { Commit, Repository } from "@Types/LogicLayerTypes";
 import {
+    mapCommitDataToCollabGraph,
     mapCommitDataToHistogram,
-    mapCommitDataToTimeline,
-    mapCommitDataToCommitTable,
-    mapCommitDataToWordCloud,
     mapCommitDataToSankey,
-    mapCommitDataToCollabGraph
+    mapCommitDataToWordCloud,
 } from "@Utils/LogicToVisualization";
+import {
+    filterCommitsByDate,
+    filterCommitsByHashes,
+    buildVisualizationSubsetData
+} from "@Utils/UseVisualizationUtils";
 
-// Main hook to manage visualization data
 export function useVisualizationData(forkData: Repository[], commitData: Commit[]) {
-    // Memoize the initial visualization data
     const initialVisData = useMemo(() => {
         const forkListData: ForkListData = { forkData: forkData };
 
         return {
             forkListData,
             histogramData: mapCommitDataToHistogram(commitData),
-            timelineData: mapCommitDataToTimeline(commitData),
-            commitTableData: mapCommitDataToCommitTable(commitData),
-            wordCloudData: mapCommitDataToWordCloud(commitData),
-            sankeyData: mapCommitDataToSankey(commitData),
-            collabGraphData: mapCommitDataToCollabGraph(commitData),
+            ...buildVisualizationSubsetData(commitData),
         };
     }, [forkData, commitData]);
 
@@ -33,18 +30,10 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
     // Update visualization data when forkData or commitData changes
     useEffect(() => setVisData(initialVisData), [forkData, commitData]);
 
-    // Handlers
-
     // Handle histogram selection to filter commits based on date range
     const handleHistogramSelection = useCallback(
         (startDate: Date, endDate: Date) => {
-            // Filter commits based on date range
-            const filteredCommits = commitData.filter(
-                (commit) => new Date(commit.date) >= startDate && new Date(commit.date) <= endDate
-            );
-
-            // Create a Set of valid commit IDs for fast lookup
-            const validCommitIds = new Set(filteredCommits.map(commit => commit.sha));
+            const constrainedCommits = filterCommitsByDate(commitData, startDate, endDate);
 
             // Remove parents that are outside the valid set
             const constrainedCommits = filteredCommits.map(commit => ({
@@ -55,11 +44,7 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
             // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
-                timelineData: mapCommitDataToTimeline(constrainedCommits),
-                sankeyData: mapCommitDataToSankey(constrainedCommits),
-                collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
-                commitTableData: mapCommitDataToCommitTable(constrainedCommits),
-                wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
+                ...buildVisualizationSubsetData(constrainedCommits),
             }));
         },
         [commitData]
@@ -68,17 +53,12 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
     // Handle timeline selection to filter commits based on selected commit hashes
     const handleTimelineSelection = useCallback(
         (hashes: string[]) => {
-            const constrainedCommits = commitData.filter((commit) =>
-                hashes.includes(commit.sha)
-            );
+            const constrainedCommits = filterCommitsByHashes(commitData, hashes);
 
             // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
                 ...prev,
-                sankeyData: mapCommitDataToSankey(constrainedCommits),
-                collabGraphData: mapCommitDataToCollabGraph(constrainedCommits),
-                commitTableData: mapCommitDataToCommitTable(constrainedCommits),
-                wordCloudData: mapCommitDataToWordCloud(constrainedCommits),
+                ...buildVisualizationSubsetData(constrainedCommits),
             }));
         },
         [commitData]
@@ -87,9 +67,7 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
     // Handle search bar submission to filter commits based on selected commit hashes
     const handleSearchBarSubmission = useCallback(
         (hashes: string[]) => {
-            const constrainedCommits = commitData.filter((commit) =>
-                hashes.includes(commit.sha)
-            );
+            const constrainedCommits = filterCommitsByHashes(commitData, hashes);
 
             // Update subsequent visualizations with filtered commits
             setVisData((prev) => ({
@@ -120,8 +98,8 @@ export function useVisualizationData(forkData: Repository[], commitData: Commit[
         handlers: {
             handleHistogramSelection,
             handleTimelineSelection,
-            handleSearchBarSubmission
+            handleSearchBarSubmission,
         },
-        defaultBranches
+        defaultBranches,
     };
 }

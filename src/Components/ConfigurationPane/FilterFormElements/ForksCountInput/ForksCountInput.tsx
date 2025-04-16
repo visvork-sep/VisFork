@@ -9,7 +9,9 @@ interface ForksCountInputProps {
 };
 
 /**
- * Number input for for the amount of forks to query
+ * Component that allows the user to input a number of forks to query.
+ * It takes in a value and an onChange handler as props.
+ * It also takes in an error prop to display validation errors.
  */
 function ForksCountInput({ error, onChangeHandler, value }: ForksCountInputProps) {
     return (

@@ -6,8 +6,11 @@ import { Commit, ForkFilter, Repository, UnprocessedCommitExtended, UnprocessedR
     from "@Types/LogicLayerTypes";
 import { useMemo } from "react";
 import { processCommits } from "@Utils/BranchingInference/ProcessCommits";
-import { classify } from "@Utils/Classify";
+import { classify } from "@Utils/Classify/Classify";
 
+/**
+ * Component that renders the main application body and configuration pane.
+ */
 function DataComponents() {
     const { onFiltersChange, forks, commits, filters, isLoading } = useFilteredData();
 
@@ -16,13 +19,17 @@ function DataComponents() {
         return `${forks[0]?.owner.login}/${forks[0]?.name}`;
     }, [forks]);
 
+    // Create a map of default branches for each fork using the main repo name.
     const defaultBranchesMap = useMemo(() => createDefaultBranchesMap(forks), [forks]);
+
+    // Process the commits using the default branches map and main repo name.
     const filteredCommits = useMemo(() => processCommits(commits, defaultBranchesMap, mainRepoName), [
         commits,
         defaultBranchesMap,
         mainRepoName,
     ]);
 
+    // Preprocess the commits and forks data based on the filters.
     const applicationBody = useMemo(
         () => {
             const { commits: processedCommits, forks: processedForks } = preprocessor(filteredCommits, forks, filters);
@@ -33,6 +40,7 @@ function DataComponents() {
         [filteredCommits, forks]
     );
 
+    // Create the configuration pane with a filter change handler and loading state.
     const configurationPane = useMemo(() => {
         return (
             <SplitPageLayout.Pane aria-label="Pane" width="medium" resizable>
@@ -49,6 +57,9 @@ function DataComponents() {
     );
 }
 
+/**
+ * Preprocesses the commits and forks data based on the provided filter.
+ */
 function preprocessor(commits: UnprocessedCommitExtended[],
     forks: UnprocessedRepository[], filter?: ForkFilter): { forks: Repository[], commits: Commit[]; } {
     const processedForks: Repository[] = forks.map(fork => ({
@@ -83,6 +94,10 @@ function preprocessor(commits: UnprocessedCommitExtended[],
     return { forks: processedForks, commits: processedCommits };
 }
 
+/**
+ * Creates a map of default branches where each repository is mapped to their
+ * respective default branch.
+ */
 function createDefaultBranchesMap(repos: UnprocessedRepository[]): Record<string, string> {
     const defaultBranches: Record<string, string> = {};
 

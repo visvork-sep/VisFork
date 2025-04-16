@@ -17,10 +17,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set Up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Get resources
         run: |
               curl -o schema.graphql https://docs.github.com/public/fpt/schema.docs.graphql
               curl https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.2022-11-28.yaml -L -o openapi-schema.yaml
+              cp /opt/simian/simian-4.0.0.jar .
 
       - name: Build Docker image
         run: docker build -t visfork-ci -f Dockerfile.build .
@@ -37,26 +44,46 @@ jobs:
                 visfork-ci bash
 
 
-  test-build-deploy:
+  build-test-deploy:
     runs-on: self-hosted
     needs: setup
 
     steps:
+      - name: Build
+        run: docker exec visfork-ci npm run build
+
       - name: Run ESLint
         run: docker exec visfork-ci npm run lint
 
       - name: Run tests
         run: docker exec visfork-ci npm run test
 
-      # - name: Authentication
-      #   if: github.ref == 'refs/heads/main'
+      #   # {balanceParentheses=true, failOnDuplication=true, ignoreCharacterCase=true, ignoreCurlyBraces=true,
+      #     # ignoreIdentifierCase=true, ignoreModifiers=true, ignoreStringCase=true, language=xxx, threshold=6}
+      # - name: Run Simian Analysis
       #   run: |
-      #         docker cp ~/auth/.env visfork-ci:/workspace/.contrib
-      #         docker cp ~/auth/backend/.env visfork-ci:/workspace/.contrib/backend
-      #         docker cp ~/auth/backend/index.js visfork-ci:/workspace/.contrib/backend
-
-      - name: Build
-        run: docker exec visfork-ci npm run build
+      #     chmod +x .contrib/Simian/simian.sh
+      #
+      #     java -jar simian-4.0.0.jar \
+      #       -includes=src/**.ts \
+      #       -includes=src/**.tsx \
+      #       -excludes=src/**test.ts \
+      #       -excludes=test/**.ts \
+      #       -excludes=src/**test.tsx \
+      #       -excludes=test/**.tsx \
+      #       -balanceParentheses+ \
+      #       failOnDuplication=true \
+      #       ignoreCharacterCase=true \
+      #       ignoreCurlyBraces=true \
+      #       ignoreIdentifierCase=true \
+      #       ignoreModifiers=true \
+      #       ignoreStringCase=true \
+      #       threshold=6
+      #
+      #     if grep -q "Found [1-9][0-9]* duplicate lines" simian.log; then
+      #       echo "Duplicate code detected!"
+      #       exit 1
+      #     fi
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
@@ -64,7 +91,7 @@ jobs:
 
   cleanup:
     runs-on: self-hosted
-    needs: test-build-deploy
+    needs: build-test-deploy
 
     steps:
       - name: Stop and Remove Docker Image

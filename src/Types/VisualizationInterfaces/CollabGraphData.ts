@@ -1,7 +1,7 @@
 /**
  * Interface of the data format for the collaboration network graph per commit.
  */
-interface CollabGraphDetails{
+export interface CollabGraphDetails {
     author: string,
     login: string,
     repo: string,

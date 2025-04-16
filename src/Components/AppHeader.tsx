@@ -6,7 +6,7 @@ import { useAuth } from "@Providers/AuthProvider";
 import { SkeletonAvatar } from "@primer/react/experimental";
 import { AUTH_URL } from "@Utils/Constants";
 import { useFetchAvatarUrl } from "../Queries/queries";
-import visForkIcon from "/visForkIcon.svg";
+import visForkIcon from "../../public/visForkIcon.svg";
 
 /**
  * Redirects the user to GitHub OAuth login.
@@ -19,6 +19,27 @@ function redirectLogin() {
     setTimeout(() => { // timeout for Safari behavior
         window.location.href = AUTH_URL + "/auth/github";
     }, 250);
+}
+
+function getLoginOrAvatar(isAuthenticated: boolean,
+    onDialogOpen: () => void,
+    avatarUrl: string | undefined,
+) {
+    return isAuthenticated ?
+        (
+            <Box onClick={onDialogOpen}>
+                {avatarUrl ?
+                    <Avatar src={avatarUrl} size={32} alt="user avatar" data-testid="user-avatar" />
+
+                    :
+                    <SkeletonAvatar size={32} />
+                }
+            </Box>
+        )
+        :
+        (
+            <Button onClick={redirectLogin}>Sign in</Button>
+        );
 }
 
 /**
@@ -44,20 +65,7 @@ function AppHeader() {
         setIsOpen(false);
     }, []);
 
-    const loginOrAvatar = isAuthenticated ?
-        (
-            <Box onClick={onDialogOpen}>
-                {avatarUrl ?
-                    <Avatar src={avatarUrl} size={32} />
-                    :
-                    <SkeletonAvatar size={32} />
-                }
-            </Box>
-        )
-        :
-        (
-            <Button onClick={redirectLogin}>Sign in</Button>
-        );
+    const loginOrAvatar = getLoginOrAvatar(isAuthenticated, onDialogOpen, avatarUrl);
 
     const currentlyColorblindMode = dayScheme === "light_colorblind" || nightScheme === "dark_colorblind";
     const onToggleColorblindMode = useCallback(() => {
@@ -76,7 +84,7 @@ function AppHeader() {
         <>
             <Stack direction="horizontal" align="center">
                 <Stack.Item>
-                    <Avatar src={visForkIcon} size={32} />
+                    <Avatar src={visForkIcon} size={32} alt="logo avatar" data-testid="logo-avatar" />
                 </Stack.Item>
                 <Stack.Item grow>
                     <span>VisFork</span>
